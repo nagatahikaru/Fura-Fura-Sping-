@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -223,11 +223,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Background.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Plyaer.cpp" />
+    <ClCompile Include="Source\Actor\Actor.cpp" />
+    <ClCompile Include="Source\Actor\Character\Ball\Ball.cpp" />
+    <ClCompile Include="Source\Actor\Character\Batter\Batter.cpp" />
+    <ClCompile Include="Source\Actor\Character\Catcher\Catcher.cpp" />
+    <ClCompile Include="Source\Actor\Character\Character.cpp" />
+    <ClCompile Include="Source\Actor\Character\Pitcher\Pitcher.cpp" />
+    <ClCompile Include="Source\Actor\GameCamera\GameCamera.cpp" />
+    <ClCompile Include="Source\Actor\Stage\Background.cpp" />
+    <ClCompile Include="Source\Actor\Transform.cpp" />
+    <ClCompile Include="Source\Scene\InGame\Game.cpp" />
+    <ClCompile Include="Source\Scene\Lrad\Lrad.cpp" />
+    <ClCompile Include="Source\Scene\Result\Result.cpp" />
+    <ClCompile Include="Source\Scene\Titer\Titer.cpp" />
+    <ClCompile Include="Source\Sound\SoundManager.cpp" />
+    <ClCompile Include="Source\Source.cpp" />
+    <ClCompile Include="Source\UI\UIManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -236,10 +248,22 @@
     <ClCompile Include="system\system.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Background.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameCamera.h" />
-    <ClInclude Include="Plyaer.h" />
+    <ClInclude Include="Source\Actor\Actor.h" />
+    <ClInclude Include="Source\Actor\Character\Ball\Ball.h" />
+    <ClInclude Include="Source\Actor\Character\Batter\Batter.h" />
+    <ClInclude Include="Source\Actor\Character\Catcher\Catcher.h" />
+    <ClInclude Include="Source\Actor\Character\Character.h" />
+    <ClInclude Include="Source\Actor\Character\Pitcher\Pitcher.h" />
+    <ClInclude Include="Source\Actor\GameCamera\GameCamera.h" />
+    <ClInclude Include="Source\Actor\Stage\Background.h" />
+    <ClInclude Include="Source\Actor\Transform.h" />
+    <ClInclude Include="Source\Scene\InGame\Game.h" />
+    <ClInclude Include="Source\Scene\Lrad\Lrad.h" />
+    <ClInclude Include="Source\Scene\Result\Result.h" />
+    <ClInclude Include="Source\Scene\Titer\Titer.h" />
+    <ClInclude Include="Source\Sound\SoundManager.h" />
+    <ClInclude Include="Source\Source.h" />
+    <ClInclude Include="Source\UI\UIManager.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />
   </ItemGroup>

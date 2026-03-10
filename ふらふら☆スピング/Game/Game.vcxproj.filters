@@ -4,6 +4,69 @@
     <Filter Include="system">
       <UniqueIdentifier>{22dd8095-74f9-46df-81a1-36675a040b1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{9cb286c7-92cb-45f0-8c64-4414d879b094}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor">
+      <UniqueIdentifier>{0872a4d6-d398-47bc-b983-683693bf8e19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Effect">
+      <UniqueIdentifier>{606565c4-15f0-431e-9eb2-1b14c201bad7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene">
+      <UniqueIdentifier>{183bd00a-9111-404d-8d16-d155e3255d8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI">
+      <UniqueIdentifier>{e8e2beb4-e207-471b-bd43-26bc7936e9b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sound">
+      <UniqueIdentifier>{dd71b928-4ea5-4bae-922d-930c4e9ec5fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene\InGame">
+      <UniqueIdentifier>{11a7fb4a-871c-4218-9b2a-da0c661c39a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene\Lrad">
+      <UniqueIdentifier>{9f68f991-69ab-47b6-9aa3-3e64500c7d85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene\Result">
+      <UniqueIdentifier>{276b83f9-5633-4434-8b88-124c501f645b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene\Titer">
+      <UniqueIdentifier>{17df55da-e02f-432b-854e-0132d5493659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor\Character">
+      <UniqueIdentifier>{9d4bb0d5-af1a-40d0-9ec9-07f52f5962be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor\GameCamera">
+      <UniqueIdentifier>{029aead8-f7e5-43d4-8d6a-f94a329ee4d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor\Stage">
+      <UniqueIdentifier>{21f726c2-7c19-4419-91ac-fa79fcfcf744}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor\Character\Batter">
+      <UniqueIdentifier>{23124d48-607f-488d-b277-da307b58b3f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor\Character\Pitcher">
+      <UniqueIdentifier>{1ae56d38-50d0-4435-91f5-447541a697a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor\Character\Catcher">
+      <UniqueIdentifier>{25aa0c82-9b14-47df-a1a1-0cb2c5018077}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor\Character\Ball">
+      <UniqueIdentifier>{85a944ed-f21c-4d4c-a090-40e3ea0a717a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI\InGameUI">
+      <UniqueIdentifier>{f4df807b-c9f2-4793-8243-fb57e6a01940}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI\LradUI">
+      <UniqueIdentifier>{91c169f4-1416-4c51-8643-d2414856013a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI\ResultUI">
+      <UniqueIdentifier>{f02b0b99-e0db-4825-957c-9293dff3af38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI\TiterUI">
+      <UniqueIdentifier>{3c027f7f-e78e-4392-bb52-5102aae0aa37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -11,19 +74,107 @@
     <ClCompile Include="system\system.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Plyaer.cpp" />
-    <ClCompile Include="GameCamera.cpp" />
-    <ClCompile Include="Background.cpp" />
+    <ClCompile Include="Source\Source.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Actor.cpp">
+      <Filter>Source\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Sound\SoundManager.cpp">
+      <Filter>Source\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Lrad\Lrad.cpp">
+      <Filter>Source\Scene\Lrad</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\InGame\Game.cpp">
+      <Filter>Source\Scene\InGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Titer\Titer.cpp">
+      <Filter>Source\Scene\Titer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Result\Result.cpp">
+      <Filter>Source\Scene\Result</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Stage\Background.cpp">
+      <Filter>Source\Actor\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\GameCamera\GameCamera.cpp">
+      <Filter>Source\Actor\GameCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Transform.cpp">
+      <Filter>Source\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Character.cpp">
+      <Filter>Source\Actor\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Batter.cpp">
+      <Filter>Source\Actor\Character\Batter</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Pitcher\Pitcher.cpp">
+      <Filter>Source\Actor\Character\Pitcher</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Catcher\Catcher.cpp">
+      <Filter>Source\Actor\Character\Catcher</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Ball\Ball.cpp">
+      <Filter>Source\Actor\Character\Ball</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\UIManager.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Plyaer.h" />
-    <ClInclude Include="GameCamera.h" />
-    <ClInclude Include="Background.h" />
+    <ClInclude Include="Source\Source.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Actor.h">
+      <Filter>Source\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Sound\SoundManager.h">
+      <Filter>Source\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Lrad\Lrad.h">
+      <Filter>Source\Scene\Lrad</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\InGame\Game.h">
+      <Filter>Source\Scene\InGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Titer\Titer.h">
+      <Filter>Source\Scene\Titer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Result\Result.h">
+      <Filter>Source\Scene\Result</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Stage\Background.h">
+      <Filter>Source\Actor\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\GameCamera\GameCamera.h">
+      <Filter>Source\Actor\GameCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Transform.h">
+      <Filter>Source\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Character.h">
+      <Filter>Source\Actor\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Batter.h">
+      <Filter>Source\Actor\Character\Batter</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Pitcher\Pitcher.h">
+      <Filter>Source\Actor\Character\Pitcher</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Catcher\Catcher.h">
+      <Filter>Source\Actor\Character\Catcher</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Ball\Ball.h">
+      <Filter>Source\Actor\Character\Ball</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\UIManager.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
