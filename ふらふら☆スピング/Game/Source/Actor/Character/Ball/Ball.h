@@ -8,7 +8,6 @@ public:
 	virtual ~Ball();
 	virtual bool Start();
 	virtual void Update();
-	virtual void Throw();
 	virtual void Render(RenderContext& rc);
 
 	//ボールを投げる関数
