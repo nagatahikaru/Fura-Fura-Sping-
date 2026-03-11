@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Ball.h"
 
 Ball::Ball()
@@ -11,19 +11,46 @@ Ball::~Ball()
 
 bool Ball::Start()
 {
-	//ƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ
+	//ãƒ¢ãƒ‡ãƒ«ã®èª­ã¿è¾¼ã¿
 	m_modelRender.Init("batter.cmo");
 	m_modelRender.SetScale({ 0.01f,0.01f,0.01f });
+
+	m_position = { 0.0f,1.5f,0.0f };
+
 	return true;
 }
 
 void Ball::Update()
 {
+	float dt = 1.0f / 60.0f;
+
+	if (m_isMove)
+	{
+		m_position += m_velocity * dt;
+
+		//ãƒ¢ãƒ‡ãƒ«ã®ä½ç½®æ›´æ–°
+		m_modelRender.SetPosition(m_position);
+	}
+}
+
+void Ball::Throw(Vector3 targetPos)
+{
+	m_targetPos = targetPos;
+
+	Vector3 dir = m_targetPos - m_position;
+
+	dir.Normalize();
+
+	float speed = 20.0f;
+
+	m_velocity = dir * speed;
+
+	m_isMove = true;
 
 }
 
 void Ball::Render(RenderContext& rc)
 {
-	//ƒ‚ƒfƒ‹‚Ì•`‰æ
+	//ãƒ¢ãƒ‡ãƒ«ã®æç”»
 	m_modelRender.Draw(rc);
 }
