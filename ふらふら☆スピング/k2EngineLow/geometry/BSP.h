@@ -48,7 +48,7 @@ namespace nsK2EngineLow {
 		/// ÉäÅ[Ét
 		/// </summary>
 		struct SLeaf : public SEntity {
-			Vector3 position;
+			Vector3 m_position;
 			void* extraData;
 		};
 		/// <summary>
@@ -72,7 +72,7 @@ namespace nsK2EngineLow {
 			auto newEntity = std::make_shared<SLeaf>();
 			m_leafArray.emplace_back(newEntity);
 			SLeaf* leaf = static_cast<SLeaf*>(newEntity.get());
-			leaf->position = position;
+			leaf->m_position = position;
 			leaf->extraData = extraData;
 			leaf->type = enEntityType_Leaf;
 			

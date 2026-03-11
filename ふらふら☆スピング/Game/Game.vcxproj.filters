@@ -176,5 +176,9 @@
     <ClInclude Include="Source\UI\UIManager.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Game.rc" />
   </ItemGroup>
 </Project>

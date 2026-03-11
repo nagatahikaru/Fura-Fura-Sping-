@@ -13,7 +13,7 @@ namespace nsK2EngineLow {
 		std::unique_ptr<char[]> fileName;		//ファイルのパス。
 		std::unique_ptr<char[]> ddsFileName;	//ddsファイル。
 		std::unique_ptr<char[]> ddsFilePath;	//ddsファイルのパス。
-		Vector2 position;						//座標。
+		Vector2 m_position;						//座標。
 		int width = 0;							//横幅。
 		int height = 0;							//縦幅。
 		int numberLayer = 0;					//レイヤー優先度。

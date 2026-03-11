@@ -348,9 +348,9 @@ namespace nsK2EngineLow {
 				for (int i = startIndex; i < endIndex; i++) {
 					auto& va = smoothVertex[i];
 					m_bpsOnVertexPosition.WalkTree(va.vertex->pos, [&](BSP::SLeaf* leaf) {
-						if (va.vertex->pos.x == leaf->position.x
-							&& va.vertex->pos.y == leaf->position.y
-							&& va.vertex->pos.z == leaf->position.z) {
+						if (va.vertex->pos.x == leaf->m_position.x
+							&& va.vertex->pos.y == leaf->m_position.y
+							&& va.vertex->pos.z == leaf->m_position.z) {
 							//ìØÇ∂ç¿ïWÅB
 							auto* normal = static_cast<Vector3*>(leaf->extraData);
 							if (va.vertex->normal.Dot(*normal) > 0.0f) {

@@ -11,7 +11,7 @@ namespace nsK2EngineLow {
 	/// レベルオブジェクト。
 	/// </summary>
 	struct LevelObjectData : public Noncopyable {
-		Vector3 position;		//座標。
+		Vector3 m_position;		//座標。
 		Quaternion rotation;	//回転。
 		Vector3 scale;			//拡大率。
 		const wchar_t* name;	//名前。

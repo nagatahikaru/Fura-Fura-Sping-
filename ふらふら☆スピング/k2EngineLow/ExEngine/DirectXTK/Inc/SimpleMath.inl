@@ -3513,8 +3513,8 @@ inline Color Color::Lerp(const Color& c1, const Color& c2, float t)
 inline bool Ray::operator == (const Ray& r) const
 {
     using namespace DirectX;
-    XMVECTOR r1p = XMLoadFloat3(&position);
-    XMVECTOR r2p = XMLoadFloat3(&r.position);
+    XMVECTOR r1p = XMLoadFloat3(&m_position);
+    XMVECTOR r2p = XMLoadFloat3(&r.m_position);
     XMVECTOR r1d = XMLoadFloat3(&direction);
     XMVECTOR r2d = XMLoadFloat3(&r.direction);
     return XMVector3Equal(r1p, r2p) && XMVector3Equal(r1d, r2d);
@@ -3523,8 +3523,8 @@ inline bool Ray::operator == (const Ray& r) const
 inline bool Ray::operator != (const Ray& r) const
 {
     using namespace DirectX;
-    XMVECTOR r1p = XMLoadFloat3(&position);
-    XMVECTOR r2p = XMLoadFloat3(&r.position);
+    XMVECTOR r1p = XMLoadFloat3(&m_position);
+    XMVECTOR r2p = XMLoadFloat3(&r.m_position);
     XMVECTOR r1d = XMLoadFloat3(&direction);
     XMVECTOR r2d = XMLoadFloat3(&r.direction);
     return XMVector3NotEqual(r1p, r2p) && XMVector3NotEqual(r1d, r2d);
@@ -3536,17 +3536,17 @@ inline bool Ray::operator != (const Ray& r) const
 
 inline bool Ray::Intersects(const BoundingSphere& sphere, _Out_ float& Dist) const
 {
-    return sphere.Intersects(position, direction, Dist);
+    return sphere.Intersects(m_position, direction, Dist);
 }
 
 inline bool Ray::Intersects(const BoundingBox& box, _Out_ float& Dist) const
 {
-    return box.Intersects(position, direction, Dist);
+    return box.Intersects(m_position, direction, Dist);
 }
 
 inline bool Ray::Intersects(const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, _Out_ float& Dist) const
 {
-    return DirectX::TriangleTests::Intersects(position, direction, tri0, tri1, tri2, Dist);
+    return DirectX::TriangleTests::Intersects(m_position, direction, tri0, tri1, tri2, Dist);
 }
 
 inline bool Ray::Intersects(const Plane& plane, _Out_ float& Dist) const
@@ -3566,7 +3566,7 @@ inline bool Ray::Intersects(const Plane& plane, _Out_ float& Dist) const
     else
     {
         // t = -(dot(n,origin) + D) / dot(n,dir)
-        XMVECTOR pos = XMLoadFloat3(&position);
+        XMVECTOR pos = XMLoadFloat3(&m_position);
         XMVECTOR v = XMPlaneDotNormal(p, pos);
         v = XMVectorAdd(v, XMVectorSplatW(p));
         v = XMVectorDivide(v, nd);

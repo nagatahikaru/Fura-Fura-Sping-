@@ -27,7 +27,7 @@ namespace nsK2Engine {
     struct SPointLight
     {
     private:
-        Vector3 position;       // 座標
+        Vector3 m_position;       // 座標
         int isUse = false;      // 使用中フラグ。
         Vector3 positionInView; // カメラ空間での座標
         float pad1;
@@ -43,7 +43,7 @@ namespace nsK2Engine {
         /// <param name="position"></param>
         void SetPosition(const Vector3& position)
         {
-            this->position = position;
+            this->m_position = position;
         }
         void SetPosition(float x, float y, float z)
         {
@@ -83,7 +83,7 @@ namespace nsK2Engine {
         /// <returns></returns>
         const Vector3& GetPosition() const
         {
-            return position;
+            return m_position;
         }
         /// <summary>
         /// カラーを取得。
@@ -147,7 +147,7 @@ namespace nsK2Engine {
     /// </remark>
    struct SSpotLight {
    private:
-        Vector3 position;                   // 座標
+        Vector3 m_position;                   // 座標
         int isUse = false;                  // 使用中フラグ。
         Vector3 positionInView;             // カメラ空間での座標。
         int no = 0;                         // ライトの番号。
@@ -220,7 +220,7 @@ namespace nsK2Engine {
         /// <param name="position"></param>
         void SetPosition(const Vector3& position)
         {
-            this->position = position;
+            this->m_position = position;
         }
         void SetPosition(float x, float y, float z)
         {
@@ -374,7 +374,7 @@ namespace nsK2Engine {
         /// <returns></returns>
         const Vector3& GetPosition() const
         {
-            return position;
+            return m_position;
         }
         
         /// <summary>

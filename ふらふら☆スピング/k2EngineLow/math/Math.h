@@ -50,19 +50,5 @@ namespace nsK2EngineLow {
 		{
 			return t0 + (t1 - t0) * rate;
 		}
-
-		/// <summary>
-		/// t0とt1の間を線形補完。
-		/// </summary>
-		/// <param name="rate">補間率は0.0～1.0</param>
-		/// <param name="t0">補間開始の値。</param>
-		/// <param name="t1">補間終了の値。</param>
-		/// <returns>補間された値。</returns>
-		template<> static inline Vector2 Lerp(float rate, Vector2 t0, Vector2 t1)
-		{
-			Vector2 ret;
-			ret.Lerp(rate, t0, t1);
-			return ret;
-		}
 	};
 }

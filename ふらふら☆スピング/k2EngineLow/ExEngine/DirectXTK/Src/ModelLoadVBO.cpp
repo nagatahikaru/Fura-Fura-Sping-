@@ -104,8 +104,8 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(const uint8_t* meshData, si
     part->vbDecl = g_vbdecl;
 
     auto mesh = std::make_shared<ModelMesh>();
-    BoundingSphere::CreateFromPoints(mesh->boundingSphere, header->numVertices, &verts->position, sizeof(VertexPositionNormalTexture));
-    BoundingBox::CreateFromPoints(mesh->boundingBox, header->numVertices, &verts->position, sizeof(VertexPositionNormalTexture));
+    BoundingSphere::CreateFromPoints(mesh->boundingSphere, header->numVertices, &verts->m_position, sizeof(VertexPositionNormalTexture));
+    BoundingBox::CreateFromPoints(mesh->boundingBox, header->numVertices, &verts->m_position, sizeof(VertexPositionNormalTexture));
     mesh->opaqueMeshParts.emplace_back(part);
 
     std::unique_ptr<Model> model(new Model());

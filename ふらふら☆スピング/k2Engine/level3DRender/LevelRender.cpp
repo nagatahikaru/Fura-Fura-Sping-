@@ -51,12 +51,12 @@ namespace nsK2Engine {
 				//マップチップを作成する。
 				//行列からポジションを作成する。
 				LevelObjectData levelObjData;
-				bone->CalcWorldTRS(levelObjData.position, levelObjData.rotation, levelObjData.scale);
+				bone->CalcWorldTRS(levelObjData.m_position, levelObjData.rotation, levelObjData.scale);
 
 				//ZupとYupの変更。
-				float fix = levelObjData.position.y;
-				levelObjData.position.y = levelObjData.position.z;
-				levelObjData.position.z = -fix;
+				float fix = levelObjData.m_position.y;
+				levelObjData.m_position.y = levelObjData.m_position.z;
+				levelObjData.m_position.z = -fix;
 
 				fix = levelObjData.rotation.y;
 				levelObjData.rotation.y = levelObjData.rotation.z;

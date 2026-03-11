@@ -9,7 +9,7 @@ namespace nsK2Engine {
 
 	struct MapChipData
 	{
-		Vector3				position;				//座標。
+		Vector3				m_position;				//座標。
 		Vector3				scale;					//大きさ。
 		Quaternion			rotation;				//回転。
 		//std::unique_ptr<PhysicsStaticObject> physicsStaticObject;	//静的物理オブジェクト。

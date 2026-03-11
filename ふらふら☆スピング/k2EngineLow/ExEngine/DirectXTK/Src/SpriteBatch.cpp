@@ -935,7 +935,7 @@ void XM_CALLCONV SpriteBatch::Impl::RenderSprite(SpriteInfo const* sprite, Verte
         // Write position as a Float4, even though VertexPositionColor::position is an XMFLOAT3.
         // This is faster, and harmless as we are just clobbering the first element of the
         // following color field, which will immediately be overwritten with its correct value.
-        XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&vertices[i].position), position);
+        XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&vertices[i].m_position), position);
 
         // Write the color.
         XMStoreFloat4(&vertices[i].color, color);

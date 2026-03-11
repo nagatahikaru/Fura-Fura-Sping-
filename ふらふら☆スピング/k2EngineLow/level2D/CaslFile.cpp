@@ -51,8 +51,8 @@ namespace nsK2EngineLow {
 			ReadOnlyOneCharacter(fp);
 
 			//À•W‚ðŽæ“¾B
-			caslData.get()->position.x = ReadDecimal(fp);
-			caslData.get()->position.y = ReadDecimal(fp);
+			caslData.get()->m_position.x = ReadDecimal(fp);
+			caslData.get()->m_position.y = ReadDecimal(fp);
 
 			//•‚Æ‚‚³‚ðŽæ“¾B
 			caslData.get()->width = ReadInteger(fp);

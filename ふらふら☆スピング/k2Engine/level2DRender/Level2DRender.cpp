@@ -32,8 +32,8 @@ namespace nsK2Engine {
 			Level2DObjectData objData;
 			objData.scale.x = caslData->scale.x;
 			objData.scale.y = caslData->scale.y;
-			objData.position.x = caslData->position.x;
-			objData.position.y = caslData->position.y;
+			objData.m_position.x = caslData->m_position.x;
+			objData.m_position.y = caslData->m_position.y;
 			objData.width = caslData->width;
 			objData.height = caslData->height;
 			objData.name = caslData->name.get();

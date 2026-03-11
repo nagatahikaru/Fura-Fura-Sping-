@@ -9,7 +9,7 @@ namespace nsK2EngineLow {
 	/// 2Dのレベルデータ。
 	/// </summary>
 	struct Level2DObjectData {
-		Vector3 position = Vector3::Zero;		//座標。
+		Vector3 m_position = Vector3::Zero;		//座標。
 		Quaternion rotation = Quaternion::Identity;	//回転。
 		Vector3 scale = Vector3::One;			//拡大率。
 		int width = 0;		//横幅。

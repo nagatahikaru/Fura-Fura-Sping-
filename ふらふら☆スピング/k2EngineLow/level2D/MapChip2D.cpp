@@ -14,8 +14,8 @@ namespace nsK2EngineLow {
 		data.m_fxFilePath = "Assets/shader/sprite.fx";
 		m_sprite.Init(data);
 		//À•WB
-		m_position.x = caslData->position.x;
-		m_position.y = caslData->position.y;
+		m_position.x = caslData->m_position.x;
+		m_position.y = caslData->m_position.y;
 		//‘å‚«‚³B
 		m_scale.x = caslData->scale.x;
 		m_scale.y = caslData->scale.y;

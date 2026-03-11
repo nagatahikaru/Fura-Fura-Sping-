@@ -11,7 +11,7 @@ namespace nsK2Engine {
 			static_cast<float>(objData->width),
 			static_cast<float>(objData->height)
 		);
-		m_spriteRender.SetPosition(objData->position);
+		m_spriteRender.SetPosition(objData->m_position);
 		m_spriteRender.SetScale(objData->scale);
 		m_spriteRender.SetPivot(objData->pivot);
 	}

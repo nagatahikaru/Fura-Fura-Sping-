@@ -12,8 +12,9 @@ public:
 	void Render(RenderContext& rc);
 
 private:
-	UIManager m_uiManager;
+	//UIAnimationManager* m_uiManager;
 	SpriteRender m_spriteRender;
+	Transform* m_transform;
 
 	
 };

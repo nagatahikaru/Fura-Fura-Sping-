@@ -182,7 +182,7 @@ namespace nsK2EngineLow {
         Vector3 centerPos;
         for (const auto& leafPtr : leafArray) {
             auto leaf = static_cast<SLeaf*>(leafPtr.get());
-            centerPos += leaf->position;
+            centerPos += leaf->m_position;
         }
         centerPos /= static_cast<float>(leafArray.size());
         return centerPos;
@@ -200,7 +200,7 @@ namespace nsK2EngineLow {
         // 共分散行列は、それを行列としてまとめたもの。
         for (const auto& leafPtr : leafNodeArray) {
             auto leaf = static_cast<SLeaf*>(leafPtr.get());
-            const auto& aabbCenterPos = leaf->position;
+            const auto& aabbCenterPos = leaf->m_position;
             covarianceMatrix[0][0] += (aabbCenterPos.x - centerPos.x) * (aabbCenterPos.x - centerPos.x);
             covarianceMatrix[0][1] += (aabbCenterPos.x - centerPos.x) * (aabbCenterPos.y - centerPos.y );
             covarianceMatrix[1][0] = covarianceMatrix[0][1];
@@ -261,7 +261,7 @@ namespace nsK2EngineLow {
             SLeaf* leafFront = static_cast<SLeaf*>(leafArray.front().get());
             SLeaf* leafBack = static_cast<SLeaf*>(leafArray.back().get());
             
-            plane.normal = leafBack->position - leafFront->position;
+            plane.normal = leafBack->m_position - leafFront->m_position;
             
             plane.normal.Normalize();
         }
@@ -281,7 +281,7 @@ namespace nsK2EngineLow {
     {
         for (const auto& leafPtr : leafArray) {
             auto leaf = static_cast<SLeaf*>(leafPtr.get());
-            float t = Dot(leaf->position, plane.normal);
+            float t = Dot(leaf->m_position, plane.normal);
 
             if (t < plane.distance) {
                 // 左側に割り振る。

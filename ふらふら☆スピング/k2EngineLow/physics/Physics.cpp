@@ -62,6 +62,29 @@ namespace nsK2EngineLow {
 		);
 		return result.isHit;
 	}
+	//自己改造版
+	/// 凸型コライダーのスイープテストを実施する。
+	/// @param collider 凸型コライダー。
+	/// @param rayStart スイープ開始位置。
+	/// @param rayEnd スイープ終了位置。
+	/// 
+	void PhysicsWorld::ConvexSweepTest(ICollider& collider, const Vector3& rayStart,
+		const Vector3& rayEnd, btCollisionWorld::ConvexResultCallback& resultCallbaxk) const
+	{
+		btTransform start, end;
+		start.setIdentity();
+		end.setIdentity();
+
+		start.setOrigin(btVector3(rayStart.x, rayStart.y, rayStart.z));
+		end.setOrigin(btVector3(rayEnd.x, rayEnd.y, rayEnd.z));
+
+		ConvexSweepTest(
+			(const btConvexShape*)collider.GetBody(),
+			start,
+			end,
+			resultCallbaxk
+		);
+	}
 	bool PhysicsWorld::RayTest(const Vector3& rayStart, const Vector3& rayEnd, Vector3& hitPos) const
 	{
 		btVector3 start, end;

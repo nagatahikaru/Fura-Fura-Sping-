@@ -19,7 +19,7 @@ namespace nsK2Engine {
 	void MapChipRender::AddMapChipData(const LevelObjectData& objData)
 	{
 		MapChipData mapChipData;
-		mapChipData.position = objData.position;
+		mapChipData.m_position = objData.m_position;
 		mapChipData.rotation = objData.rotation;
 		mapChipData.scale = objData.scale;
 		m_mapChipDataVector.push_back(mapChipData);
@@ -32,7 +32,7 @@ namespace nsK2Engine {
 		{
 			m_modelRender.Init(*m_filePath.get());
 			auto& mapChipData = m_mapChipDataVector[0];
-			m_modelRender.SetTRS(mapChipData.position, mapChipData.rotation, mapChipData.scale);
+			m_modelRender.SetTRS(mapChipData.m_position, mapChipData.rotation, mapChipData.scale);
 			m_modelRender.Update();
 			auto p = std::make_unique<PhysicsStaticObject>();
 			//静的物理オブジェクトを作成。
@@ -47,7 +47,7 @@ namespace nsK2Engine {
 		for (auto& mapChipData : m_mapChipDataVector)
 		{
 			//ワールド行列を計算する。
-			Matrix worldMatrix = m_modelRender.GetModel().CalcWorldMatrix(mapChipData.position, mapChipData.rotation, mapChipData.scale);
+			Matrix worldMatrix = m_modelRender.GetModel().CalcWorldMatrix(mapChipData.m_position, mapChipData.rotation, mapChipData.scale);
 			auto p = std::make_unique<PhysicsStaticObject>();
 			//静的物理オブジェクトを作成。
 			p->CreateFromModel(m_modelRender.GetModel(), worldMatrix);
@@ -67,7 +67,7 @@ namespace nsK2Engine {
 			for (auto& mapChipData : m_mapChipDataVector)
 			{
 				//モデルレンダーのインスタンシング用のデータを更新。
-				m_modelRender.UpdateInstancingData(instanceNo, mapChipData.position, mapChipData.rotation, mapChipData.scale);
+				m_modelRender.UpdateInstancingData(instanceNo, mapChipData.m_position, mapChipData.rotation, mapChipData.scale);
 				instanceNo++;
 			}
 		}

@@ -406,7 +406,7 @@ void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indi
     {
         // This vertex is on the prime meridian if position.x and texcoord.u are both zero (allowing for small epsilon).
         bool isOnPrimeMeridian = XMVector2NearEqual(
-            XMVectorSet(vertices[i].position.x, vertices[i].textureCoordinate.x, 0.0f, 0.0f),
+            XMVectorSet(vertices[i].m_position.x, vertices[i].textureCoordinate.x, 0.0f, 0.0f),
             XMVectorZero(),
             XMVectorSplatEpsilon());
 

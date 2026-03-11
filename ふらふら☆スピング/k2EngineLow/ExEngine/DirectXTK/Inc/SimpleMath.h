@@ -832,11 +832,11 @@ namespace DirectX
         class Ray
         {
         public:
-            Vector3 position;
+            Vector3 m_position;
             Vector3 direction;
 
-            Ray() noexcept : position(0, 0, 0), direction(0, 0, 1) {}
-            Ray(const Vector3& pos, const Vector3& dir) : position(pos), direction(dir) {}
+            Ray() noexcept : m_position(0, 0, 0), direction(0, 0, 1) {}
+            Ray(const Vector3& pos, const Vector3& dir) : m_position(pos), direction(dir) {}
 
             Ray(const Ray&) = default;
             Ray& operator=(const Ray&) = default;
@@ -1041,9 +1041,9 @@ namespace std
     {
         bool operator()(const DirectX::SimpleMath::Ray& R1, const DirectX::SimpleMath::Ray& R2) const
         {
-            if (R1.position.x != R2.position.x) return R1.position.x < R2.position.x;
-            if (R1.position.y != R2.position.y) return R1.position.y < R2.position.y;
-            if (R1.position.z != R2.position.z) return R1.position.z < R2.position.z;
+            if (R1.m_position.x != R2.m_position.x) return R1.m_position.x < R2.m_position.x;
+            if (R1.m_position.y != R2.m_position.y) return R1.m_position.y < R2.m_position.y;
+            if (R1.m_position.z != R2.m_position.z) return R1.m_position.z < R2.m_position.z;
 
             if (R1.direction.x != R2.direction.x) return R1.direction.x < R2.direction.x;
             if (R1.direction.y != R2.direction.y) return R1.direction.y < R2.direction.y;

@@ -20,7 +20,7 @@ namespace nsK2EngineLow {
 		m_model.Init(initData);
 
 		//モデルの更新。
-		m_model.UpdateWorldMatrix(objData.position, objData.rotation, objData.scale);
+		m_model.UpdateWorldMatrix(objData.m_position, objData.rotation, objData.scale);
 
 		//静的物理オブジェクトを作成。
 		m_physicsStaticObject.CreateFromModel(m_model, m_model.GetWorldMatrix());
