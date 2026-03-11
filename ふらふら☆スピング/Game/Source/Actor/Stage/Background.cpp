@@ -11,7 +11,7 @@ Background::~Background()
 
 bool Background::Start()
 {
-	m_modelRender.Init("bg/bg.mdl");
+	m_modelRender.Init("Assets/stage/baseballField.tkm");
 	return true;
 }
 
