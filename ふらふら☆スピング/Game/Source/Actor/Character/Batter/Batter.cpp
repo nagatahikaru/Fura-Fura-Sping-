@@ -62,7 +62,7 @@ Batter::Batter()
 
 Batter::~Batter()
 {
-	m_stateMachine->SetPlayer(nullptr);
+	m_stateMachine->SetBatter(nullptr);
 }
 
 bool Batter::Start()
@@ -78,6 +78,7 @@ bool Batter::Start()
 			GetBatterUniformNumberFilePath(m_UniformNumber));
 
 		m_characterController.IsOnGround();
+		m_stateMachine->SetBatter(this);
 	
 	return true;
 }
@@ -85,6 +86,16 @@ bool Batter::Start()
 void Batter::Update()
 {
 	m_stateMachine->Update();
+}
+
+void Batter::Rotation()
+{
+	//‰ñ“]ˆ—
+}
+
+void Batter::RotationUpdate()
+{
+	//‰ñ“]ˆ—‚ÌXV
 }
 
 void Batter::SetPlayAnimation(int enAnimationClip)

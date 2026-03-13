@@ -15,7 +15,6 @@ public:
 private:
 
 protected:
-
 	CharacterController m_characterController;
 
 };

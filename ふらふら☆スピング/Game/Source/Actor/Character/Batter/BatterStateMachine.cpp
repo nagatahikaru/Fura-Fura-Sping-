@@ -11,7 +11,7 @@ namespace {
 BatterStateMachine::BatterStateMachine()
 {
 	RegisterState<BatterIdleState>();
-	RegisterState<BatterMoveState>();	
+	RegisterState<BatterRotationState>();	
 	m_currentState = FindState(BatterIdleState::ID());
 
 }
@@ -52,38 +52,38 @@ void BatterIdleState::Exit()
 }
 
 //待機状態からの状態遷移判定。
-//スティック入力で移動状態。
+//スティック入力で回転状態。
 //戻り値：状態遷移が発生したらtrue、しなかったらfalseを返す。
 bool BatterIdleState::RequestState(uint32_t& request)
 {
 	if (g_pad[0]->GetLStickXF() >= LSTICK_ZERO_THRESHOLD ||
 		g_pad[0]->GetLStickYF() >= LSTICK_ZERO_THRESHOLD)
 	{
-		request = BatterMoveState::ID();
+		request = BatterRotationState::ID();
 		return true;
 	}
 	return false;
 }
 
-void BatterMoveState::Enter()
+void BatterRotationState::Enter()
 {
 
 }
 
-void BatterMoveState::Update()
+void BatterRotationState::Update()
 {
 	Batter* batter = GetBatter();
-	batter->Move();
-	batter->MoveUpdate();
+	batter->Rotation();
+	batter->RotationUpdate();
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
 }
 
-void BatterMoveState::Exit()
+void BatterRotationState::Exit()
 {
 
 }
 
-bool BatterMoveState::RequestState(uint32_t&request)
+bool BatterRotationState::RequestState(uint32_t&request)
 {
 	Batter* batter = GetBatter();
 
