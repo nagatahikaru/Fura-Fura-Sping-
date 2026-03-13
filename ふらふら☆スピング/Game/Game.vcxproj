@@ -225,8 +225,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\Actor\Actor.cpp" />
+    <ClCompile Include="Source\Actor\ActorStateMachine.cpp" />
     <ClCompile Include="Source\Actor\Character\Ball\Ball.cpp" />
     <ClCompile Include="Source\Actor\Character\Batter\Batter.cpp" />
+    <ClCompile Include="Source\Actor\Character\Batter\BatterIStateBess.cpp" />
+    <ClCompile Include="Source\Actor\Character\Batter\BatterStateMachine.cpp" />
     <ClCompile Include="Source\Actor\Character\Catcher\Catcher.cpp" />
     <ClCompile Include="Source\Actor\Character\Character.cpp" />
     <ClCompile Include="Source\Actor\Character\Pitcher\Pitcher.cpp" />
@@ -250,8 +253,11 @@
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="Source\Actor\Actor.h" />
+    <ClInclude Include="Source\Actor\ActorStateMachine.h" />
     <ClInclude Include="Source\Actor\Character\Ball\Ball.h" />
     <ClInclude Include="Source\Actor\Character\Batter\Batter.h" />
+    <ClInclude Include="Source\Actor\Character\Batter\BatterIStateBess.h" />
+    <ClInclude Include="Source\Actor\Character\Batter\BatterStateMachine.h" />
     <ClInclude Include="Source\Actor\Character\Catcher\Catcher.h" />
     <ClInclude Include="Source\Actor\Character\Character.h" />
     <ClInclude Include="Source\Actor\Character\Pitcher\Pitcher.h" />

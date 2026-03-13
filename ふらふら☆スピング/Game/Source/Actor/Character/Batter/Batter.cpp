@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Batter.h"
+#include "BatterStateMachine.h"
 
 namespace {
 	std::string FILE_PATH_BATTER_UNIFORMNUMBER = ("Assets/modelData/Batter/UniformNumber/");
@@ -36,7 +37,7 @@ namespace {
 		m_animationClips,
 		enAnimationClip_Num,
 		PlayerVariable::Transform::INITIAL_COORDINATE,
-		(i == PlayerVariable::FormState::Normal) ? Vector3(1.0f, 1.0f, 1.0f) : PlayerVariable::Transform::INITIAL_SCALE,
+		PlayerVariable::Transform::INITIAL_SCALE,
 		GetModelFilePath(i));
 	*/
 	void InitModelRender(
@@ -56,10 +57,12 @@ namespace {
 
 Batter::Batter()
 {
+	m_stateMachine = std::make_unique<BatterStateMachine>();
 }
 
 Batter::~Batter()
 {
+	m_stateMachine->SetPlayer(nullptr);
 }
 
 bool Batter::Start()
@@ -73,13 +76,20 @@ bool Batter::Start()
 			BasicSettings::INITIAL_COORDINATE,
 			BasicSettings::INITIAL_SCALE,
 			GetBatterUniformNumberFilePath(m_UniformNumber));
+
+		m_characterController.IsOnGround();
 	
 	return true;
 }
 
 void Batter::Update()
 {
+	m_stateMachine->Update();
+}
 
+void Batter::SetPlayAnimation(int enAnimationClip)
+{
+	m_modelRender[m_UniformNumber].PlayAnimation(enAnimationClip);
 }
 
 void Batter::Render(RenderContext& rc)
