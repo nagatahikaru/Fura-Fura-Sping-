@@ -271,6 +271,7 @@
     <ClInclude Include="Source\Sound\SoundManager.h" />
     <ClInclude Include="Source\Source.h" />
     <ClInclude Include="Source\UI\UIManager.h" />
+    <ClInclude Include="Source\Util\CRC32.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />
   </ItemGroup>

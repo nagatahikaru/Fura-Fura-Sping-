@@ -50,8 +50,8 @@ public:
 	{
 		return m_characterController.IsOnGround();
 	}
-	void Move();
-	void MoveUpdate();
+	void Rotation();
+	void RotationUpdate();
 
 
 

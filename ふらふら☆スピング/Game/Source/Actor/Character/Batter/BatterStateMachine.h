@@ -33,7 +33,6 @@ private:
 class BatterIdleState :public BatterIStateBess
 {
 	appState(BatterIdleState);
-	appState(BatterIdleState);
 
 public:
 	BatterIdleState() :BatterIStateBess() {};
@@ -46,13 +45,13 @@ public:
 	virtual bool RequestState(uint32_t& request)override;
 };
 
-class BatterMoveState :public BatterIStateBess
+class BatterRotationState :public BatterIStateBess
 {
-	appState(BatterMoveState);
+	appState(BatterRotationState);
 
 public:
-	BatterMoveState():BatterIStateBess() {};
-	virtual ~BatterMoveState() {};
+	BatterRotationState():BatterIStateBess() {};
+	virtual ~BatterRotationState() {};
 
 	virtual void Enter()override;
 	virtual void Update()override;
