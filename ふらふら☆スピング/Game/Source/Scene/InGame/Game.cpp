@@ -5,6 +5,7 @@
 
 bool Game::Start()
 {
+	m_skyCube = NewGO<SkyCube>(0, "skycube");
 	m_background = NewGO<Background>(0);
 	m_gameCamera = NewGO<GameCamera>(0);
 	return true;

@@ -14,5 +14,6 @@ public:
 private:
 	GameCamera* m_gameCamera; //ƒQ[ƒ€ƒJƒƒ‰B
 	Background* m_background;  //”wŒiB
+	SkyCube* m_skyCube;
 };
 
