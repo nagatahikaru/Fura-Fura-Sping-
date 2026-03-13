@@ -12,6 +12,7 @@ Background::~Background()
 bool Background::Start()
 {
 	m_modelRender.Init("Assets/stage/baseballField.tkm");
+	m_physicsStaticObject.CreateFromModel(m_modelRender.GetModel(), m_modelRender.GetModel().GetWorldMatrix());
 	return true;
 }
 
