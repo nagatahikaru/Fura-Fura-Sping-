@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Titer.h"
-
-
+#include"Source/Scene/InGame/Game.h"
 bool Titer::Start()
 {
 	m_spriteRender.Init("Assets/sprite/Titer.DDS", 1920.0f, 1080.0f);
@@ -12,7 +11,10 @@ bool Titer::Start()
 
 void Titer::Update()
 {
-	
+	if (g_pad[0]->IsTrigger(enButtonA)) {
+		NewGO<Game>(0);
+		DeleteGO(this);
+	}
 	
 }
 

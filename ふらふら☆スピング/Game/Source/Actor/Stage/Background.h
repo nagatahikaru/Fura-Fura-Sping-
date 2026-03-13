@@ -9,5 +9,7 @@ public:
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);	
+private:
+	PhysicsStaticObject m_physicsStaticObject;
 };
 
