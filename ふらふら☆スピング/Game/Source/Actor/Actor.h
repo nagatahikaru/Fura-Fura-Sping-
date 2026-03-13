@@ -12,6 +12,5 @@ public:
 
 protected:
 	ModelRender m_modelRender;
-
 };
 

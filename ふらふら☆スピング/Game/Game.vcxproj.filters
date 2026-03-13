@@ -122,6 +122,15 @@
     <ClCompile Include="Source\UI\UIManager.cpp">
       <Filter>Source\UI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\BatterIStateBess.cpp">
+      <Filter>Source\Actor\Character\Batter</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\BatterStateMachine.cpp">
+      <Filter>Source\Actor\Character\Batter</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\ActorStateMachine.cpp">
+      <Filter>Source\Actor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -177,6 +186,15 @@
       <Filter>Source\UI</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Source\Actor\Character\Batter\BatterStateMachine.h">
+      <Filter>Source\Actor\Character\Batter</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\BatterIStateBess.h">
+      <Filter>Source\Actor\Character\Batter</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\ActorStateMachine.h">
+      <Filter>Source\Actor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />
