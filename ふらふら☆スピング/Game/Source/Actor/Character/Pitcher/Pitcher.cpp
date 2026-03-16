@@ -64,12 +64,15 @@ Pitcher::~Pitcher()
 
 bool Pitcher::Start()
 {
+	//初期位置の設定
+	m_targetPosition = m_position;
+
 	InitModelRender(
 		&m_modelRender[m_UniformNumber],
 		m_animationClips,
 		enAnimationClip_Num,
 		Vector3(0.0f, 0.0f, 0.0f),
-		Vector3(0.0f, 0.0f, 0.0f),
+		Vector3(1.0f, 1.0f, 1.0f),
 		GetBatterUniformNumberFilePath(m_UniformNumber));
 	return true;
 }
@@ -77,6 +80,11 @@ bool Pitcher::Start()
 void Pitcher::Update()
 {
 
+}
+
+void Pitcher::SetPlayAnimation(int enAnimationClip)
+{
+	m_modelRender[m_UniformNumber].PlayAnimation(enAnimationClip);
 }
 
 void Pitcher::Render(RenderContext& rc)
