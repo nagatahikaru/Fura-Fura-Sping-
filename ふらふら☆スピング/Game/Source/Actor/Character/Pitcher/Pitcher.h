@@ -18,6 +18,7 @@ public:
 	virtual bool Start();
 	virtual void Update();
 	virtual void Render(RenderContext& rc);
+	void SetPlayAnimation(int enAnimationClip);
 
 	enum EnAnimationClip {
 		enAnimationClip_Idle,
@@ -26,6 +27,8 @@ public:
 
 
 private:
+	Vector3 m_position = Vector3::Zero;
+	Vector3 m_targetPosition = Vector3::Zero;
 
 	ModelRender m_modelRender[PitcherNumber::Num];
 	AnimationClip m_animationClips[enAnimationClip_Num];
