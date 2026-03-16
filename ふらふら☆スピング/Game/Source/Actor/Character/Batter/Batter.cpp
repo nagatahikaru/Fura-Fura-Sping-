@@ -3,8 +3,10 @@
 #include "BatterStateMachine.h"
 
 namespace {
+	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
 	std::string FILE_PATH_BATTER_UNIFORMNUMBER = ("Assets/modelData/Batter/UniformNumber/");
 	std::string FILE_PATH_TKM = (".tkm");
+	std::string FILE_PATH_DDS = (".tka");
 	std::string FILE_PATH_NUMBER[10] = {
 		"0",
 		"1",
@@ -17,10 +19,18 @@ namespace {
 		"8",
 		"9"
 	};
+	std::string FILE_PATH_ANIMATION[1] = {
+		"Idle"
+	};
 
 	inline std::string GetBatterUniformNumberFilePath(int number)
 	{
 		return FILE_PATH_BATTER_UNIFORMNUMBER + FILE_PATH_NUMBER[number + 1] + FILE_PATH_TKM;
+	}
+
+	inline std ::string GetAnimationFilePath(int number)
+	{
+		return FILE_PATH_BATTER_UNIFORMNUMBER + FILE_PATH_NUMBER[number] + FILE_PATH_TKM;
 	}
 
 	/**
@@ -68,18 +78,24 @@ Batter::~Batter()
 
 bool Batter::Start()
 {
+	//forループでまとめる
+//アニメーションクリップの読み込み
+	for (int j = enAnimationClip_Idle; j < enAnimationClip_Num; j++)
+	{
+		m_animationClips[j].Load(GetAnimationFilePath(j).c_str());
+		m_animationClips[j].SetLoopFlag(true);
+	}
 	//モデルレンダーの初期化
+	InitModelRender(
+		&m_modelRender[m_UniformNumber],
+		m_animationClips,
+		enAnimationClip_Num,
+		BasicSettings::INITIAL_COORDINATE,
+		BasicSettings::INITIAL_SCALE,
+		GetBatterUniformNumberFilePath(m_UniformNumber));
 
-		InitModelRender(
-			&m_modelRender[m_UniformNumber],
-			m_animationClips,
-			enAnimationClip_Num,
-			BasicSettings::INITIAL_COORDINATE,
-			BasicSettings::INITIAL_SCALE,
-			GetBatterUniformNumberFilePath(m_UniformNumber));
-
-		m_characterController.IsOnGround();
-		m_stateMachine->SetBatter(this);
+	m_characterController.IsOnGround();
+	m_stateMachine->SetBatter(this);
 	
 	return true;
 }
