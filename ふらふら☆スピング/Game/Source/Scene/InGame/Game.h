@@ -2,7 +2,7 @@
 #include "Source/Source.h"
 class GameCamera;
 class Background;
-
+class InGameUI;
 class Game : public Source
 {
 public:
@@ -15,5 +15,6 @@ private:
 	GameCamera* m_gameCamera; //ƒQ[ƒ€ƒJƒƒ‰B
 	Background* m_background;  //”wŒiB
 	SkyCube* m_skyCube;
+	InGameUI* m_InGameUI;
 };
 
