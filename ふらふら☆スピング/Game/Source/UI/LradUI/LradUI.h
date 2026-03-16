@@ -5,6 +5,6 @@ class LradUI:public Source
 {
 	public:
 		LradUI();
-	virtual ~InGameUI();
+	virtual ~LradUI();
 };
 
