@@ -91,13 +91,53 @@ void Batter::Update()
 
 void Batter::Rotation()
 {
-	//回転処理
+	//xzの移動速度を0.0fにする
+	m_transform.m_moveSpeed.x = BasicSettings::NONE_SPEED;
+	m_transform.m_moveSpeed.z = BasicSettings::NONE_SPEED;
 
+	//左スティックの入力量を取得
+	Vector3 stickL;
+	stickL.x = g_pad[0]->GetLStickXF();
+	stickL.y = g_pad[0]->GetLStickYF();
+
+	//カメラの前方向と右方向のベクトルを持って来る。
+	Vector3 forward = g_camera3D->GetForward();
+	Vector3 right = g_camera3D->GetRight();
+	//ｙ方向には移動させない
+	forward.y = BasicSettings::NONE_SPEED;
+	right.y = BasicSettings::NONE_SPEED;
+
+	//左スティックの入力量と200.0fを乗算
+	right *= stickL.x * BasicSettings::BASICS_SPEED;
+	forward *= stickL.y * BasicSettings::BASICS_SPEED;
+
+	//移動速度にスティックの入力量を加算する。
+	m_transform.m_moveSpeed += right + forward;
+
+
+	//回転処理
+	Vector3 forward = m_transform.m_moveSpeed;
+	forward.y = 0.0f;
+
+	const float kEps = 0.001f;
+	if (forward.Length() > kEps) {
+		// 移動があるときだけ向きを更新する
+		forward.Normalize();
+		m_facingDir = forward; // last non-zero direction を保持
+	}
 }
 
 void Batter::RotationUpdate()
 {
 	//回転処理の更新
+	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir); // m_rotationAngle はメンバ変数などから取得
+
+	// オフセットを考慮した位置の補正計算
+	newPosition = m_transform.m_position - pivotOffset; // m_position は現在の座標	
+	newPosition += pivotOffset;
+
+	m_modelRender[m_UniformNumber].SetRotation(m_transform.m_rotation);
+	m_modelRender[m_UniformNumber].SetPosition(newPosition);
 }
 
 void Batter::SetPlayAnimation(int enAnimationClip)
