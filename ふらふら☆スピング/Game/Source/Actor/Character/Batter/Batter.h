@@ -5,7 +5,16 @@
 namespace {
 	namespace BatterNumber {
 		enum {
+			UniformNumber_0,
 			UniformNumber_1,
+			UniformNumber_2,
+			UniformNumber_3,
+			UniformNumber_4,
+			UniformNumber_5,
+			UniformNumber_6,
+			UniformNumber_7,
+			UniformNumber_8,
+			UniformNumber_9,
 			Num
 		};
 	}

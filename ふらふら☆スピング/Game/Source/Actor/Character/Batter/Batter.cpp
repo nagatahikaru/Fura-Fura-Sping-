@@ -25,12 +25,12 @@ namespace {
 
 	inline std::string GetBatterUniformNumberFilePath(int number)
 	{
-		return FILE_PATH_BATTER_UNIFORMNUMBER + FILE_PATH_NUMBER[number + 1] + FILE_PATH_TKM;
+		return FILE_PATH_BATTER_UNIFORMNUMBER + FILE_PATH_NUMBER[number] + FILE_PATH_TKM;
 	}
 
 	inline std ::string GetAnimationFilePath(int number)
 	{
-		return FILE_PATH_BATTER_UNIFORMNUMBER + FILE_PATH_NUMBER[number] + FILE_PATH_TKM;
+		return FILE_PATH_BATTER + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
 	}
 
 	/**
