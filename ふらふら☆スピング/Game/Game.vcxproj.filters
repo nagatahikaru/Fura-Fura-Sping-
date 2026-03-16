@@ -131,6 +131,18 @@
     <ClCompile Include="Source\Actor\ActorStateMachine.cpp">
       <Filter>Source\Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Source\UI\TiterUI\TiterUI.cpp">
+      <Filter>Source\UI\TiterUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\ResultUI\ResultUI.cpp">
+      <Filter>Source\UI\ResultUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\LradUI\LradUI.cpp">
+      <Filter>Source\UI\LradUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\InGameUI\InGameUI.cpp">
+      <Filter>Source\UI\InGameUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -197,6 +209,18 @@
     </ClInclude>
     <ClInclude Include="Source\Util\CRC32.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\TiterUI\TiterUI.h">
+      <Filter>Source\UI\TiterUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\ResultUI\ResultUI.h">
+      <Filter>Source\UI\ResultUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\LradUI\LradUI.h">
+      <Filter>Source\UI\LradUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\InGameUI\InGameUI.h">
+      <Filter>Source\UI\InGameUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
