@@ -14,8 +14,8 @@ bool Game::Start()
 	m_gameCamera = NewGO<GameCamera>(0,"gameCamera");
 	m_InGameUI = NewGO<InGameUI>(0,"inGameUI");
 	m_batter = NewGO<Batter>(0,"batter");
-	m_pitcher = NewGO<Pitcher>(0,"pitcher");
-	m_catcher = NewGO<Catcher>(0, "catcher");
+	//m_pitcher = NewGO<Pitcher>(0,"pitcher");
+	//m_catcher = NewGO<Catcher>(0, "catcher");
 
 	return true;
 }

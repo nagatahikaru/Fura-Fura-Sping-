@@ -18,7 +18,7 @@ namespace {
 		};
 	}
 
-	namespace BasicSettings
+	namespace CatcherBasicSettings
 	{
 		const Vector3 INITIAL_COORDINATE = Vector3(500.0f, 1500.0f, 0.0f);//‰ŠúÀ•W
 		const float GRAVITY = 50.0f; //d—Í

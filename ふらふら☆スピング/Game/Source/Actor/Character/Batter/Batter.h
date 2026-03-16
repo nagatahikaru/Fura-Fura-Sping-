@@ -19,9 +19,9 @@ namespace {
 		};
 	}
 
-	namespace BasicSettings
+	namespace BatterBasicSettings
 	{
-		const Vector3 INITIAL_COORDINATE = Vector3(500.0f, 1500.0f, 0.0f);//初期座標
+		const Vector3 INITIAL_COORDINATE = Vector3(0.0f, 0.0f, 0.0f);//初期座標
 		const float GRAVITY = 50.0f; //重力
 		const uint8_t ACCELERATION_TIME = 5;//加速時間
 		const float BASICS_SPEED = 400.0f; //基本速度
@@ -38,6 +38,7 @@ public:
 	// グローバルでの定義の重複を避けるため、クラス内にEnumを移動（もしくは Character.h で定義されている場合は削除してください）
 	enum EnAnimationClip {
 		enAnimationClip_Idle,
+		enAnimationClip_Swing,
 		enAnimationClip_Num
 	};
 
@@ -65,7 +66,6 @@ public:
 
 private:
 	std::unique_ptr<BatterStateMachine> m_stateMachine;
-	ModelRender m_modelRender[BatterNumber::Num];
 	AnimationClip m_animationClips[enAnimationClip_Num];
 	EnAnimationClip m_setAnimation = enAnimationClip_Idle;
 	int m_UniformNumber = BatterNumber::UniformNumber_1;
