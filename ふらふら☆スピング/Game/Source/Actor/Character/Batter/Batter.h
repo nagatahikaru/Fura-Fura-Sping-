@@ -2,12 +2,6 @@
 #include "Source/Actor/Character/Character.h"
 #include "BatterStateMachine.h"
 
-enum EnAnimationClip {
-	enAnimationClip_Idle,
-	enAnimationClip_Num
-};
-
-
 namespace {
 	namespace BatterNumber {
 		enum {
@@ -32,6 +26,12 @@ namespace {
 class Batter :public Character
 {
 public:
+	// グローバルでの定義の重複を避けるため、クラス内にEnumを移動（もしくは Character.h で定義されている場合は削除してください）
+	enum EnAnimationClip {
+		enAnimationClip_Idle,
+		enAnimationClip_Num
+	};
+
 	Batter();
 	virtual ~Batter();
 	virtual bool Start();
@@ -39,7 +39,7 @@ public:
 
 	virtual void Render(RenderContext& rc);
 	void SetPlayAnimation(int enAnimationClip);
-	const EnAnimationClip GetEnAnimationClip() const
+	EnAnimationClip GetEnAnimationClip() const
 	{
 		if (!g_pad[0]->IsPressAnyKey())
 		{
@@ -53,10 +53,6 @@ public:
 	}
 	void Rotation();
 	void RotationUpdate();
-
-
-
-
 
 private:
 	std::unique_ptr<BatterStateMachine> m_stateMachine;
