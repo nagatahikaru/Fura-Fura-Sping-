@@ -1,5 +1,19 @@
-#pragma once
+﻿#pragma once
 #include "Source/Actor/Character/Character.h"
+
+enum EnAnimationClip {
+	enAnimationClip_Idle,
+	enAnimationClip_Num
+};
+
+namespace {
+	namespace PitcherNumber {
+		enum {
+			UniformNumber_1,
+			Num
+		};
+	}
+};
 
 class Pitcher :public Character
 {
@@ -13,6 +27,9 @@ public:
 
 private:
 
-
+	ModelRender m_modelRender[PitcherNumber::Num];
+	AnimationClip m_animationClips[enAnimationClip_Num];
+	EnAnimationClip m_setAnimation = enAnimationClip_Idle;
+	int m_UniformNumber = PitcherNumber::UniformNumber_1;
 };
 
