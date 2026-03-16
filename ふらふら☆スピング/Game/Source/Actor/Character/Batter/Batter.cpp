@@ -19,8 +19,9 @@ namespace {
 		"8",
 		"9"
 	};
-	std::string FILE_PATH_ANIMATION[1] = {
-		"Idle"
+	std::string FILE_PATH_ANIMATION[2] = {
+		"idle",
+		"swing"
 	};
 
 	inline std::string GetBatterUniformNumberFilePath(int number)
@@ -87,15 +88,19 @@ bool Batter::Start()
 	}
 	//モデルレンダーの初期化
 	InitModelRender(
-		&m_modelRender[m_UniformNumber],
+		&m_modelRender,
 		m_animationClips,
 		enAnimationClip_Num,
-		BasicSettings::INITIAL_COORDINATE,
-		BasicSettings::INITIAL_SCALE,
+		BatterBasicSettings::INITIAL_COORDINATE,
+		BatterBasicSettings::INITIAL_SCALE,
 		GetBatterUniformNumberFilePath(m_UniformNumber));
-
+	
+	m_characterController.Init(BatterBasicSettings::COLLISION_SCALE.x, BatterBasicSettings::COLLISION_SCALE.y, BatterBasicSettings::INITIAL_COORDINATE);
+	m_characterController.SetCollisionActive(true);
 	m_characterController.IsOnGround();
 	m_stateMachine->SetBatter(this);
+	m_modelRender.Update();
+	m_characterController.SetPosition(m_transform.m_position);
 	
 	return true;
 }
@@ -108,8 +113,8 @@ void Batter::Update()
 void Batter::Rotation()
 {
 	//xzの移動速度を0.0fにする
-	m_transform.m_moveSpeed.x = BasicSettings::NONE_SPEED;
-	m_transform.m_moveSpeed.z = BasicSettings::NONE_SPEED;
+	m_transform.m_moveSpeed.x = BatterBasicSettings::NONE_SPEED;
+	m_transform.m_moveSpeed.z = BatterBasicSettings::NONE_SPEED;
 
 	//左スティックの入力量を取得
 	Vector3 stickL;
@@ -120,12 +125,12 @@ void Batter::Rotation()
 	Vector3 forward = g_camera3D->GetForward();
 	Vector3 right = g_camera3D->GetRight();
 	//ｙ方向には移動させない
-	forward.y = BasicSettings::NONE_SPEED;
-	right.y = BasicSettings::NONE_SPEED;
+	forward.y = BatterBasicSettings::NONE_SPEED;
+	right.y = BatterBasicSettings::NONE_SPEED;
 
 	//左スティックの入力量と200.0fを乗算
-	right *= stickL.x * BasicSettings::BASICS_SPEED;
-	forward *= stickL.y * BasicSettings::BASICS_SPEED;
+	right *= stickL.x * BatterBasicSettings::BASICS_SPEED;
+	forward *= stickL.y * BatterBasicSettings::BASICS_SPEED;
 
 	//移動速度にスティックの入力量を加算する。
 	m_transform.m_moveSpeed += right + forward;
@@ -149,20 +154,20 @@ void Batter::RotationUpdate()
 	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir); // m_rotationAngle はメンバ変数などから取得
 
 	// オフセットを考慮した位置の補正計算
-	newPosition = m_transform.m_position - pivotOffset; // m_position は現在の座標	
-	newPosition += pivotOffset;
+	Vector3 pivot = m_transform.m_position - pivotOffset; // m_position は現在の座標	
+	newPosition = pivot -pivotOffset;
 
-	m_modelRender[m_UniformNumber].SetRotation(m_transform.m_rotation);
-	m_modelRender[m_UniformNumber].SetPosition(newPosition);
+	m_modelRender.SetRotation(m_transform.m_rotation);
+	m_modelRender.SetPosition(newPosition);
 }
 
 void Batter::SetPlayAnimation(int enAnimationClip)
 {
-	m_modelRender[m_UniformNumber].PlayAnimation(enAnimationClip);
+	m_modelRender.PlayAnimation(enAnimationClip);
 }
 
 void Batter::Render(RenderContext& rc)
 {
 	//モデルの描画
-	m_modelRender[m_UniformNumber].Draw(rc);
+	m_modelRender.Draw(rc);
 }

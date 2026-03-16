@@ -19,7 +19,7 @@ namespace {
 		"9"
 	};
 	std::string FILE_PATH_ANIMATION[1] = {
-		"Idle"
+		"idle"
 	};
 
 	inline std::string GetcatcherUniformNumberFilePath(int number)
@@ -66,12 +66,18 @@ namespace {
 
 bool Catcher::Start()
 {
+	for (int j = enAnimationClip_Idle; j < enAnimationClip_Num; j++)
+	{
+		m_animationClips[j].Load(GetAnimationFilePath(j).c_str());
+		m_animationClips[j].SetLoopFlag(true);
+	}
+
 	InitModelRender(
 		&m_modelRender[m_UniformNumber],
 		m_animationClips,
 		enAnimationClip_Num,
-		BasicSettings::INITIAL_COORDINATE,
-		BasicSettings::INITIAL_SCALE,
+		CatcherBasicSettings::INITIAL_COORDINATE,
+		CatcherBasicSettings::INITIAL_SCALE,
 		GetcatcherUniformNumberFilePath(0));
 	return true;
 }
