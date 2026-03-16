@@ -242,6 +242,10 @@
     <ClCompile Include="Source\Scene\Titer\Titer.cpp" />
     <ClCompile Include="Source\Sound\SoundManager.cpp" />
     <ClCompile Include="Source\Source.cpp" />
+    <ClCompile Include="Source\UI\InGameUI\InGameUI.cpp" />
+    <ClCompile Include="Source\UI\LradUI\LradUI.cpp" />
+    <ClCompile Include="Source\UI\ResultUI\ResultUI.cpp" />
+    <ClCompile Include="Source\UI\TiterUI\TiterUI.cpp" />
     <ClCompile Include="Source\UI\UIManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -270,6 +274,10 @@
     <ClInclude Include="Source\Scene\Titer\Titer.h" />
     <ClInclude Include="Source\Sound\SoundManager.h" />
     <ClInclude Include="Source\Source.h" />
+    <ClInclude Include="Source\UI\InGameUI\InGameUI.h" />
+    <ClInclude Include="Source\UI\LradUI\LradUI.h" />
+    <ClInclude Include="Source\UI\ResultUI\ResultUI.h" />
+    <ClInclude Include="Source\UI\TiterUI\TiterUI.h" />
     <ClInclude Include="Source\UI\UIManager.h" />
     <ClInclude Include="Source\Util\CRC32.h" />
     <ClInclude Include="stdafx.h" />

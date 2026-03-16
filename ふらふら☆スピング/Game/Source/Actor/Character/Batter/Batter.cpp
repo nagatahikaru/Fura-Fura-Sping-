@@ -5,7 +5,7 @@
 namespace {
 	std::string FILE_PATH_BATTER_UNIFORMNUMBER = ("Assets/modelData/Batter/UniformNumber/");
 	std::string FILE_PATH_TKM = (".tkm");
-	std::string FILE_PATH_NUMBER[9] = {
+	std::string FILE_PATH_NUMBER[10] = {
 		"0",
 		"1",
 		"2",
@@ -14,7 +14,8 @@ namespace {
 		"5",
 		"6",
 		"7",
-		"8"	
+		"8",
+		"9"
 	};
 
 	inline std::string GetBatterUniformNumberFilePath(int number)
@@ -91,6 +92,7 @@ void Batter::Update()
 void Batter::Rotation()
 {
 	//âÒì]èàóù
+
 }
 
 void Batter::RotationUpdate()
