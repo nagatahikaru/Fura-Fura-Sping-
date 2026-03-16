@@ -116,14 +116,14 @@ void Batter::Rotation()
 
 
 	//‰ñ“]ˆ—
-	Vector3 forward = m_transform.m_moveSpeed;
-	forward.y = 0.0f;
+	Vector3 ford = m_transform.m_moveSpeed;
+	ford.y = 0.0f;
 
 	const float kEps = 0.001f;
-	if (forward.Length() > kEps) {
+	if (ford.Length() > kEps) {
 		// ˆÚ“®‚ª‚ ‚é‚Æ‚«‚¾‚¯Œü‚«‚ğXV‚·‚é
-		forward.Normalize();
-		m_facingDir = forward; // last non-zero direction ‚ğ•Û
+		ford.Normalize();
+		m_facingDir = ford; // last non-zero direction ‚ğ•Û
 	}
 }
 
