@@ -64,6 +64,12 @@ namespace {
 		modelRender->SetScale(scl);
 		modelRender->Update();
 	}
+
+	void InitAnimation(AnimationClip animation[], int number, bool loop)
+	{
+		animation[number].Load(GetAnimationFilePath(number).c_str());
+		animation[number].SetLoopFlag(loop);		
+	}
 }
 
 
@@ -83,8 +89,7 @@ bool Batter::Start()
 //アニメーションクリップの読み込み
 	for (int j = enAnimationClip_Idle; j < enAnimationClip_Num; j++)
 	{
-		m_animationClips[j].Load(GetAnimationFilePath(j).c_str());
-		m_animationClips[j].SetLoopFlag(true);
+		InitAnimation(m_animationClips, j, true);
 	}
 	//モデルレンダーの初期化
 	InitModelRender(
@@ -170,4 +175,13 @@ void Batter::Render(RenderContext& rc)
 {
 	//モデルの描画
 	m_modelRender.Draw(rc);
+
+	//文字の描画
+	wchar_t be[129];
+	m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
+	m_fontRender.SetColor(g_vec4White);
+	Vector3 pos = m_transform.m_position;
+	swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f", pos.x, pos.y, pos.z);
+	m_fontRender.SetText(be);
+	m_fontRender.Draw(rc);
 }

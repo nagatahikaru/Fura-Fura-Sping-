@@ -4,8 +4,8 @@
 class Background:public Actor
 {
 public:
-	Background();
-	~Background();
+	Background() {};
+	~Background() {};
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);	
