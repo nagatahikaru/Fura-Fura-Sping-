@@ -1,11 +1,6 @@
 ﻿#pragma once
 #include "Source/Actor/Character/Character.h"
 
-enum EnAnimationClip {
-	enAnimationClip_Idle,
-	enAnimationClip_Num
-};
-
 namespace {
 	namespace PitcherNumber {
 		enum {
@@ -23,6 +18,11 @@ public:
 	virtual bool Start();
 	virtual void Update();
 	virtual void Render(RenderContext& rc);
+
+	enum EnAnimationClip {
+		enAnimationClip_Idle,
+		enAnimationClip_Num
+	};
 
 
 private:

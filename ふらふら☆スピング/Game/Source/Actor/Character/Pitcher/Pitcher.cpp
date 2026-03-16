@@ -64,6 +64,13 @@ Pitcher::~Pitcher()
 
 bool Pitcher::Start()
 {
+	InitModelRender(
+		&m_modelRender[m_UniformNumber],
+		m_animationClips,
+		enAnimationClip_Num,
+		Vector3(0.0f, 0.0f, 0.0f),
+		Vector3(0.0f, 0.0f, 0.0f),
+		GetBatterUniformNumberFilePath(m_UniformNumber));
 	return true;
 }
 
