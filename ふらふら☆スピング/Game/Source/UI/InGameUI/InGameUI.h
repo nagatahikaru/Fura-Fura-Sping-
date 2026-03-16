@@ -14,8 +14,11 @@ class InGameUI:public Source
 private:
 	SpriteRender m_spriteRender;
 	SpriteRender m_spriteRenderBat;
+	SpriteRender m_spriteRenderMeet;
 	Vector3 m_batPosition = Vector3::Zero;
+	Vector3 m_meetPosition = Vector3::Zero;
 	Quaternion m_batRotation = Quaternion::Identity;
 	float m_rad;
+	Vector3 m_meetPos;
 };
 
