@@ -70,6 +70,13 @@ namespace {
 		animation[number].Load(GetAnimationFilePath(number).c_str());
 		animation[number].SetLoopFlag(loop);		
 	}
+
+	void InitCharacterController(CharacterController* characterController, const Vector3& scale, const Vector3& pos)
+	{
+		characterController->Init(scale.x, scale.y, pos);
+		characterController->SetCollisionActive(true);
+		characterController->IsOnGround();
+	}
 }
 
 
@@ -100,9 +107,8 @@ bool Batter::Start()
 		BatterBasicSettings::INITIAL_SCALE,
 		GetBatterUniformNumberFilePath(m_UniformNumber));
 	
-	m_characterController.Init(BatterBasicSettings::COLLISION_SCALE.x, BatterBasicSettings::COLLISION_SCALE.y, BatterBasicSettings::INITIAL_COORDINATE);
-	m_characterController.SetCollisionActive(true);
-	m_characterController.IsOnGround();
+	InitCharacterController(&m_characterController, BatterBasicSettings::COLLISION_SCALE, BatterBasicSettings::INITIAL_COORDINATE);
+
 	m_stateMachine->SetBatter(this);
 	m_modelRender.Update();
 	m_characterController.SetPosition(m_transform.m_position);

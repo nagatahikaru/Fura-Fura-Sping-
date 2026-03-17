@@ -4,7 +4,10 @@
 #include "Batter.h" 
 
 namespace {
-	float LSTICK_ZERO_THRESHOLD = 0.000001f;	
+	float LSTICK_MIN_THRESHOLD = 0.000001f;
+	float RSTICK_MIN_THRESHOLD = 0.000001f;
+	float LSTICK_MINUS_THRESHOLD = -0.000001f;
+	float RSTICK_MINUS_THRESHOLD = -0.000001f;
 }
 
 
@@ -42,8 +45,8 @@ void BatterIdleState::Enter()
 
 void BatterIdleState::Update()
 {
-	Batter* player = GetBatter();
-	player->SetPlayAnimation(player->GetEnAnimationClip());
+	Batter* batter = GetBatter();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());
 }
 
 void BatterIdleState::Exit()
@@ -56,8 +59,10 @@ void BatterIdleState::Exit()
 //戻り値：状態遷移が発生したらtrue、しなかったらfalseを返す。
 bool BatterIdleState::RequestState(uint32_t& request)
 {
-	if (g_pad[0]->GetLStickXF() >= LSTICK_ZERO_THRESHOLD ||
-		g_pad[0]->GetLStickYF() >= LSTICK_ZERO_THRESHOLD)
+	if (g_pad[0]->GetLStickXF() >= LSTICK_MIN_THRESHOLD ||
+		g_pad[0]->GetLStickYF() >= RSTICK_MIN_THRESHOLD||
+		g_pad[0]->GetLStickXF() <= LSTICK_MINUS_THRESHOLD||
+		g_pad[0]->GetLStickYF() <= RSTICK_MINUS_THRESHOLD)
 	{
 		request = BatterRotationState::ID();
 		return true;
