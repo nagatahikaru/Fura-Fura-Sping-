@@ -22,8 +22,23 @@ bool Game::Start()
 
 void Game::Update()
 {
-	
-	
+	//切り替え
+	switch (m_cameraMode) {
+	case Camera_Catcher:
+		m_gameCamera->SetCatcherCamera();
+		break;
+	case Camera_Replay:
+		m_gameCamera->SetReplayCamera();
+		break;
+	case Camera_Ball:
+		m_gameCamera->SetFollowBallCamera();
+		break;
+	}
+	// ★ ボタンでカメラ切り替え
+	// ★ Yボタンでカメラ順番切り替え
+	if (g_pad[0]->IsTrigger(enButtonA)) {
+		m_cameraMode = static_cast<CameraMode>((m_cameraMode + 1) % 3);
+	}
 }
 
 void Game::Render(RenderContext& rc)

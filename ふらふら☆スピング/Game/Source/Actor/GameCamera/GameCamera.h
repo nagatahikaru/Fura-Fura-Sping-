@@ -7,8 +7,8 @@ public:
 	bool Start();
 	void Render(RenderContext& rc);
 	void SetCatcherCamera();
-	void SetReplayCamera(const Vector3& batterPos);
-	void SetFollowBallCamera(const Vector3& ballPos);
+	void SetReplayCamera();
+	void SetFollowBallCamera();
 private:
 	/*Vector3 m_cameraPos;
 	float m_angle;*/
