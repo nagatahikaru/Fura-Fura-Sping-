@@ -12,10 +12,10 @@ Ball::~Ball()
 bool Ball::Start()
 {
 	//モデルの読み込み
-	m_modelRender.Init("batter.cmo");
-	m_modelRender.SetScale({ 0.01f,0.01f,0.01f });
+	m_modelRender.Init("Assets/modelData/ball.tkm");
+	m_modelRender.SetScale({ 500.0f,500.0f,500.0f });
 
-	m_position = { 0.0f,1.5f,0.0f };
+	m_position = { 0.0f,30.0f,50.0f };
 
 	return true;
 }
