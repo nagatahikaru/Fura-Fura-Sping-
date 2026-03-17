@@ -39,6 +39,8 @@ public:
 	virtual ~Catcher() {};
 	virtual bool Start();
 	virtual void Update();
+	void PlayeAnimation(int animationNo);
+	void CatchJudgement();
 	virtual void Render(RenderContext& rc);
 
 
@@ -47,8 +49,10 @@ private:
 		enAnimationClip_Idle,
 		enAnimationClip_Num
 	};
-	ModelRender m_modelRender[CatcherNumber::Num];
+	ModelRender m_modelRender;
 	AnimationClip m_animationClips[enAnimationClip_Num];
 	int m_UniformNumber = CatcherNumber::UniformNumber_1;
+	CharacterController m_characterController;
+
 };
 
