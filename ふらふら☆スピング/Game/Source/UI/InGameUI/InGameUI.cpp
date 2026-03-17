@@ -57,4 +57,11 @@ void InGameUI::Render(RenderContext& rc) {
 	m_fontRender.SetPosition(-900.0f,500.0f,0.0f);
 	m_fontRender.SetColor(0.0f, 0.78f, 0.31f, 1.0f);
 	m_fontRender.Draw(rc);
+
+	wchar_t boll[256];
+	swprintf_s(boll,L"%dkm",0);
+	m_fontBollRender.SetText(boll);
+	m_fontBollRender.SetPosition(800.0f, 500.0f, 0.0f);
+	m_fontBollRender.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
+	m_fontBollRender.Draw(rc);
 }

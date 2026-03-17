@@ -13,6 +13,7 @@ class InGameUI:public Source
 	void SetBatRotation(float rotDeg);
 private:
 	FontRender m_fontRender;
+	FontRender m_fontBollRender;
 	SpriteRender m_spriteRender;
 	SpriteRender m_spriteRenderBat;
 	SpriteRender m_spriteRenderMeet;
@@ -21,5 +22,6 @@ private:
 	Quaternion m_batRotation = Quaternion::Identity;
 	float m_rad;
 	Vector3 m_meetPos;
+	float m_km;
 };
 
