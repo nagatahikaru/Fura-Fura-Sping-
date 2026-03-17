@@ -5,6 +5,10 @@ public:
 	GameCamera();
 	void Update();
 	bool Start();
+	void Render(RenderContext& rc);
+	void SetCatcherCamera();
+	void SetReplayCamera(const Vector3& batterPos);
+	void SetFollowBallCamera(const Vector3& ballPos);
 private:
 	/*Vector3 m_cameraPos;
 	float m_angle;*/
@@ -19,5 +23,6 @@ private:
 	float m_yaw = 0.0f;   // ç∂âEâÒì]äpìx
 	float m_rotSpeed = 1.0f;
 	float m_pitch = 0.0f;   // è„â∫âÒì]äpìx
+	FontRender m_fontrender;
 };
 

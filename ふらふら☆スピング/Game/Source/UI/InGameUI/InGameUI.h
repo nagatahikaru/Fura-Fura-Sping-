@@ -12,6 +12,7 @@ class InGameUI:public Source
 	void SetBatPosition(const Vector3&pos);
 	void SetBatRotation(float rotDeg);
 private:
+	FontRender m_fontRender;
 	SpriteRender m_spriteRender;
 	SpriteRender m_spriteRenderBat;
 	SpriteRender m_spriteRenderMeet;
