@@ -39,6 +39,25 @@ void Game::Update()
 	if (g_pad[0]->IsTrigger(enButtonA)) {
 		m_cameraMode = static_cast<CameraMode>((m_cameraMode + 1) % 3);
 	}
+
+	if (m_cameraMode == Camera_Catcher) {
+		m_InGameUI->SetUIVisible(true);
+		m_InGameUI->SetFontVisble(true);
+		m_InGameUI->SetReplayVisible(false);
+	}
+	else if(m_cameraMode==Camera_Ball)
+	{
+		m_InGameUI->SetUIVisible(false);
+		m_InGameUI->SetFontVisble(true);
+		m_InGameUI->SetReplayVisible(false);
+	}
+	else if(m_cameraMode==Camera_Replay)
+	{
+		m_InGameUI->SetUIVisible(false);
+		m_InGameUI->SetFontVisble(false);
+		m_InGameUI->SetReplayVisible(true);
+
+	}
 }
 
 void Game::Render(RenderContext& rc)
