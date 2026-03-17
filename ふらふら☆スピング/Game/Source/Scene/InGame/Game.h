@@ -8,6 +8,12 @@ class Pitcher;
 class Catcher;
 class Ball;
 
+enum CameraMode
+{
+	Camera_Catcher,
+	Camera_Replay,
+	Camera_Ball
+};
 
 class Game : public Source
 {
@@ -26,5 +32,7 @@ private:
 	Ball* m_ball;				//ボール。
 	SkyCube* m_skyCube;			//スカイキューブ。
 	InGameUI* m_InGameUI;		//インゲームUI。
+
+	CameraMode m_cameraMode = Camera_Catcher;//初期カメラ
 };
 
