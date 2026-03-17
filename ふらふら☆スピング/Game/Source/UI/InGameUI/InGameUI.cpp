@@ -45,10 +45,10 @@ void InGameUI::Render(RenderContext& rc) {
 	m_spriteRenderBat.Draw(rc);
 
 	// --- ミートゾーン（バットと同じ位置・回転を参照） ---
-	  // ミートゾーン（バット位置 + オフセット）
 	m_meetPos = m_batPosition + m_meetPosition;
 	m_spriteRenderMeet.SetPosition(m_meetPos);
 	m_spriteRenderMeet.SetRotation(m_batRotation);
 	m_spriteRenderMeet.Update();
 	m_spriteRenderMeet.Draw(rc);
+
 }
