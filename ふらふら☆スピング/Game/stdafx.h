@@ -6,3 +6,4 @@ using namespace nsK2EngineLow;
 using namespace nsK2Engine;
 
 #include "Source/Actor/Transform.h"
+#include "Source/MasterData.h"

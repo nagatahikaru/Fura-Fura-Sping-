@@ -59,7 +59,7 @@ namespace {
 		, const Vector3& pos
 		, const Vector3& scl
 		, std::string filePath) {
-		modelRender->Init(filePath.c_str(), m_animationClips, enAnimationClip_Num, enModelUpAxisY);
+		modelRender->Init(filePath.c_str(), m_animationClips, enAnimationClip_Num, enModelUpAxisZ);
 		modelRender->SetPosition(pos);
 		modelRender->SetScale(scl);
 		modelRender->Update();
@@ -88,6 +88,11 @@ Batter::Batter()
 Batter::~Batter()
 {
 	m_stateMachine->SetBatter(nullptr);
+	//当たり判定オブジェクトの削除
+	if (m_collisionObject) {		
+		delete m_collisionObject;
+		m_collisionObject = nullptr;
+	}
 }
 
 bool Batter::Start()
@@ -107,11 +112,22 @@ bool Batter::Start()
 		BatterBasicSettings::INITIAL_SCALE,
 		GetBatterUniformNumberFilePath(m_UniformNumber));
 	
-	InitCharacterController(&m_characterController, BatterBasicSettings::COLLISION_SCALE, BatterBasicSettings::INITIAL_COORDINATE);
+	InitCharacterController(&m_characterController,
+		BatterBasicSettings::COLLISION_SCALE,
+		BatterBasicSettings::INITIAL_COORDINATE);
 
 	m_stateMachine->SetBatter(this);
+	
 	m_modelRender.Update();
 	m_characterController.SetPosition(m_transform.m_position);
+
+	m_collisionObject = new CollisionObject;
+	m_collisionObject->CreateBox(
+		m_transform.m_position,
+		Quaternion::Identity,
+		BatterBasicSettings::COLLISION_SCALE);
+
+
 	
 	return true;
 }
@@ -123,40 +139,63 @@ void Batter::Update()
 
 void Batter::Rotation()
 {
-	//xzの移動速度を0.0fにする
-	m_transform.m_moveSpeed.x = BatterBasicSettings::NONE_SPEED;
-	m_transform.m_moveSpeed.z = BatterBasicSettings::NONE_SPEED;
+	//キーボード操作
+	//コントローラー操作
+	if(ERROR_DEVICE_NOT_CONNECTED != ERROR_SUCCESS)
+	{
+		//xzの移動速度を0.0fにする
+		m_transform.m_moveSpeed.x = BatterBasicSettings::NONE_SPEED;
+		m_transform.m_moveSpeed.z = BatterBasicSettings::NONE_SPEED;
 
-	//左スティックの入力量を取得
-	Vector3 stickL;
-	stickL.x = g_pad[0]->GetLStickXF();
-	stickL.y = g_pad[0]->GetLStickYF();
+		//左スティックの入力量を取得
+		Vector3 stickL = Vector3::Zero;
+		stickL.x = g_pad[0]->GetLStickXF();
+		stickL.y = g_pad[0]->GetLStickYF();
 
-	//カメラの前方向と右方向のベクトルを持って来る。
-	Vector3 forward = g_camera3D->GetForward();
-	Vector3 right = g_camera3D->GetRight();
-	//ｙ方向には移動させない
-	forward.y = BatterBasicSettings::NONE_SPEED;
-	right.y = BatterBasicSettings::NONE_SPEED;
+		//カメラの前方向と右方向のベクトルを持って来る。
+		Vector3 forward = g_camera3D->GetForward();
+		Vector3 right = g_camera3D->GetRight();
+		//ｙ方向には移動させない
+		forward.y = BatterBasicSettings::NONE_SPEED;
+		right.y = BatterBasicSettings::NONE_SPEED;
 
-	//左スティックの入力量と200.0fを乗算
-	right *= stickL.x * BatterBasicSettings::BASICS_SPEED;
-	forward *= stickL.y * BatterBasicSettings::BASICS_SPEED;
+		//左スティックの入力量と200.0fを乗算
+		right *= stickL.x * BatterBasicSettings::BASICS_SPEED;
+		forward *= stickL.y * BatterBasicSettings::BASICS_SPEED;
 
-	//移動速度にスティックの入力量を加算する。
-	m_transform.m_moveSpeed += right + forward;
+		//移動速度にスティックの入力量を加算する。
+		m_transform.m_moveSpeed += right + forward;
 
 
-	//回転処理
-	Vector3 ford = m_transform.m_moveSpeed;
-	ford.y = 0.0f;
+		//回転処理
+		Vector3 ford = m_transform.m_moveSpeed;
+		ford.y = 0.0f;
 
-	const float kEps = 0.001f;
-	if (ford.Length() > kEps) {
-		// 移動があるときだけ向きを更新する
-		ford.Normalize();
-		m_facingDir = ford; // last non-zero direction を保持
+		const float kEps = 0.001f;
+		if (ford.Length() > kEps) {
+			// 移動があるときだけ向きを更新する
+			ford.Normalize();
+			m_facingDir = ford; // last non-zero direction を保持
+		}
 	}
+	else
+	{
+		float lx = g_pad[0]->GetLStickXF();
+		float ly = g_pad[0]->GetLStickYF();
+
+		Vector3 dir;
+		dir.x = lx;
+		dir.z = ly;
+		dir.y = 0.0f;
+
+		if (dir.Length() > 0.1f)
+		{
+			dir.Normalize();
+			m_facingDir = dir;
+		}
+	}
+
+
 }
 
 void Batter::RotationUpdate()
@@ -165,16 +204,17 @@ void Batter::RotationUpdate()
 	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir); // m_rotationAngle はメンバ変数などから取得
 
 	// オフセットを考慮した位置の補正計算
-	Vector3 pivot = m_transform.m_position - pivotOffset; // m_position は現在の座標	
-	newPosition = pivot -pivotOffset;
+	Vector3 pivot = m_transform.m_position - pivotOffset;
+	newPosition = pivot + pivotOffset;
 
 	m_modelRender.SetRotation(m_transform.m_rotation);
-	m_modelRender.SetPosition(newPosition);
+	m_modelRender.SetPosition(newPosition);	
 }
 
 void Batter::SetPlayAnimation(int enAnimationClip)
 {
 	m_modelRender.PlayAnimation(enAnimationClip);
+	m_modelRender.Update();
 }
 
 void Batter::Render(RenderContext& rc)
@@ -186,7 +226,7 @@ void Batter::Render(RenderContext& rc)
 	wchar_t be[129];
 	m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
 	m_fontRender.SetColor(g_vec4White);
-	Vector3 pos = m_transform.m_position;
+	Vector3 pos = m_facingDir;
 	swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f", pos.x, pos.y, pos.z);
 	m_fontRender.SetText(be);
 	m_fontRender.Draw(rc);

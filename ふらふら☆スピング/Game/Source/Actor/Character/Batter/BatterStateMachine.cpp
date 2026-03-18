@@ -6,8 +6,6 @@
 namespace {
 	float LSTICK_MIN_THRESHOLD = 0.000001f;
 	float RSTICK_MIN_THRESHOLD = 0.000001f;
-	float LSTICK_MINUS_THRESHOLD = -0.000001f;
-	float RSTICK_MINUS_THRESHOLD = -0.000001f;
 }
 
 
@@ -16,7 +14,7 @@ BatterStateMachine::BatterStateMachine()
 	RegisterState<BatterIdleState>();
 	RegisterState<BatterRotationState>();	
 	m_currentState = FindState(BatterIdleState::ID());
-
+	
 }
 
 BatterStateMachine::~BatterStateMachine()
@@ -47,6 +45,7 @@ void BatterIdleState::Update()
 {
 	Batter* batter = GetBatter();
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
+
 }
 
 void BatterIdleState::Exit()
@@ -59,14 +58,13 @@ void BatterIdleState::Exit()
 //戻り値：状態遷移が発生したらtrue、しなかったらfalseを返す。
 bool BatterIdleState::RequestState(uint32_t& request)
 {
-	if (g_pad[0]->GetLStickXF() >= LSTICK_MIN_THRESHOLD ||
-		g_pad[0]->GetLStickYF() >= RSTICK_MIN_THRESHOLD||
-		g_pad[0]->GetLStickXF() <= LSTICK_MINUS_THRESHOLD||
-		g_pad[0]->GetLStickYF() <= RSTICK_MINUS_THRESHOLD)
+	if (fabs(g_pad[0]->GetLStickXF()) >= LSTICK_MIN_THRESHOLD ||
+		fabs(g_pad[0]->GetLStickYF()) >= RSTICK_MIN_THRESHOLD)
 	{
 		request = BatterRotationState::ID();
 		return true;
 	}
+	request = BatterIdleState::ID();
 	return false;
 }
 
@@ -88,16 +86,16 @@ void BatterRotationState::Exit()
 
 }
 
-bool BatterRotationState::RequestState(uint32_t&request)
+bool BatterRotationState::RequestState(uint32_t& request)
 {
-	Batter* batter = GetBatter();
+	float lx = g_pad[0]->GetLStickXF();
+	float ly = g_pad[0]->GetLStickYF();
 
-	if(!g_pad[0]->IsPressAnyKey() &&
-		batter->GetIsOnGround())
+	if (lx< 0.0f && ly < 0.0f)
 	{
 		request = BatterIdleState::ID();
 		return true;
 	}
-	return false;
 
+	return false;
 }
