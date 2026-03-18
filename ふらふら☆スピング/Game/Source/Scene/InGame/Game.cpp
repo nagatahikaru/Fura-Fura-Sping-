@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Game.h"
 #include"Source/Actor/GameCamera/GameCamera.h"
 #include"Source/Actor/Stage/Background.h"
@@ -14,7 +14,7 @@ bool Game::Start()
 	m_gameCamera = NewGO<GameCamera>(0,"gameCamera");
 	m_InGameUI = NewGO<InGameUI>(0,"inGameUI");
 	m_batter = NewGO<Batter>(0,"batter");
-	//m_pitcher = NewGO<Pitcher>(0,"pitcher");
+	m_pitcher = NewGO<Pitcher>(0,"pitcher");
 	//m_catcher = NewGO<Catcher>(0, "catcher");
 
 	return true;
@@ -22,7 +22,7 @@ bool Game::Start()
 
 void Game::Update()
 {
-	//Ø‚è‘Ö‚¦
+	//åˆ‡ã‚Šæ›¿ãˆ
 	switch (m_cameraMode) {
 	case Camera_Catcher:
 		m_gameCamera->SetCatcherCamera();
@@ -34,8 +34,8 @@ void Game::Update()
 		m_gameCamera->SetFollowBallCamera();
 		break;
 	}
-	// š ƒ{ƒ^ƒ“‚ÅƒJƒƒ‰Ø‚è‘Ö‚¦
-	// š Yƒ{ƒ^ƒ“‚ÅƒJƒƒ‰‡”ÔØ‚è‘Ö‚¦
+	// â˜… ãƒœã‚¿ãƒ³ã§ã‚«ãƒ¡ãƒ©åˆ‡ã‚Šæ›¿ãˆ
+	// â˜… Yãƒœã‚¿ãƒ³ã§ã‚«ãƒ¡ãƒ©é †ç•ªåˆ‡ã‚Šæ›¿ãˆ
 	if (g_pad[0]->IsTrigger(enButtonX)) {
 		m_cameraMode = static_cast<CameraMode>((m_cameraMode + 1) % 3);
 	}
