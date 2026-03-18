@@ -14,11 +14,13 @@ bool GameCamera::Start() {
 }
 
 void GameCamera::SetCatcherCamera() {
-    m_cameraPos = { 0.0f, 450.0f, 6900.0f };
+    m_cameraPos = { 0.0f, 450.0f, 6600.0f };
     m_target = { 0.0f, 300.0f, 0.0f };
 
     m_yaw = 0.0f;  
     m_pitch = 0.0f;   
+
+    g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
 }
 
 void GameCamera::SetReplayCamera() {
