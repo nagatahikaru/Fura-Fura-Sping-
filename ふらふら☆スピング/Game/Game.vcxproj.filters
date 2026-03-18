@@ -143,6 +143,9 @@
     <ClCompile Include="Source\UI\InGameUI\InGameUI.cpp">
       <Filter>Source\UI\InGameUI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MasterData.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -221,6 +224,9 @@
     </ClInclude>
     <ClInclude Include="Source\UI\InGameUI\InGameUI.h">
       <Filter>Source\UI\InGameUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MasterData.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

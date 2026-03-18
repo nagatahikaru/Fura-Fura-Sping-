@@ -111,15 +111,20 @@ bool Batter::Start()
 		BatterBasicSettings::INITIAL_COORDINATE,
 		BatterBasicSettings::INITIAL_SCALE,
 		GetBatterUniformNumberFilePath(m_UniformNumber));
+
+	m_transform.m_position = BatterBasicSettings::INITIAL_COORDINATE;
+	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);	
 	
+
 	InitCharacterController(&m_characterController,
 		BatterBasicSettings::COLLISION_SCALE,
 		BatterBasicSettings::INITIAL_COORDINATE);
 
 	m_stateMachine->SetBatter(this);
-	
-	m_modelRender.Update();
+	m_modelRender.SetRotation(m_transform.m_rotation);
 	m_characterController.SetPosition(m_transform.m_position);
+
+	m_modelRender.Update();
 
 	m_collisionObject = new CollisionObject;
 	m_collisionObject->CreateBox(
@@ -226,6 +231,7 @@ void Batter::Render(RenderContext& rc)
 	wchar_t be[129];
 	m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
 	m_fontRender.SetColor(g_vec4White);
+	//Vector3 pos = m_transform.m_position;
 	Vector3 pos = m_facingDir;
 	swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f", pos.x, pos.y, pos.z);
 	m_fontRender.SetText(be);

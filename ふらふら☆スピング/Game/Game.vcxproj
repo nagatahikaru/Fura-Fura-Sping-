@@ -236,6 +236,7 @@
     <ClCompile Include="Source\Actor\GameCamera\GameCamera.cpp" />
     <ClCompile Include="Source\Actor\Stage\Background.cpp" />
     <ClCompile Include="Source\Actor\Transform.cpp" />
+    <ClCompile Include="Source\MasterData.cpp" />
     <ClCompile Include="Source\Scene\InGame\Game.cpp" />
     <ClCompile Include="Source\Scene\Lrad\Lrad.cpp" />
     <ClCompile Include="Source\Scene\Result\Result.cpp" />
@@ -268,6 +269,7 @@
     <ClInclude Include="Source\Actor\GameCamera\GameCamera.h" />
     <ClInclude Include="Source\Actor\Stage\Background.h" />
     <ClInclude Include="Source\Actor\Transform.h" />
+    <ClInclude Include="Source\MasterData.h" />
     <ClInclude Include="Source\Scene\InGame\Game.h" />
     <ClInclude Include="Source\Scene\Lrad\Lrad.h" />
     <ClInclude Include="Source\Scene\Result\Result.h" />
