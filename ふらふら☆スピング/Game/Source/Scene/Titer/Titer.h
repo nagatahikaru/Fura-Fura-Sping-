@@ -15,7 +15,7 @@ private:
 	//UIAnimationManager* m_uiManager;
 	SpriteRender m_spriteRender;
 	Transform* m_transform;
-
+	
 	
 };
 

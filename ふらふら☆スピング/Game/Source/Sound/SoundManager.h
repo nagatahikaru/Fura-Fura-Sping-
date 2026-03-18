@@ -4,7 +4,8 @@
 //ファイルパスを追加する際は、
 //cppのnamespaceと下記のenumを追加してください。
 enum Sound{
-	enSound_1,
+	enSound_TitleBGM,
+	enSound_GameBGM,
 	enSound_Num //このステータスは、サウンドの総数を表しているため、この下には追加しないでください。
 };
 
