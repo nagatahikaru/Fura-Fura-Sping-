@@ -13,7 +13,7 @@ Ball::~Ball()
 bool Ball::Start()
 {
 	//モデルの読み込み
-	m_modelRender.Init("Assets/modelData/ball.tkm");
+	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
 	m_modelRender.SetScale({ 100.0f,100.0f,100.0f });
 
 	return true;
@@ -25,13 +25,19 @@ void Ball::Update()
 
 	if (m_isMove)
 	{
-		m_position += m_velocity * dt;
+		m_position +=  m_velocity * dt;
+
+		if (m_position.y < 0.0f)
+		{
+			m_isMove = false;
+		}
 
 		//モデルの位置更新
 		m_modelRender.SetPosition(m_position);
-		m_modelRender.Update();
 
 	}
+
+	m_modelRender.Update();
 }
 
 void Ball::Throw(Vector3 targetPos)
