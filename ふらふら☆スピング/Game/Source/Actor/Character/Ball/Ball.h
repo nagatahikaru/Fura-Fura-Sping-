@@ -13,12 +13,16 @@ public:
 	//ボールを投げる関数
 	void Throw(Vector3 targetPos);
 
+	void SetPosition(const Vector3& pos);
+
 private:
 	Vector3 m_position;  //ボールの位置
 	Vector3 m_velocity;  //ボールの速度
 	Vector3 m_targetPos; //目標位置
 
 	bool m_isMove = false; 
+
+	ModelRender m_modelRender;
 
 };
 
