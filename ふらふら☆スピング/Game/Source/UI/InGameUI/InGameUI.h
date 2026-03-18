@@ -21,6 +21,7 @@ private:
 	SpriteRender m_spriteRenderBat;
 	SpriteRender m_spriteRenderMeet;
 	SpriteRender m_spriteRenderReplay;
+	SpriteRender m_spriteRenderBall;
 	Vector3 m_batPosition = Vector3::Zero;
 	Vector3 m_meetPosition = Vector3::Zero;
 	Quaternion m_batRotation = Quaternion::Identity;
