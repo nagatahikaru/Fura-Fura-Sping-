@@ -13,18 +13,18 @@ namespace {
 class Pitcher :public Character
 {
 public:
+
+	enum EnAnimationClip {
+		enAnimationClip_Throw,
+		enAnimationClip_Num
+	};
 	Pitcher();
 	virtual ~Pitcher();
 	virtual bool Start();
 	virtual void Update();
 	virtual void Render(RenderContext& rc);
 	void SetPlayAnimation(int enAnimationClip);
-
-	enum EnAnimationClip {
-		enAnimationClip_Idle,
-		enAnimationClip_Num
-	};
-
+	void RotationUpdate();
 
 private:
 	Vector3 m_position = Vector3::Zero;
@@ -32,7 +32,7 @@ private:
 
 	ModelRender m_modelRender[PitcherNumber::Num];
 	AnimationClip m_animationClips[enAnimationClip_Num];
-	EnAnimationClip m_setAnimation = enAnimationClip_Idle;
+	EnAnimationClip m_setAnimation = enAnimationClip_Throw;
 	int m_UniformNumber = PitcherNumber::UniformNumber_1;
 };
 

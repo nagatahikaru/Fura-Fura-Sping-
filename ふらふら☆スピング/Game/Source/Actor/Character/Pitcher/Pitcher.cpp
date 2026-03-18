@@ -2,8 +2,10 @@
 #include "Pitcher.h"
 
 namespace {
+	std::string FILE_PATH_BATTER = ("Assets/animData/pitcher/");
 	std::string FILE_PATH_BATTER_UNIFORMNUMBER = ("Assets/modelData/Pitcher/UniformNumber/");
 	std::string FILE_PATH_TKM = (".tkm");
+	std::string FILE_PATH_DDS = (".tka");
 	std::string FILE_PATH_NUMBER[10] = {
 		"0",
 		"1",
@@ -17,9 +19,18 @@ namespace {
 		"9"
 	};
 
+	std::string FILE_PATH_ANIMATION[1] = {
+		"throw"
+	};
+
 	inline std::string GetBatterUniformNumberFilePath(int number)
 	{
 		return FILE_PATH_BATTER_UNIFORMNUMBER + FILE_PATH_NUMBER[number + 1] + FILE_PATH_TKM;
+	}
+
+	inline std::string GetAnimationFilePath(int number)
+	{
+		return FILE_PATH_BATTER + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
 	}
 
 	/**
@@ -47,11 +58,19 @@ namespace {
 		, const Vector3& pos
 		, const Vector3& scl
 		, std::string filePath) {
-		modelRender->Init(filePath.c_str(), m_animationClips, enAnimationClip_Num, enModelUpAxisY);
+		modelRender->Init(filePath.c_str(), m_animationClips, enAnimationClip_Num, enModelUpAxisZ);
 		modelRender->SetPosition(pos);
 		modelRender->SetScale(scl);
 		modelRender->Update();
 	}
+
+	void InitAnimation(AnimationClip animation[], int number, bool loop)
+	{
+		animation[number].Load(GetAnimationFilePath(number).c_str());
+		animation[number].SetLoopFlag(loop);
+	}
+
+
 }
 
 Pitcher::Pitcher()
@@ -64,6 +83,11 @@ Pitcher::~Pitcher()
 
 bool Pitcher::Start()
 {
+
+	for (int j = 0; j < enAnimationClip_Num; j++)
+	{
+		InitAnimation(m_animationClips, j, true);
+	}
 	//初期位置の設定
 	m_targetPosition = m_position;
 
@@ -71,15 +95,20 @@ bool Pitcher::Start()
 		&m_modelRender[m_UniformNumber],
 		m_animationClips,
 		enAnimationClip_Num,
-		Vector3(0.0f, 0.0f, 0.0f),
-		Vector3(1.0f, 1.0f, 1.0f),
+		Vector3(50.0f, 50.0f, 50.0f),
+		Vector3(25.0f, 25.0f, 25.0f),
 		GetBatterUniformNumberFilePath(m_UniformNumber));
+
+	//アニメーション再生
+	m_modelRender[m_UniformNumber].PlayAnimation(enAnimationClip_Throw);
+
 	return true;
 }
 
 void Pitcher::Update()
 {
 
+	m_modelRender[m_UniformNumber].Update();
 }
 
 void Pitcher::SetPlayAnimation(int enAnimationClip)
