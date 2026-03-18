@@ -42,7 +42,7 @@ SoundSource* SoundManager::PlayingSound(Sound number,bool isLoop,float volume)
 	sound->Play(isLoop);     //サウンドの再生。
 	//戻り値にSoundSourceのインスタンスを設定。
 	//呼び出し元で、
-	//SoundSource* sound = sound.PlayingSound(Sound::enSound_TitleBGM);
+	//SoundSource* sound = sound->PlayingSound(Sound::enSound_TitleBGM);
 	//と書くとインスタンスのアドレスを受け取ることができます。
 	return sound;
 }
