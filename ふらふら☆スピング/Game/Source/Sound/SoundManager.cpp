@@ -3,12 +3,13 @@
 #include "sound/SoundEngine.h"
 #include "sound/SoundSource.h"
 #include <iostream>
+SoundManager* g_soundManager = nullptr;
 
 namespace {
 	//ファイル名のみ追加すれば、
 	//コンストラクタにて自動でg_soundEngineに登録されます。
 	//例："Assets/sound/"+"Title"+".wav"
-	const char* SOUND_FILEPATH = "Assets/sound/TitleBGM";
+	const char* SOUND_FILEPATH = "Assets/sound/";
 	const char* SOUND_EXTENSION = ".wav";
 	const char* soundFileNameList[enSound_Num] =
 	{

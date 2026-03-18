@@ -1,6 +1,5 @@
 #pragma once
 #include "sound/SoundSource.h"
-
 //ファイルパスを追加する際は、
 //cppのnamespaceと下記のenumを追加してください。
 enum Sound{
@@ -8,7 +7,6 @@ enum Sound{
 	enSound_GameBGM,
 	enSound_Num //このステータスは、サウンドの総数を表しているため、この下には追加しないでください。
 };
-
 class SoundManager :public IGameObject
 {
 public:
@@ -24,4 +22,4 @@ public:
 	SoundSource* PlayingSound(Sound number, bool isLoop = true, float volume = 1.0f);
 };
 
-
+extern SoundManager* g_soundManager;

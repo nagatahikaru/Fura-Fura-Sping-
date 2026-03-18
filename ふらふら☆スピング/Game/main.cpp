@@ -37,6 +37,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	//Gameクラスのオブジェクトを作成。
 	//NewGO<Game>(0, "game");
 
+	NewGO<SoundManager>(0, "soundManager");
+
 	NewGO<Titer>(0, "titer");
 
 	//////////////////////////////////////

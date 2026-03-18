@@ -1,7 +1,7 @@
 #pragma once
 #include "Source/Source.h"
 #include "Source/UI/UIManager.h"
-
+#include"Source/Sound/SoundManager.h"
 class Titer : public Source
 {
 public:
@@ -15,7 +15,6 @@ private:
 	//UIAnimationManager* m_uiManager;
 	SpriteRender m_spriteRender;
 	Transform* m_transform;
-	
-	
+	SoundSource* m_bgm=nullptr;
 };
 
