@@ -14,8 +14,10 @@ InGameUI::~InGameUI() {
 }
 
 bool InGameUI::Start() {
-	m_batPosition = Vector3{-50.0f, -100.0f, 0.0f };  // ← 初期位置
-	m_meetPosition = Vector3{ 35.0f, 5.0f, 0.0f };
+	m_batPositionRight = Vector3{-50.0f, -100.0f, 0.0f };  // ← 初期位置
+	m_batPositionLeft = Vector3{ 50.0f,-100.0f,0.0f };
+	m_meetPositionRight = Vector3{ 35.0f, 5.0f, 0.0f };
+	m_meetPositionLeft = Vector3{ -35.0f,5.0f,0.0f };
 	return true;
 }
 
@@ -25,13 +27,17 @@ void InGameUI::Update() {
 
 //バットの位置を設定
 void InGameUI::SetBatPosition(const Vector3& pos) {
-	m_batPosition = pos;
+	m_batPositionRight = pos;
 }
 
 //バットの回転を設定
 void InGameUI::SetBatRotation(float rotDeg) {
 	m_rad = rotDeg * 3.14159265f / 180.0f;
 	m_batRotation.SetRotation(Vector3::AxisZ, m_rad);
+}
+
+void InGameUI::SetBatterSide(bool isLeft) {
+	m_isLeftBatter = isLeft;
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -43,16 +49,24 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spriteRender.Update();
 		m_spriteRender.Draw(rc);
 
+		// --- 左右でバット位置を切り替える ---
+		Vector3 batPos = m_isLeftBatter ? m_batPositionLeft : m_batPositionRight;
+		Vector3 meetOffset = m_isLeftBatter ? m_meetPositionLeft : m_meetPositionRight;
+
 		//バット
-		m_spriteRenderBat.SetPosition(m_batPosition);
+		batScaleX = m_isLeftBatter?-1.0f:1.0f;
+		m_spriteRenderBat.SetPosition(batPos);
 		m_spriteRenderBat.SetRotation(m_batRotation);
+		m_spriteRenderBat.SetScale(Vector3{ batScaleX,1.0f,1.0f });
 		m_spriteRenderBat.Update();
 		m_spriteRenderBat.Draw(rc);
 
 		// --- ミートゾーン（バットと同じ位置・回転を参照） ---
-		m_meetPos = m_batPosition + m_meetPosition;
+		m_meetPos = batPos+meetOffset;
+		m_meetScaleX = m_isLeftBatter ? -1.0f : 1.0f;
 		m_spriteRenderMeet.SetPosition(m_meetPos);
 		m_spriteRenderMeet.SetRotation(m_batRotation);
+		m_spriteRenderMeet.SetScale(Vector3{ m_meetScaleX, 1.0f, 1.0f });
 		m_spriteRenderMeet.Update();
 		m_spriteRenderMeet.Draw(rc);
 
