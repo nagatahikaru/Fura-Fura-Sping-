@@ -20,12 +20,10 @@ class BatterStateMachine : public StatePatternBase
 		{
 			m_batter = player;
 		}
-
 		Batter* GetBatter()const
 		{
 			return m_batter;
 		}
-
 private:
 	Batter* m_batter = nullptr;
 };
@@ -59,34 +57,3 @@ public:
 
 	virtual bool RequestState(uint32_t& request)override;
 };
-
-//class BatterAttackState :public BatterIStateBess
-//{
-//	appState(BatterAttackState);
-//
-//public:
-//	BatterAttackState() :BatterIStateBess() {};
-//	virtual ~BatterAttackState() {};
-//
-//	virtual void Enter()override;
-//	virtual void Update()override;
-//	virtual void Exit()override;
-//	
-//	virtual bool RequestState(uint32_t& request)override;
-//};
-//
-//class BatterDamageState :public BatterIStateBess
-//{
-//	appState(BatterDamageState);
-//
-//public:
-//	BatterDamageState() :BatterIStateBess() {};
-//	virtual ~BatterDamageState() {};
-//
-//	virtual void Enter()override;
-//	virtual void Update()override;
-//	virtual void Exit()override;
-//
-//	virtual bool RequestState(uint32_t& request)override;
-//};
-//
