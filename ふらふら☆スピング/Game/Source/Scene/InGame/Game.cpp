@@ -36,7 +36,7 @@ void Game::Update()
 	}
 	// ★ ボタンでカメラ切り替え
 	// ★ Yボタンでカメラ順番切り替え
-	if (g_pad[0]->IsTrigger(enButtonA)) {
+	if (g_pad[0]->IsTrigger(enButtonX)) {
 		m_cameraMode = static_cast<CameraMode>((m_cameraMode + 1) % 3);
 	}
 
