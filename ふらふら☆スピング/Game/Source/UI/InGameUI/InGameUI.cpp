@@ -6,6 +6,7 @@ InGameUI::InGameUI() {
 	m_spriteRenderBat.Init("Assets/sprite/batto.DDS", 200.0f, 300.0f);
 	m_spriteRenderMeet.Init("Assets/sprite/mi-to.DDS", 30.0f, 30.0f);
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
+	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 20.0f, 20.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -55,6 +56,10 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spriteRenderMeet.Update();
 		m_spriteRenderMeet.Draw(rc);
 
+		//É{Å[Éãó\ë™ê¸
+		m_spriteRenderBall.SetPosition(Vector3{ 0.0f, -50.0f, 0.0f });
+		m_spriteRenderBall.Update();
+		m_spriteRenderBall.Draw(rc);
 	}
 
 	if (m_isFontVisible) {
