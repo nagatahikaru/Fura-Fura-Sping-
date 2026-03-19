@@ -95,8 +95,8 @@ bool Pitcher::Start()
 		&m_modelRender[m_UniformNumber],
 		m_animationClips,
 		enAnimationClip_Num,
-		Vector3(50.0f, 50.0f, 50.0f),
-		Vector3(25.0f, 25.0f, 25.0f),
+		Vector3(-200.0f, 200.0f, 1000.0f),
+		Vector3(10.0f, 10.0f, 10.0f),
 		GetBatterUniformNumberFilePath(m_UniformNumber));
 
 	//アニメーション再生
