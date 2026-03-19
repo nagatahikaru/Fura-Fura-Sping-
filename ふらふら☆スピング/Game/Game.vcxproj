@@ -232,6 +232,7 @@
     <ClCompile Include="Source\Actor\Character\Batter\BatterStateMachine.cpp" />
     <ClCompile Include="Source\Actor\Character\Catcher\Catcher.cpp" />
     <ClCompile Include="Source\Actor\Character\Character.cpp" />
+    <ClCompile Include="Source\Actor\Character\CharacterModel.cpp" />
     <ClCompile Include="Source\Actor\Character\Pitcher\Pitcher.cpp" />
     <ClCompile Include="Source\Actor\GameCamera\GameCamera.cpp" />
     <ClCompile Include="Source\Actor\Stage\Background.cpp" />
@@ -265,6 +266,7 @@
     <ClInclude Include="Source\Actor\Character\Batter\BatterStateMachine.h" />
     <ClInclude Include="Source\Actor\Character\Catcher\Catcher.h" />
     <ClInclude Include="Source\Actor\Character\Character.h" />
+    <ClInclude Include="Source\Actor\Character\CharacterModel.h" />
     <ClInclude Include="Source\Actor\Character\Pitcher\Pitcher.h" />
     <ClInclude Include="Source\Actor\GameCamera\GameCamera.h" />
     <ClInclude Include="Source\Actor\Stage\Background.h" />
