@@ -12,7 +12,8 @@ namespace {
 BatterStateMachine::BatterStateMachine()
 {
 	RegisterState<BatterIdleState>();
-	RegisterState<BatterRotationState>();	
+	RegisterState<BatterRotationState>();
+	RegisterState<BatterSwingState>();
 	m_currentState = FindState(BatterIdleState::ID());
 	
 }
@@ -58,13 +59,25 @@ void BatterIdleState::Exit()
 //戻り値：状態遷移が発生したらtrue、しなかったらfalseを返す。
 bool BatterIdleState::RequestState(uint32_t& request)
 {
+	Batter* batter = GetBatter();
+
 	if (fabs(g_pad[0]->GetLStickXF()) >= LSTICK_MIN_THRESHOLD ||
 		fabs(g_pad[0]->GetLStickYF()) >= RSTICK_MIN_THRESHOLD)
 	{
 		request = BatterRotationState::ID();
 		return true;
 	}
-	request = BatterIdleState::ID();
+	if (batter->IsSwinging())
+	{
+		request = BatterSwingState::ID();
+		return true;
+	}
+	if (g_pad[0]->IsTrigger(enButtonA))
+	{
+		batter->SetSwinging(true);
+		request = BatterSwingState::ID();
+		return true;
+	}
 	return false;
 }
 
@@ -90,12 +103,52 @@ bool BatterRotationState::RequestState(uint32_t& request)
 {
 	float lx = g_pad[0]->GetLStickXF();
 	float ly = g_pad[0]->GetLStickYF();
+	Batter* batter = GetBatter();
 
 	if (lx< 0.0f && ly < 0.0f)
 	{
 		request = BatterIdleState::ID();
 		return true;
 	}
+	if (batter->IsPlayAnimation())
+	{
+		request = BatterSwingState::ID();
+		return true;
+	}
+	if(g_pad[0]->IsTrigger(enButtonA))
+	{
+		request = BatterSwingState::ID();
+		return true;
+	}
 
+	return false;
+}
+
+void BatterSwingState::Enter()
+{
+}
+
+void BatterSwingState::Update()
+{
+	Batter* batter = GetBatter();
+	batter->IsPlayAnimation();
+	batter->Swing();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());
+}
+
+void BatterSwingState::Exit()
+{
+}
+
+bool BatterSwingState::RequestState(uint32_t& request)
+{
+	float lx = g_pad[0]->GetLStickXF();
+	float ly = g_pad[0]->GetLStickYF();
+
+	if (lx < 0.0f && ly < 0.0f)
+	{
+		request = BatterIdleState::ID();
+		return true;
+	}
 	return false;
 }

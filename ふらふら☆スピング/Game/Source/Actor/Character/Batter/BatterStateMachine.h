@@ -57,3 +57,18 @@ public:
 
 	virtual bool RequestState(uint32_t& request)override;
 };
+
+class BatterSwingState :public BatterIStateBess
+{
+	appState(BatterSwingState);
+
+public:
+	BatterSwingState() :BatterIStateBess() {};
+	virtual ~BatterSwingState() {};
+
+	virtual void Enter()override;
+	virtual void Update()override;
+	virtual void Exit()override;
+
+	virtual bool RequestState(uint32_t& request)override;
+};

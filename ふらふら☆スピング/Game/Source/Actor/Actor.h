@@ -11,6 +11,6 @@ public:
 	Transform m_transform;
 
 protected:
-	ModelRender m_modelRender;
+	ModelRender* m_modelRender;
 };
 
