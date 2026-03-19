@@ -7,6 +7,7 @@
 #include"Source/Actor/Character/Pitcher/Pitcher.h"
 #include"Source/Actor/Character/Catcher/Catcher.h"
 #include"Source/Actor/Character/Ball/Ball.h"
+#include"Source/Scene/Result/Result.h"
 
 bool Game::Start()
 {
@@ -37,7 +38,7 @@ void Game::Update()
 		break;
 	}
 	// ★ ボタンでカメラ切り替え
-	// ★ Yボタンでカメラ順番切り替え
+	// ★ Xボタンでカメラ順番切り替え
 	if (g_pad[0]->IsTrigger(enButtonX)) {
 		m_cameraMode = static_cast<CameraMode>((m_cameraMode + 1) % 3);
 	}
@@ -59,6 +60,13 @@ void Game::Update()
 		m_InGameUI->SetFontVisble(false);
 		m_InGameUI->SetReplayVisible(true);
 
+	}
+	if (g_pad[0]->IsTrigger(enButtonY)) {
+		 Result*result= NewGO<Result>(0);
+		//m_guruguru = m_InGameUI->GetGuruguruValue();
+		//m_km = m_InGameUI->GetKmValue();
+		result->SetResultValues(m_guruguru, m_km);
+		DeleteGO(this);
 	}
 }
 

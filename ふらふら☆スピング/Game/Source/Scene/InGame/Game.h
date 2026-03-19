@@ -33,5 +33,7 @@ private:
 	SkyCube* m_skyCube;			//スカイキューブ。
 	InGameUI* m_InGameUI;		//インゲームUI。
 	CameraMode m_cameraMode = Camera_Catcher;//初期カメラ
+	int m_guruguru = 0;
+	int m_km = 0;
 };
 

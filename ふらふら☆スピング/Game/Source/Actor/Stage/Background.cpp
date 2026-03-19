@@ -45,7 +45,7 @@ namespace {
 
 bool Background::Start()
 {
-	InitData(m_modelRender, &m_physicsStaticObject, GetMagumaFilePath(0));
+	InitData(&m_modelRender, &m_physicsStaticObject, GetMagumaFilePath(0));
 	return true;
 }
 
@@ -55,5 +55,5 @@ void Background::Update()
 
 void Background::Render(RenderContext& rc)
 {
-	m_modelRender->Draw(rc);
+	m_modelRender.Draw(rc);
 }
