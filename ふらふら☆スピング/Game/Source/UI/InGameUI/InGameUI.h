@@ -15,6 +15,8 @@ class InGameUI:public Source
 	void SetFontVisble(bool isVisible) { m_isFontVisible = isVisible; }
 	void SetReplayVisible(bool isVisible){ m_isReplayVisible = isVisible; }
 	void SetBatterSide(bool isLeft);
+	//int GetGuruguruValue() const { return m_guruguruValue; }
+	//int GetKmValue() const { return m_kmValue; }
 private:
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
