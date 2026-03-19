@@ -20,7 +20,7 @@ namespace {
 	};
 
 	std::string FILE_PATH_ANIMATION[1] = {
-		"throw"
+		"Throw"
 	};
 
 	inline std::string GetBatterUniformNumberFilePath(int number)

@@ -18,6 +18,7 @@ public:
 		enAnimationClip_Throw,
 		enAnimationClip_Num
 	};
+
 	Pitcher();
 	virtual ~Pitcher();
 	virtual bool Start();

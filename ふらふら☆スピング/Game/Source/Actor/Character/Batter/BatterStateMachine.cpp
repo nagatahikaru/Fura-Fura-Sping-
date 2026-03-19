@@ -67,14 +67,13 @@ bool BatterIdleState::RequestState(uint32_t& request)
 		request = BatterRotationState::ID();
 		return true;
 	}
-	if (batter->IsSwinging())
+	if (batter->IsPlayAnimation())
 	{
 		request = BatterSwingState::ID();
 		return true;
 	}
 	if (g_pad[0]->IsTrigger(enButtonA))
-	{
-		batter->SetSwinging(true);
+	{		
 		request = BatterSwingState::ID();
 		return true;
 	}
