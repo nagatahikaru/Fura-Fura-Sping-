@@ -24,5 +24,6 @@ private:
 	float m_rotSpeed = 1.0f;
 	float m_pitch = 0.0f;   // ã‰º‰ñ“]Šp“x
 	FontRender m_fontrender;
+	float m_viewAngle = Math::DegToRad(0.0f);
 };
 

@@ -3,6 +3,7 @@
 #include "sound/SoundEngine.h"
 #include "sound/SoundSource.h"
 #include <iostream>
+SoundManager* g_soundManager = nullptr;
 
 namespace {
 	//ファイル名のみ追加すれば、
@@ -14,7 +15,8 @@ namespace {
 	{
 		//ここにファイル名を追加してください。
 		//追加する際は、ヘッダのenum Soundにも追加してください。
-		"1",
+		"TitleBGM",
+		"GameBGM",
 	};	
 }
 

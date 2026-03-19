@@ -6,6 +6,7 @@
 #include"Source/Actor/Character/Batter/Batter.h"
 #include"Source/Actor/Character/Pitcher/Pitcher.h"
 #include"Source/Actor/Character/Catcher/Catcher.h"
+#include"Source/Actor/Character/Ball/Ball.h"
 
 bool Game::Start()
 {
@@ -16,6 +17,7 @@ bool Game::Start()
 	m_batter = NewGO<Batter>(0,"batter");
 	m_pitcher = NewGO<Pitcher>(0,"pitcher");
 	//m_catcher = NewGO<Catcher>(0, "catcher");
+	m_ball = NewGO<Ball>(0, "ball");
 
 	return true;
 }

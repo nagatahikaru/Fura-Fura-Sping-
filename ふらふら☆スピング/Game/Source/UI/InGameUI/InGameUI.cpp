@@ -2,11 +2,11 @@
 #include "InGameUI.h"
 
 InGameUI::InGameUI() {
-	m_spriteRender.Init("Assets/sprite/waku.DDS", 600.0f, 400.0f);
-	m_spriteRenderBat.Init("Assets/sprite/batto.DDS", 200.0f, 300.0f);
-	m_spriteRenderMeet.Init("Assets/sprite/mi-to.DDS", 30.0f, 30.0f);
+	m_spriteRender.Init("Assets/sprite/waku.DDS", 850.0f, 600.0f);
+	m_spriteRenderBat.Init("Assets/sprite/batto.DDS", 330.0f, 430.0f);
+	m_spriteRenderMeet.Init("Assets/sprite/mi-to.DDS", 45.0f, 45.0f);
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
-	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 20.0f, 20.0f);
+	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 30.0f, 30.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -17,7 +17,7 @@ bool InGameUI::Start() {
 	m_batPositionRight = Vector3{-50.0f, -100.0f, 0.0f };  // Å© èâä˙à íu
 	m_batPositionLeft = Vector3{ 50.0f,-100.0f,0.0f };
 	m_meetPositionRight = Vector3{ 35.0f, 5.0f, 0.0f };
-	m_meetPositionLeft = Vector3{ -35.0f,5.0f,0.0f };
+	m_meetPositionLeft = Vector3{ -70.0f,7.0f,0.0f };
 	return true;
 }
 
@@ -45,7 +45,7 @@ void InGameUI::Render(RenderContext& rc) {
 	if (m_isUIVisible) {
 
 		//ê‘Ç¢òg
-		m_spriteRender.SetPosition(Vector3{ 0.0f, -100.0f, 0.0f });
+		m_spriteRender.SetPosition(Vector3{ 0.0f, -80.0f, 0.0f });
 		m_spriteRender.Update();
 		m_spriteRender.Draw(rc);
 
