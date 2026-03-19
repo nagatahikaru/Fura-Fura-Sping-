@@ -67,6 +67,9 @@
     <Filter Include="Source\UI\TiterUI">
       <UniqueIdentifier>{3c027f7f-e78e-4392-bb52-5102aae0aa37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Scene\Load">
+      <UniqueIdentifier>{634ffc6e-648f-41ad-af12-19768848e951}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -145,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="Source\MasterData.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Load\Load.cpp">
+      <Filter>Source\Scene\Load</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +233,9 @@
     </ClInclude>
     <ClInclude Include="Source\MasterData.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Load\Load.h">
+      <Filter>Source\Scene\Load</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
