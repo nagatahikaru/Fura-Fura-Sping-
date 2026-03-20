@@ -14,6 +14,9 @@ enum Sound{
 	enSound_GameBGM8,
 	enSound_GameBGM9,
 	enSound_ResultBGM,
+
+	enSound_SE,
+
 	enSound_Num //このステータスは、サウンドの総数を表しているため、この下には追加しないでください。
 };
 class SoundManager :public IGameObject
@@ -30,6 +33,7 @@ public:
 	/// <returns>再生中のサウンドソースへのポインタ。</returns>
 	SoundSource* PlayingSound(Sound number, bool isLoop = true, float volume = 1.0f);
 	Sound m_nowPlayingBGM = enSound_Num; // 今流れているBGM
+	SoundSource* PlaySE(Sound number, float volume = 1.0f);
 };
 
 extern SoundManager* g_soundManager;
