@@ -4,7 +4,7 @@
 #include "sound/SoundSource.h"
 #include <iostream>
 SoundManager* g_soundManager = nullptr;
-
+SoundSource* g_bgm = nullptr;
 namespace {
 	//ファイル名のみ追加すれば、
 	//コンストラクタにて自動でg_soundEngineに登録されます。
@@ -16,7 +16,16 @@ namespace {
 		//ここにファイル名を追加してください。
 		//追加する際は、ヘッダのenum Soundにも追加してください。
 		"TitleBGM",
-		"GameBGM",
+		"GameBGM1",
+		"GameBGM2",
+	"GameBGM3",
+	"GameBGM4",
+	"GameBGM5",
+	"GameBGM6",
+	"GameBGM7",
+	"GameBGM8",
+	"GameBGM9",
+		"ResultBGM"
 	};	
 }
 
@@ -37,6 +46,18 @@ SoundManager::SoundManager()
 
 SoundSource* SoundManager::PlayingSound(Sound number,bool isLoop,float volume)
 {
+	// すでに同じBGMが流れているなら再生しない（継続）
+	if (m_nowPlayingBGM == number && g_bgm != nullptr) {
+		return g_bgm;
+	}
+
+	// 別のBGMが流れているなら止める
+	if (g_bgm) {
+		g_bgm->Stop();
+		DeleteGO(g_bgm);
+		g_bgm = nullptr;
+	}
+
 	SoundSource* sound = NewGO<SoundSource>(0);
 	//引数で受け取ったnumberはsoundFileNameListの要素番号に対応しています。
 	sound->Init(number);     //サウンドの初期化。
@@ -46,5 +67,9 @@ SoundSource* SoundManager::PlayingSound(Sound number,bool isLoop,float volume)
 	//呼び出し元で、
 	//SoundSource* sound = sound->PlayingSound(Sound::enSound_TitleBGM);
 	//と書くとインスタンスのアドレスを受け取ることができます。
+
+	   g_bgm = sound;
+    m_nowPlayingBGM = number;
+
 	return sound;
 }

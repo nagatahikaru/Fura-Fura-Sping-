@@ -2,6 +2,7 @@
 #include "Source/Source.h"
 #include "Source/UI/UIManager.h"
 #include"Source/Sound/SoundManager.h"
+class TiterUI;
 class Titer : public Source
 {
 public:
@@ -16,5 +17,6 @@ private:
 	SpriteRender m_spriteRender;
 	Transform* m_transform;
 	SoundSource* m_bgm=nullptr;
+	TiterUI* m_titerUI;
 };
 
