@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include "Result.h"
 #include"Source/Scene/Titer/Titer.h"
+#include"Source/Sound/SoundManager.h"
 
 bool Result::Start()
 {
+	g_bgm = g_soundManager->PlayingSound(enSound_ResultBGM, true, 1.0f);
 	m_spriteRender.Init("Assets/sprite/Result.dds", 1920.0f, 1080.0f);
 	return true;
 }
@@ -11,6 +13,10 @@ bool Result::Start()
 void Result::Update()
 {
 	if (g_pad[0]->IsTrigger(enButtonY)) {
+		if (g_bgm) {
+			g_bgm->Stop();
+			g_bgm = nullptr;
+		}
 		NewGO<Titer>(0);
 		DeleteGO(this);
 	}

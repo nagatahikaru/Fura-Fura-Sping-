@@ -28,9 +28,6 @@
     <Filter Include="Source\Scene\Lrad">
       <UniqueIdentifier>{9f68f991-69ab-47b6-9aa3-3e64500c7d85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Scene\Result">
-      <UniqueIdentifier>{276b83f9-5633-4434-8b88-124c501f645b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Scene\Titer">
       <UniqueIdentifier>{17df55da-e02f-432b-854e-0132d5493659}</UniqueIdentifier>
     </Filter>
@@ -70,6 +67,15 @@
     <Filter Include="Source\Scene\Load">
       <UniqueIdentifier>{634ffc6e-648f-41ad-af12-19768848e951}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Scene\Result">
+      <UniqueIdentifier>{635b93d5-e1e7-410d-bedc-b2e6f16cbdb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene\SoundTest">
+      <UniqueIdentifier>{b0696d4c-9c3b-40cd-b09b-0803d53e7fd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI\SoundTestUI">
+      <UniqueIdentifier>{aaac079e-2be2-42fd-9cbc-10a89411f08c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -94,9 +100,6 @@
     </ClCompile>
     <ClCompile Include="Source\Scene\Titer\Titer.cpp">
       <Filter>Source\Scene\Titer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene\Result\Result.cpp">
-      <Filter>Source\Scene\Result</Filter>
     </ClCompile>
     <ClCompile Include="Source\Actor\Stage\Background.cpp">
       <Filter>Source\Actor\Stage</Filter>
@@ -152,6 +155,16 @@
     <ClCompile Include="Source\Scene\Load\Load.cpp">
       <Filter>Source\Scene\Load</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Actor\Character\CharacterModel.cpp" />
+    <ClCompile Include="Source\Scene\Result\Result.cpp">
+      <Filter>Source\Scene\Result</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\SoundTest\SoundTest.cpp">
+      <Filter>Source\Scene\SoundTest</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\SoundTestUI\SoundTestUI.cpp">
+      <Filter>Source\UI\SoundTestUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -175,9 +188,6 @@
     </ClInclude>
     <ClInclude Include="Source\Scene\Titer\Titer.h">
       <Filter>Source\Scene\Titer</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene\Result\Result.h">
-      <Filter>Source\Scene\Result</Filter>
     </ClInclude>
     <ClInclude Include="Source\Actor\Stage\Background.h">
       <Filter>Source\Actor\Stage</Filter>
@@ -236,6 +246,16 @@
     </ClInclude>
     <ClInclude Include="Source\Scene\Load\Load.h">
       <Filter>Source\Scene\Load</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\CharacterModel.h" />
+    <ClInclude Include="Source\Scene\Result\Result.h">
+      <Filter>Source\Scene\Result</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\SoundTest\SoundTest.h">
+      <Filter>Source\Scene\SoundTest</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\SoundTestUI\SoundTestUI.h">
+      <Filter>Source\UI\SoundTestUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

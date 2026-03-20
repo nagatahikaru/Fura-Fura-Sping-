@@ -13,4 +13,5 @@ private:
     SpriteRender m_guruguru;
     float m_loadProgress = 0.0f; // 0.0 Å` 1.0
     float m_blinkTimer = 0.0f;
+    SoundSource* m_bgm = nullptr;
 };

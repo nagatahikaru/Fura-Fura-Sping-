@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Load.h"
 #include "Source/Scene/InGame/Game.h"
+#include"Source/Scene/Titer/Titer.h"
+#include"Source/Sound/SoundManager.h"
 
 bool Load::Start()
 {
@@ -13,6 +15,7 @@ bool Load::Start()
     m_gaugeFill.Init("Assets/sprite/gauge2.dds", 1095.0f, 105.0f);
     m_gaugeFill.SetPosition({ -554.0f, -318.5f, 0.0f });
     m_gaugeFill.SetPivot({ 0.0f, 0.5f });   // ¶’[Šî€
+
     return true;
 }
 
@@ -38,6 +41,12 @@ void Load::Update()
 
 
     if (m_loadProgress >= 1.0f) {
+        // šƒ[ƒh‰æ–Ê‚ÌBGM‚ð’âŽ~
+
+        if (g_bgm) {
+            g_bgm->Stop();
+            g_bgm = nullptr;
+        }
         NewGO<Game>(0);
         DeleteGO(this);
     }

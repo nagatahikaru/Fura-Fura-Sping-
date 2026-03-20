@@ -4,7 +4,16 @@
 //cppのnamespaceと下記のenumを追加してください。
 enum Sound{
 	enSound_TitleBGM,
-	enSound_GameBGM,
+	enSound_GameBGM1,
+	enSound_GameBGM2,
+	enSound_GameBGM3,
+	enSound_GameBGM4,
+	enSound_GameBGM5,
+	enSound_GameBGM6,
+	enSound_GameBGM7,
+	enSound_GameBGM8,
+	enSound_GameBGM9,
+	enSound_ResultBGM,
 	enSound_Num //このステータスは、サウンドの総数を表しているため、この下には追加しないでください。
 };
 class SoundManager :public IGameObject
@@ -20,6 +29,8 @@ public:
 	/// <param name="volume">再生音量を指定します。デフォルトは 1.0f です。</param>
 	/// <returns>再生中のサウンドソースへのポインタ。</returns>
 	SoundSource* PlayingSound(Sound number, bool isLoop = true, float volume = 1.0f);
+	Sound m_nowPlayingBGM = enSound_Num; // 今流れているBGM
 };
 
 extern SoundManager* g_soundManager;
+extern SoundSource* g_bgm;

@@ -8,9 +8,11 @@
 #include"Source/Actor/Character/Catcher/Catcher.h"
 #include"Source/Actor/Character/Ball/Ball.h"
 #include"Source/Scene/Result/Result.h"
+#include"Source/Sound/SoundManager.h"
 
 bool Game::Start()
 {
+	g_bgm = g_soundManager->PlayingSound(enSound_GameBGM1, true, 1.0f);
 	m_skyCube = NewGO<SkyCube>(0, "skycube");
 	m_background = NewGO<Background>(0,"backGround");
 	m_gameCamera = NewGO<GameCamera>(0,"gameCamera");
@@ -66,6 +68,10 @@ void Game::Update()
 		//m_guruguru = m_InGameUI->GetGuruguruValue();
 		//m_km = m_InGameUI->GetKmValue();
 		result->SetResultValues(m_guruguru, m_km);
+		if (g_bgm) {
+			g_bgm->Stop();
+			g_bgm = nullptr;
+		}
 		DeleteGO(this);
 	}
 }
