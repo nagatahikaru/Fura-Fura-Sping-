@@ -35,7 +35,7 @@ void TiterUI::Update()
 
     // ¥ Aƒ{ƒ^ƒ“‚ÅŒˆ’è
     if (g_pad[0]->IsTrigger(enButtonA)) {
-
+        g_soundManager->PlaySE(enSound_SE); // © Œˆ’è‰¹
         if (m_cursor == 0) {
             // ƒQ[ƒ€‚Ö
             NewGO<Load>(0);

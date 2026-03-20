@@ -18,14 +18,15 @@ namespace {
 		"TitleBGM",
 		"GameBGM1",
 		"GameBGM2",
-	"GameBGM3",
-	"GameBGM4",
-	"GameBGM5",
-	"GameBGM6",
-	"GameBGM7",
-	"GameBGM8",
-	"GameBGM9",
-		"ResultBGM"
+	    "GameBGM3",
+     	"GameBGM4",
+	    "GameBGM5",
+	    "GameBGM6",
+	    "GameBGM7",
+	    "GameBGM8",
+	    "GameBGM9",
+		"ResultBGM",
+		"SE"
 	};	
 }
 
@@ -73,3 +74,13 @@ SoundSource* SoundManager::PlayingSound(Sound number,bool isLoop,float volume)
 
 	return sound;
 }
+
+SoundSource* SoundManager::PlaySE(Sound number, float volume)
+{
+	SoundSource* se = NewGO<SoundSource>(0);
+	se->Init(number);
+	se->SetVolume(volume);
+	se->Play(false); // ★ SE はループしない
+	return se;
+}
+
