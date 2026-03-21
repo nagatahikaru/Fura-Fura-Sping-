@@ -11,9 +11,12 @@ public:
 	virtual void Render(RenderContext& rc);
 
 	//ボールを投げる関数
-	void Throw(Vector3 targetPos);
-
+	void Throw(const Vector3& targetPos);
 	void SetPosition(const Vector3& pos);
+
+	bool IsMoving() const;
+	bool CheckCollision(const Vector3& pos, float radius);
+
 
 private:
 	Vector3 m_position;  //ボールの位置
@@ -21,8 +24,9 @@ private:
 	Vector3 m_targetPos; //目標位置
 
 	bool m_isMove = false; 
-
+	float m_throwTimer = 0.0f;
+	float m_radius = 10.0f;
+	float m_baseScale = 50.0f;
 	ModelRender m_modelRender;
-
 };
 
