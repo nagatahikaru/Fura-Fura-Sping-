@@ -9,6 +9,7 @@
 #include"Source/Actor/Character/Ball/Ball.h"
 #include"Source/Scene/Result/Result.h"
 #include"Source/Sound/SoundManager.h"
+#include"Source/UI/PauseUI/PauseUI.h"
 
 bool Game::Start()
 {
@@ -27,6 +28,29 @@ bool Game::Start()
 
 void Game::Update()
 {
+	// START でポーズ切り替え
+	// START でポーズ切り替え
+	if (g_pad[0]->IsTrigger(enButtonStart)) {
+
+		PauseUI* pause = FindGO<PauseUI>("pause");
+		if (pause == nullptr) {
+
+			m_isPaused = true;
+
+			// ★ InGameUI にもポーズを伝える
+			if (m_InGameUI) {
+				m_InGameUI->SetPause(true);
+			}
+
+			NewGO<PauseUI>(0, "pause");
+		}
+	}
+
+	// ★ ポーズ中はゲームの動きを完全停止
+	if (m_isPaused) {
+		return;
+	}
+
 	//切り替え
 	switch (m_cameraMode) {
 	case Camera_Catcher:
@@ -74,6 +98,8 @@ void Game::Update()
 		}
 		DeleteGO(this);
 	}
+	
+
 }
 
 void Game::Render(RenderContext& rc)

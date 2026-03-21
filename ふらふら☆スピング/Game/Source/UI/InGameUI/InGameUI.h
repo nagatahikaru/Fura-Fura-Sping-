@@ -15,6 +15,7 @@ class InGameUI:public Source
 	void SetFontVisble(bool isVisible) { m_isFontVisible = isVisible; }
 	void SetReplayVisible(bool isVisible){ m_isReplayVisible = isVisible; }
 	void SetBatterSide(bool isLeft);
+	void SetPause(bool isPaused);
 	//int GetGuruguruValue() const { return m_guruguruValue; }
 	//int GetKmValue() const { return m_kmValue; }
 private:
@@ -39,6 +40,7 @@ private:
 	bool m_isFontVisible = true;
 	bool m_isReplayVisible = true;
 	bool m_isLeftBatter = true;
+	bool m_isPaused = false;
 	float batScaleX;
 	float m_meetScaleX;
 };
