@@ -40,7 +40,15 @@ void InGameUI::SetBatterSide(bool isLeft) {
 	m_isLeftBatter = isLeft;
 }
 
+void InGameUI::SetPause(bool isPaused) {
+	m_isPaused = isPaused;
+}
+
 void InGameUI::Render(RenderContext& rc) {
+
+	if (m_isPaused) {
+		return; // © ƒ|[ƒY’†‚Í UI ‚ğˆêØ•`‰æ‚µ‚È‚¢
+	}
 
 	if (m_isUIVisible) {
 

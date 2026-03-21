@@ -76,6 +76,9 @@
     <Filter Include="Source\UI\SoundTestUI">
       <UniqueIdentifier>{aaac079e-2be2-42fd-9cbc-10a89411f08c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\UI\PauseUI">
+      <UniqueIdentifier>{0873d872-4df0-4808-90bf-43d11989de14}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -164,6 +167,9 @@
     </ClCompile>
     <ClCompile Include="Source\UI\SoundTestUI\SoundTestUI.cpp">
       <Filter>Source\UI\SoundTestUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\PauseUI\PauseUI.cpp">
+      <Filter>Source\UI\PauseUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -256,6 +262,9 @@
     </ClInclude>
     <ClInclude Include="Source\UI\SoundTestUI\SoundTestUI.h">
       <Filter>Source\UI\SoundTestUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\PauseUI\PauseUI.h">
+      <Filter>Source\UI\PauseUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

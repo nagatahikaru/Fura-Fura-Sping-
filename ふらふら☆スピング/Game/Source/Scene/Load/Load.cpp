@@ -47,7 +47,7 @@ void Load::Update()
             g_bgm->Stop();
             g_bgm = nullptr;
         }
-        NewGO<Game>(0);
+        NewGO<Game>(0, "game");   // © š–¼‘O‚ğ•t‚¯‚é
         DeleteGO(this);
     }
 }

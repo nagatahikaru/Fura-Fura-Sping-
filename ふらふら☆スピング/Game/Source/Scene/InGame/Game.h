@@ -23,6 +23,7 @@ public:
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);
+	bool m_isPaused = false;
 private:
 	GameCamera* m_gameCamera;	//ƒQ[ƒ€ƒJƒƒ‰B
 	Background* m_background;	//”wŒiB
@@ -35,5 +36,7 @@ private:
 	CameraMode m_cameraMode = Camera_Catcher;//‰ŠúƒJƒƒ‰
 	int m_guruguru = 0;
 	int m_km = 0;
+	
+
 };
 

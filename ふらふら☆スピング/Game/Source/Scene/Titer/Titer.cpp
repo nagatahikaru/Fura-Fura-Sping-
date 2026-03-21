@@ -12,6 +12,12 @@ bool Titer::Start()
 	// UI を追加
 	m_titerUI=NewGO<TiterUI>(0);
 
+	// 念のため Game が残っていたら消す
+	Game* game = FindGO<Game>("game");
+	if (game) {
+		DeleteGO(game);
+	}
+
 	// ★ BGM 再生（ループ）
 	g_bgm= g_soundManager->PlayingSound(enSound_TitleBGM, true, 1.0f);
 	return true;
