@@ -18,8 +18,15 @@ bool Titer::Start()
 		DeleteGO(game);
 	}
 
+
+	// ▼ 保存された音量を取得
+	float v = g_soundManager->m_bgmVolume / 100.0f;
+
+	// ▼ カーブ適用（1.8乗など）
+	float curved = powf(v, 2.0f);
+
 	// ★ BGM 再生（ループ）
-	g_bgm= g_soundManager->PlayingSound(enSound_TitleBGM, true, 1.0f);
+	g_bgm= g_soundManager->PlayingSound(enSound_TitleBGM, true, curved);
 	return true;
 }
 

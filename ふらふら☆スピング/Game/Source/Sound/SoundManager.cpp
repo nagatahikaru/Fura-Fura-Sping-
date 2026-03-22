@@ -79,8 +79,30 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 {
 	SoundSource* se = NewGO<SoundSource>(0);
 	se->Init(number);
-	se->SetVolume(volume);
-	se->Play(false); // ★ SE はループしない
+
+	float v = m_seVolume / 100.0f;
+
+	// ★ SE も音量カーブを強調
+	float curved = powf(v, 1.3f); // SE は少し弱めのカーブ
+
+	se->SetVolume(curved);
+	se->Play(false);
 	return se;
 }
 
+void SoundManager::SetBGMVolume(float vol) {
+	m_bgmVolume = vol;
+
+	if (g_bgm) {
+		float v = vol / 100.0f;
+
+		// ★ 音量カーブを強調（2乗）
+		float curved = powf(v, 1.5f);
+
+		g_bgm->SetVolume(curved);
+	}
+}
+
+void SoundManager::SetSEVolume(float vol) {
+	m_seVolume = vol;
+}

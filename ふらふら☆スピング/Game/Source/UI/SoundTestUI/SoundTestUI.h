@@ -10,5 +10,25 @@ public:
 	void Render(RenderContext& rc);
 private:
 	SpriteRender m_spriteRender;
+	SpriteRender m_spriteBGM;
+	SpriteRender m_spriteSE;
+	SpriteRender m_spriteBallBGM;
+	SpriteRender m_spriteBallSE;
+	SpriteRender m_spriteFontBGM;
+	SpriteRender m_spriteFontSE;
+	// スライダー位置
+	float m_bgmX = 0.0f;
+	float m_seX = 0.0f;
+
+	// スライダーの範囲
+	const float m_minX = -400.0f;
+	const float m_maxX = 400.0f;
+
+	// 今どのスライダーを操作しているか
+	int m_select = 0; // 0 = BGM, 1 = SE
+
+	FontRender m_fontBGM;
+	FontRender m_fontSE;
+
 };
 

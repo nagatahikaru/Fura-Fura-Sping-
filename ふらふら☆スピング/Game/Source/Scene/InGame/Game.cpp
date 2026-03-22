@@ -13,7 +13,12 @@
 
 bool Game::Start()
 {
-	g_bgm = g_soundManager->PlayingSound(enSound_GameBGM1, true, 1.0f);
+	// ▼ 保存された音量を取得
+	float v = g_soundManager->m_bgmVolume / 100.0f;
+
+	// ▼ カーブ適用（1.8乗など）
+	float curved = powf(v, 2.0f);
+	g_bgm = g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
 	m_skyCube = NewGO<SkyCube>(0, "skycube");
 	m_background = NewGO<Background>(0,"backGround");
 	m_gameCamera = NewGO<GameCamera>(0,"gameCamera");
