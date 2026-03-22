@@ -5,7 +5,12 @@
 
 bool Result::Start()
 {
-	g_bgm = g_soundManager->PlayingSound(enSound_ResultBGM, true, 1.0f);
+	// ▼ 保存された音量を取得
+	float v = g_soundManager->m_bgmVolume / 100.0f;
+
+	// ▼ カーブ適用（1.8乗など）
+	float curved = powf(v, 2.0f);
+	g_bgm = g_soundManager->PlayingSound(enSound_ResultBGM, true, curved);
 	m_spriteRender.Init("Assets/sprite/Result.dds", 1920.0f, 1080.0f);
 	return true;
 }
