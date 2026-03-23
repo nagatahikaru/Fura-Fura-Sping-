@@ -6,16 +6,13 @@
 bool SoundTest::Start()
 {
 	// UI ‚ð’Ç‰Á
-	 m_soundTestUI= NewGO<SoundTestUI>(0);
+	 m_soundTestUI= NewGO<SoundTestUI>(0,"soundtest");
 	return true;
 }
 
 void SoundTest::Update()
 {
-	if (g_pad[0]->IsTrigger(enButtonB)) {
-		NewGO<Titer>(0);
-		DeleteGO(this);
-	}
+
 }
 
 void SoundTest::Render(RenderContext& rc)

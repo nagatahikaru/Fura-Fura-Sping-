@@ -1,96 +1,140 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "PauseUI.h"
 #include"Source/Scene/Titer/Titer.h"
 #include"Source/Scene/InGame/Game.h"
 #include"Source/Sound/SoundManager.h"
 #include"Source/UI/InGameUI/InGameUI.h"
+#include"Source/Scene/SoundTest/SoundTest.h"
+#include"Source/UI/SoundTestUI/SoundTestUI.h"
 bool PauseUI::Start()
 {
     m_spriteRender.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
     m_spriteRender.SetMulColor({ 1.0f, 1.0f, 1.0f, 0.5f });
     m_startButton.Init("Assets/sprite/StartButton.dds", 600.0f, 450.0f);
-    m_startButton.SetPosition({ 0.0f, -330.0f, 0.0f });
+    m_startButton.SetPosition({ 0.0f, 200.0f, 0.0f });
 
 
     m_titleMenu.Init("Assets/sprite/TitleMenu.dds", 600.0f, 450.0f);
-    m_titleMenu.SetPosition({ 0.0f, -450.0f, 0.0f });
+    m_titleMenu.SetPosition({ 0.0f, 0.0f, 0.0f });
 
-    // š ƒ|[ƒY’†‚Í BGM ‚ğ¬‚³‚­‚·‚é
+    m_soundRender.Init("Assets/sprite/sound.dds", 600.0f, 450.0f);
+    m_soundRender.SetPosition({ 0.0f, -200.0f, 0.0f });
+
+    m_spritePause.Init("Assets/sprite/Pause.dds", 600.0f, 450.0f);
+    m_spritePause.SetPosition({ 0.0f, 380.0f, 0.0f });
+
+    // â˜… ãƒãƒ¼ã‚ºä¸­ã¯ BGM ã‚’å°ã•ãã™ã‚‹
     if (g_bgm) {
-        g_bgm->SetVolume(0.2f);   // © D‚«‚È‰¹—Ê‚É’²®
+        float v = g_soundManager->m_bgmVolume / 100.0f;
+        float curved = powf(v, 1.5f);
+
+        float pauseVolume = curved * 0.5f;   // â˜… 50% ã«ä¸‹ã’ã‚‹ï¼ˆè‡ªç”±ã«èª¿æ•´å¯ï¼‰
+
+        g_bgm->SetVolume(pauseVolume);
     }
+
 
     return true;
 }
 
 void PauseUI::Update()
 {
-    // ¥ START ‚Å‚àÄŠJ
+    // â–¼ START ã§ã‚‚å†é–‹
     if (g_pad[0]->IsTrigger(enButtonStart)) {
         Game* game = FindGO<Game>("game");
         if (game) {
             game->m_isPaused = false;
 
-            // š UI ‚Ìƒ|[ƒY‰ğœ‚ğ’Ç‰Á
+            // â˜… UI ã®ãƒãƒ¼ã‚ºè§£é™¤ã‚’è¿½åŠ 
             InGameUI* ui = FindGO<InGameUI>("inGameUI");
             if (ui) {
                 ui->SetPause(false);
             }
-            // š BGM ‚Ì‰¹—Ê‚ğŒ³‚É–ß‚·
+            // â˜… BGM ã®éŸ³é‡ã‚’æœ€æ–°ã®å€¤ã«æˆ»ã™ï¼ˆ1.0f ã¯çµ¶å¯¾ãƒ€ãƒ¡ï¼‰
             if (g_bgm) {
-                g_bgm->SetVolume(1.0f);   // Œ³‚Ì‰¹—Ê
+                float v = g_soundManager->m_bgmVolume / 100.0f;
+                float curved = powf(v, 1.5f);
+                g_bgm->SetVolume(curved);
             }
         }
         DeleteGO(this);
         return;
     }
 
-    // ¥ ƒJ[ƒ\ƒ‹ˆÚ“®iã‰ºj
+    // â–¼ ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•ï¼ˆä¸Šä¸‹ï¼‰
     if (g_pad[0]->IsTrigger(enButtonUp)) {
-        m_cursor = 0;   // ÄŠJ
+        m_cursor--;
+        if (m_cursor < 0) m_cursor = 2;   // â† 3é …ç›®ãªã®ã§ 0ã€œ2
     }
     if (g_pad[0]->IsTrigger(enButtonDown)) {
-        m_cursor = 1;   // ƒ^ƒCƒgƒ‹‚Ö
+        m_cursor++;
+        if (m_cursor > 2) m_cursor = 0;   // â† 3é …ç›®ãªã®ã§ 0ã€œ2
     }
 
-    // ¥ Aƒ{ƒ^ƒ“‚ÅŒˆ’è
+
     if (g_pad[0]->IsTrigger(enButtonA)) {
 
-        g_soundManager->PlaySE(enSound_SE); // Œˆ’è‰¹
+        g_soundManager->PlaySE(enSound_SE); // æ±ºå®šéŸ³
 
         if (m_cursor == 0) {
-            // ÄŠJ
             Game* game = FindGO<Game>("game");
             if (game) {
-                game->m_isPaused = false;  // © ‚±‚ê‚ª•K—vI
+                game->m_isPaused = false;
             }
-            // š BGM ‚Ì‰¹—Ê‚ğŒ³‚É–ß‚·
+
             if (g_bgm) {
-                g_bgm->SetVolume(1.0f);   // Œ³‚Ì‰¹—Ê
+                float v = g_soundManager->m_bgmVolume / 100.0f;
+                float curved = powf(v, 1.5f);
+                g_bgm->SetVolume(curved);
             }
-            DeleteGO(this); // PauseUI ‚ğÁ‚·
+
+            DeleteGO(this);
         }
-        else {
-            // ƒ^ƒCƒgƒ‹‚Ö–ß‚é
+
+        else if (m_cursor == 1) {
+            // ã‚¿ã‚¤ãƒˆãƒ«ã¸
+            Game* game = FindGO<Game>("game");
+            if (game) DeleteGO(game);
+
+            NewGO<Titer>(0);
+            DeleteGO(this);
+        }
+        else if (m_cursor == 2) {
             Game* game = FindGO<Game>("game");
             if (game) {
-                DeleteGO(game); // ƒQ[ƒ€‚ğŠ®‘SI—¹
+                game->m_isPaused = true;  // ã‚²ãƒ¼ãƒ ã‚’å†é–‹
             }
 
-            NewGO<Titer>(0); // ƒ^ƒCƒgƒ‹‚Ö
-            DeleteGO(this);  // PauseUI íœ
+            if (g_bgm) {
+                float v = g_soundManager->m_bgmVolume / 100.0f;
+                float curved = powf(v, 1.5f);
+                g_bgm->SetVolume(curved);
+            }
+
+
+            auto st = NewGO<SoundTestUI>(0,"soundtest");
+            st->m_returnType = ReturnToPause;   // â˜… ãƒãƒ¼ã‚ºã‹ã‚‰æ¥ãŸã“ã¨ã‚’è¨˜éŒ²
+
+            DeleteGO(this);  // PauseUI ã‚’æ¶ˆã™
         }
     }
 
-    // ¥ ƒJ[ƒ\ƒ‹‚É‰‚¶‚ÄŒ©‚½–Ú‚ğ•Ï‚¦‚éiŠg‘åj
     if (m_cursor == 0) {
-        m_startButton.SetScale({ 1.2f, 1.2f, 1.0f });
-        m_titleMenu.SetScale({ 1.0f, 1.0f, 1.0f });
+        m_startButton.SetScale({ 1.2f,1.2f,1.0f });
+        m_titleMenu.SetScale({ 1.0f,1.0f,1.0f });
+        m_soundRender.SetScale({ 1.0f,1.0f,1.0f });
     }
-    else {
-        m_startButton.SetScale({ 1.0f, 1.0f, 1.0f });
-        m_titleMenu.SetScale({ 1.2f, 1.2f, 1.0f });
+    else if (m_cursor == 1) {
+        m_startButton.SetScale({ 1.0f,1.0f,1.0f });
+        m_titleMenu.SetScale({ 1.2f,1.2f,1.0f });
+        m_soundRender.SetScale({ 1.0f,1.0f,1.0f });
     }
+    else if (m_cursor == 2) {
+        m_startButton.SetScale({ 1.0f,1.0f,1.0f });
+        m_titleMenu.SetScale({ 1.0f,1.0f,1.0f });
+        m_soundRender.SetScale({ 1.2f,1.2f,1.0f });
+    }
+
 }
 
 
@@ -101,4 +145,8 @@ void PauseUI::Render(RenderContext& rc)
     m_startButton.Draw(rc);
     m_titleMenu.Update();
     m_titleMenu.Draw(rc);
+    m_soundRender.Update();
+    m_soundRender.Draw(rc);
+    m_spritePause.Update();
+    m_spritePause.Draw(rc);
 }
