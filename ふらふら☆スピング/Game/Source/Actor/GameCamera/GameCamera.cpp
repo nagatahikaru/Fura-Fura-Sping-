@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GameCamera.h"
+#include"Source/Scene/InGame/Game.h"
 
 GameCamera::GameCamera() {
 
@@ -40,6 +41,13 @@ void GameCamera::SetFollowBallCamera() {
 
 
 void GameCamera::Update() {
+
+
+    // ★ ポーズ中はカメラを止める
+    Game* game = FindGO<Game>("game");
+    if (game && game->m_isPaused) {
+        return;   // ← これでカメラが完全停止
+    }
 
   // --- ASWD で移動 ---
 

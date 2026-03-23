@@ -35,14 +35,14 @@ void Game::Update()
 {
 	// START でポーズ切り替え
 	// START でポーズ切り替え
+	// START でポーズ開始
 	if (g_pad[0]->IsTrigger(enButtonStart)) {
 
-		PauseUI* pause = FindGO<PauseUI>("pause");
-		if (pause == nullptr) {
+		// すでに PauseUI がある → 何もしない（PauseUI 側で処理する）
+		if (FindGO<PauseUI>("pause") == nullptr) {
 
 			m_isPaused = true;
 
-			// ★ InGameUI にもポーズを伝える
 			if (m_InGameUI) {
 				m_InGameUI->SetPause(true);
 			}

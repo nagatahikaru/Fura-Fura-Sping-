@@ -1,5 +1,6 @@
 #pragma once
 #include "Source/Actor/Character/Character.h"
+#include"Source/Scene/InGame/Game.h"
 
 namespace {
 	namespace CatcherNumber {

@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Pitcher.h"
-
+#include"Source/Scene/InGame/Game.h"
 namespace {
 	std::string FILE_PATH_BATTER = ("Assets/animData/pitcher/");
 	std::string FILE_PATH_BATTER_UNIFORMNUMBER = ("Assets/modelData/Pitcher/UniformNumber/");
@@ -107,6 +107,12 @@ bool Pitcher::Start()
 
 void Pitcher::Update()
 {
+
+	// ★ ポーズ中はアニメーションを止める
+	Game* game = FindGO<Game>("game");
+	if (game && game->m_isPaused) {
+		return;   // ← これで投球アニメが途中で停止する
+	}
 
 	m_modelRender[m_UniformNumber].Update();
 }
