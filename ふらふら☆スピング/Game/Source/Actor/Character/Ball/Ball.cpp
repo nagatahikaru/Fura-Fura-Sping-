@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Ball.h"
 #include <stdlib.h>
+#include"Source/Scene/InGame/Game.h"
 
 Ball::Ball()
 {
@@ -27,6 +28,12 @@ bool Ball::Start()
 
 void Ball::Update()
 {
+	// ★ ポーズ中はボールの動きを止める
+	Game* game = FindGO<Game>("game");
+	if (game && game->m_isPaused) {
+		return;   // ← これでボールの移動が完全停止
+	}
+
 	float dt = 1.0f / 60.0f;
 
 	//タイマー更新
