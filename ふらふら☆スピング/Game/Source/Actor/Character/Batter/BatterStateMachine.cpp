@@ -39,14 +39,14 @@ void BatterStateMachine::Update()
 
 void BatterIdleState::Enter()
 { 
-
+	Batter* batter = GetBatter();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());
 }
 
 void BatterIdleState::Update()
 {
 	Batter* batter = GetBatter();
-	batter->SetPlayAnimation(batter->GetEnAnimationClip());
-
+	batter->AnimationUpdate();
 }
 
 void BatterIdleState::Exit()
@@ -67,11 +67,6 @@ bool BatterIdleState::RequestState(uint32_t& request)
 		request = BatterRotationState::ID();
 		return true;
 	}
-	if (batter->IsPlayAnimation())
-	{
-		request = BatterSwingState::ID();
-		return true;
-	}
 	if (g_pad[0]->IsTrigger(enButtonA))
 	{		
 		request = BatterSwingState::ID();
@@ -82,7 +77,9 @@ bool BatterIdleState::RequestState(uint32_t& request)
 
 void BatterRotationState::Enter()
 {
-
+	Batter* batter = GetBatter();
+	batter->SetPlayRotation();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());
 }
 
 void BatterRotationState::Update()
@@ -90,7 +87,7 @@ void BatterRotationState::Update()
 	Batter* batter = GetBatter();
 	batter->Rotation();
 	batter->RotationUpdate();
-	batter->SetPlayAnimation(batter->GetEnAnimationClip());
+	batter->AnimationUpdate();
 }
 
 void BatterRotationState::Exit()
@@ -109,11 +106,6 @@ bool BatterRotationState::RequestState(uint32_t& request)
 		request = BatterIdleState::ID();
 		return true;
 	}
-	if (batter->IsPlayAnimation())
-	{
-		request = BatterSwingState::ID();
-		return true;
-	}
 	if(g_pad[0]->IsTrigger(enButtonA))
 	{
 		request = BatterSwingState::ID();
@@ -125,14 +117,15 @@ bool BatterRotationState::RequestState(uint32_t& request)
 
 void BatterSwingState::Enter()
 {
+	Batter* batter = GetBatter();
+	batter->Swing();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());
 }
 
 void BatterSwingState::Update()
 {
 	Batter* batter = GetBatter();
-	batter->IsPlayAnimation();
-	batter->Swing();
-	batter->SetPlayAnimation(batter->GetEnAnimationClip());
+	batter->AnimationUpdate();
 }
 
 void BatterSwingState::Exit()
@@ -141,6 +134,11 @@ void BatterSwingState::Exit()
 
 bool BatterSwingState::RequestState(uint32_t& request)
 {
+	Batter* batter = GetBatter();
+	if (batter->IsSwingAnimationPlaying())
+	{
+		return false;		
+	}
 	float lx = g_pad[0]->GetLStickXF();
 	float ly = g_pad[0]->GetLStickYF();
 

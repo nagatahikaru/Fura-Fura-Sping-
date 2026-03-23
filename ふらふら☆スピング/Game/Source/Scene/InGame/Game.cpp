@@ -25,6 +25,9 @@ bool Game::Start()
 
 void Game::Update()
 {
+	//当たり判定の表示
+	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
+
 	//切り替え
 	switch (m_cameraMode) {
 	case Camera_Catcher:

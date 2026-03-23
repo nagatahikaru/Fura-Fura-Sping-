@@ -16,7 +16,7 @@ bool Titer::Start()
 void Titer::Update()
 {
 	if (g_pad[0]->IsTrigger(enButtonA)) {
-		NewGO<Load>(0);
+		NewGO<Game>(0,"game");
 		DeleteGO(this);
 	}
 	

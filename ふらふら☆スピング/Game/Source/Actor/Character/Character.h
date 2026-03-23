@@ -19,5 +19,6 @@ protected:
 	CharacterController m_characterController;
 	// CharacterModel ‚ğƒƒ“ƒo•Ï”‚Æ‚µ‚Ä•Û
 	std::unique_ptr<nsApp::CharacterModel> m_characterModel;
+
 };
 
