@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Pitcher.h"
-
+#include"Source/Scene/InGame/Game.h"
 namespace {
 	std::string FILE_PATH_BATTER = ("Assets/animData/pitcher/");
 	std::string FILE_PATH_BATTER_UNIFORMNUMBER = ("Assets/modelData/Pitcher/UniformNumber/");
@@ -19,7 +19,8 @@ namespace {
 		"9"
 	};
 
-	std::string FILE_PATH_ANIMATION[1] = {
+	std::string FILE_PATH_ANIMATION[2] = {
+		"Idle",
 		"Throw"
 	};
 
@@ -83,14 +84,20 @@ Pitcher::~Pitcher()
 
 bool Pitcher::Start()
 {
-
+	// アニメーション初期化
 	for (int j = 0; j < enAnimationClip_Num; j++)
 	{
-		InitAnimation(m_animationClips, j, true);
+		if (j == enAnimationClip_Throw)
+		{
+			InitAnimation(m_animationClips, j, false);
+		}
+		else
+		{
+			InitAnimation(m_animationClips, j, true);
+		}
 	}
-	//初期位置の設定
-	m_targetPosition = m_position;
 
+	//初期位置の設定
 	InitModelRender(
 		&m_modelRender[m_UniformNumber],
 		m_animationClips,
@@ -99,14 +106,42 @@ bool Pitcher::Start()
 		Vector3(10.0f, 10.0f, 10.0f),
 		GetBatterUniformNumberFilePath(m_UniformNumber));
 
+
 	//アニメーション再生
-	m_modelRender[m_UniformNumber].PlayAnimation(enAnimationClip_Throw);
+	m_modelRender[m_UniformNumber].PlayAnimation(enAnimationClip_Idle);
+
+	m_timer = 0.0f;
+	m_isThrowing = false;
 
 	return true;
 }
 
 void Pitcher::Update()
 {
+	float dt = 1.0f / 60.0f;
+
+	// ★ ポーズ中はアニメーションを止める
+	Game* game = FindGO<Game>("game");
+	if (game && game->m_isPaused) {
+		return;   // ← これで投球アニメが途中で停止する
+	}
+
+	m_timer += dt;
+
+	if (!m_isThrowing && m_timer > 2.0f)
+	{
+		SetPlayAnimation(enAnimationClip_Throw);
+		m_isThrowing = true;
+		m_timer = 0.0f;
+	}
+
+	if (m_isThrowing)
+	{
+		if (m_timer > 1.0f) 
+		{
+			m_isThrowing = false;
+		}
+	}
 
 	m_modelRender[m_UniformNumber].Update();
 }

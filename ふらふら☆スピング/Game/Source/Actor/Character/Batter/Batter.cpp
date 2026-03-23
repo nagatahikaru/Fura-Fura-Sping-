@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Batter.h"
 #include "BatterStateMachine.h"
+#include"Source/Scene/InGame/Game.h"
 
 namespace {
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
@@ -161,6 +162,11 @@ bool Batter::Start()
 
 void Batter::Update()
 {
+	// ★ ポーズ中はキャッチャーのアニメーションを止める
+	Game* game = FindGO<Game>("game");
+	if (game && game->m_isPaused) {
+		return;   // ← これでキャッチャーの動きが完全停止
+	}
 	m_stateMachine->Update();
 }
 

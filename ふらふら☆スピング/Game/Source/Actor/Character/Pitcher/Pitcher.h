@@ -15,6 +15,7 @@ class Pitcher :public Character
 public:
 
 	enum EnAnimationClip {
+		enAnimationClip_Idle,
 		enAnimationClip_Throw,
 		enAnimationClip_Num
 	};
@@ -33,7 +34,10 @@ private:
 
 	ModelRender m_modelRender[PitcherNumber::Num];
 	AnimationClip m_animationClips[enAnimationClip_Num];
-	EnAnimationClip m_setAnimation = enAnimationClip_Throw;
+
 	int m_UniformNumber = PitcherNumber::UniformNumber_1;
+
+	float m_timer = 0.0f;
+	bool m_isThrowing = false;
 };
 
