@@ -104,9 +104,13 @@ bool Batter::Start()
 {
 	//forループでまとめる
 //アニメーションクリップの読み込み
-	for (int j = enAnimationClip_Idle; j < enAnimationClip_Num; j++)
+	for (int j = enAnimationClip_Idle; j < enAnimationClip_Swing; j++)
 	{
 		InitAnimation(m_animationClips, j, true);
+	}
+	for(int j = enAnimationClip_Swing; j < enAnimationClip_Num; j++)
+	{
+		InitAnimation(m_animationClips, j, false);
 	}
 	// インスタンスの生成
 	m_characterModel = std::make_unique<nsApp::CharacterModel>();
@@ -121,8 +125,8 @@ bool Batter::Start()
 	m_characterModel->LoadWeaponModel(nsApp::CharacterModelType::Bat);
 
 	// 3. アタッチするボーンの設定とオフセットの調整
-	m_characterModel->SetWeaponAttackBone(L"RightHand"); // 実際のボーン名に合わせる
-	m_characterModel->SetWeaponOffset(Vector3(0.0f, 10.0f, 0.0f));
+	m_characterModel->SetWeaponAttackBone(L"mixamorig:RightHand"); // 実際のボーン名に合わせる
+	m_characterModel->SetWeaponOffset(Vector3(100.0f, 150.0f, 0.0f));
 
 	m_transform.m_position = BatterBasicSettings::INITIAL_COORDINATE;
 	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);	
@@ -131,6 +135,7 @@ bool Batter::Start()
 	m_characterModel->SetPosition(m_transform.m_position);
 	m_characterModel->SetCharacterScale(BatterBasicSettings::INITIAL_SCALE);
 	m_characterModel->SettRotation(m_transform.m_rotation);
+	m_characterModel->SetWeaponScale(BatterBasicSettings::INITIAL_SCALE);
 	
 
 	InitCharacterController(&m_characterController,
@@ -148,6 +153,7 @@ bool Batter::Start()
 		Quaternion::Identity,
 		BatterBasicSettings::COLLISION_SCALE);
 
+	m_characterModel->Update();
 
 	
 	return true;
@@ -225,7 +231,6 @@ void Batter::RotationUpdate()
 	// オフセットを考慮した位置の補正計算
 	Vector3 pivot = m_transform.m_position - pivotOffset;
 	newPosition = pivot + pivotOffset;
-	m_setAnimation = enAnimationClip_Idle;
 
 	m_characterModel->SettRotation(m_transform.m_rotation);
 	m_characterModel->SetPosition(newPosition);
@@ -234,12 +239,7 @@ void Batter::RotationUpdate()
 void Batter::SetPlayAnimation(int enAnimationClip)
 {
 	m_characterModel->PlayAnimation(enAnimationClip,0.2);
-	m_characterModel->Update();
-}
-
-void Batter::Swing()
-{
-	m_setAnimation = enAnimationClip_Swing;
+	
 }
 
 void Batter::Render(RenderContext& rc)

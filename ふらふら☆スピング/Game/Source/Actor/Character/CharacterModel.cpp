@@ -8,10 +8,10 @@ namespace nsApp
 		/* モデルのファイルパスを格納。*/
 		/* キャラモデルの格納。*/
 		/* プレイヤーモデル。*/
-		m_filePathList[CharacterModelType::BatterUniformNumber_1] = GetCharacterModelFilePath("Batter/UniformNumber/1"); /* 1Pモデル。*/
+		m_filePathList[CharacterModelType::BatterUniformNumber_0] = GetCharacterModelFilePath("Batter/UniformNumber/0"); /* 1Pモデル。*/
 
 		/* ピッチャーモデル。*/
-		m_filePathList[CharacterModelType::PicherUniformNumber_1] = GetCharacterModelFilePath("Picher/UniformNumber/1");
+		m_filePathList[CharacterModelType::PicherUniformNumber_0] = GetCharacterModelFilePath("Picher/UniformNumber/0");
 
 		/* キャッチャーモデル。*/
 		m_filePathList[CharacterModelType::CatcherUniformNumber_0] = GetCharacterModelFilePath("Catcher/UniformNumber/0"); /* ボスモデル。*/
@@ -114,7 +114,7 @@ namespace nsApp
 			m_yAxis.Normalize();
 			m_zAxis.Normalize();
 
-			m_offsetPosition = m_matrixPosition + (m_xAxis * m_weaponOffset.x), (m_yAxis * m_weaponOffset.y), (m_zAxis * m_weaponOffset.z);
+			m_offsetPosition = m_matrixPosition + (m_xAxis * m_weaponOffset.x)+(m_yAxis * m_weaponOffset.y)+(m_zAxis * m_weaponOffset.z);
 			m_weaponModelRender->SetPosition(m_offsetPosition);
 				                 
 

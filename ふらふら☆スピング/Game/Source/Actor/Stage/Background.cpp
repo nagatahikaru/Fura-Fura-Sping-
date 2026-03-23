@@ -45,6 +45,7 @@ namespace {
 
 bool Background::Start()
 {
+
 	InitData(&m_modelRender, &m_physicsStaticObject, GetMagumaFilePath(0));
 	return true;
 }

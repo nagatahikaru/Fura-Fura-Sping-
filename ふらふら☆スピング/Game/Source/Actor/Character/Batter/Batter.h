@@ -28,6 +28,14 @@ namespace {
 		const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
 		const float NONE_SPEED = 0.0f;//速度なし
 	}
+
+	namespace BatBasicSettings
+	{
+		const Vector3 INITIAL_SCALE = Vector3(10.0f, 10.0f, 10.0f); //初期スケール
+		const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
+		const Vector3 ROTATION_OFFSET = Vector3(1.0f, 0.0f, 0.0f); //回転の軸となるオフセット座標
+		const float ROTATION_ANGLE = 90.0f; //回転角度
+	}
 };
 
 class Batter :public Character
@@ -61,13 +69,35 @@ public:
 	}
 	void Rotation();
 	void RotationUpdate();
-	void Swing();
+	void Swing()
+	{
+		m_setAnimation = enAnimationClip_Swing;
+		m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
+		m_characterModel->SettRotation(m_rotation);
+
+	}
 
 	bool IsPlayAnimation()
 	{
-		m_isAnimation = m_characterModel->IsPlayAnimation();
+		return m_characterModel->IsPlayAnimation();
+	}
 
-		return m_isAnimation;
+	void AnimationUpdate()
+	{
+		m_characterModel->Update();
+	}
+
+	void SetPlayRotation()
+	{
+		m_setAnimation = enAnimationClip_Idle;
+	}
+
+	// Swingアニメーションが再生中かどうかを判定する関数
+	// Swingアニメーションが再生中であればtrueを返し、そうでなければfalseを返す
+	// 例えば、Swingアニメーションが再生中であれば、攻撃の当たり判定を有効にするなどの処理に利用できます。
+	bool IsSwingAnimationPlaying()
+	{
+		return m_characterModel->IsPlayAnimation() && m_setAnimation == enAnimationClip_Swing;
 	}
 
 private:
@@ -77,9 +107,11 @@ private:
 	int m_UniformNumber = BatterNumber::UniformNumber_1;
 	Vector3 newPosition;
 	Vector3 m_facingDir = Vector3(0.0f, 0.0f, -1.0f); // 初期向き
+	Quaternion m_rotation; // 回転を保持するクォータニオン
 	Vector3 pivotOffset = { 0.0f, 0.0f, 10.0f }; // 例: 回転の軸となるオフセット座標（ローカル）
 	FontRender m_fontRender;
 	CollisionObject* m_collisionObject;
-	bool m_isAnimation = false; // スイング中かどうかのフラグ
+	Quaternion m_batRotation; // バットの回転を保持するクォータニオン
+	bool m_isAnimation = false; // animationの再生状態を保持するフラグ
 };
 
