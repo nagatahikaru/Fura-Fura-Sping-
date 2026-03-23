@@ -13,5 +13,7 @@ private:
 	SpriteRender m_spriteRender;
 	SpriteRender m_startButton;
 	SpriteRender m_titleMenu;
+	SpriteRender m_soundRender;
+	SpriteRender m_spritePause;
 	int m_cursor = 0; // 0 = ƒQ[ƒ€, 1 = ƒƒjƒ…[
 };

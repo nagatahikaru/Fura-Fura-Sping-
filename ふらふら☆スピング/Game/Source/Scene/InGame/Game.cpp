@@ -10,14 +10,14 @@
 #include"Source/Scene/Result/Result.h"
 #include"Source/Sound/SoundManager.h"
 #include"Source/UI/PauseUI/PauseUI.h"
+#include"Source/UI/SoundTestUI/SoundTestUI.h"
 
 bool Game::Start()
 {
-	// ▼ 保存された音量を取得
+	// ▼ 最新の音量を必ず適用して再生
 	float v = g_soundManager->m_bgmVolume / 100.0f;
+	float curved = powf(v, 1.5f);
 
-	// ▼ カーブ適用（1.8乗など）
-	float curved = powf(v, 2.0f);
 	g_bgm = g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
 	m_skyCube = NewGO<SkyCube>(0, "skycube");
 	m_background = NewGO<Background>(0,"backGround");
@@ -38,17 +38,24 @@ void Game::Update()
 	// START でポーズ開始
 	if (g_pad[0]->IsTrigger(enButtonStart)) {
 
-		// すでに PauseUI がある → 何もしない（PauseUI 側で処理する）
-		if (FindGO<PauseUI>("pause") == nullptr) {
-
-			m_isPaused = true;
-
-			if (m_InGameUI) {
-				m_InGameUI->SetPause(true);
-			}
-
-			NewGO<PauseUI>(0, "pause");
+		// ★ PauseUI があるなら START を無効化
+		if (FindGO<PauseUI>("pause") != nullptr) {
+			return;
 		}
+
+		// ★ SoundTestUI があるなら START を無効化
+		if (FindGO<SoundTestUI>("soundtest") != nullptr) {
+			return;
+		}
+
+		// ★ 通常のポーズ処理
+		m_isPaused = true;
+
+		if (m_InGameUI) {
+			m_InGameUI->SetPause(true);
+		}
+
+		NewGO<PauseUI>(0, "pause");
 	}
 
 	// ★ ポーズ中はゲームの動きを完全停止

@@ -1,6 +1,10 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "SoundTestUI.h"
 #include"Source/Sound/SoundManager.h"
+#include"Source/Scene/Titer/Titer.h"
+#include"Source/UI/PauseUI/PauseUI.h"
+#include"Source/Scene/InGame/Game.h"
+#include"Source/UI/InGameUI/InGameUI.h"
 bool SoundTestUI::Start() {
 	m_spriteRender.Init("Assets/sprite/SoundTest.DDS", 1920.0f, 1080.0f);
 
@@ -22,7 +26,7 @@ bool SoundTestUI::Start() {
     m_spriteFontSE.Init("Assets/sprite/ball.dds", 80.0f, 80.0f);
     m_spriteFontSE.SetPosition({ 540.0f, -440.0f, 0.0f });
 
-    // ¥ •Û‘¶‚³‚ê‚½‰¹—Ê‚ğƒXƒ‰ƒCƒ_[ˆÊ’u‚É•ÏŠ·
+    // â–¼ ä¿å­˜ã•ã‚ŒãŸéŸ³é‡ã‚’ã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ä½ç½®ã«å¤‰æ›
     float bgmT = g_soundManager->m_bgmVolume / 100.0f;
     float seT = g_soundManager->m_seVolume / 100.0f;
 
@@ -32,7 +36,12 @@ bool SoundTestUI::Start() {
 	return true;
 }
 void SoundTestUI::Update() {
-    // ¥ ã‰º‚Å BGM / SE ‚Ì‘I‘ğ
+    // â˜… ã‚µã‚¦ãƒ³ãƒ‰ãƒ†ã‚¹ãƒˆä¸­ã¯ START ã‚’ç„¡åŠ¹åŒ–
+    if (g_pad[0]->IsTrigger(enButtonStart)) {
+        return;
+    }
+
+    // â–¼ ä¸Šä¸‹ã§ BGM / SE ã®é¸æŠ
     if (g_pad[0]->IsTrigger(enButtonUp)) {
         m_select = 0;
     }
@@ -40,7 +49,7 @@ void SoundTestUI::Update() {
         m_select = 1;
     }
 
-    // ¥ ¶‰E‚Åƒ{[ƒ‹‚ğ“®‚©‚·
+    // â–¼ å·¦å³ã§ãƒœãƒ¼ãƒ«ã‚’å‹•ã‹ã™
     if (g_pad[0]->IsPress(enButtonRight)) {
         if (m_select == 0) m_bgmX += 5.0f;
         else               m_seX += 5.0f;
@@ -50,24 +59,55 @@ void SoundTestUI::Update() {
         else               m_seX -= 5.0f;
     }
 
-    // ”ÍˆÍ§ŒÀ
+    // ç¯„å›²åˆ¶é™
     m_bgmX = std::clamp(m_bgmX, m_minX, m_maxX);
     m_seX = std::clamp(m_seX, m_minX, m_maxX);
 
-    // ¥ ˆÊ’u ¨ ‰¹—Êi0?100j‚É•ÏŠ·
+    // â–¼ ä½ç½® â†’ éŸ³é‡ï¼ˆ0?100ï¼‰ã«å¤‰æ›
     float bgmT = (m_bgmX - m_minX) / (m_maxX - m_minX);
     float seT = (m_seX - m_minX) / (m_maxX - m_minX);
 
+    // â–¼ ä½ç½® â†’ éŸ³é‡ï¼ˆ0ã€œ100ï¼‰
     float bgmVolume = bgmT * 100.0f;
     float seVolume = seT * 100.0f;
 
-    // ¥ SoundManager ‚É”½‰f
+    // â˜… ã‚«ãƒ¼ãƒ–ã¯ SoundManager ã«ä»»ã›ã‚‹
     g_soundManager->SetBGMVolume(bgmVolume);
     g_soundManager->SetSEVolume(seVolume);
 
-	if (g_pad[0]->IsTrigger(enButtonB)) {
-		DeleteGO(this);
-	}
+
+    if (g_pad[0]->IsTrigger(enButtonB)) {
+
+
+        // â–¼ æœ€æ–°ã®ã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼å€¤ã‚’ä¿å­˜ï¼ˆã“ã‚ŒãŒè¶…é‡è¦ï¼‰
+        g_soundManager->m_bgmVolume = bgmVolume;
+        g_soundManager->m_seVolume = seVolume;
+
+        // â–¼ BGM ã«ã‚‚åæ˜ 
+        g_soundManager->SetBGMVolume(g_soundManager->m_bgmVolume);
+
+        if (m_returnType == ReturnToTitle) {
+            NewGO<Titer>(0);
+        }
+        else if (m_returnType == ReturnToPause) {
+
+            // â˜… PauseUI ã‚’å¾©å…ƒ
+            NewGO<PauseUI>(0, "pause");
+
+            // â˜… ã‚²ãƒ¼ãƒ ã¯åœæ­¢çŠ¶æ…‹ã®ã¾ã¾
+            Game* game = FindGO<Game>("game");
+            if (game) {
+                game->m_isPaused = true;
+            }
+
+            // â˜… InGameUI ã‚‚åœæ­¢çŠ¶æ…‹ã«æˆ»ã™ï¼ˆã“ã‚ŒãŒè¶…é‡è¦ï¼‰
+            InGameUI* ui = FindGO<InGameUI>("inGameUI");
+            if (ui) {
+                ui->SetPause(true);
+            }
+        }
+        DeleteGO(this);
+    }
 
 }
 void SoundTestUI::Render(RenderContext& rc) {
@@ -85,14 +125,14 @@ void SoundTestUI::Render(RenderContext& rc) {
     m_spriteFontSE.Update();
     m_spriteFontSE.Draw(rc);
 
-    // ¥ BGM ƒ{[ƒ‹
+    // â–¼ BGM ãƒœãƒ¼ãƒ«
     m_spriteBallBGM.SetPosition({ m_bgmX, -330.0f, 0.0f });
     if (m_select == 0) m_spriteBallBGM.SetScale({ 1.3f, 1.3f, 1.0f });
     else               m_spriteBallBGM.SetScale({ 1.0f, 1.0f, 1.0f });
     m_spriteBallBGM.Update();
     m_spriteBallBGM.Draw(rc);
 
-    // ¥ SE ƒ{[ƒ‹
+    // â–¼ SE ãƒœãƒ¼ãƒ«
     m_spriteBallSE.SetPosition({ m_seX, -450.0f, 0.0f });
     if (m_select == 1) m_spriteBallSE.SetScale({ 1.3f, 1.3f, 1.0f });
     else               m_spriteBallSE.SetScale({ 1.0f, 1.0f, 1.0f });
@@ -100,18 +140,18 @@ void SoundTestUI::Render(RenderContext& rc) {
     m_spriteBallSE.Draw(rc);
 
 
-    // ¥ ”’l•\¦iBGMj
+    // â–¼ æ•°å€¤è¡¨ç¤ºï¼ˆBGMï¼‰
     int bgmVal = (int)g_soundManager->m_bgmVolume;
     wchar_t bgmText[32];
     swprintf_s(bgmText, L"%d", bgmVal);
 
-    // •¶š•‚Ì‰¼’èiƒtƒHƒ“ƒgƒTƒCƒY40‚È‚ç–ñ20pxj
+    // æ–‡å­—å¹…ã®ä»®å®šï¼ˆãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º40ãªã‚‰ç´„20pxï¼‰
     const float charWidthBGM = 20.0f;
 
-    // Œ…”‚ğæ“¾
+    // æ¡æ•°ã‚’å–å¾—
     int digitsBGM = wcslen(bgmText);
 
-    // ’†‰›‘µ‚¦ƒIƒtƒZƒbƒgi•¶š—ñ‚Ì”¼•ª‚Ì•j
+    // ä¸­å¤®æƒãˆã‚ªãƒ•ã‚»ãƒƒãƒˆï¼ˆæ–‡å­—åˆ—ã®åŠåˆ†ã®å¹…ï¼‰
     float bgmOffsetX = -(digitsBGM * charWidthBGM) * 0.5f;
 
     m_fontBGM.SetText(bgmText);
@@ -120,18 +160,18 @@ void SoundTestUI::Render(RenderContext& rc) {
     m_fontBGM.Draw(rc);
 
 
-    // ¥ ”’l•\¦iSEj
+    // â–¼ æ•°å€¤è¡¨ç¤ºï¼ˆSEï¼‰
     int seVal = (int)g_soundManager->m_seVolume;
     wchar_t seText[32];
     swprintf_s(seText, L"%d", seVal);
 
-    // •¶š•‚Ì‰¼’è
+    // æ–‡å­—å¹…ã®ä»®å®š
     const float charWidthSE = 20.0f;
 
-    // Œ…”
+    // æ¡æ•°
     int digitsSE = wcslen(seText);
 
-    // ’†‰›‘µ‚¦ƒIƒtƒZƒbƒg
+    // ä¸­å¤®æƒãˆã‚ªãƒ•ã‚»ãƒƒãƒˆ
     float seOffsetX = -(digitsSE * charWidthSE) * 0.5f;
 
     m_fontSE.SetText(seText);

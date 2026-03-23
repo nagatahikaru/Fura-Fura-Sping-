@@ -36,7 +36,6 @@ private:
 	CameraMode m_cameraMode = Camera_Catcher;//‰ŠúƒJƒƒ‰
 	int m_guruguru = 0;
 	int m_km = 0;
-	
-
+	bool m_bgmStarted = false;
 };
 

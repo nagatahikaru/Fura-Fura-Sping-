@@ -1,5 +1,9 @@
 #pragma once
 #include "Source/Source.h"
+enum ReturnType {
+	ReturnToTitle,
+	ReturnToPause
+};
 class SoundTestUI :public Source
 {
 public:
@@ -8,6 +12,7 @@ public:
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);
+	ReturnType m_returnType = ReturnToTitle;
 private:
 	SpriteRender m_spriteRender;
 	SpriteRender m_spriteBGM;
@@ -29,6 +34,6 @@ private:
 
 	FontRender m_fontBGM;
 	FontRender m_fontSE;
-
+	
 };
 

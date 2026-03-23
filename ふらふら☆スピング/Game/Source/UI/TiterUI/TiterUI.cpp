@@ -42,7 +42,8 @@ void TiterUI::Update()
         }
         else {
             // メニューへ
-            NewGO<SoundTest>(0);   // メニューシーンが Load ならこれでOK
+            auto st = NewGO<SoundTestUI>(0);
+            st->m_returnType = ReturnToTitle;   // ★ タイトルから来たことを記録
         }
        
         DeleteGO(this); // UI削除
