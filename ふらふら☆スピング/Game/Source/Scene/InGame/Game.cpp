@@ -28,6 +28,8 @@ bool Game::Start()
 	//m_catcher = NewGO<Catcher>(0, "catcher");
 	m_ball = NewGO<Ball>(0, "ball");
 
+	m_gameCamera->SetBall(m_ball);
+
 	return true;
 }
 
@@ -63,22 +65,28 @@ void Game::Update()
 		return;
 	}
 
-	//切り替え
+	// ★ ボタンでカメラ切り替え
+	// ★ Xボタンでカメラ順番切り替え
+	if (g_pad[0]->IsTrigger(enButtonX)) {
+		m_cameraMode = static_cast<CameraMode>((m_cameraMode + 1) % 4);
+	}
+
 	switch (m_cameraMode) {
 	case Camera_Catcher:
 		m_gameCamera->SetCatcherCamera();
 		break;
+
 	case Camera_Replay:
 		m_gameCamera->SetReplayCamera();
 		break;
+
 	case Camera_Ball:
 		m_gameCamera->SetFollowBallCamera();
 		break;
-	}
-	// ★ ボタンでカメラ切り替え
-	// ★ Xボタンでカメラ順番切り替え
-	if (g_pad[0]->IsTrigger(enButtonX)) {
-		m_cameraMode = static_cast<CameraMode>((m_cameraMode + 1) % 3);
+
+	case Camera_BackBall:
+		m_gameCamera->SetFollowBallBackCamera();
+		break;
 	}
 
 	if (m_cameraMode == Camera_Catcher) {
@@ -86,7 +94,7 @@ void Game::Update()
 		m_InGameUI->SetFontVisble(true);
 		m_InGameUI->SetReplayVisible(false);
 	}
-	else if(m_cameraMode==Camera_Ball)
+	else if(m_cameraMode==Camera_Ball||m_cameraMode==Camera_BackBall)
 	{
 		m_InGameUI->SetUIVisible(false);
 		m_InGameUI->SetFontVisble(true);
@@ -99,6 +107,7 @@ void Game::Update()
 		m_InGameUI->SetReplayVisible(true);
 
 	}
+
 	if (g_pad[0]->IsTrigger(enButtonY)) {
 		 Result*result= NewGO<Result>(0);
 		//m_guruguru = m_InGameUI->GetGuruguruValue();

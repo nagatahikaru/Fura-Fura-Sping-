@@ -1,4 +1,10 @@
 #pragma once
+class Ball;
+enum FollowMode {
+	Follow_None,   // 追尾しない（横カメラ）
+	Follow_Back,   // 後ろから追尾
+	Follow_Side    // 横から見る（固定）
+};
 class GameCamera:public IGameObject
 {
 public:
@@ -9,6 +15,9 @@ public:
 	void SetCatcherCamera();
 	void SetReplayCamera();
 	void SetFollowBallCamera();
+	void SetFollowBallBackCamera();
+	// ★ ボールをセットする関数
+	void SetBall(Ball* ball) { m_ball = ball; }
 private:
 	/*Vector3 m_cameraPos;
 	float m_angle;*/
@@ -25,5 +34,9 @@ private:
 	float m_pitch = 0.0f;   // 上下回転角度
 	FontRender m_fontrender;
 	float m_viewAngle = Math::DegToRad(0.0f);
+	// ★★★ これが無いからエラーになっていた ★★★
+	Ball* m_ball = nullptr;        // ボールへのポインタ
+	bool m_isFollowBall = false;   // 追尾モードフラグ
+	FollowMode m_followMode = Follow_None;
 };
 

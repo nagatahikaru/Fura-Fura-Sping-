@@ -12,7 +12,8 @@ enum CameraMode
 {
 	Camera_Catcher,
 	Camera_Replay,
-	Camera_Ball
+	Camera_Ball,
+	Camera_BackBall
 };
 
 class Game : public Source
