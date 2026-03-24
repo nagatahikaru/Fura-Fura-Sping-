@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "GameCamera.h"
 #include"Source/Scene/InGame/Game.h"
+#include"Source/Actor/Character/Ball/Ball.h"
+
+inline Vector3 LerpVec3(const Vector3& a, const Vector3& b, float t)
+{
+    return a + (b - a) * t;
+}
 
 GameCamera::GameCamera() {
 
@@ -22,6 +28,7 @@ void GameCamera::SetCatcherCamera() {
     m_pitch = 0.0f;   
 
     g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
+    m_followMode = Follow_None;   // ★ 追加
 }
 
 void GameCamera::SetReplayCamera() {
@@ -29,7 +36,7 @@ void GameCamera::SetReplayCamera() {
     m_target = { 0.0f, 300.0f, 0.0f };        // 固定ターゲット（例）
     m_yaw = 165.0f;
     m_pitch = 3.0f;
-
+    m_followMode = Follow_None;   // ★ 追加
 }
 
 void GameCamera::SetFollowBallCamera() {
@@ -37,8 +44,20 @@ void GameCamera::SetFollowBallCamera() {
     m_target = { 0.0f, 300.0f, 0.0f };
     m_yaw = -55.0f;
     m_pitch = -53.0f;
+    g_camera3D->SetViewAngle(Math::DegToRad(15.0f));
+    m_followMode = Follow_Side;   // ← 横追尾
 }
 
+void GameCamera::SetFollowBallBackCamera() {
+    m_cameraPos = { 0.0f, 450.0f, 4600.0f };
+    m_target = { 0.0f, 300.0f, 0.0f };
+
+    m_yaw = 0.0f;
+    m_pitch = 0.0f;
+
+    g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
+    m_followMode = Follow_Back;   // ← 後ろ追尾
+}
 
 void GameCamera::Update() {
 
@@ -108,8 +127,39 @@ void GameCamera::Update() {
     m_forward = Vector3::AxisZ;
     m_rot.Apply(m_forward);
 
-    // --- target 更新 ---
-    m_target = m_cameraPos - m_forward * 100.0f;
+    if (m_followMode == Follow_Back && m_ball != nullptr) {
+
+        Vector3 ballPos = m_ball->GetPosition();
+
+        // ★ ボールの進行方向（速度）を取得
+        Vector3 dir = m_ball->GetVelocity();
+        if (dir.LengthSq() > 0.001f) {
+            dir.Normalize();
+        }
+        else {
+            dir = Vector3(0, 0, 1);
+        }
+
+        // ★ ボールの後ろ600 + 高さも追尾
+        Vector3 targetCamPos = ballPos + dir * 600.0f;
+
+        // 高さをボールに合わせる（＋50）
+        targetCamPos.y = ballPos.y - 100.0f;
+
+        // ★ スムーズ追尾（位置）
+        m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 1.0f);
+
+        // ★ 向きはボールを見る
+        m_target = ballPos;
+    }
+    else if (m_followMode == Follow_Side && m_ball != nullptr) {
+
+        // 横カメラは固定向き
+        m_target = m_ball->GetPosition();
+    }
+    else {
+        m_target = m_cameraPos - m_forward * 100.0f;
+    }
 
     // --- カメラ反映 ---
     g_camera3D->SetPosition(m_cameraPos);

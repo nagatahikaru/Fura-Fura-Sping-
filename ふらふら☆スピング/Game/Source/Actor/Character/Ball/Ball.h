@@ -16,7 +16,8 @@ public:
 
 	bool IsMoving() const;
 	bool CheckCollision(const Vector3& pos, float radius);
-
+	const Vector3& GetPosition() const { return m_position; }
+	const Vector3& GetVelocity() const { return m_velocity; }
 
 private:
 	Vector3 m_position;  //ボールの位置

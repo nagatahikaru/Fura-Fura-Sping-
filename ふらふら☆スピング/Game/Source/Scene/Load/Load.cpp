@@ -23,7 +23,7 @@ void Load::Update()
 {
 
     // ロード進行度を増やす（例：毎フレーム 0.01）
-    m_loadProgress += 1.0f / (60.0f * 60.0f);
+    m_loadProgress += 1.0f / (60.0f * 10.0f);
     if (m_loadProgress > 1.0f) {
         m_loadProgress = 1.0f;
     }
