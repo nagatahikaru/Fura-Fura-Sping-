@@ -16,5 +16,7 @@ private:
 	int m_km = 0;
 	FontRender m_fontGuruguru;
 	FontRender m_fontKm;
+	SpriteRender m_grobu;
+	SpriteRender m_B;
 };
 
