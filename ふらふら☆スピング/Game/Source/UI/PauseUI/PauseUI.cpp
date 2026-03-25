@@ -18,11 +18,25 @@ bool PauseUI::Start()
     m_titleMenu.SetPosition({ 0.0f, 0.0f, 0.0f });
 
     m_soundRender.Init("Assets/sprite/sound.dds", 600.0f, 450.0f);
-    m_soundRender.SetPosition({ 0.0f, -200.0f, 0.0f });
+    m_soundRender.SetPosition({ 0.0f, -400.0f, 0.0f });
 
     m_spritePause.Init("Assets/sprite/Pause.dds", 600.0f, 450.0f);
     m_spritePause.SetPosition({ 0.0f, 380.0f, 0.0f });
 
+    m_spriteRed.Init("Assets/sprite/reseto.dds", 600.0f, 450.0f);
+    m_spriteRed.SetPosition({ 0.0f, -200.0f, 0.0f });
+
+    m_start.Init("Assets/sprite/saikai.dds", 250.0f, 150.0f);
+    m_start.SetPosition({ -550.0f, 200.0f, 0.0f });
+
+    m_option.Init("Assets/sprite/Soundtest2.dds", 250.0f, 150.0f);
+    m_option.SetPosition({ -550.0f, -400.0f, 0.0f });
+
+    m_Title.Init("Assets/sprite/modoru.dds", 250.0f, 150.0f);
+    m_Title.SetPosition({ -550.0f, 0.0f, 0.0f });
+
+    m_yari.Init("Assets/sprite/yari.dds", 250.0f, 150.0f);
+    m_yari.SetPosition({ -550.0f, -200.0f, 0.0f });
     // ★ ポーズ中は BGM を小さくする
     if (g_bgm) {
         float v = g_soundManager->m_bgmVolume / 100.0f;
@@ -64,11 +78,11 @@ void PauseUI::Update()
     // ▼ カーソル移動（上下）
     if (g_pad[0]->IsTrigger(enButtonUp)) {
         m_cursor--;
-        if (m_cursor < 0) m_cursor = 2;   // ← 3項目なので 0〜2
+        if (m_cursor < 0) m_cursor = 3;   // ← 3項目なので 0〜2
     }
     if (g_pad[0]->IsTrigger(enButtonDown)) {
         m_cursor++;
-        if (m_cursor > 2) m_cursor = 0;   // ← 3項目なので 0〜2
+        if (m_cursor > 3) m_cursor = 0;   // ← 3項目なので 0〜2
     }
 
 
@@ -99,7 +113,7 @@ void PauseUI::Update()
             NewGO<Titer>(0);
             DeleteGO(this);
         }
-        else if (m_cursor == 2) {
+        else if (m_cursor == 3) {
             Game* game = FindGO<Game>("game");
             if (game) {
                 game->m_isPaused = true;  // ゲームを再開
@@ -117,22 +131,80 @@ void PauseUI::Update()
 
             DeleteGO(this);  // PauseUI を消す
         }
-    }
+        else if (m_cursor == 2) {
+            // ★ ゲームをやり直す（リスタート）
+            Game* game = FindGO<Game>("game");
+            if (game) {
+                DeleteGO(game);   // 今のゲームを削除
+            }
 
+            // 新しくゲームを開始
+            NewGO<Game>(0, "game");
+
+            // BGM を最新音量で再生し直す
+            if (g_bgm) {
+                g_bgm->Stop();
+                g_bgm = nullptr;
+            }
+
+            float v = g_soundManager->m_bgmVolume / 100.0f;
+            float curved = powf(v, 1.5f);
+            g_bgm = g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
+
+            DeleteGO(this);  // PauseUI を閉じる
+        }
+    }
     if (m_cursor == 0) {
-        m_startButton.SetScale({ 1.2f,1.2f,1.0f });
+        m_startButton.SetScale({ 1.5f,1.5f,1.0f });
+        m_start.SetScale({ 1.5f,1.5f,1.0f });
+
         m_titleMenu.SetScale({ 1.0f,1.0f,1.0f });
+        m_Title.SetScale({ 1.0f,1.0f,1.0f });
+
         m_soundRender.SetScale({ 1.0f,1.0f,1.0f });
+        m_option.SetScale({ 1.0f,1.0f,1.0f });
+
+        m_spriteRed.SetScale({ 1.0f,1.0f,1.0f });
+        m_yari.SetScale({ 1.0f,1.0f,1.0f });
     }
     else if (m_cursor == 1) {
         m_startButton.SetScale({ 1.0f,1.0f,1.0f });
-        m_titleMenu.SetScale({ 1.2f,1.2f,1.0f });
+        m_start.SetScale({ 1.0f,1.0f,1.0f });
+
+        m_titleMenu.SetScale({ 1.5f,1.5f,1.0f });
+        m_Title.SetScale({ 1.5f,1.5f,1.0f });
+
         m_soundRender.SetScale({ 1.0f,1.0f,1.0f });
+        m_option.SetScale({ 1.0f,1.0f,1.0f });
+
+        m_spriteRed.SetScale({ 1.0f,1.0f,1.0f });
+        m_yari.SetScale({ 1.0f,1.0f,1.0f });
     }
     else if (m_cursor == 2) {
         m_startButton.SetScale({ 1.0f,1.0f,1.0f });
+        m_start.SetScale({ 1.0f,1.0f,1.0f });
+
         m_titleMenu.SetScale({ 1.0f,1.0f,1.0f });
-        m_soundRender.SetScale({ 1.2f,1.2f,1.0f });
+        m_Title.SetScale({ 1.0f,1.0f,1.0f });
+
+        m_soundRender.SetScale({ 1.0f,1.0f,1.0f });
+        m_option.SetScale({ 1.0f,1.0f,1.0f });
+
+        m_spriteRed.SetScale({ 1.5f,1.5f,1.0f });
+        m_yari.SetScale({ 1.5f,1.5f,1.0f });
+    }
+    else if (m_cursor == 3) {
+        m_startButton.SetScale({ 1.0f,1.0f,1.0f });
+        m_start.SetScale({ 1.0f,1.0f,1.0f });
+
+        m_titleMenu.SetScale({ 1.0f,1.0f,1.0f });
+        m_Title.SetScale({ 1.0f,1.0f,1.0f });
+
+        m_soundRender.SetScale({ 1.5f,1.5f,1.0f });
+        m_option.SetScale({ 1.5f,1.5f,1.0f });
+
+        m_spriteRed.SetScale({ 1.0f,1.0f,1.0f });
+        m_yari.SetScale({ 1.0f,1.0f,1.0f });
     }
 
 }
@@ -149,4 +221,14 @@ void PauseUI::Render(RenderContext& rc)
     m_soundRender.Draw(rc);
     m_spritePause.Update();
     m_spritePause.Draw(rc);
+    m_spriteRed.Update();
+    m_spriteRed.Draw(rc);
+    m_start.Update();
+    m_start.Draw(rc);
+    m_option.Update();
+    m_option.Draw(rc);
+    m_Title.Update();
+    m_Title.Draw(rc);
+    m_yari.Update();
+    m_yari.Draw(rc);
 }
