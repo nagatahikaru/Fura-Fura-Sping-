@@ -21,6 +21,10 @@ private:
 	SpriteRender m_spriteBallSE;
 	SpriteRender m_spriteFontBGM;
 	SpriteRender m_spriteFontSE;
+	SpriteRender m_BGM;
+	SpriteRender m_SE;
+	SpriteRender m_B;
+	SpriteRender m_grobu;
 	// スライダー位置
 	float m_bgmX = 0.0f;
 	float m_seX = 0.0f;

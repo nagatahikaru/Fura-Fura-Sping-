@@ -15,5 +15,10 @@ private:
 	SpriteRender m_titleMenu;
 	SpriteRender m_soundRender;
 	SpriteRender m_spritePause;
+	SpriteRender m_spriteRed;
+	SpriteRender m_start;
+	SpriteRender m_option;
+	SpriteRender m_Title;
+	SpriteRender m_yari;
 	int m_cursor = 0; // 0 = ƒQ[ƒ€, 1 = ƒƒjƒ…[
 };
