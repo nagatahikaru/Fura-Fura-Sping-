@@ -54,10 +54,16 @@ SoundSource* SoundManager::PlayingSound(Sound number,bool isLoop,float volume)
 
 	// 別のBGMが流れているなら止める
 	if (g_bgm) {
-		g_bgm->Stop();
+
+		// 再生中のときだけ Stop する
+		if (g_bgm->IsPlaying()) {
+			g_bgm->Stop();
+		}
+
 		DeleteGO(g_bgm);
 		g_bgm = nullptr;
 	}
+
 
 	SoundSource* sound = NewGO<SoundSource>(0);
 	//引数で受け取ったnumberはsoundFileNameListの要素番号に対応しています。
