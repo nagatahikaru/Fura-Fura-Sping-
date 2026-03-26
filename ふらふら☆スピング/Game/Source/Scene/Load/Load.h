@@ -19,5 +19,7 @@ private:
     int m_waitFrame = 0;
     float m_finishWait = 0.0f;
     bool m_loadFinished = false;
-
+    bool m_bgmStarted = false;
+    float m_realProgress = 0.0f;     // 実際のロード進行
+    float m_displayProgress = 0.0f;  // ゲージに表示する進行
 };

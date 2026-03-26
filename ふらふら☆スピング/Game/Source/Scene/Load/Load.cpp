@@ -32,22 +32,22 @@ void Load::Update()
         return;
     }
 
-    // ★ ロードが終わった後の3秒待ち処理
+    // ★ ロードが終わった後の待ち処理
     if (m_loadFinished) {
         m_finishWait += g_gameTime->GetFrameDeltaTime();
 
-        // ★ ゲームBGMをここで鳴らす
-        float v = g_soundManager->m_bgmVolume / 100.0f;
-        float curved = powf(v, 1.5f);
-        g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
+        // ★ ゲージ満タンから3秒後に一度だけBGM再生
+        if (!m_bgmStarted && m_finishWait >= 1.0f) {
+            float v = g_soundManager->m_bgmVolume / 100.0f;
+            float curved = powf(v, 1.5f);
+            g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
+            m_bgmStarted = true;
+        }
 
-        if (m_finishWait >= 5) {
-
-            // ★ ここで初めて UI を生成する
+        // ★ 5秒後にゲーム開始（ここは好みで調整）
+        if (m_finishWait >= 3.0f) {
             NewGO<InGameUI>(0, "inGameUI");
-            // ★ その後ゲーム開始
             NewGO<Game>(0, "game");
-
             DeleteGO(this);
         }
         return;
@@ -58,19 +58,19 @@ void Load::Update()
     {
     case 0:
         NewGO<SkyCube>(0, "skyCube");
-        m_loadProgress = 0.1f;
+        m_realProgress = 0.1f;
         m_loadStep++;
         break;
 
     case 1:
         NewGO<Background>(0, "backGround");
-        m_loadProgress = 0.4f;
+        m_realProgress = 0.4f;
         m_loadStep++;
         break;
 
     case 2:
         NewGO<GameCamera>(0, "gameCamera");
-        m_loadProgress = 0.6f;
+        m_realProgress = 0.6f;
         m_loadStep++;
         break;
 
@@ -78,23 +78,33 @@ void Load::Update()
         NewGO<Batter>(0, "batter");
         NewGO<Pitcher>(0, "pitcher");
         NewGO<Ball>(0, "ball");
-        m_loadProgress = 0.8f;
+        m_realProgress = 0.8f;
         m_loadStep++;
         break;
 
     case 4:
-        m_loadProgress = 1.0f;
+        m_realProgress = 1.0f;
         m_loadStep++;
         break;
 
     case 5:
-        // ★ ロード完了 → ここから3秒待つ
         m_loadFinished = true;
+        m_finishWait = 0.0f;
         return;
+    }
+    // ★ ゲージは実際の進行値に向かってゆっくり伸びる
+    float speed = 0.25f;  // 伸びるスピード（調整可）
+
+    if (m_displayProgress < m_realProgress) {
+        m_displayProgress += speed;
+        if (m_displayProgress > m_realProgress) {
+            m_displayProgress = m_realProgress;
+        }
     }
 
     // ゲージ更新
-    m_gaugeFill.SetScale({ m_loadProgress, 1.0f, 1.0f });
+    m_gaugeFill.SetScale({ m_displayProgress, 1.0f, 1.0f });
+
 }
 
 
