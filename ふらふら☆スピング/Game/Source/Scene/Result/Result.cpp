@@ -24,10 +24,6 @@ bool Result::Start()
 void Result::Update()
 {
 	if (g_pad[0]->IsTrigger(enButtonB)) {
-		if (g_bgm && g_bgm->IsPlaying()) {
-			g_bgm->Stop();
-		}
-		g_bgm = nullptr;
 
 		NewGO<Titer>(0);
 		DeleteGO(this);

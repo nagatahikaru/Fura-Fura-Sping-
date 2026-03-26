@@ -48,6 +48,12 @@ namespace nsK2EngineLow {
 		/// </summary>
 		void Stop()
 		{
+			// š ‚·‚Å‚É‰ð•úÏ‚Ý or –¢‰Šú‰»‚È‚ç‰½‚à‚µ‚È‚¢
+			if (m_sourceVoice == nullptr) {
+				m_isPlaying = false;
+				return;
+			}
+
 			m_sourceVoice->Stop();
 			m_isPlaying = false;
 		}
