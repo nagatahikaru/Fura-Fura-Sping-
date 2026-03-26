@@ -14,24 +14,24 @@
 
 bool Game::Start()
 {
-	// ▼ 最新の音量を必ず適用して再生
-	float v = g_soundManager->m_bgmVolume / 100.0f;
-	float curved = powf(v, 1.5f);
 
-	g_bgm = g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
-	m_skyCube = NewGO<SkyCube>(0, "skycube");
-	m_background = NewGO<Background>(0,"backGround");
-	m_gameCamera = NewGO<GameCamera>(0,"gameCamera");
-	m_InGameUI = NewGO<InGameUI>(0,"inGameUI");
-	m_batter = NewGO<Batter>(0,"batter");
-	m_pitcher = NewGO<Pitcher>(0,"pitcher");
-	//m_catcher = NewGO<Catcher>(0, "catcher");
-	m_ball = NewGO<Ball>(0, "ball");
+	// ★ Load で作ったオブジェクトを取得するだけ
+	m_skyCube = FindGO<SkyCube>("skycube");
+	m_background = FindGO<Background>("backGround");
+	m_gameCamera = FindGO<GameCamera>("gameCamera");
+	m_InGameUI = FindGO<InGameUI>("inGameUI");
+	m_batter = FindGO<Batter>("batter");
+	m_pitcher = FindGO<Pitcher>("pitcher");
+	m_ball = FindGO<Ball>("ball");
 
-	m_gameCamera->SetBall(m_ball);
+	// ボールをカメラにセット
+	if (m_gameCamera && m_ball) {
+		m_gameCamera->SetBall(m_ball);
+	}
 
 	return true;
 }
+
 
 void Game::Update()
 {

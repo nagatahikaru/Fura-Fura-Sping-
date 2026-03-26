@@ -1,12 +1,17 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Load.h"
 #include "Source/Scene/InGame/Game.h"
 #include"Source/Scene/Titer/Titer.h"
 #include"Source/Sound/SoundManager.h"
-
+#include "Source/Actor/Stage/Background.h"
+#include "Source/Actor/GameCamera/GameCamera.h"
+#include "Source/UI/InGameUI/InGameUI.h"
+#include "Source/Actor/Character/Batter/Batter.h"
+#include "Source/Actor/Character/Pitcher/Pitcher.h"
+#include "Source/Actor/Character/Ball/Ball.h"
 bool Load::Start()
 {
-    // ”wŒi
+    // èƒŒæ™¯
     m_spriteRender.Init("Assets/sprite/Lrad.dds", 1920.0f, 1080.0f);
     m_guruguru.Init("Assets/sprite/guruguru.dds", 500.f, 500.0f);
     m_guruguru.SetPosition({ 790.0f, -450.0f, 0.0f });
@@ -14,43 +19,84 @@ bool Load::Start()
     m_gaugeFrame.SetPosition({ 0.0f, -350.0f, 0.0f });
     m_gaugeFill.Init("Assets/sprite/gauge2.dds", 1095.0f, 105.0f);
     m_gaugeFill.SetPosition({ -554.0f, -318.5f, 0.0f });
-    m_gaugeFill.SetPivot({ 0.0f, 0.5f });   // ¶’[Šî€
+    m_gaugeFill.SetPivot({ 0.0f, 0.5f });   // å·¦ç«¯åŸºæº–
 
     return true;
 }
 
 void Load::Update()
 {
-
-    // ƒ[ƒhis“x‚ğ‘‚â‚·i—áF–ˆƒtƒŒ[ƒ€ 0.01j
-    m_loadProgress += 1.0f / (60.0f * 10.0f);
-    if (m_loadProgress > 1.0f) {
-        m_loadProgress = 1.0f;
+    // â˜… æœ€åˆã®1ãƒ•ãƒ¬ãƒ¼ãƒ ã¯æç”»ã ã‘ã—ã¦ãƒ­ãƒ¼ãƒ‰å‡¦ç†ã‚’ã—ãªã„
+    if (m_waitFrame < 1) {
+        m_waitFrame++;
+        return;
     }
 
-    // ƒQ[ƒW‚Ì‰¡•‚ğis“x‚É‡‚í‚¹‚é
-    m_gaugeFill.SetScale({ m_loadProgress, 1.0f, 1.0f });
+    // â˜… ãƒ­ãƒ¼ãƒ‰ãŒçµ‚ã‚ã£ãŸå¾Œã®3ç§’å¾…ã¡å‡¦ç†
+    if (m_loadFinished) {
+        m_finishWait += g_gameTime->GetFrameDeltaTime();
 
-    m_blinkTimer +=4.0f / 60.0f; // –ˆƒtƒŒ[ƒ€‰ÁZi60FPS‘O’ñj
+        // â˜… ã‚²ãƒ¼ãƒ BGMã‚’ã“ã“ã§é³´ã‚‰ã™
+        float v = g_soundManager->m_bgmVolume / 100.0f;
+        float curved = powf(v, 1.5f);
+        g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
 
-    // ƒAƒ‹ƒtƒ@’l‚ğ0.5?1.0‚Ì”ÍˆÍ‚Å•Ï‰»‚³‚¹‚éisin”g‚ÅŠŠ‚ç‚©‚Éj
-    float alpha = 0.6f + 0.45f * sinf(m_blinkTimer * 1.0f); // 1•büŠú
+        if (m_finishWait >= 5) {
 
-    // æZƒJƒ‰[‚ÅƒAƒ‹ƒtƒ@‚ğİ’èiRGB‚Í1.0f‚ÅˆÛj
-    m_guruguru.SetMulColor({ 1.0f, 1.0f, 1.0f, alpha });
+            // â˜… ã“ã“ã§åˆã‚ã¦ UI ã‚’ç”Ÿæˆã™ã‚‹
+            NewGO<InGameUI>(0, "inGameUI");
+            // â˜… ãã®å¾Œã‚²ãƒ¼ãƒ é–‹å§‹
+            NewGO<Game>(0, "game");
 
-
-    if (m_loadProgress >= 1.0f) {
-        // šƒ[ƒh‰æ–Ê‚ÌBGM‚ğ’â~
-
-        if (g_bgm) {
-            g_bgm->Stop();
-            g_bgm = nullptr;
+            DeleteGO(this);
         }
-        NewGO<Game>(0, "game");   // © š–¼‘O‚ğ•t‚¯‚é
-        DeleteGO(this);
+        return;
     }
+
+    // â˜… ãƒ­ãƒ¼ãƒ‰ã‚¹ãƒ†ãƒƒãƒ—å‡¦ç†
+    switch (m_loadStep)
+    {
+    case 0:
+        NewGO<SkyCube>(0, "skyCube");
+        m_loadProgress = 0.1f;
+        m_loadStep++;
+        break;
+
+    case 1:
+        NewGO<Background>(0, "backGround");
+        m_loadProgress = 0.4f;
+        m_loadStep++;
+        break;
+
+    case 2:
+        NewGO<GameCamera>(0, "gameCamera");
+        m_loadProgress = 0.6f;
+        m_loadStep++;
+        break;
+
+    case 3:
+        NewGO<Batter>(0, "batter");
+        NewGO<Pitcher>(0, "pitcher");
+        NewGO<Ball>(0, "ball");
+        m_loadProgress = 0.8f;
+        m_loadStep++;
+        break;
+
+    case 4:
+        m_loadProgress = 1.0f;
+        m_loadStep++;
+        break;
+
+    case 5:
+        // â˜… ãƒ­ãƒ¼ãƒ‰å®Œäº† â†’ ã“ã“ã‹ã‚‰3ç§’å¾…ã¤
+        m_loadFinished = true;
+        return;
+    }
+
+    // ã‚²ãƒ¼ã‚¸æ›´æ–°
+    m_gaugeFill.SetScale({ m_loadProgress, 1.0f, 1.0f });
 }
+
 
 void Load::Render(RenderContext& rc)
 {
@@ -58,8 +104,13 @@ void Load::Render(RenderContext& rc)
    
     m_gaugeFrame.Update();
     m_gaugeFrame.Draw(rc);
-    m_gaugeFill.Update();
-    m_gaugeFill.Draw(rc);
+    (rc);
+
+    // â˜… æœ€åˆã®1ãƒ•ãƒ¬ãƒ¼ãƒ ã ã‘ã‚²ãƒ¼ã‚¸Fillã‚’æç”»ã—ãªã„
+    if (m_waitFrame >= 1) {
+        m_gaugeFill.Update();
+        m_gaugeFill.Draw(rc);
+    }
     m_guruguru.Update();
     m_guruguru.Draw(rc);
 }
