@@ -28,6 +28,10 @@ bool Ball::Start()
 
 void Ball::Update()
 {
+	if (m_isPaused) {
+		return; // 完全停止
+	}
+
 	// ★ ポーズ中はボールの動きを止める
 	Game* game = FindGO<Game>("game");
 	if (game && game->m_isPaused) {

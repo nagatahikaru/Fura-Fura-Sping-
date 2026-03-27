@@ -12,6 +12,8 @@ private:
     SpriteRender m_gaugeFill;   // ’†giL‚Ñ‚éj
     SpriteRender m_gaugeFrame;  // ˜giŒÅ’èj
     SpriteRender m_guruguru;
+    SpriteRender m_B;
+    SpriteRender m_grobu;
     float m_loadProgress = 0.0f; // 0.0 ` 1.0
     float m_blinkTimer = 0.0f;
     SoundSource* m_bgm = nullptr;

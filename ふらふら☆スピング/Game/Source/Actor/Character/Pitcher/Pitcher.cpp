@@ -118,6 +118,10 @@ bool Pitcher::Start()
 
 void Pitcher::Update()
 {
+	if (m_isPaused) {
+		return; // 完全停止
+	}
+
 	float dt = 1.0f / 60.0f;
 
 	// ★ ポーズ中はアニメーションを止める

@@ -99,7 +99,7 @@ public:
 	{
 		return m_characterModel->IsPlayAnimation() && m_setAnimation == enAnimationClip_Swing;
 	}
-
+	bool m_isPaused = true;
 private:
 	std::unique_ptr<BatterStateMachine> m_stateMachine;
 	AnimationClip m_animationClips[enAnimationClip_Num];
@@ -113,5 +113,7 @@ private:
 	CollisionObject* m_collisionObject;
 	Quaternion m_batRotation; // バットの回転を保持するクォータニオン
 	bool m_isAnimation = false; // animationの再生状態を保持するフラグ
+	
+
 };
 
