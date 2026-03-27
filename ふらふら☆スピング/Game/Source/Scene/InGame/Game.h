@@ -24,6 +24,7 @@ public:
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);
+	InGameUI* GetInGameUI() const { return m_InGameUI; }
 	bool m_isPaused = false;
 private:
 	GameCamera* m_gameCamera;	//ƒQ[ƒ€ƒJƒƒ‰B

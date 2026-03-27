@@ -21,7 +21,7 @@ bool GameCamera::Start() {
 }
 
 void GameCamera::SetCatcherCamera() {
-    m_cameraPos = { 0.0f, 450.0f, 6600.0f };
+    m_cameraPos = { 10.0f, 450.0f, 6600.0f };
     m_target = { 0.0f, 300.0f, 0.0f };
 
     m_yaw = 0.0f;  
@@ -144,7 +144,7 @@ void GameCamera::Update() {
         Vector3 targetCamPos = ballPos + dir * 600.0f;
 
         // 高さをボールに合わせる（＋50）
-        targetCamPos.y = ballPos.y - 100.0f;
+        targetCamPos.y = ballPos.y - 0.0f;
 
         // ★ スムーズ追尾（位置）
         m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 1.0f);
