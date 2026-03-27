@@ -16,6 +16,10 @@ class InGameUI:public Source
 	void SetReplayVisible(bool isVisible){ m_isReplayVisible = isVisible; }
 	void SetBatterSide(bool isLeft);
 	void SetPause(bool isPaused);
+	void SetPredictedBallPos(const Vector3& pos3D);
+	Vector3 ConvertBall3DToUI(const Vector3& pos3D);
+	void FixBallUI(const Vector3& pos3D);
+
 	//int GetGuruguruValue() const { return m_guruguruValue; }
 	//int GetKmValue() const { return m_kmValue; }
 private:
@@ -43,5 +47,11 @@ private:
 	bool m_isPaused = false;
 	float batScaleX;
 	float m_meetScaleX;
+	Vector3 m_predictedBallPos3D = Vector3::Zero;
+	bool m_hasPredictedBall = false;
+	bool m_isBallUIFixed = false;
+	Vector3 m_fixedBallUIPos = Vector3::Zero;
+	FontRender m_debugFont;
+	FontRender m_debugFont2;
 };
 
