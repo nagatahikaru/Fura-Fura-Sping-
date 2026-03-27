@@ -18,6 +18,7 @@ public:
 	bool CheckCollision(const Vector3& pos, float radius);
 	const Vector3& GetPosition() const { return m_position; }
 	const Vector3& GetVelocity() const { return m_velocity; }
+	bool m_isPaused = true;
 
 private:
 	Vector3 m_position;  //ボールの位置
@@ -29,5 +30,6 @@ private:
 	float m_radius = 10.0f;
 	float m_baseScale = 50.0f;
 	ModelRender m_modelRender;
+
 };
 

@@ -20,6 +20,11 @@ bool Load::Start()
     m_gaugeFill.Init("Assets/sprite/gauge2.dds", 1095.0f, 105.0f);
     m_gaugeFill.SetPosition({ -554.0f, -318.5f, 0.0f });
     m_gaugeFill.SetPivot({ 0.0f, 0.5f });   // 左端基準
+    m_B.Init("Assets/sprite/BB.dds", 220.0f, 170.0f);
+    m_B.SetPosition({ 800.0f, -400.0f, 0.0f });
+
+    m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
+    m_grobu.SetPosition({ 800.0f, -400.0f, 0.0f });
 
     return true;
 }
@@ -28,6 +33,9 @@ void Load::Update()
 {
     // ★ 最初の1フレームは描画だけしてロード処理をしない
     if (m_waitFrame < 1) {
+        m_gaugeFill.SetMulColor({ 1,1,1,0 });
+        m_grobu.SetMulColor({ 1,1,1,0 });
+        m_B.SetMulColor({ 1,1,1,0 });
         m_waitFrame++;
         return;
     }
@@ -45,7 +53,15 @@ void Load::Update()
         }
 
         // ★ 5秒後にゲーム開始（ここは好みで調整）
-        if (m_finishWait >= 3.0f) {
+        if (g_pad[0]->IsTrigger(enButtonB)) {
+            // ★ キャラを動作開始にする
+            auto batter = FindGO<Batter>("batter");
+            auto pitcher = FindGO<Pitcher>("pitcher");
+            auto ball = FindGO<Ball>("ball");
+
+            if (batter) batter->m_isPaused = false;
+            if (pitcher) pitcher->m_isPaused = false;
+            if (ball) ball->m_isPaused = false;
             NewGO<InGameUI>(0, "inGameUI");
             NewGO<Game>(0, "game");
             DeleteGO(this);
@@ -58,6 +74,7 @@ void Load::Update()
     {
     case 0:
         NewGO<SkyCube>(0, "skyCube");
+        m_gaugeFill.SetMulColor({ 1,1,1,1 });
         m_realProgress = 0.1f;
         m_loadStep++;
         break;
@@ -90,6 +107,10 @@ void Load::Update()
     case 5:
         m_loadFinished = true;
         m_finishWait = 0.0f;
+        // ★ ぐるぐる中を非表示（透明化）
+        m_guruguru.SetMulColor({ 1,1,1,0 });
+        m_grobu.SetMulColor({ 1,1,1,1 });
+        m_B.SetMulColor({ 1,1,1,1 });
         return;
     }
     // ★ ゲージは実際の進行値に向かってゆっくり伸びる
@@ -123,4 +144,10 @@ void Load::Render(RenderContext& rc)
     }
     m_guruguru.Update();
     m_guruguru.Draw(rc);
+   
+    m_grobu.Update();
+    m_grobu.Draw(rc);
+   
+    m_B.Update();
+    m_B.Draw(rc);
 }

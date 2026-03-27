@@ -162,6 +162,10 @@ bool Batter::Start()
 
 void Batter::Update()
 {
+	if (m_isPaused) {
+		return; // 完全停止
+	}
+
 	// ★ ポーズ中はキャッチャーのアニメーションを止める
 	Game* game = FindGO<Game>("game");
 	if (game && game->m_isPaused) {
