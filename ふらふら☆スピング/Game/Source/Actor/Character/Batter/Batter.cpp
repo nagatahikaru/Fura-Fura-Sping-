@@ -165,10 +165,15 @@ bool Batter::Start()
 
 void Batter::Update()
 {
-	if (m_isPaused) {
-		return; // 完全停止
+	if(m_isPaused)
+	{
+		return; // ゲームがポーズ中なら更新処理をスキップ
 	}
-
+	if (!m_inGameUI)
+	{
+		m_inGameUI = FindGO<InGameUI>("inGameUI");
+		return;
+	}
 	// ★ ポーズ中はキャッチャーのアニメーションを止める
 	Game* game = FindGO<Game>("game");
 	if (game && game->m_isPaused) {

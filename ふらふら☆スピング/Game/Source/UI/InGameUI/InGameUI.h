@@ -19,6 +19,9 @@ class InGameUI:public Source
 	void SetPredictedBallPos(const Vector3& pos3D);
 	Vector3 ConvertBall3DToUI(const Vector3& pos3D);
 	void FixBallUI(const Vector3& pos3D);
+	void SetMeetCursorPosition(Vector3 m_inputOffset);
+	Vector3 GetMeetCursorPosition() const { return m_meetPos; }
+
 
 	//int GetGuruguruValue() const { return m_guruguruValue; }
 	//int GetKmValue() const { return m_kmValue; }

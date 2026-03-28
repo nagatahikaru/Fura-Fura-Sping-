@@ -73,6 +73,18 @@ void InGameUI::FixBallUI(const Vector3& pos3D)
 	m_fixedBallUIPos = pos3D;
 }
 
+void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
+{
+	
+	m_batPos = m_isLeftBatter ? m_batPositionLeft : m_batPositionRight;
+	Vector3 meetOffset = m_isLeftBatter ? m_meetPositionLeft : m_meetPositionRight;
+
+	Vector3 baseMeetPos = m_batPos + meetOffset;
+
+	m_meetPos = baseMeetPos + m_inputOffset;
+	m_batPos = m_meetPos - meetOffset;
+}
+
 
 void InGameUI::Render(RenderContext& rc) {
 
@@ -93,14 +105,13 @@ void InGameUI::Render(RenderContext& rc) {
 
 		//バット
 		batScaleX = m_isLeftBatter?-1.0f:1.0f;
-		m_spriteRenderBat.SetPosition(batPos);
+		m_spriteRenderBat.SetPosition(m_batPos);
 		m_spriteRenderBat.SetRotation(m_batRotation);
 		m_spriteRenderBat.SetScale(Vector3{ batScaleX,1.0f,1.0f });
 		m_spriteRenderBat.Update();
 		m_spriteRenderBat.Draw(rc);
 
-		// --- ミートゾーン（バットと同じ位置・回転を参照） ---
-		m_meetPos = batPos+meetOffset;
+		// --- ミートゾーン（バットと同じ位置・回転を参照） ---	
 		m_meetScaleX = m_isLeftBatter ? -1.0f : 1.0f;
 		m_spriteRenderMeet.SetPosition(m_meetPos);
 		m_spriteRenderMeet.SetRotation(m_batRotation);
