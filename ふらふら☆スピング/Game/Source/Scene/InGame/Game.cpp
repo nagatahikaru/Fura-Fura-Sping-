@@ -11,14 +11,10 @@
 #include"Source/Sound/SoundManager.h"
 #include"Source/UI/PauseUI/PauseUI.h"
 #include"Source/UI/SoundTestUI/SoundTestUI.h"
-
+#include"Source/Scene/Start/Start.h"
 
 Game::~Game()
 {
-	if (g_bgm) {
-		g_bgm->Stop();
-		g_bgm = nullptr;
-	}
 
 	DeleteGO(m_gameCamera);
 	DeleteGO(m_background);
@@ -42,6 +38,9 @@ bool Game::Start()
 	m_batter = FindGO<Batter>("batter");
 	m_pitcher = FindGO<Pitcher>("pitcher");
 	m_ball = FindGO<Ball>("ball");
+	// ★ カウントダウンUIを表示
+	m_start1 =NewGO<Start1>(0, "start1");
+
 
 	// ボールをカメラにセット
 	if (m_gameCamera && m_ball) {
@@ -78,6 +77,17 @@ void Game::Update()
 
 		NewGO<PauseUI>(0, "pause");
 	}
+
+	// ★ カウントダウン中はUIを非表示
+	if (FindGO<Start1>("start1") != nullptr) {
+		if (m_InGameUI) {
+			m_InGameUI->SetUIVisible(false);
+			m_InGameUI->SetFontVisble(false);
+			m_InGameUI->SetReplayVisible(false);
+		}
+		return; // カウントダウン中はゲーム処理もしない
+	}
+
 
 	// ★ ポーズ中はゲームの動きを完全停止
 	if (m_isPaused) {

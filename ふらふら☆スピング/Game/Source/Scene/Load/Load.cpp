@@ -55,13 +55,6 @@ void Load::Update()
         // ★ 5秒後にゲーム開始（ここは好みで調整）
         if (g_pad[0]->IsTrigger(enButtonB)) {
             // ★ キャラを動作開始にする
-            auto batter = FindGO<Batter>("batter");
-            auto pitcher = FindGO<Pitcher>("pitcher");
-            auto ball = FindGO<Ball>("ball");
-
-            if (batter) batter->m_isPaused = false;
-            if (pitcher) pitcher->m_isPaused = false;
-            if (ball) ball->m_isPaused = false;
             NewGO<InGameUI>(0, "inGameUI");
             NewGO<Game>(0, "game");
             DeleteGO(this);
@@ -92,12 +85,20 @@ void Load::Update()
         break;
 
     case 3:
-        NewGO<Batter>(0, "batter");
-        NewGO<Pitcher>(0, "pitcher");
-        NewGO<Ball>(0, "ball");
+    {
+        auto batter = NewGO<Batter>(0, "batter");
+        auto pitcher = NewGO<Pitcher>(0, "pitcher");
+        auto ball = NewGO<Ball>(0, "ball");
+
+        // ★ 生成直後は必ず停止状態にする
+        batter->m_isPaused = true;
+        pitcher->m_isPaused = true;
+        ball->m_isPaused = true;
+
         m_realProgress = 0.8f;
         m_loadStep++;
-        break;
+    }
+    break;
 
     case 4:
         m_realProgress = 1.0f;

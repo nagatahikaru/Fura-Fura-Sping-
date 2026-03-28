@@ -7,7 +7,7 @@ class Batter;
 class Pitcher;
 class Catcher;
 class Ball;
-
+class Start1;
 enum CameraMode
 {
 	Camera_Catcher,
@@ -36,6 +36,7 @@ private:
 	SkyCube* m_skyCube;			//スカイキューブ。
 	InGameUI* m_InGameUI;		//インゲームUI。
 	CameraMode m_cameraMode = Camera_Catcher;//初期カメラ
+	Start1* m_start1;
 	int m_guruguru = 0;
 	int m_km = 0;
 	bool m_bgmStarted = false;
