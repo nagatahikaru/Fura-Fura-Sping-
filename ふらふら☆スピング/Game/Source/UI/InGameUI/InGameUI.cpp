@@ -173,7 +173,7 @@ void InGameUI::Render(RenderContext& rc) {
 	//		m_debugFont.Draw(rc);
 	//}
 	// ★ ボールの 3D 座標と UI 座標をデバッグ表示
-		wchar_t dbg3D[128];
+	/*	wchar_t dbg3D[128];
 		swprintf_s(dbg3D, L"Ball3D  X:%.1f  Y:%.1f  Z:%.1f",
 			m_predictedBallPos3D.x,
 			m_predictedBallPos3D.y,
@@ -196,5 +196,5 @@ void InGameUI::Render(RenderContext& rc) {
 		m_debugFont2.SetText(dbgUI);
 		m_debugFont2.SetPosition(-900.0f, -400.0f, 0.0f);
 		m_debugFont2.SetColor(0.0f, 1.0f, 1.0f, 1.0f);
-		m_debugFont2.Draw(rc);
+		m_debugFont2.Draw(rc);*/
 }
