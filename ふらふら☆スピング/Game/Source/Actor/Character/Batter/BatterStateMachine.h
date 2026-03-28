@@ -72,3 +72,16 @@ public:
 
 	virtual bool RequestState(uint32_t& request)override;
 };
+
+class BatterCursorSetState :public BatterIStateBess
+{
+	appState(BatterCursorSetState);
+
+public:
+	BatterCursorSetState() :BatterIStateBess() {};
+	virtual ~BatterCursorSetState() {};
+	virtual void Enter()override;
+	virtual void Update()override;
+	virtual void Exit()override;
+	virtual bool RequestState(uint32_t& request)override;
+};

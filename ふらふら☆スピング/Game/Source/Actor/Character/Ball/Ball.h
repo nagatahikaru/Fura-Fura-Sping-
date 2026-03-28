@@ -13,6 +13,7 @@ public:
 	//ボールを投げる関数
 	void Throw(const Vector3& targetPos);
 	void SetPosition(const Vector3& pos);
+	Vector3 GetPosition() const { return m_position; }
 
 	bool IsMoving() const;
 	bool CheckCollision(const Vector3& pos, float radius);

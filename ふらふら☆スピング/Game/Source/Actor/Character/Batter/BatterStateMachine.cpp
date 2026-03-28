@@ -14,6 +14,7 @@ BatterStateMachine::BatterStateMachine()
 	RegisterState<BatterIdleState>();
 	RegisterState<BatterRotationState>();
 	RegisterState<BatterSwingState>();
+	RegisterState<BatterCursorSetState>();
 	m_currentState = FindState(BatterIdleState::ID());
 	
 }
@@ -41,17 +42,21 @@ void BatterIdleState::Enter()
 { 
 	Batter* batter = GetBatter();
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
+	batter->SetRotationSeen(true);
 }
 
 void BatterIdleState::Update()
 {
 	Batter* batter = GetBatter();
 	batter->AnimationUpdate();
+	batter->SetRotationSeen(true);
 }
 
 void BatterIdleState::Exit()
 {
-
+	Batter* batter = GetBatter();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());
+	batter->SetRotationSeen(true);
 }
 
 //‘Ò‹@ó‘Ô‚©‚ç‚Ìó‘Ô‘JˆÚ”»’èB
@@ -60,18 +65,28 @@ void BatterIdleState::Exit()
 bool BatterIdleState::RequestState(uint32_t& request)
 {
 	Batter* batter = GetBatter();
-
-	if (fabs(g_pad[0]->GetLStickXF()) >= LSTICK_MIN_THRESHOLD ||
-		fabs(g_pad[0]->GetLStickYF()) >= RSTICK_MIN_THRESHOLD)
-	{
-		request = BatterRotationState::ID();
-		return true;
-	}
 	if (g_pad[0]->IsTrigger(enButtonA))
-	{		
+	{
 		request = BatterSwingState::ID();
 		return true;
 	}
+
+	if (batter->GetRotationSeen())
+	{
+		request = BatterCursorSetState::ID();
+		return true;
+	}
+	//if (fabs(g_pad[0]->GetLStickXF()) >= LSTICK_MIN_THRESHOLD ||
+	//	fabs(g_pad[0]->GetLStickYF()) >= RSTICK_MIN_THRESHOLD)
+	//{
+	//	request = BatterRotationState::ID();
+	//	return true;
+	//}
+	//if (g_pad[0]->IsTrigger(enButtonA))
+	//{		
+	//	request = BatterSwingState::ID();
+	//	return true;
+	//}
 	return false;
 }
 
@@ -111,6 +126,12 @@ bool BatterRotationState::RequestState(uint32_t& request)
 		request = BatterSwingState::ID();
 		return true;
 	}
+	if (batter->GetRotationSeen())
+	{
+		request = BatterCursorSetState::ID();
+		return true;
+	}
+
 
 	return false;
 }
@@ -119,6 +140,7 @@ void BatterSwingState::Enter()
 {
 	Batter* batter = GetBatter();
 	batter->Swing();
+	batter->SetRotationSeen(false);
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
 }
 
@@ -143,6 +165,36 @@ bool BatterSwingState::RequestState(uint32_t& request)
 	float ly = g_pad[0]->GetLStickYF();
 
 	if (lx < 0.0f && ly < 0.0f)
+	{
+		request = BatterIdleState::ID();
+		return true;
+	}
+	return false;
+}
+
+void BatterCursorSetState::Enter()
+{
+	Batter* batter = GetBatter();
+	batter->SetIdleAnimation();
+
+}
+
+void BatterCursorSetState::Update()
+{
+	Batter* batter = GetBatter();
+	batter->SetCursorPosition();
+	batter->UpdateBatAim();
+	batter->AnimationUpdate();
+}
+
+void BatterCursorSetState::Exit()
+{
+}
+
+bool BatterCursorSetState::RequestState(uint32_t& request)
+{
+	Batter* batter = GetBatter();
+	if (batter->GetIsOnGround())
 	{
 		request = BatterIdleState::ID();
 		return true;

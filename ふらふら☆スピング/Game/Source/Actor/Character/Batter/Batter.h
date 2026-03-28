@@ -1,6 +1,9 @@
 #pragma once
 #include "Source/Actor/Character/Character.h"
+#include "Source/UI/InGameUI/InGameUI.h"
 #include "BatterStateMachine.h"
+#include "Source/Actor/Character/Ball/Ball.h"
+
 
 namespace {
 	namespace BatterNumber {
@@ -69,6 +72,12 @@ public:
 	}
 	void Rotation();
 	void RotationUpdate();
+	
+	// バットのSwing位置を設定する関数
+	//ミートカーソルの位置に合わせてバットの位置を調整するための関数です。
+	void SetBatSwingPosition();
+	
+	// Swingアニメーションを再生する関数
 	void Swing()
 	{
 		m_setAnimation = enAnimationClip_Swing;
@@ -77,21 +86,28 @@ public:
 
 	}
 
+	// アニメーションが再生中かどうかを判定する関数
 	bool IsPlayAnimation()
 	{
 		return m_characterModel->IsPlayAnimation();
 	}
 
+	// アニメーションの更新を行う関数
 	void AnimationUpdate()
 	{
 		m_characterModel->Update();
 	}
 
+	// 回転アニメーションを再生する関数
 	void SetPlayRotation()
 	{
 		m_setAnimation = enAnimationClip_Idle;
 	}
 
+	void SetIdleAnimation()
+	{
+		m_setAnimation = enAnimationClip_Idle;
+	}
 	// Swingアニメーションが再生中かどうかを判定する関数
 	// Swingアニメーションが再生中であればtrueを返し、そうでなければfalseを返す
 	// 例えば、Swingアニメーションが再生中であれば、攻撃の当たり判定を有効にするなどの処理に利用できます。
@@ -99,6 +115,31 @@ public:
 	{
 		return m_characterModel->IsPlayAnimation() && m_setAnimation == enAnimationClip_Swing;
 	}
+
+	void SetCursorPosition();
+
+	void SetRotationSeen(bool isRotation)
+	{
+		m_isRotation = isRotation;
+	}
+
+	bool GetRotationSeen() const
+	{
+		return m_isRotation;
+	}
+
+	Vector3 GetBatPostion() const
+	{
+		return m_characterModel->GetWeaponWorldPosition();
+	}
+
+	void HitBat();
+
+	float DistancePointToSegment(const Vector3& ballpos, const Vector3& base, const Vector3& tip);
+
+	void UpdateBatAim();
+
+	Vector3 CalcCursorWorldPos();
 
 private:
 	std::unique_ptr<BatterStateMachine> m_stateMachine;
@@ -113,5 +154,25 @@ private:
 	CollisionObject* m_collisionObject;
 	Quaternion m_batRotation; // バットの回転を保持するクォータニオン
 	bool m_isAnimation = false; // animationの再生状態を保持するフラグ
+	InGameUI* m_inGameUI; // インゲームUIへのポインタ
+	Vector3 m_meetPosition; // ミートカーソルの位置を保持する変数
+	bool m_isRotation = false; // 回転アニメーションの再生状態を保持するフラグ
+	Ball* m_ball; // ボールへのポインタ
+	bool m_isCursorMode = true;
+	Vector3 m_meetCursorWorldPos;
 };
 
+
+//class Bat :public Batter
+//{
+//	public:
+//		Bat() {};
+//		virtual ~Bat() {};
+//	virtual bool Start();
+//	virtual void Update();
+//	virtual void Render(RenderContext& rc);
+//
+//
+//
+//
+//};
