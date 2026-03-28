@@ -90,7 +90,6 @@ namespace nsApp
 			return false;
 		}
 
-
 	/* セッター。*/
 	public:
 		/* 座標を設定。*/
@@ -133,6 +132,14 @@ namespace nsApp
 			m_attackBoneName = boneName;
 		}
 
+		inline void SetWeaponRotation(const Quaternion& rotation)
+		{
+			if (m_weaponModelRender)
+				m_weaponModelRender->SetRotation(rotation);
+		}
+
+		void AimRightHand(const Vector3& targetPos);
+
 	/* ゲッター。*/
 	public:
 		/* キャラモデルのファイルパスを格納。*/
@@ -147,6 +154,18 @@ namespace nsApp
 		{
 			std::string weaponFilePath = m_weaponModelFilePath + filePath + m_modelExtension;
 			return weaponFilePath;
+		}
+
+		Vector3 GetWeaponWorldPosition();
+
+		Vector3 GetBatTip()
+		{
+			return m_offsetPosition + m_zAxis * 100.0f; // 長さは調整
+		}
+
+		Vector3 GetBatBase()
+		{
+			return m_offsetPosition;
 		}
 
 		/* 指定したボーンのワールド行列を取得する。
@@ -167,9 +186,10 @@ namespace nsApp
 		std::string m_modelExtension = ".tkm";                                                                                 /* プレイヤー/NPCモデルの拡張子を格納。*/
 		std::string m_weaponModelFilePath = "Assets/modelData/";                                              /* 武器モデルのファイルパスを格納。*/
 
-		int boneID;                                                                                                            /* ボーンIDを格納。*/
+		//int boneID;                                                                                                            /* ボーンIDを格納。*/
 
 		Quaternion m_matrixRotation;
+		Quaternion m_weaponRotation;                                                                                             /* 武器の回転を管理する変数。*/
 
 		Matrix m_handMatrix; 																					               /* 武器を装備させるときの右手のボーンの行列を管理する変数。*/
 		Matrix m_rotationMatrix;                                                                                               /* 武器を装備させたときの武器の傾きを制御。*/

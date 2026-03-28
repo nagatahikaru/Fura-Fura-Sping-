@@ -20,7 +20,7 @@ class Game : public Source
 {
 public:
 	Game() {}
-	~Game() {}
+	~Game();
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);

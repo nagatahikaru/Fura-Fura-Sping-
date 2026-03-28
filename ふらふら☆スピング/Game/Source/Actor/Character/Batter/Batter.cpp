@@ -2,6 +2,9 @@
 #include "Batter.h"
 #include "BatterStateMachine.h"
 #include"Source/Scene/InGame/Game.h"
+#include "Source/Actor/Character/Ball/Ball.h"
+#include <algorithm> // 追加
+
 
 namespace {
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
@@ -150,13 +153,13 @@ bool Batter::Start()
 
 	m_collisionObject = new CollisionObject;
 	m_collisionObject->CreateBox(
-		m_transform.m_position,
+		m_characterModel->GetWeaponWorldPosition(),
 		Quaternion::Identity,
 		BatterBasicSettings::COLLISION_SCALE);
 
 	m_characterModel->Update();
-
-	
+	m_inGameUI = FindGO<InGameUI>("inGameUI");
+	m_ball = FindGO<Ball>("ball");
 	return true;
 }
 
@@ -171,6 +174,12 @@ void Batter::Update()
 	if (game && game->m_isPaused) {
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
+
+	if (GetRotationSeen())
+	{
+		m_meetCursorWorldPos = CalcCursorWorldPos();
+	}
+
 	m_stateMachine->Update();
 }
 
@@ -231,6 +240,8 @@ void Batter::Rotation()
 			m_facingDir = dir;
 		}
 	}
+
+	SetRotationSeen(true);
 }
 
 void Batter::RotationUpdate()
@@ -250,6 +261,131 @@ void Batter::SetPlayAnimation(int enAnimationClip)
 {
 	m_characterModel->PlayAnimation(enAnimationClip,0.2);
 	
+}
+
+void Batter::SetBatSwingPosition()
+{
+	// バットの位置をミートカーソルの位置に合わせて調整する処理
+	// ここでは例として、ミートカーソルの位置を取得してバットの位置を更新するコードを示します。
+	// 実際のミートカーソルの位置はゲームのロジックに応じて取得してください。
+	// 例: ミートカーソルの位置を取得
+	Vector3 meetCursorPosition = m_inGameUI->GetMeetCursorPosition(); // この関数は実装されていると仮定
+	// バットの位置をミートカーソルの位置に合わせて更新
+	m_characterModel->SetWeaponOffset(meetCursorPosition - m_transform.m_position);
+}
+
+void Batter::SetCursorPosition()
+{
+	float dt = 1.0f / 60.0f;
+
+	float lx = g_pad[0]->GetLStickXF();
+	float ly = g_pad[0]->GetLStickYF();
+
+	if (m_isCursorMode)
+	{
+		// カーソル操作
+		Vector3 move;
+		move.x = lx;
+		move.y = ly;
+		move.z = 0.0f;
+
+		float speed = 500.0f;
+
+		m_meetPosition += move * speed * dt;
+
+		m_meetPosition.x = std::clamp(m_meetPosition.x, -300.0f, 300.0f);
+		m_meetPosition.y = std::clamp(m_meetPosition.y, -300.0f, 300.0f);
+	}
+	else
+	{
+		// 従来の移動ロジック
+		m_transform.m_moveSpeed.x = 0.0f;
+		m_transform.m_moveSpeed.z = 0.0f;
+
+		Vector3 forward = g_camera3D->GetForward();
+		Vector3 right = g_camera3D->GetRight();
+
+		forward.y = 0.0f;
+		right.y = 0.0f;
+
+		right *= lx * 400.0f;
+		forward *= ly * 400.0f;
+
+		m_transform.m_moveSpeed += right + forward;
+	}
+
+	m_inGameUI->SetMeetCursorPosition(m_meetPosition);
+}
+
+void Batter::HitBat()
+{
+	Vector3 base = m_characterModel->GetBatBase();
+	Vector3 tip = m_characterModel->GetBatTip();
+	Vector3 ballPos = m_ball->GetPosition();
+
+	float dist = DistancePointToSegment(ballPos, base, tip);
+
+	if (dist < 50.0f)
+	{
+		// ヒット
+	}
+}
+
+float Batter::DistancePointToSegment(const Vector3& ballpos, const Vector3& base, const Vector3& tip)
+{
+	Vector3 ab = tip - base;
+	Vector3 ac = ballpos - base;
+	float lenSq = ab.Dot(ab);
+	if (lenSq < 0.0001f)
+	{
+		return (ballpos - base).Length(); // 線じゃなく点扱い
+	}
+	float t = ac.Dot(ab) / lenSq;
+	t = max(0.0f, min(1.0f, t)); // std::max, std::min を使うために <algorithm> が必要
+	Vector3 closestPoint = base + ab * t;
+	return (ballpos - closestPoint).Length();
+}
+
+Vector3 Batter::CalcCursorWorldPos()
+{
+	Vector3 camPos = g_camera3D->GetPosition();
+
+	Vector3 forward = g_camera3D->GetForward();
+	Vector3 right = g_camera3D->GetRight();
+	Vector3 up = g_camera3D->GetUp();
+
+	float scale = 0.002f;
+
+	Vector3 dir =
+		forward +
+		right * (m_meetPosition.x * scale) +
+		up * (m_meetPosition.y * scale);
+
+	dir.Normalize();
+
+	// ★ 安全対策
+	if (fabs(dir.y) < 0.0001f)
+	{
+		return camPos + dir * 1000.0f; // 適当に前方へ
+	}
+
+	float t = -camPos.y / dir.y;
+
+	return camPos + dir * t;
+}
+
+void Batter::UpdateBatAim()
+{
+	if (!IsSwingAnimationPlaying()) return;
+	// カーソルのワールド座標
+	Vector3 target = m_meetCursorWorldPos;
+
+	// ★ 右手をカーソルに向ける
+	m_characterModel->AimRightHand(target);
+
+	// ★ キャラ本体は正面(Z-)維持
+	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
+	m_characterModel->SettRotation(m_transform.m_rotation);
 }
 
 void Batter::Render(RenderContext& rc)

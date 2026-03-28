@@ -132,13 +132,56 @@ namespace nsApp
 		}
 	}
 
+	Vector3 CharacterModel::GetWeaponWorldPosition()
+	{
+		return m_offsetPosition;
+	}
+
+	void CharacterModel::AimRightHand(const Vector3& targetPos)
+	{
+		if (!m_characterModelRender) return;
+
+		int boneId = m_characterModelRender->FindBoneID(L"mixamorig:RightHand");
+		if (boneId == -1) return;
+
+		Bone* bone = m_characterModelRender->GetBone(boneId);
+
+		// 手のワールド位置
+		Matrix handWorld = bone->GetWorldMatrix();
+		Vector3 handPos = Vector3(handWorld._41, handWorld._42, handWorld._43);
+
+		// 向き行列を作る（これがLookRotationの代わり）
+		Matrix rotMat;
+		rotMat.MakeLookAt(handPos, targetPos, Vector3(0, 1, 0));
+
+		// ローカル行列に変換
+		int parentId = bone->GetParentBoneNo();
+		if (parentId != -1)
+		{
+			Matrix parentWorld = m_characterModelRender->GetBone(parentId)->GetWorldMatrix();
+
+			Matrix invParent;
+			invParent.Inverse(parentWorld);
+
+			Matrix localMat = invParent * rotMat;
+
+			// 位置は元のローカル位置を維持
+			Matrix currentLocal = bone->GetLocalMatrix();
+			localMat._41 = currentLocal._41;
+			localMat._42 = currentLocal._42;
+			localMat._43 = currentLocal._43;
+
+			bone->SetLocalMatrix(localMat);
+		}
+	}
+
 
 	Matrix CharacterModel::GetWorldMatrix(const wchar_t* boneName)
 	{
 		if (m_characterModelRender)
 		{
 			/* ボーンIDを取得。*/
-			boneID = m_characterModelRender->FindBoneID(boneName);
+			int boneID = m_characterModelRender->FindBoneID(boneName);
 
 			if (boneID != -1)
 				return m_characterModelRender->GetBone(boneID)->GetWorldMatrix();

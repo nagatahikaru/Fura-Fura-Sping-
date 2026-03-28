@@ -158,7 +158,6 @@
     <ClCompile Include="Source\Scene\Load\Load.cpp">
       <Filter>Source\Scene\Load</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Actor\Character\CharacterModel.cpp" />
     <ClCompile Include="Source\Scene\Result\Result.cpp">
       <Filter>Source\Scene\Result</Filter>
     </ClCompile>
@@ -170,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="Source\UI\PauseUI\PauseUI.cpp">
       <Filter>Source\UI\PauseUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\CharacterModel.cpp">
+      <Filter>Source\Actor\Character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -253,7 +255,6 @@
     <ClInclude Include="Source\Scene\Load\Load.h">
       <Filter>Source\Scene\Load</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Actor\Character\CharacterModel.h" />
     <ClInclude Include="Source\Scene\Result\Result.h">
       <Filter>Source\Scene\Result</Filter>
     </ClInclude>
@@ -265,6 +266,9 @@
     </ClInclude>
     <ClInclude Include="Source\UI\PauseUI\PauseUI.h">
       <Filter>Source\UI\PauseUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\CharacterModel.h">
+      <Filter>Source\Actor\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
