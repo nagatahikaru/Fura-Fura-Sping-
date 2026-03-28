@@ -30,6 +30,24 @@ Game::~Game()
 }
 
 
+Game::~Game()
+{
+	if (g_bgm) {
+		g_bgm->Stop();
+		g_bgm = nullptr;
+	}
+
+	DeleteGO(m_gameCamera);
+	DeleteGO(m_background);
+	DeleteGO(m_batter);
+	DeleteGO(m_pitcher);
+	DeleteGO(m_catcher);
+	DeleteGO(m_ball);
+	DeleteGO(m_skyCube);
+	DeleteGO(m_InGameUI);
+}
+
+
 bool Game::Start()
 {
 
