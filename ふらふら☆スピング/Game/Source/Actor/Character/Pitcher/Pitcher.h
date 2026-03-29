@@ -28,6 +28,7 @@ public:
 	void SetPlayAnimation(int enAnimationClip);
 	void RotationUpdate();
 	bool m_isPaused = true;
+	void AnimationUpdate();
 
 private:
 	Vector3 m_position = Vector3::Zero;

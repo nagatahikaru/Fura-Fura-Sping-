@@ -20,6 +20,7 @@ public:
 	//const Vector3& GetPosition() const { return m_position; }
 	const Vector3& GetVelocity() const { return m_velocity; }
 	bool m_isPaused = true;
+	void AnimationUpdate();
 
 private:
 	Vector3 m_position;  //ボールの位置

@@ -79,13 +79,22 @@ void Game::Update()
 	}
 
 	// ★ カウントダウン中はUIを非表示
+	// ★ カウントダウン中はゲームロジック停止、アニメーションだけ動かす
 	if (FindGO<Start1>("start1") != nullptr) {
+
+		// UI 非表示
 		if (m_InGameUI) {
 			m_InGameUI->SetUIVisible(false);
 			m_InGameUI->SetFontVisble(false);
 			m_InGameUI->SetReplayVisible(false);
 		}
-		return; // カウントダウン中はゲーム処理もしない
+
+		// ★ キャラのアニメーションだけ更新する
+		if (m_batter)  m_batter->AnimationUpdate();
+		if (m_pitcher) m_pitcher->AnimationUpdate();
+		if (m_ball)    m_ball->AnimationUpdate();
+
+		return; // ゲームロジックは止める
 	}
 
 
@@ -96,7 +105,7 @@ void Game::Update()
 
 	// ★ ボタンでカメラ切り替え
 	// ★ Xボタンでカメラ順番切り替え
-	if (g_pad[0]->IsTrigger(enButtonX)) {
+	if (g_pad[0]->IsTrigger(enButtonLB1)) {
 		m_cameraMode = static_cast<CameraMode>((m_cameraMode + 1) % 4);
 	}
 
@@ -137,7 +146,7 @@ void Game::Update()
 
 	}
 
-	if (g_pad[0]->IsTrigger(enButtonY)) {
+	if (g_pad[0]->IsTrigger(enButtonRB1)) {
 		 Result*result= NewGO<Result>(0);
 		//m_guruguru = m_InGameUI->GetGuruguruValue();
 		//m_km = m_InGameUI->GetKmValue();

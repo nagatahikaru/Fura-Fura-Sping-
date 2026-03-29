@@ -155,6 +155,12 @@ void Pitcher::SetPlayAnimation(int enAnimationClip)
 	m_modelRender[m_UniformNumber].PlayAnimation(enAnimationClip);
 }
 
+void Pitcher::AnimationUpdate()
+{
+	// Pitcher のアニメーション更新
+	m_modelRender[m_UniformNumber].Update();
+}
+
 void Pitcher::Render(RenderContext& rc)
 {
 	//モデルの描画

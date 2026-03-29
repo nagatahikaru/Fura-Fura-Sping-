@@ -122,6 +122,11 @@ bool Ball::CheckCollision(const Vector3& pos, float radius)
 	return dist < (m_radius + radius);
 }
 
+void Ball::AnimationUpdate()
+{
+    // ボールはアニメーションが無いので空でOK
+}
+
 void Ball::Render(RenderContext& rc)
 {
 	//モデルの描画
