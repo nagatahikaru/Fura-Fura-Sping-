@@ -8,6 +8,12 @@
 
 bool Start1::Start()
 {
+    // ★ カウントダウン開始 → ゲーム全体を停止
+    Game* game = FindGO<Game>("game");
+    if (game) {
+        game->m_isPaused = true;
+    }
+
 	m_3.Init("Assets/sprite/3.dds", 400.0f, 300.0f);
 	m_3.SetPosition({ 0.0f, 0.0f, 0.0f });
 	m_2.Init("Assets/sprite/2.dds", 400.0f, 300.0f);
@@ -22,6 +28,17 @@ bool Start1::Start()
 void Start1::Update()
 {
     m_timer += g_gameTime->GetFrameDeltaTime();
+
+    if (m_timer >= 4.0f) {
+
+        // ★ カウントダウン終了 → ゲーム再開
+        Game* game = FindGO<Game>("game");
+        if (game) {
+            game->m_isPaused = false;
+        }
+
+        DeleteGO(this);
+    }
 
     // 0〜1秒 → 3
     if (m_timer < 1.0f) {
