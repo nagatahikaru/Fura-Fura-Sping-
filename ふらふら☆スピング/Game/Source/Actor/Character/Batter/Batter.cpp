@@ -98,10 +98,7 @@ Batter::~Batter()
 {
 	m_stateMachine->SetBatter(nullptr);
 	//当たり判定オブジェクトの削除
-	if (m_collisionObject) {		
-		delete m_collisionObject;
-		m_collisionObject = nullptr;
-	}
+	
 }
 
 bool Batter::Start()
@@ -153,13 +150,14 @@ bool Batter::Start()
 
 	m_collisionObject = new CollisionObject;
 	m_collisionObject->CreateBox(
-		m_characterModel->GetWeaponWorldPosition(),
+		Vector3(0.0f, -50.0f, 5500.0f),
 		Quaternion::Identity,
-		BatterBasicSettings::COLLISION_SCALE);
+		BatBasicSettings::COLLISION_SCALE_BAT);
 
 	m_characterModel->Update();
 	m_inGameUI = FindGO<InGameUI>("inGameUI");
 	m_ball = FindGO<Ball>("ball");
+	m_collisionObject->Update();
 	return true;
 }
 
@@ -186,6 +184,12 @@ void Batter::Update()
 	}
 
 	m_stateMachine->Update();
+}
+
+void Batter::UpdateCursor3D()
+{
+	SetCursorPosition();
+	m_meetCursorWorldPos = CalcCursorWorldPos();
 }
 
 void Batter::Rotation()
@@ -316,7 +320,7 @@ void Batter::SetCursorPosition()
 		right *= lx * 400.0f;
 		forward *= ly * 400.0f;
 
-		m_transform.m_moveSpeed += right + forward;
+		m_meetPosition += right + forward;
 	}
 
 	m_inGameUI->SetMeetCursorPosition(m_meetPosition);
@@ -324,15 +328,14 @@ void Batter::SetCursorPosition()
 
 void Batter::HitBat()
 {
-	Vector3 base = m_characterModel->GetBatBase();
-	Vector3 tip = m_characterModel->GetBatTip();
-	Vector3 ballPos = m_ball->GetPosition();
+	if (!IsSwingAnimationPlaying()) return;
 
-	float dist = DistancePointToSegment(ballPos, base, tip);
-
-	if (dist < 50.0f)
+	if (m_collisionObject->IsHit(m_ball->GetCollisionObject()))
 	{
-		// ヒット
+		Vector3 hitDir = m_ball->GetPosition() - m_meetCursorWorldPos;
+		hitDir.Normalize();
+
+		m_ball->HitBall(hitDir, 1000.0f);
 	}
 }
 
@@ -353,30 +356,28 @@ float Batter::DistancePointToSegment(const Vector3& ballpos, const Vector3& base
 
 Vector3 Batter::CalcCursorWorldPos()
 {
+	float screenW = 1920.0f;
+	float screenH = 1080.0f;
+
+	// UI座標（中心基準なら変換必要）
+	float mouseX = m_meetPosition.x + screenW * 0.5f;
+	float mouseY = m_meetPosition.y + screenH * 0.5f;
+
 	Vector3 camPos = g_camera3D->GetPosition();
 
-	Vector3 forward = g_camera3D->GetForward();
-	Vector3 right = g_camera3D->GetRight();
-	Vector3 up = g_camera3D->GetUp();
+	Vector3 rayDir = ScreenToRay(
+		mouseX, mouseY,
+		screenW, screenH,
+		g_camera3D->GetViewMatrix(),
+		g_camera3D->GetProjectionMatrix(),
+		camPos
+	);
 
-	float scale = 0.002f;
+	// ★ Z=5500の平面と交差
+	Vector3 planePoint = Vector3(0, 0, 5500.0f);
+	Vector3 planeNormal = Vector3(0, 0, 1);
 
-	Vector3 dir =
-		forward +
-		right * (m_meetPosition.x * scale) +
-		up * (m_meetPosition.y * scale);
-
-	dir.Normalize();
-
-	// ★ 安全対策
-	if (fabs(dir.y) < 0.0001f)
-	{
-		return camPos + dir * 1000.0f; // 適当に前方へ
-	}
-
-	float t = -camPos.y / dir.y;
-
-	return camPos + dir * t;
+	return RayToPlane(camPos, rayDir, planePoint, planeNormal);
 }
 
 void Batter::UpdateBatAim()
@@ -393,6 +394,24 @@ void Batter::UpdateBatAim()
 	m_characterModel->SettRotation(m_transform.m_rotation);
 }
 
+void Batter::BatHitBoxPosition()
+{
+
+	// ★ カーソル位置を使う
+	Vector3 pos = m_meetCursorWorldPos;
+
+	// ★ 向き（任意）
+	Vector3 dir = m_ball->GetPosition() - pos;
+	dir.Normalize();
+
+	Quaternion rot;
+	rot.SetRotationYFromDirectionXZ(dir);
+
+	m_collisionObject->SetPosition(pos);
+	m_collisionObject->SetRotation(rot);
+	m_collisionObject->Update();
+}
+
 void Batter::Render(RenderContext& rc)
 {
 	//モデルの描画
@@ -403,7 +422,7 @@ void Batter::Render(RenderContext& rc)
 	m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
 	m_fontRender.SetColor(g_vec4White);
 	//Vector3 pos = m_transform.m_position;
-	Vector3 pos = m_facingDir;
+	Vector3 pos = m_meetCursorWorldPos;
 	swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f", pos.x, pos.y, pos.z);
 	m_fontRender.SetText(be);
 	m_fontRender.Draw(rc);
