@@ -336,6 +336,12 @@ void Batter::HitBat()
 		hitDir.Normalize();
 
 		m_ball->HitBall(hitDir, 1000.0f);
+
+		// š ‚±‚±‚ÅƒJƒƒ‰Ø‚è‘Ö‚¦
+		Game* game = FindGO<Game>("game");
+		if (game) {
+			game->SetCameraMode(Camera_BackBall);
+		}
 	}
 }
 
