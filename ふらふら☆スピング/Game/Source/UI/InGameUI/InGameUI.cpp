@@ -147,7 +147,7 @@ void InGameUI::Render(RenderContext& rc) {
 		m_fontRender.Draw(rc);
 
 		wchar_t boll[256];
-		swprintf_s(boll, L"%dkm", 0);
+		swprintf_s(boll, L"%3dm", (int)m_km);
 		m_fontBollRender.SetText(boll);
 		m_fontBollRender.SetPosition(800.0f, 500.0f, 0.0f);
 		m_fontBollRender.SetColor(0.0f, 0.0f, 0.0f, 1.0f);

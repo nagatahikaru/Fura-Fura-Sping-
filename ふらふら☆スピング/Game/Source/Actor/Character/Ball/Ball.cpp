@@ -62,31 +62,49 @@ void Ball::Update()
         m_throwTimer = 0.0f;
     }
 
-    if (m_isMove)
-    {
-        m_velocity.y -= 31.0f * dt;
-        m_position += m_velocity * dt;
+   if (m_isMove)
+{
+    m_velocity.y -= 31.0f * dt;
+    m_position += m_velocity * dt;
 
-        // ★ Z>=5500 の瞬間に 1 回だけ固定する
-        if (!m_hasFixed && m_position.z >= 5500.0f) {
-            if (game) {
-                InGameUI* ui = game->GetInGameUI();
-                if (ui) {
-                    ui->FixBallUI(m_position);
-                }
-            }
-            m_hasFixed = true;   // ← これが重要
+    // ★ リアルタイム飛距離更新
+    if (m_hasHit) {
+        float distance = (m_position - m_hitStartPos).Length();
+        if (game) {
+            game->SetKmValue(distance);
         }
-
-        // ★ 地面に着いたら止める
-        if (m_position.y < 0.0f)
-        {
-            m_position.y = 0.0f;
-            m_isMove = false;
-        }
-
-        SetPosition(m_position);
     }
+
+    // Z>=5500 の固定処理
+    if (!m_hasFixed && m_position.z >= 5500.0f) {
+        if (game) {
+            InGameUI* ui = game->GetInGameUI();
+            if (ui) {
+                ui->FixBallUI(m_position);
+            }
+        }
+        m_hasFixed = true;
+    }
+
+    // 着地処理
+    if (m_position.y < 0.0f)
+    {
+        m_position.y = 0.0f;
+        m_isMove = false;
+
+        // 着地時の最終距離
+        if (m_hasHit) {
+            float distance = (m_position - m_hitStartPos).Length();
+            if (game) {
+                game->SetKmValue(distance);
+            }
+            m_hasHit = false;
+        }
+    }
+
+    SetPosition(m_position);
+}
+
 
     // ★ UI に毎フレーム位置を送る（必須）
     if (game) {
@@ -143,6 +161,9 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     dir.Normalize();
     m_velocity = dir * hitPower;
     m_isMove = true;
+    // ★ 打った瞬間の位置を記録
+    m_hitStartPos = m_position;
+    m_hasHit = true;
 }
 
 void Ball::Render(RenderContext& rc)
