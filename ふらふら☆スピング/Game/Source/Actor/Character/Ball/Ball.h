@@ -24,9 +24,7 @@ public:
 
 	void HitBall(const Vector3& hitDirection, float hitPower);
 	CollisionObject* GetCollisionObject() const { return m_collisionObject; }
-
-	void HitBall(const Vector3& hitDirection, float hitPower);
-	CollisionObject* GetCollisionObject() const { return m_collisionObject; }
+	
 
 private:
 	Vector3 m_position;  //ボールの位置

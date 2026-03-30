@@ -80,7 +80,7 @@
       <UniqueIdentifier>{0873d872-4df0-4808-90bf-43d11989de14}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Scene\Start">
-      <UniqueIdentifier>{82a7d2d6-cecb-443e-80d0-2a9cb37ab6f5}</UniqueIdentifier>
+      <UniqueIdentifier>{3df94db5-8cea-410d-bf7c-9c0954403896}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -161,7 +161,6 @@
     <ClCompile Include="Source\Scene\Load\Load.cpp">
       <Filter>Source\Scene\Load</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Actor\Character\CharacterModel.cpp" />
     <ClCompile Include="Source\Scene\Result\Result.cpp">
       <Filter>Source\Scene\Result</Filter>
     </ClCompile>
@@ -173,6 +172,9 @@
     </ClCompile>
     <ClCompile Include="Source\UI\PauseUI\PauseUI.cpp">
       <Filter>Source\UI\PauseUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\CharacterModel.cpp">
+      <Filter>Source\Actor\Character</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Start\Start.cpp">
       <Filter>Source\Scene\Start</Filter>
@@ -259,7 +261,6 @@
     <ClInclude Include="Source\Scene\Load\Load.h">
       <Filter>Source\Scene\Load</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Actor\Character\CharacterModel.h" />
     <ClInclude Include="Source\Scene\Result\Result.h">
       <Filter>Source\Scene\Result</Filter>
     </ClInclude>
@@ -271,6 +272,9 @@
     </ClInclude>
     <ClInclude Include="Source\UI\PauseUI\PauseUI.h">
       <Filter>Source\UI\PauseUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\CharacterModel.h">
+      <Filter>Source\Actor\Character</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\Start\Start.h">
       <Filter>Source\Scene\Start</Filter>

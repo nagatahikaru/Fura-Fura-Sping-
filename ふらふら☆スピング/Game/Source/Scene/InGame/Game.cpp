@@ -93,9 +93,9 @@ void Game::Update()
 		}
 
 		// ★ キャラのアニメーションだけ更新する
-		if (m_batter)  m_batter->AnimationUpdate();
+		//if (m_batter)  m_batter->AnimationUpdate();
 		if (m_pitcher) m_pitcher->AnimationUpdate();
-		if (m_ball)    m_ball->AnimationUpdate();
+		//if (m_ball)    m_ball->AnimationUpdate();
 
 		return; // ゲームロジックは止める
 	}
