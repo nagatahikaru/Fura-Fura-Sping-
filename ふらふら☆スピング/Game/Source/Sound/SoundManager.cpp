@@ -26,7 +26,8 @@ namespace {
 	    "GameBGM8",
 	    "GameBGM9",
 		"ResultBGM",
-		"SE"
+		"SE",
+		"SE2"
 	};	
 }
 
@@ -80,15 +81,17 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 	SoundSource* se = NewGO<SoundSource>(0);
 	se->Init(number);
 
+	// ★ SE と SE2 を完全に共有音量にする
 	float v = m_seVolume / 100.0f;
 
-	// ★ SE も音量カーブを強調
-	float curved = powf(v, 1.3f); // SE は少し弱めのカーブ
+	// ★ 音量カーブ
+	float curved = powf(v, 1.3f);
 
 	se->SetVolume(curved);
 	se->Play(false);
 	return se;
 }
+
 
 void SoundManager::SetBGMVolume(float vol) {
 	m_bgmVolume = vol;

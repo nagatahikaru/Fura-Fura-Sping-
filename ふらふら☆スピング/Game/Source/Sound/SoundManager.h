@@ -16,6 +16,7 @@ enum Sound{
 	enSound_ResultBGM,
 
 	enSound_SE,
+	enSound_SE2,
 
 	enSound_Num //このステータスは、サウンドの総数を表しているため、この下には追加しないでください。
 };
@@ -38,6 +39,7 @@ public:
 	void SetSEVolume(float vol);
 	float m_bgmVolume = 100.0f;   // 0〜100
 	float m_seVolume = 100.0f;   // 0〜100
+	float m_se2Volume = 100.0f;   // SE2 専用音量
 };
 
 extern SoundManager* g_soundManager;

@@ -15,5 +15,6 @@ private:
 	SpriteRender m_3;
 	SpriteRender m_Start;
 	float m_timer = 0.0f;   // ★ カウントダウン用タイマー
+	bool m_playedStartSE = false;
 };
 
