@@ -56,22 +56,26 @@ void Game::Update()
 	//当たり判定の表示
 //	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
-	// START でポーズ切り替え
-	// START でポーズ切り替え
-	// START でポーズ開始
+	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止
+	if (FindGO<Start1>("start1") != nullptr) {
+
+		if (m_InGameUI) {
+			m_InGameUI->SetUIVisible(false);
+			m_InGameUI->SetFontVisble(false);
+			m_InGameUI->SetReplayVisible(false);
+		}
+
+		if (m_pitcher) m_pitcher->AnimationUpdate();
+
+		return; // ← START ボタンも完全に無効
+	}
+
+	// ★ START ボタン処理（ここに1回だけ）
 	if (g_pad[0]->IsTrigger(enButtonStart)) {
 
-		// ★ PauseUI があるなら START を無効化
-		if (FindGO<PauseUI>("pause") != nullptr) {
-			return;
-		}
+		if (FindGO<PauseUI>("pause") != nullptr) return;
+		if (FindGO<SoundTestUI>("soundtest") != nullptr) return;
 
-		// ★ SoundTestUI があるなら START を無効化
-		if (FindGO<SoundTestUI>("soundtest") != nullptr) {
-			return;
-		}
-
-		// ★ 通常のポーズ処理
 		m_isPaused = true;
 
 		if (m_InGameUI) {
@@ -81,27 +85,7 @@ void Game::Update()
 		NewGO<PauseUI>(0, "pause");
 	}
 
-	// ★ カウントダウン中はUIを非表示
-	// ★ カウントダウン中はゲームロジック停止、アニメーションだけ動かす
-	if (FindGO<Start1>("start1") != nullptr) {
-
-		// UI 非表示
-		if (m_InGameUI) {
-			m_InGameUI->SetUIVisible(false);
-			m_InGameUI->SetFontVisble(false);
-			m_InGameUI->SetReplayVisible(false);
-		}
-
-		// ★ キャラのアニメーションだけ更新する
-		//if (m_batter)  m_batter->AnimationUpdate();
-		if (m_pitcher) m_pitcher->AnimationUpdate();
-		//if (m_ball)    m_ball->AnimationUpdate();
-
-		return; // ゲームロジックは止める
-	}
-
-
-	// ★ ポーズ中はゲームの動きを完全停止
+	// ★ ポーズ中はゲーム停止
 	if (m_isPaused) {
 		return;
 	}

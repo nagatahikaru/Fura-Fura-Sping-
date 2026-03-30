@@ -6,6 +6,7 @@
 #include"Source/UI/InGameUI/InGameUI.h"
 #include"Source/Scene/SoundTest/SoundTest.h"
 #include"Source/UI/SoundTestUI/SoundTestUI.h"
+#include"Source/Scene/Load/Load.h"
 bool PauseUI::Start()
 {
     m_spriteRender.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
@@ -132,27 +133,18 @@ void PauseUI::Update()
             DeleteGO(this);  // PauseUI を消す
         }
         else if (m_cursor == 2) {
-            // ★ ゲームをやり直す（リスタート）
+            // ★ ゲームをやり直す（ロード画面から再開）
             Game* game = FindGO<Game>("game");
             if (game) {
                 DeleteGO(game);   // 今のゲームを削除
             }
 
-            // 新しくゲームを開始
-            NewGO<Game>(0, "game");
-
-            // BGM を最新音量で再生し直す
-            if (g_bgm) {
-                g_bgm->Stop();
-                g_bgm = nullptr;
-            }
-
-            float v = g_soundManager->m_bgmVolume / 100.0f;
-            float curved = powf(v, 1.5f);
-            g_bgm = g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
+            // ★ Load シーンを開始
+            NewGO<Load>(0, "load");
 
             DeleteGO(this);  // PauseUI を閉じる
         }
+
     }
     if (m_cursor == 0) {
         m_startButton.SetScale({ 1.5f,1.5f,1.0f });
