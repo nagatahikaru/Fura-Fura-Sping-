@@ -3,9 +3,17 @@
 #include"Source/Scene/InGame/Game.h"
 #include"Source/Actor/Character/Ball/Ball.h"
 
+
 inline Vector3 LerpVec3(const Vector3& a, const Vector3& b, float t)
 {
     return a + (b - a) * t;
+}
+
+inline float Clamp(float v, float minV, float maxV)
+{
+    if (v < minV) return minV;
+    if (v > maxV) return maxV;
+    return v;
 }
 
 GameCamera::GameCamera() {
@@ -126,12 +134,11 @@ void GameCamera::Update() {
     // --- forward 計算 ---
     m_forward = Vector3::AxisZ;
     m_rot.Apply(m_forward);
-
     if (m_followMode == Follow_Back && m_ball != nullptr) {
 
         Vector3 ballPos = m_ball->GetPosition();
 
-        // ★ ボールの進行方向（速度）を取得
+        // ボールの進行方向
         Vector3 dir = m_ball->GetVelocity();
         if (dir.LengthSq() > 0.001f) {
             dir.Normalize();
@@ -140,16 +147,32 @@ void GameCamera::Update() {
             dir = Vector3(0, 0, 1);
         }
 
-        // ★ ボールの後ろ600 + 高さも追尾
-        Vector3 targetCamPos = ballPos + dir * 600.0f;
+        // ボールの速度
+        float ballSpeed = m_ball->GetVelocity().Length();
 
-        // 高さをボールに合わせる（＋50）
-        targetCamPos.y = ballPos.y - 0.0f;
+        // ボールとホームベースの距離（Z軸方向を想定）
+        float distanceFromHome = (ballPos - Vector3(0, 0, 0)).Length();
 
-        // ★ スムーズ追尾（位置）
-        m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 1.0f);
+        // 速度ベースのズーム
+        float zoomBySpeed = 600.0f + ballSpeed * 3.0f;
 
-        // ★ 向きはボールを見る
+        // 距離ベースのズーム（遠くへ飛ぶほどズームアウト）
+        float zoomByDistance = 600.0f + distanceFromHome * 0.5f;
+
+        // 2つをミックス（自然なズーム）
+        float followDistance = Clamp((zoomBySpeed + zoomByDistance) * 0.5f, 600.0f, 2000.0f);
+
+        Vector3 fixedDir = Vector3(0, 0, -1);
+        Vector3 targetCamPos = ballPos + fixedDir * followDistance;
+
+        // 高さ調整
+       // 高さ調整（距離に応じて上げる）
+        targetCamPos.y = ballPos.y + 50.0f + distanceFromHome * 0.1f;
+
+        // スムーズ追尾
+        m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 0.8f);
+
+        // ボールを見る
         m_target = ballPos;
     }
     else if (m_followMode == Follow_Side && m_ball != nullptr) {
