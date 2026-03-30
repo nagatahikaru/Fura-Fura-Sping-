@@ -22,6 +22,7 @@ class InGameUI:public Source
 	void SetMeetCursorPosition(Vector3 m_inputOffset);
 	Vector3 GetMeetCursorPosition() const { return m_meetPos; }
 	void SetKm(float km) { m_km = km; }
+	void SetStartZ(float z);
 private:
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
@@ -53,5 +54,7 @@ private:
 	Vector3 m_fixedBallUIPos = Vector3::Zero;
 	FontRender m_debugFont;
 	FontRender m_debugFont2;
+	float m_startZ = 0.0f;
+	bool m_isError = false;
 };
 

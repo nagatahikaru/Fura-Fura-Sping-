@@ -51,6 +51,11 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 		return;
 	}
 
+	// ★ 後ろに完全に飛んだときだけエラー（誤差 20 を無視）
+	if (pos3D.z > m_startZ + 20.0f) {
+		m_isError = true;
+	}
+
 	m_predictedBallPos3D = pos3D;
 	m_hasPredictedBall = true;
 }
@@ -85,6 +90,10 @@ void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
 	m_batPos = m_meetPos - meetOffset;
 }
 
+void InGameUI::SetStartZ(float z) {
+	m_startZ = z;
+	m_isError = false;   // 打つたびにリセット
+}
 
 void InGameUI::Render(RenderContext& rc) {
 
@@ -147,7 +156,13 @@ void InGameUI::Render(RenderContext& rc) {
 		m_fontRender.Draw(rc);
 
 		wchar_t boll[256];
-		swprintf_s(boll, L"%3dm", (int)m_km);
+
+		if (m_isError) {
+			swprintf_s(boll, L"ERROR");
+		}
+		else {
+			swprintf_s(boll, L"%3dm", (int)m_km);
+		}
 		m_fontBollRender.SetText(boll);
 		m_fontBollRender.SetPosition(800.0f, 500.0f, 0.0f);
 		m_fontBollRender.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
