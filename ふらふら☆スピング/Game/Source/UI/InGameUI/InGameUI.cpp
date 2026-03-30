@@ -158,7 +158,7 @@ void InGameUI::Render(RenderContext& rc) {
 		wchar_t boll[256];
 
 		if (m_isError) {
-			swprintf_s(boll, L"ERROR");
+			swprintf_s(boll, L"???m");
 		}
 		else {
 			swprintf_s(boll, L"%3dm", (int)m_km);
@@ -175,41 +175,4 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spriteRenderReplay.Draw(rc);
 	}
 
-	//if (!m_isBallUIFixed) {
-	//	// ★ デバッグ表示：UI ボールの Y 座標
-	//		Vector3 uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
-
-	//		wchar_t dbg[128];
-	//		swprintf_s(dbg, L"UI Ball Y = %.1f", uiPos.y);
-
-	//		m_debugFont.SetText(dbg);
-	//		m_debugFont.SetPosition(-900.0f, -400.0f, 0.0f); // 好きな位置に調整
-	//		m_debugFont.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
-	//		m_debugFont.Draw(rc);
-	//}
-	// ★ ボールの 3D 座標と UI 座標をデバッグ表示
-	/*	wchar_t dbg3D[128];
-		swprintf_s(dbg3D, L"Ball3D  X:%.1f  Y:%.1f  Z:%.1f",
-			m_predictedBallPos3D.x,
-			m_predictedBallPos3D.y,
-			m_predictedBallPos3D.z
-		);
-
-		m_debugFont.SetText(dbg3D);
-		m_debugFont.SetPosition(-900.0f, -300.0f, 0.0f);
-		m_debugFont.SetColor(1.0f, 1.0f, 0.0f, 1.0f);
-		m_debugFont.Draw(rc);
-
-		Vector3 uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
-
-		wchar_t dbgUI[128];
-		swprintf_s(dbgUI, L"UI Pos  X:%.1f  Y:%.1f",
-			uiPos.x,
-			uiPos.y
-		);
-
-		m_debugFont2.SetText(dbgUI);
-		m_debugFont2.SetPosition(-900.0f, -400.0f, 0.0f);
-		m_debugFont2.SetColor(0.0f, 1.0f, 1.0f, 1.0f);
-		m_debugFont2.Draw(rc);*/
 }

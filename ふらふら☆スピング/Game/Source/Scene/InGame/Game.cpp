@@ -149,20 +149,53 @@ void Game::Update()
 
 	}
 
-	if (g_pad[0]->IsTrigger(enButtonRB1)) {
-		 Result*result= NewGO<Result>(0);
-		//m_guruguru = m_InGameUI->GetGuruguruValue();
-		//m_km = m_InGameUI->GetKmValue();
-		result->SetResultValues(m_guruguru, m_km);
-		if (g_bgm) {
-			g_bgm->Stop();
-			g_bgm = nullptr;
+	//if (g_pad[0]->IsTrigger(enButtonRB1)) {
+	//	 Result*result= NewGO<Result>(0);
+	//	//m_guruguru = m_InGameUI->GetGuruguruValue();
+	//	//m_km = m_InGameUI->GetKmValue();
+	//	result->SetResultValues(m_guruguru, m_km);
+	//	if (g_bgm) {
+	//		g_bgm->Stop();
+	//		g_bgm = nullptr;
+	//	}
+	//	DeleteGO(this);
+	//}
+
+	if (m_isBallLanded) {
+		m_afterLandingTimer += 1.0f / 60.0f;
+
+		if (m_afterLandingTimer >= 1.0f) {
+			Result* result = NewGO<Result>(0);
+			result->SetResultValues(m_guruguru, m_km);
+			DeleteGO(this);
+			return;
 		}
-		DeleteGO(this);
 	}
+
+	if (m_km <= 0.1f) {
+		m_zeroDistanceTimer += 1.0f / 60.0f;
+
+		if (m_zeroDistanceTimer >= 10.0f) {
+			Result* result = NewGO<Result>(0);
+			result->SetResultValues(m_guruguru, m_km);
+			DeleteGO(this);
+			return;
+		}
+	}
+	else {
+		m_zeroDistanceTimer = 0.0f;
+	}
+
+
 	if (m_InGameUI) {
 		m_InGameUI->SetKm(m_km);
 	}
+}
+
+void Game::OnBallLanded()
+{
+	m_isBallLanded = true;
+	m_afterLandingTimer = 0.0f;
 }
 
 void Game::Render(RenderContext& rc)

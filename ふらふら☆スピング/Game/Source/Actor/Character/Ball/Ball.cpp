@@ -94,20 +94,31 @@ void Ball::Update()
     }
 
     // 着地処理
-    if (m_position.y < 0.0f)
+   // 着地処理
+  // 着地処理
+    if (m_position.y <= 0.0f)
     {
         m_position.y = 0.0f;
         m_isMove = false;
 
-        // 着地時の最終距離
+        Game* game = FindGO<Game>("game");
+
+        // ★ 1. 距離を必ず更新する
+        float distance = 0.0f;
         if (m_hasHit) {
-            float distance = (m_position - m_hitStartPos).Length();
-            if (game) {
-                game->SetKmValue(distance);
-            }
+            distance = (m_position - m_hitStartPos).Length();
             m_hasHit = false;
         }
+        if (game) {
+            game->SetKmValue(distance);
+        }
+
+        // ★ 2. 着地を Game に通知（距離更新の後）
+        if (game) {
+            game->OnBallLanded();
+        }
     }
+
 
     SetPosition(m_position);
 }

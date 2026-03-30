@@ -27,6 +27,7 @@ public:
 	InGameUI* GetInGameUI() const { return m_InGameUI; }
 	void SetCameraMode(CameraMode mode) { m_cameraMode = mode; }
 	void SetKmValue(float km) { m_km = km; }
+	void OnBallLanded();
 	bool m_isPaused = false;
 private:
 	GameCamera* m_gameCamera;	//ƒQ[ƒ€ƒJƒƒ‰B
@@ -42,5 +43,8 @@ private:
 	int m_guruguru = 0;
 	int m_km = 0;
 	bool m_bgmStarted = false;
+	float m_afterLandingTimer = 0.0f;
+	bool  m_isBallLanded = false;
+	float m_zeroDistanceTimer = 0.0f;
 };
 
