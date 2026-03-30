@@ -38,7 +38,8 @@ private:
 	ModelRender m_modelRender;
 	bool m_hasReached5500 = false;
 	bool m_hasFixed = false;
-
+	Vector3 m_hitStartPos = Vector3::Zero;
+	bool m_hasHit = false;
 	CollisionObject* m_collisionObject = nullptr; // 衝突オブジェクト
 };
 

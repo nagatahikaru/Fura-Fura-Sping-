@@ -26,6 +26,7 @@ public:
 	void Render(RenderContext& rc);
 	InGameUI* GetInGameUI() const { return m_InGameUI; }
 	void SetCameraMode(CameraMode mode) { m_cameraMode = mode; }
+	void SetKmValue(float km) { m_km = km; }
 	bool m_isPaused = false;
 private:
 	GameCamera* m_gameCamera;	//ƒQ[ƒ€ƒJƒƒ‰B

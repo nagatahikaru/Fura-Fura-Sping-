@@ -21,10 +21,7 @@ class InGameUI:public Source
 	void FixBallUI(const Vector3& pos3D);
 	void SetMeetCursorPosition(Vector3 m_inputOffset);
 	Vector3 GetMeetCursorPosition() const { return m_meetPos; }
-
-
-	//int GetGuruguruValue() const { return m_guruguruValue; }
-	//int GetKmValue() const { return m_kmValue; }
+	void SetKm(float km) { m_km = km; }
 private:
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
@@ -42,7 +39,7 @@ private:
 	Vector3 m_meetPos;
 	Vector3 m_batPos;
 	Vector3 m_offset;
-	float m_km;
+	float m_km=0.0f;
 	bool m_isUIVisible = true;
 	bool m_isFontVisible = true;
 	bool m_isReplayVisible = true;

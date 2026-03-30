@@ -160,8 +160,9 @@ void Game::Update()
 		}
 		DeleteGO(this);
 	}
-	
-
+	if (m_InGameUI) {
+		m_InGameUI->SetKm(m_km);
+	}
 }
 
 void Game::Render(RenderContext& rc)
