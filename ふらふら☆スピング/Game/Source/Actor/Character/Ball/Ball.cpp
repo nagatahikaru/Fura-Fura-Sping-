@@ -10,6 +10,10 @@ Ball::Ball()
 
 Ball::~Ball()
 {
+    if (m_collisionObject) {
+        delete m_collisionObject;
+        m_collisionObject = nullptr;
+    }
 }
 
 bool Ball::Start()
@@ -33,6 +37,10 @@ bool Ball::Start()
 
 	//タイマー初期化
 	m_throwTimer = 0.0f;
+
+	m_collisionObject = new CollisionObject();
+	m_collisionObject->CreateSphere(m_position, Quaternion::Identity, 25.0f);
+	m_collisionObject->Update();
 
 	return true;
 }
@@ -77,7 +85,7 @@ void Ball::Update()
             m_isMove = false;
         }
 
-        m_modelRender.SetPosition(m_position);
+        SetPosition(m_position);
     }
 
     // ★ UI に毎フレーム位置を送る（必須）
@@ -109,6 +117,8 @@ void Ball::SetPosition(const Vector3& pos)
 {
 	m_position = pos;
 	m_modelRender.SetPosition(m_position);
+	m_collisionObject->SetPosition(m_position);
+    m_collisionObject->Update();
 }
 
 bool Ball::IsMoving() const
@@ -116,15 +126,23 @@ bool Ball::IsMoving() const
 	return m_isMove;
 }
 
+// ボールと指定した位置・半径の球との衝突判定
+// ボールの中心と指定した位置との距離が、両方の半径の和より小さい場合に衝突とみなす
+// 例: ボールの半径が10、指定した半径が5の場合、両方の半径の和は15
+// ボールの中心と指定した位置との距離が15未満なら衝突と判定
+// つまり、ボールの中心が指定した位置から15未満の距離にある場合に衝突とみなす
 bool Ball::CheckCollision(const Vector3& pos, float radius)
 {
 	float dist = (m_position - pos).Length();
 	return dist < (m_radius + radius);
 }
 
-void Ball::AnimationUpdate()
+void Ball::HitBall(const Vector3& hitDirection, float hitPower)
 {
-    // ボールはアニメーションが無いので空でOK
+    Vector3 dir = hitDirection;
+    dir.Normalize();
+    m_velocity = dir * hitPower;
+    m_isMove = true;
 }
 
 void Ball::Render(RenderContext& rc)
