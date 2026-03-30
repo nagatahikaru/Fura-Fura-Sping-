@@ -32,6 +32,7 @@ bool Ball::Start()
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
             ui->SetPredictedBallPos(m_position);
+            ui->SetStartZ(m_position.z);   // ← これを追加！
         }
     }
 
@@ -68,12 +69,18 @@ void Ball::Update()
     m_position += m_velocity * dt;
 
     // ★ リアルタイム飛距離更新
+   // 着地時の最終距離
+  // ★ リアルタイム飛距離更新（HitBall してから着地まで）
     if (m_hasHit) {
-        float distance = (m_position - m_hitStartPos).Length();
+
+        float distance = m_hitStartPos.z - m_position.z;  // ← Z が減るほど距離が伸びる
+        if (distance < 0) distance = 0;                   // ← バッター方向は 0
+
         if (game) {
             game->SetKmValue(distance);
         }
     }
+
 
     // Z>=5500 の固定処理
     if (!m_hasFixed && m_position.z >= 5500.0f) {
@@ -129,6 +136,14 @@ void Ball::Throw(const Vector3& targetPos)
 
 	m_isMove = true;
 
+    // ★ 投げた瞬間の Z を UI に送る（必須）
+    Game* game = FindGO<Game>("game");
+    if (game) {
+        InGameUI* ui = game->GetInGameUI();
+        if (ui) {
+            ui->SetStartZ(m_position.z);
+        }
+    }
 }
 
 void Ball::SetPosition(const Vector3& pos)
@@ -164,6 +179,13 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     // ★ 打った瞬間の位置を記録
     m_hitStartPos = m_position;
     m_hasHit = true;
+    Game* game = FindGO<Game>("game");
+    if (game) {
+        InGameUI* ui = game->GetInGameUI();
+        if (ui) {
+            ui->SetStartZ(m_position.z);
+        }
+    }
 }
 
 void Ball::Render(RenderContext& rc)
