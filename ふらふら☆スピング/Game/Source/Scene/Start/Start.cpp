@@ -4,7 +4,7 @@
 #include"Source/Actor/Character/Pitcher/Pitcher.h"
 #include"Source/Actor/Character/Catcher/Catcher.h"
 #include"Source/Actor/Character/Ball/Ball.h"
-
+#include"Source/Sound/SoundManager.h"
 
 bool Start1::Start()
 {
@@ -63,6 +63,13 @@ void Start1::Update()
     }
     // 3〜4秒 → START!!
     else if (m_timer < 4.0f) {
+        // ★ START!! に入った瞬間だけ SE 再生
+        if (!m_playedStartSE) {
+            if (g_soundManager) {
+                g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
+            }
+            m_playedStartSE = true;
+        }
         m_3.SetMulColor({ 1,1,1,0 });
         m_2.SetMulColor({ 1,1,1,0 });
         m_1.SetMulColor({ 1,1,1,0 });

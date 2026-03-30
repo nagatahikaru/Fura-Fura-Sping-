@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Source/Source.h"
 
 class Result : public Source
@@ -18,5 +18,11 @@ private:
 	FontRender m_fontKm;
 	SpriteRender m_grobu;
 	SpriteRender m_B;
+	float m_se2Volume = 1.0f;   // SE2 の現在音量（0〜1）
+	bool m_isFadingSE2 = true;  // フェードアウト開始フラグ
+	int m_displayGuruguru = 0;
+	int m_displayKm = 0;
+	float m_countSpeed = 1.5f;  // カウントアップ速度（調整可）
+	float m_kmAddPerFrame = 0.0f;
 };
 

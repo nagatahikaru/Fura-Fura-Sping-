@@ -3,6 +3,7 @@
 #include "BatterStateMachine.h"
 #include"Source/Scene/InGame/Game.h"
 #include "Source/Actor/Character/Ball/Ball.h"
+#include"Source/Sound/SoundManager.h"
 #include <algorithm> // 追加
 
 
@@ -336,6 +337,14 @@ void Batter::HitBat()
 		hitDir.Normalize();
 
 		m_ball->HitBall(hitDir, 1000.0f);
+
+		// ★ 打撃 SE 再生
+		if (g_soundManager) {
+			g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
+			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 100.0f);
+			se2->SetName("SE2");   // ← これが超重要！
+
+		}
 
 		// ★ ここでカメラ切り替え
 		Game* game = FindGO<Game>("game");
