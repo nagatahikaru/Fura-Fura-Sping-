@@ -22,6 +22,9 @@ public:
 	bool m_isPaused = true;
 	void AnimationUpdate();
 
+	void HitBall(const Vector3& hitDirection, float hitPower);
+	CollisionObject* GetCollisionObject() const { return m_collisionObject; }
+
 private:
 	Vector3 m_position;  //ボールの位置
 	Vector3 m_velocity;  //ボールの速度
@@ -34,5 +37,7 @@ private:
 	ModelRender m_modelRender;
 	bool m_hasReached5500 = false;
 	bool m_hasFixed = false;
+
+	CollisionObject* m_collisionObject = nullptr; // 衝突オブジェクト
 };
 

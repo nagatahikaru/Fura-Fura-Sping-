@@ -53,6 +53,9 @@ bool Game::Start()
 
 void Game::Update()
 {
+	//当たり判定の表示
+//	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
+
 	// START でポーズ切り替え
 	// START でポーズ切り替え
 	// START でポーズ開始

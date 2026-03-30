@@ -38,6 +38,7 @@ namespace {
 		const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
 		const Vector3 ROTATION_OFFSET = Vector3(1.0f, 0.0f, 0.0f); //回転の軸となるオフセット座標
 		const float ROTATION_ANGLE = 90.0f; //回転角度
+		const Vector3 COLLISION_SCALE_BAT = Vector3(114.285714286f, 80.0f, 114.285714286f);
 	}
 };
 
@@ -140,6 +141,74 @@ public:
 	void UpdateBatAim();
 
 	Vector3 CalcCursorWorldPos();
+
+	void BatHitBoxPosition();
+
+	Vector3 ScreenToRay(
+		float mouseX, float mouseY,
+		float screenWidth, float screenHeight,
+		const Matrix& view,
+		const Matrix& proj,
+		const Vector3& cameraPos)
+	{
+		// ① スクリーン → NDC
+		float x = (2.0f * mouseX / screenWidth) - 1.0f;
+		float y = 1.0f - (2.0f * mouseY / screenHeight); // Y反転
+
+		Vector4 rayClip = Vector4(x, y, 1.0f, 1.0f);
+
+		// ② Clip → View
+		Matrix invProj = proj;
+		invProj.Inverse();
+		Vector4 rayView = InverseProjectionMatrix(rayClip, invProj);
+		rayView.z = 1.0f;
+		rayView.w = 0.0f;
+
+		// ③ View → World
+		Matrix invView = view;
+		invView.Inverse();
+		Vector4 rayWorld4 = InverseProjectionMatrix(rayView, invView);
+
+		Vector3 rayDir = Vector3(rayWorld4.x, rayWorld4.y, rayWorld4.z);
+		rayDir.Normalize();
+
+		return rayDir;
+	}
+
+	Vector4 InverseProjectionMatrix(const Vector4& v, const Matrix& m)
+	{
+		Vector4 result;
+
+		result.x = v.x * m._11 + v.y * m._21 + v.z * m._31 + v.w * m._41;
+		result.y = v.x * m._12 + v.y * m._22 + v.z * m._32 + v.w * m._42;
+		result.z = v.x * m._13 + v.y * m._23 + v.z * m._33 + v.w * m._43;
+		result.w = v.x * m._14 + v.y * m._24 + v.z * m._34 + v.w * m._44;
+
+		return result;
+	}
+
+	Vector3 RayToPlane(
+		const Vector3& rayOrigin,
+		const Vector3& rayDir,
+		const Vector3& planePoint,
+		const Vector3& planeNormal)
+	{
+		float denom = planeNormal.Dot(rayDir);
+
+		if (fabs(denom) < 0.0001f)
+			return rayOrigin; // 平行（適当回避）
+
+		float t = (planePoint - rayOrigin).Dot(planeNormal) / denom;
+
+		return rayOrigin + rayDir * t;
+	}
+
+	Vector3 GetCursorWorldPos() const
+	{
+		return m_meetCursorWorldPos;
+	}
+
+	void UpdateCursor3D();
 
 	bool m_isPaused;
 private:

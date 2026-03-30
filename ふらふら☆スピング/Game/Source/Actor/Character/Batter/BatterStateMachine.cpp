@@ -147,7 +147,12 @@ void BatterSwingState::Enter()
 void BatterSwingState::Update()
 {
 	Batter* batter = GetBatter();
+
 	batter->AnimationUpdate();
+
+	// ★ スイング中だけ当たり判定
+	batter->BatHitBoxPosition();
+	batter->HitBat();
 }
 
 void BatterSwingState::Exit()
@@ -182,8 +187,9 @@ void BatterCursorSetState::Enter()
 void BatterCursorSetState::Update()
 {
 	Batter* batter = GetBatter();
-	batter->SetCursorPosition();
-	batter->UpdateBatAim();
+
+	batter->UpdateCursor3D();   // ★ 位置更新だけ
+	batter->BatHitBoxPosition(); // ★ 当たり判定の位置更新
 	batter->AnimationUpdate();
 }
 
