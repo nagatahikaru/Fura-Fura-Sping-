@@ -65,6 +65,7 @@ void Game::Update()
 			m_InGameUI->SetReplayVisible(false);
 		}
 
+		if (m_batter) m_batter->AnimationUpdate();
 		if (m_pitcher) m_pitcher->AnimationUpdate();
 
 		return; // ← START ボタンも完全に無効
@@ -132,6 +133,13 @@ void Game::Update()
 		m_InGameUI->SetReplayVisible(true);
 
 	}
+	else if (m_batter->GetRotationSeen())
+	{
+		m_InGameUI->SetUIVisible(false);
+		m_InGameUI->SetFontVisble(false);
+		m_InGameUI->SetReplayVisible(true);
+		m_InGameUI->SetGuruGuruCount(GetGuruguru());
+	}
 
 	//if (g_pad[0]->IsTrigger(enButtonRB1)) {
 	//	 Result*result= NewGO<Result>(0);
@@ -156,7 +164,7 @@ void Game::Update()
 		}
 	}
 
-	if (m_km <= 0.1f) {
+	if (m_km <= 0.1f&&m_isGameStarted) {
 		m_zeroDistanceTimer += 1.0f / 60.0f;
 
 		if (m_zeroDistanceTimer >= 10.0f) {

@@ -29,6 +29,34 @@ public:
 	void SetKmValue(float km) { m_km = km; }
 	void OnBallLanded();
 	bool m_isPaused = false;
+
+	int GetGuruguru()const{
+		return  m_guruguru;
+	}
+	void SetGuruGuru(int count)
+	{
+		m_guruguru = count;
+	}
+
+	bool GetRotationSeen() const
+	{
+		return m_isRotationSeen;
+	}
+	void SetRotationSeen(bool isRotationSeen)
+	{
+		m_isRotationSeen = isRotationSeen;
+	}
+
+	void SetGameStarted(bool flag)
+	{
+		m_isGameStarted = flag;
+	}
+
+	bool IsGameStarted() const
+	{
+		return m_isGameStarted;
+	}
+
 private:
 	GameCamera* m_gameCamera;	//ƒQ[ƒ€ƒJƒƒ‰B
 	Background* m_background;	//”wŒiB
@@ -46,5 +74,7 @@ private:
 	float m_afterLandingTimer = 0.0f;
 	bool  m_isBallLanded = false;
 	float m_zeroDistanceTimer = 0.0f;
+	bool m_isRotationSeen = true;
+	bool m_isGameStarted=false;
 };
 

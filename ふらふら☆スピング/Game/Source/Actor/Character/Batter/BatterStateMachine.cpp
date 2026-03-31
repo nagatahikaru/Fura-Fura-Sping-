@@ -42,21 +42,21 @@ void BatterIdleState::Enter()
 { 
 	Batter* batter = GetBatter();
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
-	batter->SetRotationSeen(true);
+	
 }
 
 void BatterIdleState::Update()
 {
 	Batter* batter = GetBatter();
 	batter->AnimationUpdate();
-	batter->SetRotationSeen(true);
+	
 }
 
 void BatterIdleState::Exit()
 {
 	Batter* batter = GetBatter();
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
-	batter->SetRotationSeen(true);
+	
 }
 
 //‘Ò‹@ó‘Ô‚©‚ç‚Ìó‘Ô‘JˆÚ”»’èB
@@ -65,28 +65,24 @@ void BatterIdleState::Exit()
 bool BatterIdleState::RequestState(uint32_t& request)
 {
 	Batter* batter = GetBatter();
+
+	if (batter->GetRotationSeen())
+	{
+		request = BatterRotationState::ID();
+		return true;
+	}
+
 	if (g_pad[0]->IsTrigger(enButtonA))
 	{
 		request = BatterSwingState::ID();
 		return true;
 	}
 
-	if (batter->GetRotationSeen())
+	if (!batter->GetRotationSeen())
 	{
 		request = BatterCursorSetState::ID();
 		return true;
 	}
-	//if (fabs(g_pad[0]->GetLStickXF()) >= LSTICK_MIN_THRESHOLD ||
-	//	fabs(g_pad[0]->GetLStickYF()) >= RSTICK_MIN_THRESHOLD)
-	//{
-	//	request = BatterRotationState::ID();
-	//	return true;
-	//}
-	//if (g_pad[0]->IsTrigger(enButtonA))
-	//{		
-	//	request = BatterSwingState::ID();
-	//	return true;
-	//}
 	return false;
 }
 
@@ -99,9 +95,10 @@ void BatterRotationState::Enter()
 
 void BatterRotationState::Update()
 {
-	Batter* batter = GetBatter();
+	Batter* batter = GetBatter();	
 	batter->Rotation();
 	batter->RotationUpdate();
+	batter->RoundAndRoundBat();
 	batter->AnimationUpdate();
 }
 
@@ -121,18 +118,11 @@ bool BatterRotationState::RequestState(uint32_t& request)
 		request = BatterIdleState::ID();
 		return true;
 	}
-	if(g_pad[0]->IsTrigger(enButtonA))
-	{
-		request = BatterSwingState::ID();
-		return true;
-	}
-	if (batter->GetRotationSeen())
+	if (!batter->GetRotationSeen())
 	{
 		request = BatterCursorSetState::ID();
 		return true;
 	}
-
-
 	return false;
 }
 
@@ -140,7 +130,7 @@ void BatterSwingState::Enter()
 {
 	Batter* batter = GetBatter();
 	batter->Swing();
-	batter->SetRotationSeen(false);
+	batter->SetRotationSeen(true);
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
 }
 

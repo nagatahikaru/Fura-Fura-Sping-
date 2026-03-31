@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "Pitcher.h"
 #include"Source/Scene/InGame/Game.h"
+#include "Source/Actor/Character/Batter/Batter.h"
+
 namespace {
 	std::string FILE_PATH_BATTER = ("Assets/animData/pitcher/");
 	std::string FILE_PATH_BATTER_UNIFORMNUMBER = ("Assets/modelData/Pitcher/UniformNumber/");
@@ -128,6 +130,13 @@ void Pitcher::Update()
 	Game* game = FindGO<Game>("game");
 	if (game && game->m_isPaused) {
 		return;   // ← これで投球アニメが途中で停止する
+	}
+
+	Batter* batter = FindGO<Batter>("batter");
+	if (batter && batter->GetRotationSeen()) {
+		SetPlayAnimation(enAnimationClip_Idle);
+		AnimationUpdate();
+		return;
 	}
 
 	m_timer += dt;

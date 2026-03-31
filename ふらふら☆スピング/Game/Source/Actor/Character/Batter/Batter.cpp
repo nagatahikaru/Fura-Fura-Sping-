@@ -147,7 +147,7 @@ bool Batter::Start()
 	m_stateMachine->SetBatter(this);
 	m_characterController.SetPosition(m_transform.m_position);
 
-	
+	m_guruGuruBatTimer = 5.0f;
 
 	m_collisionObject = new CollisionObject;
 	m_collisionObject->CreateBox(
@@ -157,6 +157,7 @@ bool Batter::Start()
 
 	m_characterModel->Update();
 	m_inGameUI = FindGO<InGameUI>("inGameUI");
+	m_game = FindGO<Game>("game");
 	m_ball = FindGO<Ball>("ball");
 	m_collisionObject->Update();
 	return true;
@@ -173,13 +174,12 @@ void Batter::Update()
 		m_inGameUI = FindGO<InGameUI>("inGameUI");
 		return;
 	}
-	// ★ ポーズ中はキャッチャーのアニメーションを止める
-	Game* game = FindGO<Game>("game");
-	if (game && game->m_isPaused) {
+	m_game = FindGO<Game>("game");
+	// ★ ポーズ中はキャッチャーのアニメーションを止める	
+	if (m_game && m_game->m_isPaused) {
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
-
-	if (GetRotationSeen())
+	if (!GetRotationSeen())
 	{
 		m_meetCursorWorldPos = CalcCursorWorldPos();
 	}
@@ -250,8 +250,8 @@ void Batter::Rotation()
 			m_facingDir = dir;
 		}
 	}
-
-	SetRotationSeen(true);
+	float currentAngle = atan2f(m_facingDir.x, m_facingDir.z) * 180.0f / 3.14159265f;
+	UpdateRotation(currentAngle);
 }
 
 void Batter::RotationUpdate()
@@ -265,6 +265,34 @@ void Batter::RotationUpdate()
 
 	m_characterModel->SettRotation(m_transform.m_rotation);
 	m_characterModel->SetPosition(newPosition);
+}
+
+void Batter::UpdateRotation(float currentAngle)
+{
+	float delta = currentAngle - m_prevAngle;
+
+	// ★ 角度のラップ補正（重要！）
+	if (delta > 180.0f) {
+		delta -= 360.0f;
+	}
+	else if (delta < -180.0f) {
+		delta += 360.0f;
+	}
+
+	// 累積
+	m_totalRotation += delta;
+
+	// ★ 1回転判定
+	if (m_totalRotation >= 360.0f) {
+		m_guruGuruBatCount++;
+		m_totalRotation -= 360.0f;
+	}
+	else if (m_totalRotation <= -360.0f) {
+		m_guruGuruBatCount++;
+		m_totalRotation += 360.0f;
+	}
+	m_game->SetGuruGuru(m_guruGuruBatCount);
+	m_prevAngle = currentAngle;
 }
 
 void Batter::SetPlayAnimation(int enAnimationClip)
@@ -327,6 +355,33 @@ void Batter::SetCursorPosition()
 	m_inGameUI->SetMeetCursorPosition(m_meetPosition);
 }
 
+/**
+* この関数はぐるぐるバットの処理を行う関数です。
+* 時間を計測し、一定時間が経過したら方向をresetし
+* カーソル操作が可能になるようにフラグを切り替える処理を行います。
+*/
+void Batter::RoundAndRoundBat()
+{
+	m_guruGuruBatTimer -= g_gameTime->GetFrameDeltaTime();
+	if (m_guruGuruBatTimer <= 0.0f)
+	{
+		m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
+
+		Quaternion offset;
+		offset.SetRotationY(-90.0f); // ←ここ調整ポイント
+
+		Quaternion finalRot = m_transform.m_rotation * offset;
+		finalRot.Normalize();
+
+		m_characterModel->SettRotation(finalRot);
+		m_guruGuruBatTimer = 0.0f;
+		SetRotationSeen(false);
+		m_game->SetRotationSeen(false);
+		m_game->SetGameStarted(true);
+		m_characterModel->Update();
+	}
+}
+
 void Batter::HitBat()
 {
 	if (!IsSwingAnimationPlaying()) return;
@@ -347,9 +402,9 @@ void Batter::HitBat()
 		}
 
 		// ★ ここでカメラ切り替え
-		Game* game = FindGO<Game>("game");
-		if (game) {
-			game->SetCameraMode(Camera_BackBall);
+		
+		if (m_game) {
+			m_game->SetCameraMode(Camera_BackBall);
 		}
 	}
 }
@@ -437,8 +492,8 @@ void Batter::Render(RenderContext& rc)
 	m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
 	m_fontRender.SetColor(g_vec4White);
 	//Vector3 pos = m_transform.m_position;
-	Vector3 pos = m_meetCursorWorldPos;
-	swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f", pos.x, pos.y, pos.z);
+	Quaternion pos = m_transform.m_rotation;
+	swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f,w=%.0f", pos.x, pos.y, pos.z,pos.w);
 	m_fontRender.SetText(be);
 	m_fontRender.Draw(rc);
 }
