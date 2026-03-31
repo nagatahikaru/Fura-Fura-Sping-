@@ -7,6 +7,8 @@ InGameUI::InGameUI() {
 	m_spriteRenderMeet.Init("Assets/sprite/mi-to.DDS", 45.0f, 45.0f);
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
 	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 30.0f, 30.0f);
+	m_kiiro.Init("Assets/sprite/kiiro.DDS", 550.0f, 550.0f);
+	m_besu.Init("Assets/sprite/besu.DDS", 350.0f, 350.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -148,10 +150,19 @@ void InGameUI::Render(RenderContext& rc) {
 	}
 
 	if (m_isFontVisible) {
+
+		m_kiiro.SetPosition(Vector3{ 980.0f, 470.0f, 0.0f });
+		m_kiiro.Update();
+		m_kiiro.Draw(rc);
+
+		m_besu.SetPosition(Vector3{ -800.0f, 430.0f, 0.0f });
+		m_besu.Update();
+		m_besu.Draw(rc);
+
 		wchar_t text[256];
 		swprintf_s(text, L"‚®‚é‚®‚é:%d", 0);
 		m_fontRender.SetText(text);
-		m_fontRender.SetPosition(-900.0f, 500.0f, 0.0f);
+		m_fontRender.SetPosition(-920.0f, 500.0f, 0.0f);
 		m_fontRender.SetColor(0.0f, 0.78f, 0.31f, 1.0f);
 		m_fontRender.Draw(rc);
 

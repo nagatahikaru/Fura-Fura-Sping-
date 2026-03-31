@@ -31,6 +31,8 @@ private:
 	SpriteRender m_spriteRenderMeet;
 	SpriteRender m_spriteRenderReplay;
 	SpriteRender m_spriteRenderBall;
+	SpriteRender m_kiiro;
+	SpriteRender m_besu;
 	Vector3 m_batPositionRight = Vector3::Zero;
 	Vector3 m_batPositionLeft = Vector3::Zero;
 	Vector3 m_meetPositionRight = Vector3::Zero;
