@@ -24,4 +24,5 @@ private:
     bool m_bgmStarted = false;
     float m_realProgress = 0.0f;     // 実際のロード進行
     float m_displayProgress = 0.0f;  // ゲージに表示する進行
+    float alpha = 0.0f;
 };
