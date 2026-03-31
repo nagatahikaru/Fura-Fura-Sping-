@@ -52,6 +52,8 @@ void Ball::Update()
 
     Game* game = FindGO<Game>("game");
     if (game && game->m_isPaused) return;
+    if (!game->IsGameStarted())return;
+
 
     float dt = 1.0f / 60.0f;
 

@@ -23,6 +23,11 @@ class InGameUI:public Source
 	Vector3 GetMeetCursorPosition() const { return m_meetPos; }
 	void SetKm(float km) { m_km = km; }
 	void SetStartZ(float z);
+	void SetGuruGuruCount(int count)
+	{
+		m_guruGuruCount = count;
+	}
+
 private:
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
@@ -58,5 +63,6 @@ private:
 	FontRender m_debugFont2;
 	float m_startZ = 0.0f;
 	bool m_isError = false;
+	int m_guruGuruCount = 0;
 };
 

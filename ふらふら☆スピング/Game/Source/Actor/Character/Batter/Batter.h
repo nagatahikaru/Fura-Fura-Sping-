@@ -27,6 +27,7 @@ namespace {
 		const Vector3 INITIAL_COORDINATE = Vector3(-420.0f, -50.0f, 5500.0f);//初期座標
 		const float BASICS_SPEED = 400.0f; //基本速度
 		const Vector3 VECTOR_UP = Vector3(0.0f, 1.0f, 0.0f); //上方向ベクトル
+		const Vector3 VECTOR_LOOKAT = Vector3(1.0f, 0.0f, 0.0f); //注視点ベクトル
 		const Vector3 INITIAL_SCALE = Vector3(10.0f, 10.0f, 10.0f); //初期スケール
 		const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
 		const float NONE_SPEED = 0.0f;//速度なし
@@ -210,6 +211,10 @@ public:
 
 	void UpdateCursor3D();
 
+	void RoundAndRoundBat();
+
+	void UpdateRotation(float currentAngle);
+
 	bool m_isPaused;
 private:
 	std::unique_ptr<BatterStateMachine> m_stateMachine;
@@ -227,9 +232,13 @@ private:
 	bool m_isAnimation = false; // animationの再生状態を保持するフラグ
 	InGameUI* m_inGameUI; // インゲームUIへのポインタ
 	Vector3 m_meetPosition; // ミートカーソルの位置を保持する変数
-	bool m_isRotation = false; // 回転アニメーションの再生状態を保持するフラグ
+	bool m_isRotation = true; // 回転アニメーションの再生状態を保持するフラグ
 	Ball* m_ball; // ボールへのポインタ
 	bool m_isCursorMode = true;
 	Vector3 m_meetCursorWorldPos;
+	float m_guruGuruBatTimer = 0.0f; // グルグルバットのタイマー
+	float m_prevAngle = 0.0f;
+	float m_totalRotation = 0.0f;
+	int m_guruGuruBatCount = 0; // グルグルバットの回数
 };
 

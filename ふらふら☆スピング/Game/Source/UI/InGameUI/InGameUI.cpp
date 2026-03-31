@@ -160,7 +160,7 @@ void InGameUI::Render(RenderContext& rc) {
 		m_besu.Draw(rc);
 
 		wchar_t text[256];
-		swprintf_s(text, L"‚®‚é‚®‚é:%d", 0);
+		swprintf_s(text,256, L"‚®‚é‚®‚é:%d", m_guruGuruCount);
 		m_fontRender.SetText(text);
 		m_fontRender.SetPosition(-920.0f, 500.0f, 0.0f);
 		m_fontRender.SetColor(0.0f, 0.78f, 0.31f, 1.0f);
