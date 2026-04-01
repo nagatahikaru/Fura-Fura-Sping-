@@ -5,6 +5,13 @@
 #include"Source/UI/PauseUI/PauseUI.h"
 #include"Source/Scene/InGame/Game.h"
 #include"Source/UI/InGameUI/InGameUI.h"
+
+// ファイル冒頭付近に追加（std::clampが使えない場合のため）
+template <typename T>
+constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
+    return (v < lo) ? lo : (hi < v) ? hi : v;
+}
+
 bool SoundTestUI::Start() {
 	m_spriteRender.Init("Assets/sprite/SoundTest.DDS", 1920.0f, 1080.0f);
 
@@ -72,8 +79,8 @@ void SoundTestUI::Update() {
     }
 
     // 範囲制限
-    m_bgmX = std::clamp(m_bgmX, m_minX, m_maxX);
-    m_seX = std::clamp(m_seX, m_minX, m_maxX);
+    m_bgmX = clamp(m_bgmX, m_minX, m_maxX);
+    m_seX = clamp(m_seX, m_minX, m_maxX);
 
     // ▼ 位置 → 音量（0?100）に変換
     float bgmT = (m_bgmX - m_minX) / (m_maxX - m_minX);

@@ -7,6 +7,13 @@
 #include <algorithm> // 追加
 
 
+// ファイル冒頭付近に追加（std::clampが使えない場合のため）
+template <typename T>
+constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
+    return (v < lo) ? lo : (hi < v) ? hi : v;
+}
+
+
 namespace {
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
 	//std::string FILE_PATH_BATTER_UNIFORMNUMBER = ("Assets/modelData/Batter/UniformNumber/");
@@ -341,8 +348,8 @@ void Batter::SetCursorPosition()
 
 		m_meetPosition += move * speed * dt;
 
-		m_meetPosition.x = std::clamp(m_meetPosition.x, -300.0f, 300.0f);
-		m_meetPosition.y = std::clamp(m_meetPosition.y, -300.0f, 300.0f);
+		m_meetPosition.x = clamp(m_meetPosition.x, -300.0f, 300.0f);
+		m_meetPosition.y = clamp(m_meetPosition.y, -300.0f, 300.0f);
 	}
 	else
 	{
