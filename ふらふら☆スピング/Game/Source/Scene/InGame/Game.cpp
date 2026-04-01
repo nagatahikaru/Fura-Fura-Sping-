@@ -12,6 +12,7 @@
 #include"Source/UI/PauseUI/PauseUI.h"
 #include"Source/UI/SoundTestUI/SoundTestUI.h"
 #include"Source/Scene/Start/Start.h"
+#include "Source/Actor/Character/Catcher/Catcher.h"
 
 Game::~Game()
 {
@@ -38,6 +39,7 @@ bool Game::Start()
 	m_batter = FindGO<Batter>("batter");
 	m_pitcher = FindGO<Pitcher>("pitcher");
 	m_ball = FindGO<Ball>("ball");
+	m_catcher = FindGO<Catcher>("catcher");
 	// ★ カウントダウンUIを表示
 	m_start1 =NewGO<Start1>(0, "start1");
 
@@ -67,6 +69,7 @@ void Game::Update()
 
 		if (m_batter) m_batter->AnimationUpdate();
 		if (m_pitcher) m_pitcher->AnimationUpdate();
+		if (m_catcher) m_catcher->AnimationUpdate();
 
 		return; // ← START ボタンも完全に無効
 	}
@@ -116,18 +119,21 @@ void Game::Update()
 	}
 
 	if (m_cameraMode == Camera_Catcher) {
+		m_cameraType = Camera_Catcher;
 		m_InGameUI->SetUIVisible(true);
 		m_InGameUI->SetFontVisble(true);
 		m_InGameUI->SetReplayVisible(false);
 	}
 	else if(m_cameraMode==Camera_Ball||m_cameraMode==Camera_BackBall)
 	{
+		m_cameraType = Camera_Ball;
 		m_InGameUI->SetUIVisible(false);
 		m_InGameUI->SetFontVisble(true);
 		m_InGameUI->SetReplayVisible(false);
 	}
 	else if(m_cameraMode==Camera_Replay)
 	{
+		m_cameraType = Camera_Replay;
 		m_InGameUI->SetUIVisible(false);
 		m_InGameUI->SetFontVisble(false);
 		m_InGameUI->SetReplayVisible(true);

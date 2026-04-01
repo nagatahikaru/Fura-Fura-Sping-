@@ -99,6 +99,8 @@ Batter::~Batter()
 {
 	m_stateMachine->SetBatter(nullptr);
 	//当たり判定オブジェクトの削除
+	if (m_collisionObject)return;
+	delete m_collisionObject;
 	
 }
 
@@ -146,6 +148,8 @@ bool Batter::Start()
 
 	m_stateMachine->SetBatter(this);
 	m_characterController.SetPosition(m_transform.m_position);
+	m_initialRotation = m_transform.m_rotation;
+
 
 	m_guruGuruBatTimer = 5.0f;
 
@@ -263,7 +267,14 @@ void Batter::RotationUpdate()
 	Vector3 pivot = m_transform.m_position - pivotOffset;
 	newPosition = pivot + pivotOffset;
 
+
 	m_characterModel->SettRotation(m_transform.m_rotation);
+
+	if (!m_isRotation)
+	{
+		m_characterModel->SettRotation(m_initialRotation);
+	}
+
 	m_characterModel->SetPosition(newPosition);
 }
 
@@ -297,8 +308,7 @@ void Batter::UpdateRotation(float currentAngle)
 
 void Batter::SetPlayAnimation(int enAnimationClip)
 {
-	m_characterModel->PlayAnimation(enAnimationClip,0.2);
-	
+	m_characterModel->PlayAnimation(enAnimationClip,0.2);	
 }
 
 void Batter::SetBatSwingPosition()
@@ -487,13 +497,13 @@ void Batter::Render(RenderContext& rc)
 	//モデルの描画
 	m_characterModel->DrawCharacterModel(rc);
 
-	//文字の描画
-	wchar_t be[129];
-	m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
-	m_fontRender.SetColor(g_vec4White);
-	//Vector3 pos = m_transform.m_position;
-	Quaternion pos = m_transform.m_rotation;
-	swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f,w=%.0f", pos.x, pos.y, pos.z,pos.w);
-	m_fontRender.SetText(be);
-	m_fontRender.Draw(rc);
+	////文字の描画
+	//wchar_t be[129];
+	//m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
+	//m_fontRender.SetColor(g_vec4White);
+	////Vector3 pos = m_transform.m_position;
+	//Quaternion pos = m_transform.m_rotation;
+	//swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f,w=%.0f", pos.x, pos.y, pos.z,pos.w);
+	//m_fontRender.SetText(be);
+	//m_fontRender.Draw(rc);
 }

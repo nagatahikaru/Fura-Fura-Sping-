@@ -9,6 +9,8 @@
 #include "Source/Actor/Character/Batter/Batter.h"
 #include "Source/Actor/Character/Pitcher/Pitcher.h"
 #include "Source/Actor/Character/Ball/Ball.h"
+#include "Source/Actor/Character/Catcher/Catcher.h"
+
 bool Load::Start()
 {
     // 背景
@@ -88,11 +90,13 @@ void Load::Update()
     {
         auto batter = NewGO<Batter>(0, "batter");
         auto pitcher = NewGO<Pitcher>(0, "pitcher");
+		auto catcher = NewGO<Catcher>(0, "catcher");
         auto ball = NewGO<Ball>(0, "ball");
 
         // ★ 生成直後は必ず停止状態にする
         batter->m_isPaused = true;
         pitcher->m_isPaused = true;
+		catcher->m_isPaused = true;
         ball->m_isPaused = true;
 
         m_realProgress = 0.8f;

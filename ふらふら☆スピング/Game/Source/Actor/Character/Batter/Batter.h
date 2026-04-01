@@ -82,9 +82,6 @@ public:
 	void Swing()
 	{
 		m_setAnimation = enAnimationClip_Swing;
-		m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
-		m_characterModel->SettRotation(m_rotation);
-
 	}
 
 	// アニメーションが再生中かどうかを判定する関数
@@ -240,5 +237,7 @@ private:
 	float m_prevAngle = 0.0f;
 	float m_totalRotation = 0.0f;
 	int m_guruGuruBatCount = 0; // グルグルバットの回数
+	Vector3 m_initialFacingDir;
+	Quaternion m_initialRotation;
 };
 

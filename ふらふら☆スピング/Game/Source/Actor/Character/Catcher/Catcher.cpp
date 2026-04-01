@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Catcher.h"
+#include "Source/Actor/Character/Ball/Ball.h"
 
 namespace {
 	std::string FILE_PATH_CATCHER = ("Assets/animData/catcher/");
@@ -57,7 +58,7 @@ namespace {
 		, const Vector3& pos
 		, const Vector3& scl
 		, std::string filePath) {
-		modelRender->Init(filePath.c_str(), m_animationClips, enAnimationClip_Num, enModelUpAxisY);
+		modelRender->Init(filePath.c_str(), m_animationClips, enAnimationClip_Num, enModelUpAxisZ);
 		modelRender->SetPosition(pos);
 		modelRender->SetScale(scl);
 		modelRender->Update();
@@ -91,6 +92,11 @@ namespace {
 	}
 }
 
+Catcher::~Catcher()
+{
+	delete m_collisionObject;
+}
+
 bool Catcher::Start()
 {
 	LoadAnimationClips(m_animationClips,enAnimationClip_Idle, enAnimationClip_Num);
@@ -107,17 +113,35 @@ bool Catcher::Start()
 		CatcherBasicSettings::COLLISION_SCALE,
 		CatcherBasicSettings::INITIAL_COORDINATE);
 
+	m_collisionObject = new CollisionObject;
+	m_collisionObject->CreateBox(
+		CatcherBasicSettings::INITIAL_COORDINATE,
+		Quaternion::Identity,
+		CatcherBasicSettings::COLLISION_SCALE);
+
+	m_ball = FindGO<Ball>("ball");
+	m_game = FindGO<Game>("game");
+
 	return true;
 }
 
 void Catcher::Update()
 {
+	if (m_isPaused) return;
 
+	Game* game = FindGO<Game>("game");
+	if (game && game->m_isPaused) return;
+	if (!game->IsGameStarted())return;
+
+	Catch();
 }
 
-void Catcher::CatchJudgement()
+void Catcher::Catch()
 {
-	
+	if(m_collisionObject->IsHit(m_ball->GetCollisionObject()));
+	{
+		m_game->OnBallLanded();
+	}
 }
 
 void Catcher::PlayeAnimation(int animationNo)
@@ -127,6 +151,15 @@ void Catcher::PlayeAnimation(int animationNo)
 
 void Catcher::Render(RenderContext& rc)
 {
+	if (m_game == nullptr)
+	{
+		m_game= FindGO<Game>("game");
+		return;
+	}
+	if (m_game->GetCameraType() == 0)
+	{
+		return;
+	}
 	//ƒ‚ƒfƒ‹‚Ì•`‰æ
 	m_modelRender.Draw(rc);
 }

@@ -8,6 +8,8 @@ class Pitcher;
 class Catcher;
 class Ball;
 class Start1;
+
+
 enum CameraMode
 {
 	Camera_Catcher,
@@ -57,6 +59,11 @@ public:
 		return m_isGameStarted;
 	}
 
+	int GetCameraType() const
+	{
+		return m_cameraType;
+	}
+
 private:
 	GameCamera* m_gameCamera;	//ƒQ[ƒ€ƒJƒƒ‰B
 	Background* m_background;	//”wŒiB
@@ -76,5 +83,6 @@ private:
 	float m_zeroDistanceTimer = 0.0f;
 	bool m_isRotationSeen = true;
 	bool m_isGameStarted=false;
+	int m_cameraType = 0;
 };
 

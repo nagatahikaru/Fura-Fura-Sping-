@@ -104,7 +104,8 @@ void BatterRotationState::Update()
 
 void BatterRotationState::Exit()
 {
-
+	Batter* batter = GetBatter();
+	batter->RotationUpdate();
 }
 
 bool BatterRotationState::RequestState(uint32_t& request)
@@ -130,7 +131,7 @@ void BatterSwingState::Enter()
 {
 	Batter* batter = GetBatter();
 	batter->Swing();
-	batter->SetRotationSeen(true);
+	batter->RotationUpdate();
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
 }
 
@@ -139,7 +140,6 @@ void BatterSwingState::Update()
 	Batter* batter = GetBatter();
 
 	batter->AnimationUpdate();
-
 	// š ƒXƒCƒ“ƒO’†‚¾‚¯“–‚½‚è”»’è
 	batter->BatHitBoxPosition();
 	batter->HitBat();
