@@ -83,7 +83,12 @@ void Result::Update()
 
 void Result::SetResultValues(int guruguru, int km) {
 	m_guruguru = guruguru;
-	m_km = km;
+
+	// š ‚®‚é‚®‚é1‰ñ‚É‚Â‚«1.01”{‚·‚é
+	double multiplier = pow(1.01, (double)guruguru);
+
+	// š km ‚É”{—¦‚ğ“K—p
+	m_km = (int)(km * multiplier);
 
 	m_displayGuruguru = 0;
 	m_displayKm = 0;
