@@ -29,6 +29,7 @@ class InGameUI:public Source
 	}
 	bool GetIsError() const { return m_isError; }
 	void DisableErrorCheck() { m_isErrorCheckEnabled = false; }
+	void SetGuruGuruTimer(float time);
 private:
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
@@ -66,5 +67,7 @@ private:
 	bool m_isError = false;
 	int m_guruGuruCount = 0;
 	bool  m_isErrorCheckEnabled = false;
+	float m_guruGuruTimer = 0.0f;
+	FontRender m_Count;
 };
 

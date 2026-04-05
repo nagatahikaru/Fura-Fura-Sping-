@@ -196,6 +196,12 @@ void Batter::Update()
 	}
 
 	m_stateMachine->Update();
+
+
+	// ★★★ これを追加！ 毎フレーム UI に送る ★★★
+	if (m_inGameUI) {
+		m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
+	}
 }
 
 void Batter::UpdateCursor3D()
@@ -384,6 +390,10 @@ void Batter::SetCursorPosition()
 void Batter::RoundAndRoundBat()
 {
 	m_guruGuruBatTimer -= g_gameTime->GetFrameDeltaTime();
+	// ★ UI に残り時間を送る
+	if (m_inGameUI) {
+		m_inGameUI->SetGuruGuruTimer(m_guruGuruBatTimer);
+	}
 	if (m_guruGuruBatTimer <= 0.0f)
 	{
 		m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);

@@ -8,7 +8,7 @@ InGameUI::InGameUI() {
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
 	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 30.0f, 30.0f);
 	m_kiiro.Init("Assets/sprite/kiiro.DDS", 550.0f, 550.0f);
-	m_besu.Init("Assets/sprite/besu.DDS", 400.0f, 350.0f);
+	m_besu.Init("Assets/sprite/besu.DDS", 400.0f, 450.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -97,6 +97,11 @@ void InGameUI::SetStartZ(float z) {
 	m_isError = false;   // 打つたびにリセット
 }
 
+void InGameUI::SetGuruGuruTimer(float time)
+{
+	m_guruGuruTimer = time;
+}
+
 void InGameUI::Render(RenderContext& rc) {
 
 	if (m_isPaused) {
@@ -155,7 +160,7 @@ void InGameUI::Render(RenderContext& rc) {
 		m_kiiro.Update();
 		m_kiiro.Draw(rc);
 
-		m_besu.SetPosition(Vector3{ -800.0f, 430.0f, 0.0f });
+		m_besu.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 		m_besu.Update();
 		m_besu.Draw(rc);
 
@@ -166,8 +171,16 @@ void InGameUI::Render(RenderContext& rc) {
 		m_fontRender.SetColor(0.0f, 0.78f, 0.31f, 1.0f);
 		m_fontRender.Draw(rc);
 
-		wchar_t boll[256];
+		wchar_t timerText[256];
+		// 小数1桁で表示（例：4.8）
+		float displayTime = max(0.0f, m_guruGuruTimer);
+		swprintf_s(timerText, 256, L"タイム: %.1f", displayTime);
+		m_Count.SetText(timerText);
+		m_Count.SetPosition(-930.0f, 450.0f, 0.0f);
+		m_Count.SetColor(0.0f, 0.78f, 0.31f, 1.0f);
+		m_Count.Draw(rc);
 
+		wchar_t boll[256];
 		if (m_isError) {
 			swprintf_s(boll, L"???m");
 		}
