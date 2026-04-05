@@ -96,6 +96,7 @@ void Ball::Update()
     }
 
     // 着地処理
+   // 着地処理
     if (m_position.y <= 0.0f)
     {
         m_position.y = 0.0f;
@@ -103,22 +104,33 @@ void Ball::Update()
 
         Game* game = FindGO<Game>("game");
 
-        // ★ 1. 距離を必ず更新する
         float distance = 0.0f;
+
         if (m_hasHit) {
-            distance = (m_position - m_hitStartPos).Length();
+
+            // ★ Z方向の差分で前後を判定
+            float dz = m_position.z - m_hitStartPos.z;
+
+            if (dz < 0) {
+                // 前に飛んだ（通常の飛距離）
+                distance = -dz;   // dz は負なので -dz で正の距離
+            }
+            else {
+                // ★ 後ろに飛んだ（ファール）
+                distance = -dz;   // dz は正 → マイナス距離になる
+            }
+
             m_hasHit = false;
         }
+
         if (game) {
-            game->SetKmValue(distance);
+            game->SetKmValue(distance);   // ← マイナス距離もそのまま送る
         }
 
-        // ★ 2. 着地を Game に通知（距離更新の後）
         if (game) {
             game->OnBallLanded();
         }
     }
-
 
     SetPosition(m_position);
 }
