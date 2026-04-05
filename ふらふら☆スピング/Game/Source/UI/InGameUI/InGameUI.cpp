@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "InGameUI.h"
 
 InGameUI::InGameUI() {
@@ -16,7 +16,7 @@ InGameUI::~InGameUI() {
 }
 
 bool InGameUI::Start() {
-	m_batPositionRight = Vector3{-50.0f, -100.0f, 0.0f };  // © ‰ŠúˆÊ’u
+	m_batPositionRight = Vector3{-50.0f, -100.0f, 0.0f };  // â† åˆæœŸä½ç½®
 	m_batPositionLeft = Vector3{ 50.0f,-100.0f,0.0f };
 	m_meetPositionRight = Vector3{ 35.0f, 5.0f, 0.0f };
 	m_meetPositionLeft = Vector3{ -70.0f,7.0f,0.0f };
@@ -27,12 +27,12 @@ void InGameUI::Update() {
 
 }
 
-//ƒoƒbƒg‚ÌˆÊ’u‚ğİ’è
+//ãƒãƒƒãƒˆã®ä½ç½®ã‚’è¨­å®š
 void InGameUI::SetBatPosition(const Vector3& pos) {
 	m_batPositionRight = pos;
 }
 
-//ƒoƒbƒg‚Ì‰ñ“]‚ğİ’è
+//ãƒãƒƒãƒˆã®å›è»¢ã‚’è¨­å®š
 void InGameUI::SetBatRotation(float rotDeg) {
 	m_rad = rotDeg * 3.14159265f / 180.0f;
 	m_batRotation.SetRotation(Vector3::AxisZ, m_rad);
@@ -48,12 +48,12 @@ void InGameUI::SetPause(bool isPaused) {
 
 void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 
-	// š ŒÅ’è’†‚Íã‘‚«‹Ö~I
+	// â˜… å›ºå®šä¸­ã¯ä¸Šæ›¸ãç¦æ­¢ï¼
 	if (m_isBallUIFixed) {
 		return;
 	}
 
-	// š Œã‚ë‚ÉŠ®‘S‚É”ò‚ñ‚¾‚Æ‚«‚¾‚¯ƒGƒ‰[iŒë· 20 ‚ğ–³‹j
+	// â˜… å¾Œã‚ã«å®Œå…¨ã«é£›ã‚“ã ã¨ãã ã‘ã‚¨ãƒ©ãƒ¼ï¼ˆèª¤å·® 20 ã‚’ç„¡è¦–ï¼‰
 	if (pos3D.z > m_startZ + 20.0f) {
 		m_isError = true;
 	}
@@ -64,11 +64,11 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 
 Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
 {
-	// --- X•ûŒüi¶‰Ej ---
+	// --- Xæ–¹å‘ï¼ˆå·¦å³ï¼‰ ---
 	float uiX = ballPos3D.x * 0.20f;
 
-	// --- Y•ûŒüi‚‚³j ---
-	// 3D‚Ì‰Šú‚‚³ 750 ¨ UI ‚Ì‰ŠúˆÊ’u -80 ‚É‡‚í‚¹‚é
+	// --- Yæ–¹å‘ï¼ˆé«˜ã•ï¼‰ ---
+	// 3Dã®åˆæœŸé«˜ã• 750 â†’ UI ã®åˆæœŸä½ç½® -80 ã«åˆã‚ã›ã‚‹
 	float uiY = (ballPos3D.y - 750.0f) * 0.15f + (-80.0f);
 
 	return Vector3{ uiX, uiY, 0.0f };
@@ -94,7 +94,7 @@ void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
 
 void InGameUI::SetStartZ(float z) {
 	m_startZ = z;
-	m_isError = false;   // ‘Å‚Â‚½‚Ñ‚ÉƒŠƒZƒbƒg
+	m_isError = false;   // æ‰“ã¤ãŸã³ã«ãƒªã‚»ãƒƒãƒˆ
 }
 
 void InGameUI::SetGuruGuruTimer(float time)
@@ -105,21 +105,21 @@ void InGameUI::SetGuruGuruTimer(float time)
 void InGameUI::Render(RenderContext& rc) {
 
 	if (m_isPaused) {
-		return; // © ƒ|[ƒY’†‚Í UI ‚ğˆêØ•`‰æ‚µ‚È‚¢
+		return; // â† ãƒãƒ¼ã‚ºä¸­ã¯ UI ã‚’ä¸€åˆ‡æç”»ã—ãªã„
 	}
 
 	if (m_isUIVisible) {
 
-		//Ô‚¢˜g
+		//èµ¤ã„æ 
 		m_spriteRender.SetPosition(Vector3{ 0.0f, -80.0f, 0.0f });
 		m_spriteRender.Update();
 		m_spriteRender.Draw(rc);
 
-		// --- ¶‰E‚ÅƒoƒbƒgˆÊ’u‚ğØ‚è‘Ö‚¦‚é ---
+		// --- å·¦å³ã§ãƒãƒƒãƒˆä½ç½®ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ ---
 		Vector3 batPos = m_isLeftBatter ? m_batPositionLeft : m_batPositionRight;
 		Vector3 meetOffset = m_isLeftBatter ? m_meetPositionLeft : m_meetPositionRight;
 
-		//ƒoƒbƒg
+		//ãƒãƒƒãƒˆ
 		batScaleX = m_isLeftBatter ? -1.0f : 1.0f;
 		m_spriteRenderBat.SetPosition(m_batPos);
 		m_spriteRenderBat.SetRotation(m_batRotation);
@@ -127,7 +127,7 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spriteRenderBat.Update();
 		m_spriteRenderBat.Draw(rc);
 
-		// --- ƒ~[ƒgƒ][ƒ“iƒoƒbƒg‚Æ“¯‚¶ˆÊ’uE‰ñ“]‚ğQÆj ---	
+		// --- ãƒŸãƒ¼ãƒˆã‚¾ãƒ¼ãƒ³ï¼ˆãƒãƒƒãƒˆã¨åŒã˜ä½ç½®ãƒ»å›è»¢ã‚’å‚ç…§ï¼‰ ---	
 		m_meetScaleX = m_isLeftBatter ? -1.0f : 1.0f;
 		m_spriteRenderMeet.SetPosition(m_meetPos);
 		m_spriteRenderMeet.SetRotation(m_batRotation);
@@ -140,11 +140,11 @@ void InGameUI::Render(RenderContext& rc) {
 			Vector3 uiPos;
 
 			if (m_isBallUIFixed) {
-				// š ŒÅ’èƒ‚[ƒhF•ÏŠ·‚µ‚È‚¢A“®‚©‚³‚È‚¢
+				// â˜… å›ºå®šãƒ¢ãƒ¼ãƒ‰ï¼šå¤‰æ›ã—ãªã„ã€å‹•ã‹ã•ãªã„
 				uiPos = ConvertBall3DToUI(m_fixedBallUIPos);
 			}
 			else {
-				// š ’Êíƒ‚[ƒhFƒŠƒAƒ‹ƒ^ƒCƒ€‚Å“®‚­
+				// â˜… é€šå¸¸ãƒ¢ãƒ¼ãƒ‰ï¼šãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ã§å‹•ã
 				uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
 			}
 
@@ -164,20 +164,58 @@ void InGameUI::Render(RenderContext& rc) {
 		m_besu.Update();
 		m_besu.Draw(rc);
 
+		// --- ãã‚‹ãã‚‹ã‚«ã‚¦ãƒ³ãƒˆè‰²å¤‰æ›´ ---
+	// --- ãã‚‹ãã‚‹ã‚«ã‚¦ãƒ³ãƒˆè‰²å¤‰æ›´ï¼ˆ5åˆ»ã¿ï¼‰ ---
+		// --- ãã‚‹ãã‚‹ã‚«ã‚¦ãƒ³ãƒˆè‰²å¤‰æ›´ï¼ˆ5åˆ»ã¿ï¼‰ ---
+		int c = m_guruGuruCount;
+		float r2, g2, b2;
+
+		// 0ã€œ4ï¼šé»’
+		if (c < 10) {
+			r2 = 0.0f; g2 = 0.0f; b2 = 0.0f;
+		}
+		// 5ã€œ9ï¼šé’
+		else if (c < 15) {
+			r2 = 0.0f; g2 = 0.0f; b2 = 1.0f;
+		}
+		// 15ã€œ19ï¼šé»„ç·‘ï¼ˆãƒ©ã‚¤ãƒ ï¼‰
+		else if (c < 20) {
+			r2 = 0.0f; g2 = 1.0f; b2 = 0.0f;
+		}
+		// 20ã€œ24ï¼šã‚ªãƒ¬ãƒ³ã‚¸
+		else if (c < 25) {
+			r2 = 1.0f; g2 = 0.5f; b2 = 0.0f;
+		}
+		// 25ä»¥ä¸Šï¼šèµ¤
+		else {
+			r2 = 1.0f; g2 = 0.0f; b2 = 0.0f;
+		}
+
+		m_fontRender.SetColor(r2, g2, b2, 1.0f);
 		wchar_t text[256];
-		swprintf_s(text, 256, L"‚®‚é‚®‚é:%d", (int)m_guruGuruCount);
+		swprintf_s(text, 256, L"ãã‚‹ãã‚‹:%d", (int)m_guruGuruCount);
 		m_fontRender.SetText(text);
 		m_fontRender.SetPosition(-930.0f, 500.0f, 0.0f);
-		m_fontRender.SetColor(0.0f, 0.78f, 0.31f, 1.0f);
 		m_fontRender.Draw(rc);
 
 		wchar_t timerText[256];
-		// ¬”1Œ…‚Å•\¦i—áF4.8j
+		// å°æ•°1æ¡ã§è¡¨ç¤ºï¼ˆä¾‹ï¼š4.8ï¼‰
 		float displayTime = max(0.0f, m_guruGuruTimer);
-		swprintf_s(timerText, 256, L"ƒ^ƒCƒ€: %.1f", displayTime);
+		swprintf_s(timerText, 256, L"ã‚¿ã‚¤ãƒ : %.1f", displayTime);
 		m_Count.SetText(timerText);
 		m_Count.SetPosition(-930.0f, 450.0f, 0.0f);
-		m_Count.SetColor(0.0f, 0.78f, 0.31f, 1.0f);
+		// é€šå¸¸æ™‚ï¼ˆ3ç§’ã‚ˆã‚Šå¤§ãã„ï¼‰
+		if (displayTime > 3.0f) {
+			m_Count.SetColor(0.0f, 0.0f, 0.0f, 1.0f);  // é»’å›ºå®š
+		}
+		else {
+			// â˜… ç‚¹æ»…å‡¦ç†ï¼ˆ0.2ç§’å‘¨æœŸï¼‰
+			float blink = fabsf(sinf(displayTime * 10.0f));  // 0ã€œ1 ã®ç‚¹æ»…
+			float alpha = 0.0f + blink * 1.0f;               // 0.2ã€œ1.0 ã®ç¯„å›²ã«èª¿æ•´
+
+			// èµ¤ã§ç‚¹æ»…ã•ã›ã‚‹ï¼ˆè‰²ã¯è‡ªç”±ã«å¤‰æ›´å¯èƒ½ï¼‰
+			m_Count.SetColor(1.0f, 0.0f, 0.0f, alpha);
+		}
 		m_Count.Draw(rc);
 
 		wchar_t boll[256];
