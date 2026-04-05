@@ -311,6 +311,10 @@ void Batter::UpdateRotation(float currentAngle)
 	}
 	m_game->SetGuruGuru(m_guruGuruBatCount);
 	m_prevAngle = currentAngle;
+
+	if (m_inGameUI) {
+		m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
+	}
 }
 
 void Batter::SetPlayAnimation(int enAnimationClip)

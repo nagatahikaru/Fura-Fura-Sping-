@@ -111,7 +111,8 @@ void Result::Render(RenderContext& rc)
 	m_fontGuruguru.Draw(rc);
 
 	// km
-	swprintf_s(buf, L"%d m", m_displayKm);
+	double meter = (double)m_displayKm / 100.0;
+	swprintf_s(buf, L"%.2f m", meter);
 	m_fontKm.SetText(buf);
 	m_fontKm.SetPosition(-50, 0, 0);
 	m_fontKm.SetScale(1.5f);
