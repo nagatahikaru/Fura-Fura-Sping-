@@ -8,7 +8,7 @@ InGameUI::InGameUI() {
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
 	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 30.0f, 30.0f);
 	m_kiiro.Init("Assets/sprite/kiiro.DDS", 550.0f, 550.0f);
-	m_besu.Init("Assets/sprite/besu.DDS", 350.0f, 350.0f);
+	m_besu.Init("Assets/sprite/besu.DDS", 400.0f, 350.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -115,7 +115,7 @@ void InGameUI::Render(RenderContext& rc) {
 		Vector3 meetOffset = m_isLeftBatter ? m_meetPositionLeft : m_meetPositionRight;
 
 		//ƒoƒbƒg
-		batScaleX = m_isLeftBatter?-1.0f:1.0f;
+		batScaleX = m_isLeftBatter ? -1.0f : 1.0f;
 		m_spriteRenderBat.SetPosition(m_batPos);
 		m_spriteRenderBat.SetRotation(m_batRotation);
 		m_spriteRenderBat.SetScale(Vector3{ batScaleX,1.0f,1.0f });
@@ -160,9 +160,9 @@ void InGameUI::Render(RenderContext& rc) {
 		m_besu.Draw(rc);
 
 		wchar_t text[256];
-		swprintf_s(text,256, L"‚®‚é‚®‚é:%d", (int)m_guruGuruCount);
+		swprintf_s(text, 256, L"‚®‚é‚®‚é:%d", (int)m_guruGuruCount);
 		m_fontRender.SetText(text);
-		m_fontRender.SetPosition(-920.0f, 500.0f, 0.0f);
+		m_fontRender.SetPosition(-930.0f, 500.0f, 0.0f);
 		m_fontRender.SetColor(0.0f, 0.78f, 0.31f, 1.0f);
 		m_fontRender.Draw(rc);
 
@@ -172,18 +172,19 @@ void InGameUI::Render(RenderContext& rc) {
 			swprintf_s(boll, L"???m");
 		}
 		else {
-			swprintf_s(boll, L"%3dm", (int)m_km);
+			double meter = (double)m_km / 100.0;
+			swprintf_s(boll, L"%.2f m", meter);
 		}
 		m_fontBollRender.SetText(boll);
-		m_fontBollRender.SetPosition(780.0f, 500.0f, 0.0f);
+		m_fontBollRender.SetPosition(774.0f, 505.0f, 0.0f);
 		m_fontBollRender.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
 		m_fontBollRender.Draw(rc);
-	}
 
-	if (m_isReplayVisible) {
-		m_spriteRenderReplay.SetPosition(Vector3{ -800.0f, 450.0f, 0.0f });
-		m_spriteRenderReplay.Update();
-		m_spriteRenderReplay.Draw(rc);
-	}
+		if (m_isReplayVisible) {
+			m_spriteRenderReplay.SetPosition(Vector3{ -800.0f, 450.0f, 0.0f });
+			m_spriteRenderReplay.Update();
+			m_spriteRenderReplay.Draw(rc);
+		}
 
+	}
 }

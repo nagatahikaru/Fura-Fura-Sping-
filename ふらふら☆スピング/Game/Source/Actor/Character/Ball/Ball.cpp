@@ -96,8 +96,6 @@ void Ball::Update()
     }
 
     // 着地処理
-   // 着地処理
-  // 着地処理
     if (m_position.y <= 0.0f)
     {
         m_position.y = 0.0f;
