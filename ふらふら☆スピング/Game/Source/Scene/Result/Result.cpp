@@ -22,39 +22,42 @@ bool Result::Start()
 
 	// ★ SE 音量が 0 の場合は SE2 を即削除
 	if (g_soundManager->m_seVolume <= 0.0f) {
-		auto se2 = FindGO<SoundSource>("SE2");
+		auto se2 = g_soundManager->GetSE2();
 		if (se2) {
 			se2->Stop();
 			DeleteGO(se2);
+			g_soundManager->ClearSE2();
 		}
-		m_isFadingSE2 = false;  // フェード処理もしない
+		m_isFadingSE2 = false;
 	}
 	else {
-		// ★ フェードアウト開始
 		m_se2Volume = 3.0f;
 		m_isFadingSE2 = true;
 	}
-
 	return true;
 }
 
 
 void Result::Update()
 {
-	// ★ SE2 フェードアウト処理
 	if (m_isFadingSE2) {
-		m_se2Volume -= 0.012f;   // ← フェード速度（調整可）
+		m_se2Volume -= 0.012f;
 
 		if (m_se2Volume <= 0.0f) {
 			m_se2Volume = 0.0f;
 			m_isFadingSE2 = false;
 		}
 
-		// ★ 実際の音量に反映
-		// SE2 の SoundSource を全部探して音量を下げる
-		auto se2 = FindGO<SoundSource>("SE2");
+		auto se2 = g_soundManager->GetSE2();
 		if (se2) {
 			se2->SetVolume(m_se2Volume);
+
+			// 完全に 0 になったら消してしまうならここで
+			if (!m_isFadingSE2) {
+				se2->Stop();
+				DeleteGO(se2);
+				g_soundManager->ClearSE2();
+			}
 		}
 	}
 
@@ -84,16 +87,17 @@ void Result::Update()
 
 	if (g_pad[0]->IsTrigger(enButtonA)) {
 
-		// ★ シーン遷移前に SE2 を必ず止める
-		auto se2 = FindGO<SoundSource>("SE2");
+		auto se2 = g_soundManager->GetSE2();
 		if (se2) {
 			se2->Stop();
 			DeleteGO(se2);
+			g_soundManager->ClearSE2();
 		}
 
 		NewGO<Titer>(0);
 		DeleteGO(this);
 	}
+
 }
 
 void Result::SetResultValues(int guruguru, int km) {

@@ -35,11 +35,15 @@ public:
 	SoundSource* PlayingSound(Sound number, bool isLoop = true, float volume = 1.0f);
 	Sound m_nowPlayingBGM = enSound_Num; // 今流れているBGM
 	SoundSource* PlaySE(Sound number, float volume = 1.0f);
+	// ★ 追加
+	SoundSource* GetSE2() const { return m_se2; }
+	void ClearSE2() { m_se2 = nullptr; }
 	void SetBGMVolume(float vol);
 	void SetSEVolume(float vol);
 	float m_bgmVolume = 100.0f;   // 0〜100
 	float m_seVolume = 100.0f;   // 0〜100
 	float m_se2Volume = 100.0f;   // SE2 専用音量
+	SoundSource* m_se2 = nullptr;
 };
 
 extern SoundManager* g_soundManager;
