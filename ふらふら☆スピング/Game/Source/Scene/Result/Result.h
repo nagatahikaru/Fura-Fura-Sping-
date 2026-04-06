@@ -24,5 +24,9 @@ private:
 	int m_displayKm = 0;
 	float m_countSpeed = 1.5f;  // カウントアップ速度（調整可）
 	float m_kmAddPerFrame = 0.0f;
+	FontRender m_moto;
+	int m_originalKm = 0;   // 元の km
+	float m_displayOriginalKm = 0; // カウントアップ用
+	float m_originalKmAddPerFrame = 0; // 1フレーム加算量
 };
 

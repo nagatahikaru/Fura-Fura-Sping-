@@ -22,7 +22,7 @@ bool Load::Start()
     m_gaugeFill.Init("Assets/sprite/gauge2.dds", 1095.0f, 105.0f);
     m_gaugeFill.SetPosition({ -554.0f, -318.5f, 0.0f });
     m_gaugeFill.SetPivot({ 0.0f, 0.5f });   // 左端基準
-    m_B.Init("Assets/sprite/BB.dds", 220.0f, 170.0f);
+    m_B.Init("Assets/sprite/AA.dds", 220.0f, 170.0f);
     m_B.SetPosition({ 800.0f, -400.0f, 0.0f });
 
     m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
@@ -55,7 +55,7 @@ void Load::Update()
         }
 
         // ★ 5秒後にゲーム開始（ここは好みで調整）
-        if (g_pad[0]->IsTrigger(enButtonB)) {
+        if (g_pad[0]->IsTrigger(enButtonA)) {
             // ★ キャラを動作開始にする
             NewGO<InGameUI>(0, "inGameUI");
             NewGO<Game>(0, "game");
