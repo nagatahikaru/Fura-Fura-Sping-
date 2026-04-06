@@ -78,15 +78,23 @@ SoundSource* SoundManager::PlayingSound(Sound number,bool isLoop,float volume)
 
 SoundSource* SoundManager::PlaySE(Sound number, float volume)
 {
-	SoundSource* se = NewGO<SoundSource>(0);
-	se->Init(number);
-
-	// ★ SE と SE2 を完全に共有音量にする
 	float v = m_seVolume / 100.0f;
-
-	// ★ 音量カーブ
 	float curved = powf(v, 1.3f);
 
+	// ★ SE2 は 1 個だけにする
+	if (number == enSound_SE2) {
+		if (!m_se2) {
+			m_se2 = NewGO<SoundSource>(0);
+			m_se2->Init(number);
+		}
+		m_se2->SetVolume(curved);
+		m_se2->Play(false);
+		return m_se2;
+	}
+
+	// ★ 通常 SE は今まで通り
+	SoundSource* se = NewGO<SoundSource>(0);
+	se->Init(number);
 	se->SetVolume(curved);
 	se->Play(false);
 	return se;
