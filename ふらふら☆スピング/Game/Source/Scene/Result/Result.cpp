@@ -1,36 +1,36 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Result.h"
 #include"Source/Scene/Titer/Titer.h"
 #include"Source/Sound/SoundManager.h"
 
 bool Result::Start()
 {
-	// ¥ •Û‘¶‚³‚ê‚½‰¹—Ê‚ğæ“¾
+	// â–¼ ä¿å­˜ã•ã‚ŒãŸéŸ³é‡ã‚’å–å¾—
 	float v = g_soundManager->m_bgmVolume / 100.0f;
 
-	// ¥ ƒJ[ƒu“K—pi1.8æ‚È‚Çj
+	// â–¼ ã‚«ãƒ¼ãƒ–é©ç”¨ï¼ˆ1.8ä¹—ãªã©ï¼‰
 	float curved = powf(v, 2.0f);
 	g_bgm = g_soundManager->PlayingSound(enSound_ResultBGM, false, curved);
 
 	m_spriteRender.Init("Assets/sprite/result2.dds", 1920.0f, 1080.0f);
 
-	m_B.Init("Assets/sprite/Bback.dds", 220.0f, 170.0f);
+	m_B.Init("Assets/sprite/AAA.dds", 220.0f, 170.0f);
 	m_B.SetPosition({ 730.0f, -400.0f, 0.0f });
 
 	m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
 	m_grobu.SetPosition({ 730.0f, -400.0f ,0.0f});
 
-	// š SE ‰¹—Ê‚ª 0 ‚Ìê‡‚Í SE2 ‚ğ‘¦íœ
+	// â˜… SE éŸ³é‡ãŒ 0 ã®å ´åˆã¯ SE2 ã‚’å³å‰Šé™¤
 	if (g_soundManager->m_seVolume <= 0.0f) {
 		auto se2 = FindGO<SoundSource>("SE2");
 		if (se2) {
 			se2->Stop();
 			DeleteGO(se2);
 		}
-		m_isFadingSE2 = false;  // ƒtƒF[ƒhˆ—‚à‚µ‚È‚¢
+		m_isFadingSE2 = false;  // ãƒ•ã‚§ãƒ¼ãƒ‰å‡¦ç†ã‚‚ã—ãªã„
 	}
 	else {
-		// š ƒtƒF[ƒhƒAƒEƒgŠJn
+		// â˜… ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆé–‹å§‹
 		m_se2Volume = 3.0f;
 		m_isFadingSE2 = true;
 	}
@@ -41,32 +41,32 @@ bool Result::Start()
 
 void Result::Update()
 {
-	// š SE2 ƒtƒF[ƒhƒAƒEƒgˆ—
+	// â˜… SE2 ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆå‡¦ç†
 	if (m_isFadingSE2) {
-		m_se2Volume -= 0.012f;   // © ƒtƒF[ƒh‘¬“xi’²®‰Âj
+		m_se2Volume -= 0.012f;   // â† ãƒ•ã‚§ãƒ¼ãƒ‰é€Ÿåº¦ï¼ˆèª¿æ•´å¯ï¼‰
 
 		if (m_se2Volume <= 0.0f) {
 			m_se2Volume = 0.0f;
 			m_isFadingSE2 = false;
 		}
 
-		// š ÀÛ‚Ì‰¹—Ê‚É”½‰f
-		// SE2 ‚Ì SoundSource ‚ğ‘S•”’T‚µ‚Ä‰¹—Ê‚ğ‰º‚°‚é
+		// â˜… å®Ÿéš›ã®éŸ³é‡ã«åæ˜ 
+		// SE2 ã® SoundSource ã‚’å…¨éƒ¨æ¢ã—ã¦éŸ³é‡ã‚’ä¸‹ã’ã‚‹
 		auto se2 = FindGO<SoundSource>("SE2");
 		if (se2) {
 			se2->SetVolume(m_se2Volume);
 		}
 	}
 
-	// š ‚®‚é‚®‚é‚ÌƒJƒEƒ“ƒgƒAƒbƒv
+	// â˜… ãã‚‹ãã‚‹ã®ã‚«ã‚¦ãƒ³ãƒˆã‚¢ãƒƒãƒ—
 	if (m_displayGuruguru < m_guruguru) {
-		m_displayGuruguru += (int)(m_countSpeed * 60); // 1•b‚Å60‘‚¦‚é
+		m_displayGuruguru += (int)(m_countSpeed * 60); // 1ç§’ã§60å¢—ãˆã‚‹
 		if (m_displayGuruguru > m_guruguru)
 			m_displayGuruguru = m_guruguru;
 	}
 
-	// š km ‚ÌƒJƒEƒ“ƒgƒAƒbƒv
-	// š km ‚ğ•K‚¸5•b‚ÅƒJƒEƒ“ƒgƒAƒbƒv
+	// â˜… km ã®ã‚«ã‚¦ãƒ³ãƒˆã‚¢ãƒƒãƒ—
+	// â˜… km ã‚’å¿…ãš5ç§’ã§ã‚«ã‚¦ãƒ³ãƒˆã‚¢ãƒƒãƒ—
 	if (m_displayKm < m_km) {
 		m_displayKm += m_kmAddPerFrame;
 
@@ -74,8 +74,15 @@ void Result::Update()
 			m_displayKm = m_km;
 	}
 
+	// â˜… å…ƒã® km ã®ã‚«ã‚¦ãƒ³ãƒˆã‚¢ãƒƒãƒ—
+	if (m_displayOriginalKm < m_originalKm) {
+		m_displayOriginalKm += m_originalKmAddPerFrame;
 
-	if (g_pad[0]->IsTrigger(enButtonB)) {
+		if (m_displayOriginalKm > m_originalKm)
+			m_displayOriginalKm = m_originalKm;
+	}
+
+	if (g_pad[0]->IsTrigger(enButtonA)) {
 		NewGO<Titer>(0);
 		DeleteGO(this);
 	}
@@ -84,18 +91,24 @@ void Result::Update()
 void Result::SetResultValues(int guruguru, int km) {
 	m_guruguru = guruguru;
 
-	// š ‚®‚é‚®‚é1‰ñ‚É‚Â‚«1.01”{‚·‚é
+	// â˜… å…ƒã® km ã‚’ä¿å­˜
+	m_originalKm = km;
+
+	// â˜… ãã‚‹ãã‚‹1å›ã«ã¤ã1.01å€ã™ã‚‹
 	double multiplier = pow(1.01, (double)guruguru);
 
-	// š km ‚É”{—¦‚ğ“K—p
+	// â˜… æ›¸ã‘ãŸã‚¹ã‚³ã‚¢ï¼ˆå€ç‡å¾Œï¼‰
 	m_km = (int)(km * multiplier);
 
+	// â˜… ã‚«ã‚¦ãƒ³ãƒˆã‚¢ãƒƒãƒ—åˆæœŸåŒ–
 	m_displayGuruguru = 0;
 	m_displayKm = 0;
+	m_displayOriginalKm = 0;
 
+	// â˜… 5ç§’ï¼ˆ270ãƒ•ãƒ¬ãƒ¼ãƒ ï¼‰ã§åˆ°é”
 	m_kmAddPerFrame = (float)m_km / 270.0f;
+	m_originalKmAddPerFrame = (float)m_originalKm / 180.0f;
 }
-
 
 void Result::Render(RenderContext& rc)
 {
@@ -108,18 +121,27 @@ void Result::Render(RenderContext& rc)
 	m_B.Draw(rc);
 
 	wchar_t buf[256];
-	// ‚®‚é‚®‚é
-	swprintf_s(buf, L"‚®‚é‚®‚é: %d", m_displayGuruguru);
+	// ãã‚‹ãã‚‹
+	swprintf_s(buf, L"ãã‚‹ãã‚‹: %d", m_displayGuruguru);
 	m_fontGuruguru.SetText(buf);
-	m_fontGuruguru.SetPosition(-130, 130, 0);
+	m_fontGuruguru.SetPosition(300, 230, 0);
 	m_fontGuruguru.SetScale(1.5f);
+	m_fontGuruguru.SetColor(1, 1, 1, 1);
 	m_fontGuruguru.Draw(rc);
 
-	// km
-	double meter = (double)m_displayKm / 100.0;
-	swprintf_s(buf, L"%.2f m", meter);
+	// å…ƒã® kmï¼ˆå€ç‡å‰ï¼‰
+	double originalMeter = (double)m_displayOriginalKm / 100.0;
+	swprintf_s(buf, L"%.2f m", originalMeter);
 	m_fontKm.SetText(buf);
-	m_fontKm.SetPosition(-50, 0, 0);
-	m_fontKm.SetScale(1.5f);
+	m_fontKm.SetPosition(-50, 0, 0);  // â† å¥½ããªä½ç½®ã«èª¿æ•´
+	m_fontKm.SetScale(1.0f);
+	m_fontKm.SetColor(1, 1, 1, 1);
 	m_fontKm.Draw(rc);
+
+	swprintf_s(buf, L"ã‚¹ã‚³ã‚¢%.2f",m_displayKm/100.0);
+	m_moto.SetText(buf);
+	m_moto.SetPosition(-200, 120, 0);
+	m_moto.SetScale(2.0f);
+	m_moto.SetColor(0,0,0,1);
+	m_moto.Draw(rc);
 }
