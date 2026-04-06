@@ -83,6 +83,14 @@ void Result::Update()
 	}
 
 	if (g_pad[0]->IsTrigger(enButtonA)) {
+
+		// ★ シーン遷移前に SE2 を必ず止める
+		auto se2 = FindGO<SoundSource>("SE2");
+		if (se2) {
+			se2->Stop();
+			DeleteGO(se2);
+		}
+
 		NewGO<Titer>(0);
 		DeleteGO(this);
 	}
