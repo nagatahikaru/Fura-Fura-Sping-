@@ -424,6 +424,12 @@ void Batter::HitBat()
 
 		m_ball->HitBall(hitDir, 1000.0f);
 
+
+		// š ‘Å‚Á‚½uŠÔ‚É”{‘¬‹–‰Â‚ð ON
+		if (m_game) {
+			m_game->m_canFastForward = true;
+		}
+
 		// š ‘ÅŒ‚ SE Ä¶
 		if (g_soundManager) {
 			g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
@@ -433,9 +439,12 @@ void Batter::HitBat()
 		}
 
 		// š ‚±‚±‚ÅƒJƒƒ‰Ø‚è‘Ö‚¦
-		
 		if (m_game) {
 			m_game->SetCameraMode(Camera_BackBall);
+		}
+
+		if (m_inGameUI) {
+			m_inGameUI->SetBaisokuVisible(true);
 		}
 	}
 }

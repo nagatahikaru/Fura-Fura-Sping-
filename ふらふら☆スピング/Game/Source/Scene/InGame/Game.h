@@ -63,7 +63,8 @@ public:
 	{
 		return m_cameraType;
 	}
-
+	float GetTimeScale() const { return m_timeScale; }
+	bool m_canFastForward = false;
 private:
 	GameCamera* m_gameCamera;	//ƒQ[ƒ€ƒJƒƒ‰B
 	Background* m_background;	//”wŒiB
@@ -84,5 +85,6 @@ private:
 	bool m_isRotationSeen = true;
 	bool m_isGameStarted=false;
 	int m_cameraType = 0;
+	float m_timeScale = 1.0f;
 };
 
