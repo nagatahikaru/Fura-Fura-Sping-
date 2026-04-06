@@ -55,7 +55,7 @@ void Ball::Update()
     if (!game->IsGameStarted())return;
 
 
-    float dt = 1.0f / 60.0f;
+    float dt = (1.0f / 60.0f) * game->GetTimeScale();
 
     m_throwTimer += dt;
 

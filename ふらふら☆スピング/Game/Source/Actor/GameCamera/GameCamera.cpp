@@ -157,20 +157,20 @@ void GameCamera::Update() {
         float zoomBySpeed = 600.0f + ballSpeed * 3.0f;
 
         // 距離ベースのズーム（遠くへ飛ぶほどズームアウト）
-        float zoomByDistance = 600.0f + distanceFromHome * 0.5f;
+        float zoomByDistance = 600.0f + distanceFromHome * 0.2f;
 
         // 2つをミックス（自然なズーム）
-        float followDistance = Clamp((zoomBySpeed + zoomByDistance) * 0.5f, 600.0f, 2000.0f);
+        float followDistance = Clamp((zoomBySpeed + zoomByDistance) * 0.5f, 150.0f, 800.0f);
 
-        Vector3 fixedDir = Vector3(0, 0, -1);
+        Vector3 fixedDir = Vector3(0, 0, 1);
         Vector3 targetCamPos = ballPos + fixedDir * followDistance;
 
         // 高さ調整
        // 高さ調整（距離に応じて上げる）
-        targetCamPos.y = ballPos.y + 50.0f + distanceFromHome * 0.1f;
+        targetCamPos.y = ballPos.y + 20.0f + distanceFromHome * 0.02f;
 
         // スムーズ追尾
-        m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 0.8f);
+        m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 1.0f);
 
         // ボールを見る
         m_target = ballPos;

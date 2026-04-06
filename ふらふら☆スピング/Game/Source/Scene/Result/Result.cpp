@@ -106,7 +106,7 @@ void Result::SetResultValues(int guruguru, int km) {
 	m_displayOriginalKm = 0;
 
 	// ★ 5秒（270フレーム）で到達
-	m_kmAddPerFrame = (float)m_km / 270.0f;
+	m_kmAddPerFrame = (float)m_km / 258.0f;
 	m_originalKmAddPerFrame = (float)m_originalKm / 180.0f;
 }
 
@@ -126,7 +126,7 @@ void Result::Render(RenderContext& rc)
 	m_fontGuruguru.SetText(buf);
 	m_fontGuruguru.SetPosition(300, 230, 0);
 	m_fontGuruguru.SetScale(1.5f);
-	m_fontGuruguru.SetColor(1, 1, 1, 1);
+	m_fontGuruguru.SetColor(0, 0, 0, 1);
 	m_fontGuruguru.Draw(rc);
 
 	// 元の km（倍率前）

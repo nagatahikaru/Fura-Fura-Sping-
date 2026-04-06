@@ -94,6 +94,15 @@ void Game::Update()
 		return;
 	}
 
+	// ★ Aボタン押しっぱなしで2倍速
+	// ★ 打った後だけ倍速ボタンを有効化
+	if (m_canFastForward && g_pad[0]->IsPress(enButtonB)) {
+		m_timeScale = 2.0f;
+	}
+	else {
+		m_timeScale = 1.0f;
+	}
+
 	// ★ ボタンでカメラ切り替え
 	// ★ Xボタンでカメラ順番切り替え
 	if (g_pad[0]->IsTrigger(enButtonLB1)) {
@@ -160,7 +169,7 @@ void Game::Update()
 	//}
 
 	if (m_isBallLanded) {
-		m_afterLandingTimer += 1.0f / 60.0f;
+		m_afterLandingTimer += (1.0f / 60.0f) * m_timeScale;
 
 		if (m_afterLandingTimer >= 1.0f) {
 			Result* result = NewGO<Result>(0);
@@ -169,9 +178,8 @@ void Game::Update()
 			return;
 		}
 	}
-
-	if (m_km <= 0.1f&&m_isGameStarted) {
-		m_zeroDistanceTimer += 1.0f / 60.0f;
+	if (m_km <= 0.1f && m_isGameStarted) {
+		m_zeroDistanceTimer += (1.0f / 60.0f) * m_timeScale;
 
 		if (m_zeroDistanceTimer >= 10.0f) {
 			Result* result = NewGO<Result>(0);
@@ -184,7 +192,6 @@ void Game::Update()
 		m_zeroDistanceTimer = 0.0f;
 	}
 
-
 	if (m_InGameUI) {
 		m_InGameUI->SetKm(m_km);
 	}
@@ -194,6 +201,8 @@ void Game::OnBallLanded()
 {
 	m_isBallLanded = true;
 	m_afterLandingTimer = 0.0f;
+	m_canFastForward = false;  // ★ 倍速禁止に戻す
+	m_timeScale = 1.0f;        // ★ 通常速度に戻す
 }
 
 void Game::Render(RenderContext& rc)

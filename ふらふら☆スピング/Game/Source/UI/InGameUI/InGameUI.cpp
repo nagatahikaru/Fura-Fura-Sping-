@@ -9,6 +9,7 @@ InGameUI::InGameUI() {
 	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 30.0f, 30.0f);
 	m_kiiro.Init("Assets/sprite/kiiro.DDS", 550.0f, 550.0f);
 	m_besu.Init("Assets/sprite/besu.DDS", 400.0f, 450.0f);
+	m_baisoku.Init("Assets/sprite/baisoku.DDS", 150.0f, 150.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -100,6 +101,11 @@ void InGameUI::SetStartZ(float z) {
 void InGameUI::SetGuruGuruTimer(float time)
 {
 	m_guruGuruTimer = time;
+}
+
+void InGameUI::SetBaisokuVisible(bool isVisible)
+{
+	m_isBaisokuVisible = isVisible;
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -200,20 +206,25 @@ void InGameUI::Render(RenderContext& rc) {
 
 		wchar_t timerText[256];
 		// 小数1桁で表示（例：4.8）
+	// 小数1桁で表示（例：4.8）
 		float displayTime = max(0.0f, m_guruGuruTimer);
 		swprintf_s(timerText, 256, L"タイム: %.1f", displayTime);
 		m_Count.SetText(timerText);
 		m_Count.SetPosition(-930.0f, 450.0f, 0.0f);
-		// 通常時（3秒より大きい）
-		if (displayTime > 3.0f) {
+
+		// ★ タイムが0なら透明にする
+		if (displayTime <= 0.0f) {
+			m_Count.SetColor(0.0f, 0.0f, 0.0f, 0.0f);  // 完全透明
+		}
+		else if (displayTime > 3.0f) {
 			m_Count.SetColor(0.0f, 0.0f, 0.0f, 1.0f);  // 黒固定
 		}
 		else {
 			// ★ 点滅処理（0.2秒周期）
 			float blink = fabsf(sinf(displayTime * 10.0f));  // 0〜1 の点滅
-			float alpha = 0.0f + blink * 1.0f;               // 0.2〜1.0 の範囲に調整
+			float alpha = blink;  // 0〜1 の範囲
 
-			// 赤で点滅させる（色は自由に変更可能）
+			// 赤で点滅
 			m_Count.SetColor(1.0f, 0.0f, 0.0f, alpha);
 		}
 		m_Count.Draw(rc);
@@ -237,5 +248,10 @@ void InGameUI::Render(RenderContext& rc) {
 			m_spriteRenderReplay.Draw(rc);
 		}
 
+		if (m_isBaisokuVisible) {
+			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
+			m_baisoku.Update();
+			m_baisoku.Draw(rc);
+		}
 	}
 }

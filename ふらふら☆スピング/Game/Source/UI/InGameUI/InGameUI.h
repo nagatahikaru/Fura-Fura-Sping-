@@ -30,6 +30,7 @@ class InGameUI:public Source
 	bool GetIsError() const { return m_isError; }
 	void DisableErrorCheck() { m_isErrorCheckEnabled = false; }
 	void SetGuruGuruTimer(float time);
+	void SetBaisokuVisible(bool isVisible);
 private:
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
@@ -69,5 +70,7 @@ private:
 	bool  m_isErrorCheckEnabled = false;
 	float m_guruGuruTimer = 0.0f;
 	FontRender m_Count;
+	SpriteRender m_baisoku;
+	bool m_isBaisokuVisible = false;
 };
 
