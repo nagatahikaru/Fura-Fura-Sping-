@@ -99,7 +99,15 @@ namespace nsK2EngineLow {
 		void EndMeasurement()
 		{
 			m_sw.Stop();
-			PushFrameDeltaTime(static_cast<float>(m_sw.GetElapsed()));
+			float dt = static_cast<float>(m_sw.GetElapsed());
+			PushFrameDeltaTime(dt);
+
+			// ★ 累計時間を加算
+			m_totalTime += dt;
+		}
+		float GetTime() const
+		{
+			return m_totalTime;
 		}
 	private:
 		friend class K2EngineLow;
@@ -108,5 +116,6 @@ namespace nsK2EngineLow {
 		float		m_frameDeltaTime = 1.0f / 60.0f;	// 1フレームの経過時間。
 		bool		m_isFixedFrameDeltaTime = false;		// 1フレームの経過時間を固定化する。
 		float		m_fixedFrameDeltaTime = 1.0f / 60.0f;	// 固定経過時間。
+		float m_totalTime = 0.0f;   // 累計時間（秒）
 	};
 }

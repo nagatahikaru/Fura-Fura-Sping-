@@ -82,6 +82,9 @@
     <Filter Include="Source\Scene\Start">
       <UniqueIdentifier>{3df94db5-8cea-410d-bf7c-9c0954403896}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\UI\LoadUI">
+      <UniqueIdentifier>{05823ccc-be60-4054-a628-d80c0ee9bc78}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -178,6 +181,9 @@
     </ClCompile>
     <ClCompile Include="Source\Scene\Start\Start.cpp">
       <Filter>Source\Scene\Start</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\LoadUI\LoadUI.cpp">
+      <Filter>Source\UI\LoadUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -278,6 +284,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene\Start\Start.h">
       <Filter>Source\Scene\Start</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\LoadUI\LoadUI.h">
+      <Filter>Source\UI\LoadUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
