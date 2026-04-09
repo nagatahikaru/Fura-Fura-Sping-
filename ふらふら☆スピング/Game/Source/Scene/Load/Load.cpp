@@ -51,6 +51,12 @@ void Load::Update()
             m_bgmStarted = true;
         }
         if (g_pad[0]->IsTrigger(enButtonA)) {
+            // ★ 即押しでも BGM を必ず再生する
+            if (!m_bgmStarted) {
+                float v = g_soundManager->m_bgmVolume / 100.0f;
+                g_soundManager->PlayingSound(enSound_GameBGM1, true, powf(v, 1.5f));
+                m_bgmStarted = true;
+            }
             auto loadUI = FindGO<LoadUI>("loadUI");
             if (loadUI) DeleteGO(loadUI);
             NewGO<InGameUI>(0, "inGameUI");

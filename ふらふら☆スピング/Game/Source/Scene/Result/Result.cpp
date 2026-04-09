@@ -87,6 +87,22 @@ void Result::Update()
 
 	if (g_pad[0]->IsTrigger(enButtonA)) {
 
+		// ★ まだカウントアップ中なら即終了させる
+		if (m_displayKm < m_km || m_displayOriginalKm < m_originalKm || m_displayGuruguru < m_guruguru) {
+
+			// ぐるぐる
+			m_displayGuruguru = m_guruguru;
+
+			// 元の km
+			m_displayOriginalKm = m_originalKm;
+
+			// 倍率後 km
+			m_displayKm = m_km;
+
+			return; // ← ここで終了。次のフレームから A で進める
+		}
+
+		// ★ ここに来たらスコアはすでに完成しているので次へ進む
 		auto se2 = g_soundManager->GetSE2();
 		if (se2) {
 			se2->Stop();

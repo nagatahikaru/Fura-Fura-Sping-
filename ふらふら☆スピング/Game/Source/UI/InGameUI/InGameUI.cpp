@@ -10,6 +10,9 @@ InGameUI::InGameUI() {
 	m_kiiro.Init("Assets/sprite/kiiro.DDS", 550.0f, 550.0f);
 	m_besu.Init("Assets/sprite/besu.DDS", 400.0f, 450.0f);
 	m_baisoku.Init("Assets/sprite/baisoku.DDS", 150.0f, 150.0f);
+	m_shuchusen.Init("Assets/sprite/shuchusen.DDS", 1920.0f, 1080.0f);
+	m_shuchusen.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
+	m_shuchusen.SetMulColor({ 1,1,1,0 }); // 最初は透明
 }
 
 InGameUI::~InGameUI() {
@@ -25,7 +28,12 @@ bool InGameUI::Start() {
 }
 
 void InGameUI::Update() {
+	if (m_shuchusenTimer > 0.0f) {
+		m_shuchusenTimer -= g_gameTime->GetFrameDeltaTime();
 
+		float alpha = m_shuchusenTimer / 0.2f; // 0.2秒で消える
+		m_shuchusen.SetMulColor({ 1.0f, 1.0f, 1.0f, alpha });
+	}
 }
 
 //バットの位置を設定
@@ -112,6 +120,11 @@ void InGameUI::Render(RenderContext& rc) {
 
 	if (m_isPaused) {
 		return; // ← ポーズ中は UI を一切描画しない
+	}
+
+	if (m_shuchusenTimer > 0.0f) {
+		m_shuchusen.Update();
+		m_shuchusen.Draw(rc);
 	}
 
 	if (m_isUIVisible) {

@@ -76,53 +76,6 @@ void GameCamera::Update() {
         return;   // ← これでカメラが完全停止
     }
 
-  // --- ASWD で移動 ---
-
-    //if (g_pad[0]->IsPress(enButtonB)) {
-    //    m_cameraPos.z += m_moveSpeed;
-    //    m_target.z += m_moveSpeed;
-    //}
-    //if (g_pad[0]->IsPress(enButtonY)) {
-    //    m_cameraPos.z -= m_moveSpeed;
-    //    m_target.z -= m_moveSpeed;
-    //}
-    //if (g_pad[0]->IsPress(enButtonA)) {
-    //    m_cameraPos.x -= m_moveSpeed;
-    //    m_target.x -= m_moveSpeed;
-    //}
-    //if (g_pad[0]->IsPress(enButtonX)) {
-    //    m_cameraPos.x += m_moveSpeed;
-    //    m_target.x += m_moveSpeed;
-    //}
-
-    //// --- 上下移動（Up：上昇、Down：下降） ---
-    //if (g_pad[0]->IsPress(enButtonRB1)) {
-    //    m_cameraPos.y += m_moveSpeed;
-    //    m_target.y += m_moveSpeed;
-    //}
-    //if (g_pad[0]->IsPress(enButtonRB3)) {
-    //    m_cameraPos.y -= m_moveSpeed;
-    //    m_target.y -= m_moveSpeed;
-    //}
-
-    //// --- 視点の上下回転（Up：上を見る、Down：下を見る） ---
-    //if (g_pad[0]->IsPress(enButtonUp)) {
-    //    m_pitch += m_rotSpeed;
-    //}
-    //if (g_pad[0]->IsPress(enButtonDown)) {
-    //    m_pitch -= m_rotSpeed;
-    //}
-
-    //// --- 回転（Q：左回転、E：右回転） ---
-    //if (g_pad[0]->IsPress(enButtonLeft)) {
-    //    m_yaw -= m_rotSpeed;
-    //}
-
-    //// --- 回転（Q：左回転、E：右回転） ---
-    //if (g_pad[0]->IsPress(enButtonRight)) {
-    //    m_yaw += m_rotSpeed;
-    //}
-
     // --- 回転（Yaw + Pitch） ---
     m_rotYaw.SetRotationDeg(Vector3::AxisY, m_yaw);
 
@@ -154,13 +107,13 @@ void GameCamera::Update() {
         float distanceFromHome = (ballPos - Vector3(0, 0, 0)).Length();
 
         // 速度ベースのズーム
-        float zoomBySpeed = 600.0f + ballSpeed * 3.0f;
+        float zoomBySpeed = 600.0f + ballSpeed * 5.0f;
 
         // 距離ベースのズーム（遠くへ飛ぶほどズームアウト）
-        float zoomByDistance = 600.0f + distanceFromHome * 0.2f;
+        float zoomByDistance = 600.0f + distanceFromHome * 0.4f;
 
         // 2つをミックス（自然なズーム）
-        float followDistance = Clamp((zoomBySpeed + zoomByDistance) * 0.5f, 150.0f, 800.0f);
+        float followDistance = Clamp((zoomBySpeed + zoomByDistance) * 0.5f, 150.0f, 1300.0f);
 
         Vector3 fixedDir = Vector3(0, 0, 1);
         Vector3 targetCamPos = ballPos + fixedDir * followDistance;

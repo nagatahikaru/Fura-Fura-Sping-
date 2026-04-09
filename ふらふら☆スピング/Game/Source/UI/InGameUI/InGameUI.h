@@ -1,19 +1,19 @@
 #pragma once
 #include "Source/Source.h"
 
-class InGameUI:public Source
+class InGameUI :public Source
 {
-	public:
+public:
 	InGameUI();
 	virtual ~InGameUI();
 	virtual void Update();
 	virtual bool Start();
 	virtual void Render(RenderContext& rc);
-	void SetBatPosition(const Vector3&pos);
+	void SetBatPosition(const Vector3& pos);
 	void SetBatRotation(float rotDeg);
 	void SetUIVisible(bool isVisible) { m_isUIVisible = isVisible; }
 	void SetFontVisble(bool isVisible) { m_isFontVisible = isVisible; }
-	void SetReplayVisible(bool isVisible){ m_isReplayVisible = isVisible; }
+	void SetReplayVisible(bool isVisible) { m_isReplayVisible = isVisible; }
 	void SetBatterSide(bool isLeft);
 	void SetPause(bool isPaused);
 	void SetPredictedBallPos(const Vector3& pos3D);
@@ -31,6 +31,7 @@ class InGameUI:public Source
 	void DisableErrorCheck() { m_isErrorCheckEnabled = false; }
 	void SetGuruGuruTimer(float time);
 	void SetBaisokuVisible(bool isVisible);
+	float m_shuchusenTimer = 0.0f;
 private:
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
@@ -50,7 +51,7 @@ private:
 	Vector3 m_meetPos;
 	Vector3 m_batPos;
 	Vector3 m_offset;
-	float m_km=0.0f;
+	float m_km = 0.0f;
 	bool m_isUIVisible = true;
 	bool m_isFontVisible = true;
 	bool m_isReplayVisible = true;
@@ -72,5 +73,6 @@ private:
 	FontRender m_Count;
 	SpriteRender m_baisoku;
 	bool m_isBaisokuVisible = false;
+	SpriteRender m_shuchusen;
 };
 
