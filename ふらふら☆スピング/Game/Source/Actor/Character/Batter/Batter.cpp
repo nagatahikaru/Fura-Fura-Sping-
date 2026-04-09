@@ -424,6 +424,9 @@ void Batter::HitBat()
 
 		m_ball->HitBall(hitDir, 1000.0f);
 
+		if (m_inGameUI) {
+			m_inGameUI->m_shuchusenTimer = 0.5f;  // © W’†ü‚ð0.2•b•\Ž¦
+		}
 
 		// š ‘Å‚Á‚½uŠÔ‚É”{‘¬‹–‰Â‚ð ON
 		if (m_game) {
@@ -447,6 +450,7 @@ void Batter::HitBat()
 			m_inGameUI->SetBaisokuVisible(true);
 		}
 	}
+	
 }
 
 float Batter::DistancePointToSegment(const Vector3& ballpos, const Vector3& base, const Vector3& tip)
