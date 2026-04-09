@@ -241,7 +241,6 @@
     <ClCompile Include="Source\MasterData.cpp" />
     <ClCompile Include="Source\Scene\InGame\Game.cpp" />
     <ClCompile Include="Source\Scene\Load\Load.cpp" />
-    <ClCompile Include="Source\Scene\Lrad\Lrad.cpp" />
     <ClCompile Include="Source\Scene\Result\Result.cpp" />
     <ClCompile Include="Source\Scene\SoundTest\SoundTest.cpp" />
     <ClCompile Include="Source\Scene\Start\Start.cpp" />
@@ -280,7 +279,6 @@
     <ClInclude Include="Source\MasterData.h" />
     <ClInclude Include="Source\Scene\InGame\Game.h" />
     <ClInclude Include="Source\Scene\Load\Load.h" />
-    <ClInclude Include="Source\Scene\Lrad\Lrad.h" />
     <ClInclude Include="Source\Scene\Result\Result.h" />
     <ClInclude Include="Source\Scene\SoundTest\SoundTest.h" />
     <ClInclude Include="Source\Scene\Start\Start.h" />
