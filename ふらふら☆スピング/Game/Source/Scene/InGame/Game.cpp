@@ -56,7 +56,7 @@ bool Game::Start()
 void Game::Update()
 {
 	//当たり判定の表示
-//	PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
+	//PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止
 	if (FindGO<Start1>("start1") != nullptr) {
@@ -207,5 +207,5 @@ void Game::OnBallLanded()
 
 void Game::Render(RenderContext& rc)
 {
-	
+
 }

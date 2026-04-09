@@ -25,9 +25,6 @@
     <Filter Include="Source\Scene\InGame">
       <UniqueIdentifier>{11a7fb4a-871c-4218-9b2a-da0c661c39a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Scene\Lrad">
-      <UniqueIdentifier>{9f68f991-69ab-47b6-9aa3-3e64500c7d85}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Scene\Titer">
       <UniqueIdentifier>{17df55da-e02f-432b-854e-0132d5493659}</UniqueIdentifier>
     </Filter>
@@ -100,9 +97,6 @@
     </ClCompile>
     <ClCompile Include="Source\Sound\SoundManager.cpp">
       <Filter>Source\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene\Lrad\Lrad.cpp">
-      <Filter>Source\Scene\Lrad</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\InGame\Game.cpp">
       <Filter>Source\Scene\InGame</Filter>
@@ -199,9 +193,6 @@
     </ClInclude>
     <ClInclude Include="Source\Sound\SoundManager.h">
       <Filter>Source\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Scene\Lrad\Lrad.h">
-      <Filter>Source\Scene\Lrad</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\InGame\Game.h">
       <Filter>Source\Scene\InGame</Filter>

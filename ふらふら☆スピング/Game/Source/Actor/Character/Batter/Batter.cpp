@@ -15,73 +15,21 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
 
 
 namespace {
+	float PI= 3.1415f / 180.0f;
+	float ZERO_FLOAT = 0.0f;	
+
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
-	//std::string FILE_PATH_BATTER_UNIFORMNUMBER = ("Assets/modelData/Batter/UniformNumber/");
-	//std::string FILE_PATH_BAT = ("Assets/modelData/Bat");
-	//std::string FILE_PATH_TKM = (".tkm");
 	std::string FILE_PATH_DDS = (".tka");
-	//std::string FILE_PATH_NUMBER[10] = {
-	//	"0",
-	//	"1",
-	//	"2",
-	//	"3",
-	//	"4",
-	//	"5",
-	//	"6",
-	//	"7",
-	//	"8",
-	//	"9"
-	//};
 	std::string FILE_PATH_ANIMATION[2] = {
 		"idle",
 		"swing"
 	};
-
-	//inline std::string GetBatterUniformNumberFilePath(int number)
-	//{
-	//	return FILE_PATH_BATTER_UNIFORMNUMBER + FILE_PATH_NUMBER[number] + FILE_PATH_TKM;
-	//}
 
 	inline std ::string GetAnimationFilePath(int number)
 	{
 		return FILE_PATH_BATTER + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
 	}
 
-	//inline std::string GetBatFilePath()
-	//{
-	//	return FILE_PATH_BAT + FILE_PATH_TKM;
-	//}
-	///**
-	//モデルの一括初期化処理
-	//ModelRenderの初期化、位置、スケール設定、更新処理をまとめて行う関数
-	//modelRender			 初期化するModelRenderのポインタ
-	//m_animationClips	 アニメーションクリップの配列
-	//enAnimationClip_Num	 アニメーションクリップの数
-	//pos					 モデルの位置
-	//scl					 モデルのスケール
-	//filePath			 モデルデータのファイルパス
-	//例:
-	//InitModelRender(
-	//	&m_modelRender[i],
-	//	m_animationClips,
-	//	enAnimationClip_Num,
-	//	PlayerVariable::Transform::INITIAL_COORDINATE,
-	//	PlayerVariable::Transform::INITIAL_SCALE,
-	//	GetModelFilePath(i));
-	//*/
-	//void InitModelRender(
-	//	ModelRender* modelRender
-	//	, AnimationClip* m_animationClips
-	//	, int enAnimationClip_Num
-	//	, const Vector3& pos
-	//	, const Vector3& scl
-	//	, std::string filePath) {
-	//	modelRender->Init(filePath.c_str(), m_animationClips, enAnimationClip_Num, enModelUpAxisZ);
-	//	modelRender->SetPosition(pos);
-	//	modelRender->SetScale(scl);
-	//	modelRender->Update();
-	//}
-	//
 	void InitAnimation(AnimationClip animation[], int number, bool loop)
 	{
 		animation[number].Load(GetAnimationFilePath(number).c_str());
@@ -162,7 +110,7 @@ bool Batter::Start()
 
 	m_collisionObject = new CollisionObject;
 	m_collisionObject->CreateBox(
-		Vector3(0.0f, -50.0f, 5500.0f),
+		m_meetCursorWorldPos,
 		Quaternion::Identity,
 		BatBasicSettings::COLLISION_SCALE_BAT);
 
@@ -189,10 +137,6 @@ void Batter::Update()
 	// ★ ポーズ中はキャッチャーのアニメーションを止める	
 	if (m_game && m_game->m_isPaused) {
 		return;   // ← これでキャッチャーの動きが完全停止
-	}
-	if (!GetRotationSeen())
-	{
-		m_meetCursorWorldPos = CalcCursorWorldPos();
 	}
 
 	m_stateMachine->Update();
@@ -356,7 +300,7 @@ void Batter::SetCursorPosition()
 
 		float speed = 500.0f;
 
-		m_meetPosition += move * speed * dt;
+		m_meetPosition += move * speed * dt+ m_randomCursorMovePwer;
 
 		m_meetPosition.x = clamp(m_meetPosition.x, -300.0f, 300.0f);
 		m_meetPosition.y = clamp(m_meetPosition.y, -300.0f, 300.0f);
@@ -376,7 +320,7 @@ void Batter::SetCursorPosition()
 		right *= lx * 400.0f;
 		forward *= ly * 400.0f;
 
-		m_meetPosition += right + forward;
+		m_meetPosition += right + forward+ m_randomCursorMovePwer;
 	}
 
 	m_inGameUI->SetMeetCursorPosition(m_meetPosition);
@@ -526,18 +470,67 @@ void Batter::BatHitBoxPosition()
 	m_collisionObject->Update();
 }
 
+void Batter::SetRandomCursorTimeRadius()
+{
+	// ★ 回転回数に応じて時間と半径を増加させる
+	int count = m_guruGuruBatCount/5;
+	if (count >= 10) count = 10; // 上限を設ける（必要に応じて調整）
+	// ★ ランダムな時間と半径を設定
+	m_randomMoveDuration = count * 5.0f - 0.5f; // 例: 回転5回ごとに時間0.5秒減少
+	m_randomSpotRadius = count * 50.0f + 50.0f; // 例: 回転5回ごとに半径50増加
+	m_randomCursorUpdate = true;
+}
+
+//デバフ無し
+void Batter::DebuffDepth(){
+	// ★ 回転回数が0以下ならデバフ無し
+	if(m_guruGuruBatCount<=0)
+	{
+		m_randomCursorMovePwer = Vector3::Zero;
+		return;
+	}
+
+	// ★ デバフの強さを回転回数で決める
+	//ランダムなベクトルを取得
+	if (m_randomCursorUpdate)
+	{
+		//そのベクトルに向かって移動
+		// 基準点から半径250の円範囲内でランダムに出現位置を決定
+		//ランダムな角度と距離を生成
+		float angle = (rand() % 360) * PI;
+		float radius = SetRandom(0, m_randomSpotRadius);
+
+		// 円の中のランダム位置を生成
+		m_randomCursorTargetPos.x = cosf(angle) * radius;
+		m_randomCursorTargetPos.y = sinf(angle) * radius;
+		m_randomCursorMoveTimer = SetRandom(0, m_randomMoveDuration);
+		m_randomCursorUpdate = false;
+	}
+	Vector3 toTarget = m_randomCursorTargetPos - m_meetPosition;
+
+	// 少しずつ寄せる（ここがデバフの強さ）
+	m_randomCursorMovePwer = toTarget * 0.05f;
+	//一定時間経過後、再度ランダムなベクトルを取得
+	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
+	if (m_randomCursorMoveTimer <= ZERO_FLOAT)
+	{
+		m_randomCursorUpdate = true;
+	}
+}
+
+
 void Batter::Render(RenderContext& rc)
 {
 	//モデルの描画
 	m_characterModel->DrawCharacterModel(rc);
 
-	////文字の描画
-	//wchar_t be[129];
-	//m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
-	//m_fontRender.SetColor(g_vec4White);
-	////Vector3 pos = m_transform.m_position;
+	//文字の描画
+	wchar_t be[129];
+	m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
+	m_fontRender.SetColor(g_vec4White);
+	Vector3 pos = m_meetCursorWorldPos;
 	//Quaternion pos = m_transform.m_rotation;
-	//swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f,w=%.0f", pos.x, pos.y, pos.z,pos.w);
-	//m_fontRender.SetText(be);
-	//m_fontRender.Draw(rc);
+	swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f", pos.x, pos.y, pos.z);
+	m_fontRender.SetText(be);
+	m_fontRender.Draw(rc);
 }

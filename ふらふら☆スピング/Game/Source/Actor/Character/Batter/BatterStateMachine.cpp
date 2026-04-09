@@ -127,6 +127,38 @@ bool BatterRotationState::RequestState(uint32_t& request)
 	return false;
 }
 
+void BatterCursorSetState::Enter()
+{
+	Batter* batter = GetBatter();
+	batter->SetIdleAnimation();
+	batter->SetRandomCursorTimeRadius();
+
+}
+
+void BatterCursorSetState::Update()
+{
+	Batter* batter = GetBatter();
+	batter->DebuffDepth();
+	batter->UpdateCursor3D();   // ★ 位置更新だけ
+	batter->BatHitBoxPosition(); // ★ 当たり判定の位置更新
+	batter->AnimationUpdate();
+}
+
+void BatterCursorSetState::Exit()
+{
+}
+
+bool BatterCursorSetState::RequestState(uint32_t& request)
+{
+	Batter* batter = GetBatter();
+	if (batter->GetIsOnGround())
+	{
+		request = BatterIdleState::ID();
+		return true;
+	}
+	return false;
+}
+
 void BatterSwingState::Enter()
 {
 	Batter* batter = GetBatter();
@@ -152,48 +184,5 @@ void BatterSwingState::Exit()
 bool BatterSwingState::RequestState(uint32_t& request)
 {
 	Batter* batter = GetBatter();
-	if (batter->IsSwingAnimationPlaying())
-	{
-		return false;		
-	}
-	float lx = g_pad[0]->GetLStickXF();
-	float ly = g_pad[0]->GetLStickYF();
-
-	if (lx < 0.0f && ly < 0.0f)
-	{
-		request = BatterIdleState::ID();
-		return true;
-	}
-	return false;
-}
-
-void BatterCursorSetState::Enter()
-{
-	Batter* batter = GetBatter();
-	batter->SetIdleAnimation();
-
-}
-
-void BatterCursorSetState::Update()
-{
-	Batter* batter = GetBatter();
-
-	batter->UpdateCursor3D();   // ★ 位置更新だけ
-	batter->BatHitBoxPosition(); // ★ 当たり判定の位置更新
-	batter->AnimationUpdate();
-}
-
-void BatterCursorSetState::Exit()
-{
-}
-
-bool BatterCursorSetState::RequestState(uint32_t& request)
-{
-	Batter* batter = GetBatter();
-	if (batter->GetIsOnGround())
-	{
-		request = BatterIdleState::ID();
-		return true;
-	}
 	return false;
 }

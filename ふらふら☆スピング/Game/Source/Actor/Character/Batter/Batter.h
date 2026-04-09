@@ -39,7 +39,7 @@ namespace {
 		const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
 		const Vector3 ROTATION_OFFSET = Vector3(1.0f, 0.0f, 0.0f); //回転の軸となるオフセット座標
 		const float ROTATION_ANGLE = 90.0f; //回転角度
-		const Vector3 COLLISION_SCALE_BAT = Vector3(114.285714286f, 80.0f, 114.285714286f);
+		const Vector3 COLLISION_SCALE_BAT = Vector3(114.285714286f, 80.0f, 40.0f);
 	}
 };
 
@@ -185,6 +185,9 @@ public:
 		return result;
 	}
 
+	/**
+	* 
+	*/
 	Vector3 RayToPlane(
 		const Vector3& rayOrigin,
 		const Vector3& rayDir,
@@ -211,6 +214,21 @@ public:
 	void RoundAndRoundBat();
 
 	void UpdateRotation(float currentAngle);
+
+	int GetGuruGuruBatCount() const
+	{
+		return m_guruGuruBatCount;
+	}
+
+	void DebuffDepth();
+	void SetRandomCursorTimeRadius();
+	float SetRandom(const float min, const float max)
+	{
+		// 乱数の範囲を[min, max]に設定
+		// rand()は0からRAND_MAXまでの整数を返すため、これを[min, max]の範囲に変換
+		// まず、rand()を0から1の範囲に正規化し、その後、minからmaxの範囲にスケーリングしてシフトします。
+		return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
+	}
 
 	bool m_isPaused;
 private:
@@ -239,5 +257,11 @@ private:
 	int m_guruGuruBatCount = 0; // グルグルバットの回数
 	Vector3 m_initialFacingDir;
 	Quaternion m_initialRotation;
+	bool m_randomCursorUpdate = false; // ランダムな位置にカーソルを更新するフラグ
+	Vector3 m_randomCursorTargetPos; // ランダムな位置に更新するためのターゲット座標
+	float m_randomCursorMoveTimer = 0.0f; // ランダムな位置にカーソルを移動するためのタイマー
+	float m_randomSpotRadius = 0.0f; // ランダムな位置にカーソルを移動する際の半径
+	float m_randomMoveDuration = 0.0f; // ランダムな位置にカーソルを移動する際の移動時間
+	Vector3 m_randomCursorMovePwer; // ランダムな位置にカーソルを移動する際の移動の強さ
 };
 
