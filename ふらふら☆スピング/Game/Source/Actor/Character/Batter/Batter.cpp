@@ -476,7 +476,7 @@ void Batter::SetRandomCursorTimeRadius()
 	int count = m_guruGuruBatCount/5;
 	if (count >= 10) count = 10; // ãŒÀ‚ðÝ‚¯‚éi•K—v‚É‰ž‚¶‚Ä’²®j
 	// š ƒ‰ƒ“ƒ_ƒ€‚ÈŽžŠÔ‚Æ”¼Œa‚ðÝ’è
-	m_randomMoveDuration = count * 5.0f - 0.5f; // —á: ‰ñ“]5‰ñ‚²‚Æ‚ÉŽžŠÔ0.5•bŒ¸­
+	m_randomMoveDuration = count * -0.5f + 5.0f;// —á: ‰ñ“]5‰ñ‚²‚Æ‚ÉŽžŠÔ0.5•bŒ¸­
 	m_randomSpotRadius = count * 50.0f + 50.0f; // —á: ‰ñ“]5‰ñ‚²‚Æ‚É”¼Œa50‘‰Á
 	m_randomCursorUpdate = true;
 }
@@ -525,12 +525,12 @@ void Batter::Render(RenderContext& rc)
 	m_characterModel->DrawCharacterModel(rc);
 
 	//•¶Žš‚Ì•`‰æ
-	wchar_t be[129];
-	m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
-	m_fontRender.SetColor(g_vec4White);
-	Vector3 pos = m_meetCursorWorldPos;
-	//Quaternion pos = m_transform.m_rotation;
-	swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f", pos.x, pos.y, pos.z);
-	m_fontRender.SetText(be);
-	m_fontRender.Draw(rc);
+	//wchar_t be[129];
+	//m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
+	//m_fontRender.SetColor(g_vec4White);
+	//Vector3 pos = m_meetCursorWorldPos;
+	////Quaternion pos = m_transform.m_rotation;
+	//swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f", pos.x, pos.y, pos.z);
+	//m_fontRender.SetText(be);
+	//m_fontRender.Draw(rc);
 }
