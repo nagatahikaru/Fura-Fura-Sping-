@@ -179,6 +179,9 @@
     <ClCompile Include="Source\UI\LoadUI\LoadUI.cpp">
       <Filter>Source\UI\LoadUI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Effect\EffectManager.cpp">
+      <Filter>Source\Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -278,6 +281,9 @@
     </ClInclude>
     <ClInclude Include="Source\UI\LoadUI\LoadUI.h">
       <Filter>Source\UI\LoadUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Effect\EffectManager.h">
+      <Filter>Source\Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

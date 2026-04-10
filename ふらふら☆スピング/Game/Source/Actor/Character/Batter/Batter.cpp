@@ -4,6 +4,7 @@
 #include"Source/Scene/InGame/Game.h"
 #include "Source/Actor/Character/Ball/Ball.h"
 #include"Source/Sound/SoundManager.h"
+#include "Source/Effect/EffectManager.h"
 #include <algorithm> // 追加
 
 
@@ -516,6 +517,18 @@ void Batter::DebuffDepth(){
 	{
 		m_randomCursorUpdate = true;
 	}
+}
+
+void Batter::EffectUpdate()
+{
+	// ★ ぐるぐるバットの回転数に応じてエフェクトを更新する処理をここに追加
+	// 例: 回転数が増えるごとにエフェクトの強さや範囲を広げるなど
+	g_effectManager->PlayEffect(
+		enEffect_DownArrow, // 仮のエフェクトタイプ
+		m_transform.m_position, // エフェクトの位置
+		Quaternion::Identity, // エフェクトの回転
+		Vector3(50.0f,50.0f,50.0f) // 回転数に応じてスケールを増加
+	);
 }
 
 

@@ -4,6 +4,7 @@
 #include "BatterStateMachine.h"
 #include "Source/Actor/Character/Ball/Ball.h"
 #include "Source/Scene/InGame/Game.h"
+#include "Source/Effect/EffectManager.h"
 
 namespace {
 	namespace BatterNumber {
@@ -229,6 +230,8 @@ public:
 		// まず、rand()を0から1の範囲に正規化し、その後、minからmaxの範囲にスケーリングしてシフトします。
 		return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
 	}
+
+	void EffectUpdate();
 
 	bool m_isPaused;
 private:
