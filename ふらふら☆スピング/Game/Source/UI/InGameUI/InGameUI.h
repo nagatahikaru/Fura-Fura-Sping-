@@ -32,6 +32,7 @@ public:
 	void SetGuruGuruTimer(float time);
 	void SetBaisokuVisible(bool isVisible);
 	float m_shuchusenTimer = 0.0f;
+	void OnButtonPressed();
 private:
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
@@ -80,5 +81,13 @@ private:
 	Quaternion m_yazirusiRotation;
 	float      m_yazirusiAngleDeg = 0.0f;
 	SpriteRender m_mawase;
+	SpriteRender m_taimingu;
+	SpriteRender m_Abotan;
+	SpriteRender m_Abotan2;
+	bool m_isButtonPressed = false;
+	float m_buttonPressTimer = 0.0f;
+	float m_uiToggleTimer = 0.0f;
+	bool m_isAltUI = false;   // ŒðŒÝUIƒtƒ‰ƒO
+	SpriteRender m_gizagiza;
 };
 
