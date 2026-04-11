@@ -18,4 +18,6 @@ private:
 	std::vector<SpriteRender*> m_tips;
 	int m_currentTip = 0;
 	float m_timer = 0.0f;
+	SpriteRender m_sannkaku;
+	SpriteRender m_gyakusann;
 };
