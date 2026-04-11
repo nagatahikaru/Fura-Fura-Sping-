@@ -16,6 +16,10 @@ InGameUI::InGameUI() {
 	m_konto.Init("Assets/sprite/konto.DDS", 300.0f, 300.0f);
 	m_yazirusi.Init("Assets/sprite/yazirusi.DDS", 130.0f, 100.0f);
 	m_mawase.Init("Assets/sprite/mawase.DDS", 550.0f, 500.0f);
+	m_taimingu.Init("Assets/sprite/taimingu.DDS", 550.0f, 500.0f);
+	m_Abotan.Init("Assets/sprite/Abotann.DDS", 200.0f, 200.0f);
+	m_Abotan2.Init("Assets/sprite/abotann2.DDS", 200.0f, 200.0f);
+	m_gizagiza.Init("Assets/sprite/gizagiza.DDS", 200.0f, 200.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -45,6 +49,18 @@ void InGameUI::Update() {
 	float rad = m_yazirusiAngleDeg * 3.14159265f / 180.0f;
 	m_yazirusiRotation.SetRotation(Vector3::AxisZ, rad);
 
+	if (m_buttonPressTimer > 0.0f) {
+		m_buttonPressTimer -= g_gameTime->GetFrameDeltaTime();
+		if (m_buttonPressTimer <= 0.0f) {
+			m_isButtonPressed = false;
+		}
+	}
+
+	m_uiToggleTimer += g_gameTime->GetFrameDeltaTime();
+	if (m_uiToggleTimer >= 0.5f) {
+		m_uiToggleTimer = 0.0f;
+		m_isAltUI = !m_isAltUI;   // true / false を交互に切り替え
+	}
 }
 
 //バットの位置を設定
@@ -122,6 +138,11 @@ void InGameUI::SetGuruGuruTimer(float time)
 	m_guruGuruTimer = time;
 }
 
+void InGameUI::OnButtonPressed() {
+	m_isButtonPressed = true;
+	m_buttonPressTimer = 0.1f; // 0.1秒だけ押し込み表示
+}
+
 void InGameUI::SetBaisokuVisible(bool isVisible)
 {
 	m_isBaisokuVisible = isVisible;
@@ -182,6 +203,33 @@ void InGameUI::Render(RenderContext& rc) {
 			m_spriteRenderBall.Update();
 			m_spriteRenderBall.Draw(rc);
 		}
+
+		// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
+		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed)
+		{
+			m_taimingu.SetPosition(Vector3{ -800.0f, 100.0f, 0.0f });
+			m_taimingu.Update();
+			m_taimingu.Draw(rc);
+
+			// ★ 0.5秒ごとに m_isAltUI が true / false になる
+			if (m_isAltUI) {
+				// 交互UI：Aボタン2
+				m_Abotan2.SetPosition(Vector3{ -800.0f, -130.0f, 0.0f });
+				m_Abotan2.Update();
+				m_Abotan2.Draw(rc);
+
+				m_gizagiza.SetPosition(Vector3{ -800.0f, -30.0f, 0.0f });
+				m_gizagiza.Update();
+				m_gizagiza.Draw(rc);
+			}
+			else {
+				// 交互UI：Aボタン
+				m_Abotan.SetPosition(Vector3{ -800.0f, -130.0f, 0.0f });
+				m_Abotan.Update();
+				m_Abotan.Draw(rc);
+			}
+		}
+
 	}
 
 	if (m_isFontVisible) {
@@ -276,6 +324,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 			m_baisoku.Update();
 			m_baisoku.Draw(rc);
+
 		}
 
 		if (m_guruGuruTimer > 0.0) {
