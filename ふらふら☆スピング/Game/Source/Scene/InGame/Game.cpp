@@ -105,9 +105,9 @@ void Game::Update()
 
 	// ★ ボタンでカメラ切り替え
 	// ★ Xボタンでカメラ順番切り替え
-	if (g_pad[0]->IsTrigger(enButtonLB1)) {
+	/*if (g_pad[0]->IsTrigger(enButtonLB1)) {
 		m_cameraMode = static_cast<CameraMode>((m_cameraMode + 1) % 4);
-	}
+	}*/
 
 	switch (m_cameraMode) {
 	case Camera_Catcher:

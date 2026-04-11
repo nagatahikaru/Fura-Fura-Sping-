@@ -24,7 +24,6 @@ bool Load::Start()
     m_gaugeFill.SetPivot({ 0.0f, 0.5f });   // 左端基準
     m_B.Init("Assets/sprite/AA.dds", 220.0f, 170.0f);
     m_B.SetPosition({ 800.0f, -400.0f, 0.0f });
-
     m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
     m_grobu.SetPosition({ 800.0f, -400.0f, 0.0f });
     NewGO<LoadUI>(0, "loadUI");
