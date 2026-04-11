@@ -13,6 +13,9 @@ InGameUI::InGameUI() {
 	m_shuchusen.Init("Assets/sprite/shuchusen.DDS", 1920.0f, 1080.0f);
 	m_shuchusen.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
 	m_shuchusen.SetMulColor({ 1,1,1,0 }); // 最初は透明
+	m_konto.Init("Assets/sprite/konto.DDS", 300.0f, 300.0f);
+	m_yazirusi.Init("Assets/sprite/yazirusi.DDS", 130.0f, 100.0f);
+	m_mawase.Init("Assets/sprite/mawase.DDS", 550.0f, 500.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -34,6 +37,14 @@ void InGameUI::Update() {
 		float alpha = m_shuchusenTimer / 0.2f; // 0.2秒で消える
 		m_shuchusen.SetMulColor({ 1.0f, 1.0f, 1.0f, alpha });
 	}
+
+	// ★ 矢印の角度を更新（毎秒180度）
+	m_yazirusiAngleDeg -= 180.0f * g_gameTime->GetFrameDeltaTime();
+
+	// ★ Z軸回転のクォータニオンを作る
+	float rad = m_yazirusiAngleDeg * 3.14159265f / 180.0f;
+	m_yazirusiRotation.SetRotation(Vector3::AxisZ, rad);
+
 }
 
 //バットの位置を設定
@@ -265,6 +276,22 @@ void InGameUI::Render(RenderContext& rc) {
 			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 			m_baisoku.Update();
 			m_baisoku.Draw(rc);
+		}
+
+		if (m_guruGuruTimer > 0.0) {
+			m_konto.SetPosition(Vector3{ -800.0f, 0.0f, 0.0f });
+			m_konto.Update();
+			m_konto.Draw(rc);
+			
+			// ★ 矢印の回転描画
+			m_yazirusi.SetPosition(Vector3{ -840.0f, -5.0f, 0.0f }); // 位置はお好みで
+			m_yazirusi.SetRotation(m_yazirusiRotation);               // ← Quaternion を渡す
+			m_yazirusi.Update();
+			m_yazirusi.Draw(rc);
+
+			m_mawase.SetPosition(Vector3{ -800.0f, -180.0f, 0.0f }); // 位置はお好みで
+			m_mawase.Update();
+			m_mawase.Draw(rc);
 		}
 	}
 }

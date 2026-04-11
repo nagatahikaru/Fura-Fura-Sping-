@@ -74,5 +74,11 @@ private:
 	SpriteRender m_baisoku;
 	bool m_isBaisokuVisible = false;
 	SpriteRender m_shuchusen;
+	SpriteRender m_yazirusi;
+	SpriteRender m_konto;
+	float m_yazirusiRot = 0.0f;
+	Quaternion m_yazirusiRotation;
+	float      m_yazirusiAngleDeg = 0.0f;
+	SpriteRender m_mawase;
 };
 
