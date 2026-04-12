@@ -96,6 +96,16 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 
 	m_predictedBallPos3D = pos3D;
 	m_hasPredictedBall = true;
+
+	// ★ 距離に応じて透明度を決める
+	float startZ = m_startZ;
+	float currentZ = pos3D.z;
+
+	// ボールが近づくほど 0 → 1
+	float t = (startZ - currentZ) / (startZ - 4500.0f);
+	t = std::clamp(t, 0.0f, 1.0f);
+
+	m_ballAlpha = t;
 }
 
 Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
@@ -191,18 +201,22 @@ void InGameUI::Render(RenderContext& rc) {
 			Vector3 uiPos;
 
 			if (m_isBallUIFixed) {
-				// ★ 固定モード：変換しない、動かさない
 				uiPos = ConvertBall3DToUI(m_fixedBallUIPos);
 			}
 			else {
-				// ★ 通常モード：リアルタイムで動く
 				uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
 			}
 
 			m_spriteRenderBall.SetPosition(uiPos);
+
+			// ★ 距離に応じた透明度を適用！
+			Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
+			m_spriteRenderBall.SetMulColor(color);
+
 			m_spriteRenderBall.Update();
 			m_spriteRenderBall.Draw(rc);
 		}
+
 
 		// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
 		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed)

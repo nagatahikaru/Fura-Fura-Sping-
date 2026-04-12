@@ -89,5 +89,6 @@ private:
 	float m_uiToggleTimer = 0.0f;
 	bool m_isAltUI = false;   // 交互UIフラグ
 	SpriteRender m_gizagiza;
+	float m_ballAlpha = 0.0f;   // 透明度（0=透明, 1=完全表示）
 };
 
