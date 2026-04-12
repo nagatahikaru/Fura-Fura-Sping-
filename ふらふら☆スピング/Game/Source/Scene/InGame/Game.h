@@ -64,6 +64,7 @@ public:
 		return m_cameraType;
 	}
 	float GetTimeScale() const { return m_timeScale; }
+	GameCamera* GetGameCamera() const { return m_gameCamera; }
 	bool m_canFastForward = false;
 private:
 	GameCamera* m_gameCamera;	//ƒQ[ƒ€ƒJƒƒ‰B
