@@ -361,6 +361,11 @@ void Batter::RoundAndRoundBat()
 
 void Batter::HitBat()
 {
+	// ★ ポーズ中は絶対に打撃処理しない
+	if (m_game && m_game->m_isPaused) {
+		return;
+	}
+
 	if (!IsSwingAnimationPlaying()) return;
 
 	if (m_collisionObject->IsHit(m_ball->GetCollisionObject()))
@@ -380,11 +385,11 @@ void Batter::HitBat()
 		}
 
 		// ★ 打撃 SE 再生
-		if (g_soundManager) {
+	// ★ 打撃 SE 再生（ポーズ中は絶対に鳴らさない）
+		if (!m_game->m_isPaused && g_soundManager) {
 			g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
 			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 100.0f);
-			se2->SetName("SE2");   // ← これが超重要！
-
+			se2->SetName("SE2");
 		}
 
 		// ★ ここでカメラ切り替え

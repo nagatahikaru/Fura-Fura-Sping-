@@ -102,7 +102,7 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 	float currentZ = pos3D.z;
 
 	// ボールが近づくほど 0 → 1
-	float t = (startZ - currentZ) / (startZ - 4500.0f);
+	float t = (startZ - currentZ) / (startZ - 4800.0f);
 	t = std::clamp(t, 0.0f, 1.0f);
 
 	m_ballAlpha = t;

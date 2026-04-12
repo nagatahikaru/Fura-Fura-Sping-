@@ -70,7 +70,7 @@ void GameCamera::SetFollowBallBackCamera() {
 void GameCamera::StartHitMomentCamera()
 {
     m_isHitMoment = true;
-    m_hitMomentTimer = 3.0f;   // © 1•bŠÔ‚¾‚¯g‘Å‚Á‚½uŠÔƒJƒƒ‰h‚ðŽg‚¤
+    m_hitMomentTimer = 3.5f;   // © 1•bŠÔ‚¾‚¯g‘Å‚Á‚½uŠÔƒJƒƒ‰h‚ðŽg‚¤
 }
 
 void GameCamera::Update() {
@@ -126,10 +126,10 @@ void GameCamera::Update() {
             float ballSpeed = m_ball->GetVelocity().Length();
             float distanceFromHome = (ballPos - Vector3(0, 0, 0)).Length();
 
-            float zoomBySpeed = 600.0f + ballSpeed * 5.0f;
-            float zoomByDistance = 600.0f + distanceFromHome * 0.4f;
+            float zoomBySpeed = 600.0f + ballSpeed * 3.0f;
+            float zoomByDistance = 600.0f + distanceFromHome * 0.2f;
 
-            float followDistance = Clamp((zoomBySpeed + zoomByDistance) * 0.5f, 150.0f, 1300.0f);
+            float followDistance = Clamp((zoomBySpeed + zoomByDistance) * 0.5f, 150.0f, 1000.0f);
 
             Vector3 fixedDir = Vector3(0, 0, 1);
             Vector3 targetCamPos = ballPos + fixedDir * followDistance;
