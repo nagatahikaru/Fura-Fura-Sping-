@@ -5,6 +5,7 @@
 #include "Source/Actor/Character/Ball/Ball.h"
 #include"Source/Sound/SoundManager.h"
 #include "Source/Effect/EffectManager.h"
+#include "Source/Actor/GameCamera/GameCamera.h"
 #include <algorithm> // 追加
 
 
@@ -389,6 +390,10 @@ void Batter::HitBat()
 		// ★ ここでカメラ切り替え
 		if (m_game) {
 			m_game->SetCameraMode(Camera_BackBall);
+
+			// ★ 打った瞬間カメラ開始
+			GameCamera* cam = m_game->GetGameCamera();
+			if (cam) cam->StartHitMomentCamera();
 		}
 
 		if (m_inGameUI) {
