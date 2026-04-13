@@ -185,5 +185,13 @@ void BatterSwingState::Exit()
 bool BatterSwingState::RequestState(uint32_t& request)
 {
 	Batter* batter = GetBatter();
+
+	// ★ スイングアニメが終わったら Idle に戻す
+	if (!batter->IsSwingAnimationPlaying())
+	{
+		request = BatterIdleState::ID();
+		return true;
+	}
+
 	return false;
 }

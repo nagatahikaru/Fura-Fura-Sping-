@@ -139,8 +139,13 @@ void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
 }
 
 void InGameUI::SetStartZ(float z) {
-	m_startZ = z;
-	m_isError = false;   // 打つたびにリセット
+    m_startZ = z;
+    m_isError = false;   // 打つたびにリセット
+
+    // ★ ここを追加：ボール予測UIの状態もリセット
+    m_isBallUIFixed    = false;
+    m_hasPredictedBall = false;
+    m_ballAlpha        = 0.0f;
 }
 
 void InGameUI::SetGuruGuruTimer(float time)

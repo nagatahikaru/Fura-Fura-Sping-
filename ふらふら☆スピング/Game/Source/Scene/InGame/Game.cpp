@@ -199,13 +199,58 @@ void Game::Update()
 	}
 }
 
+void Game::ResetForNextShot()
+{
+	m_isBallLanded = false;
+	m_afterLandingTimer = 0.0f;
+	m_zeroDistanceTimer = 0.0f;
+	m_km = 0.0f;
+
+	// ボールを初期位置に戻す
+	if (m_ball) {
+		m_ball->ResetBall();
+	}
+
+	// UI のリセット
+	if (m_InGameUI) {
+		m_InGameUI->SetKm(0);
+		m_InGameUI->SetBaisokuVisible(false);
+	}
+
+	// カメラをキャッチャー視点に戻す
+	m_cameraMode = Camera_Catcher;
+}
+
 void Game::OnBallLanded()
 {
-	m_isBallLanded = true;
-	m_afterLandingTimer = 0.0f;
-	m_canFastForward = false;  // ★ 倍速禁止に戻す
-	m_timeScale = 1.0f;        // ★ 通常速度に戻す
+    m_isBallLanded = true;
+    m_afterLandingTimer = 0.0f;
+    m_canFastForward = false;
+    m_timeScale = 1.0f;
+
+    // ★ ピッチャーのアニメーションをリセット
+    Pitcher* pitcher = FindGO<Pitcher>("pitcher");
+    if (pitcher) {
+        pitcher->ResetThrow();
+    }
+
+    // ★ スコア保存（3球制）
+    m_scores[m_shots] = m_km;
+    m_shots++;
+
+    if (m_shots >= 3) {
+        // 最高スコアを計算して Result へ
+        int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
+        Result* result = NewGO<Result>(0);
+        result->SetResultValues(m_guruguru, best);
+        DeleteGO(this);
+        return;
+    }
+
+    // ★ 次の球の準備
+    ResetForNextShot();
 }
+
 
 void Game::Render(RenderContext& rc)
 {

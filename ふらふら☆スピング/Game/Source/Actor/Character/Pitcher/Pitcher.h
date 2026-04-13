@@ -29,7 +29,7 @@ public:
 	void RotationUpdate();
 	bool m_isPaused = true;
 	void AnimationUpdate();
-
+	void ResetThrow();
 private:
 	Vector3 m_position = Vector3::Zero;
 	Vector3 m_targetPosition = Vector3::Zero;
