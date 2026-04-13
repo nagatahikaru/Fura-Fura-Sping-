@@ -96,7 +96,7 @@ void Ball::Update()
     }
 
     // ★ 空振り判定（打撃ゾーンを通過したら次へ）
-    if (!m_hasHit && m_position.z > 6200.0f) {
+    if (!m_hasHit && m_position.z > 7500.0f) {
         Game* game = FindGO<Game>("game");
         if (game) {
             game->SetKmValue(0);   // 空振りは距離0
