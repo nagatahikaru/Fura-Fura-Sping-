@@ -14,7 +14,7 @@
 bool Load::Start()
 {
     // 背景
-    m_spriteRender.Init("Assets/sprite/Lrad.dds", 1920.0f, 1080.0f);
+    m_spriteRender.Init("Assets/sprite/siro.dds", 1920.0f, 1080.0f);
     m_guruguru.Init("Assets/sprite/guruguru.dds", 500.f, 500.0f);
     m_guruguru.SetPosition({ 790.0f, -450.0f, 0.0f });
     m_gaugeFrame.Init("Assets/sprite/gauge.dds", 2450.0f, 1300.0f);

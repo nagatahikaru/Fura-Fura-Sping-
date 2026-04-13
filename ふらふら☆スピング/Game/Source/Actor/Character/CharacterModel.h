@@ -137,7 +137,9 @@ namespace nsApp
 			if (m_weaponModelRender)
 				m_weaponModelRender->SetRotation(rotation);
 		}
-
+		void SetPlaySpeed(float speed) {
+			m_playSpeed = speed;
+		}
 		void AimRightHand(const Vector3& targetPos);
 
 	/* ゲッター。*/
@@ -173,7 +175,9 @@ namespace nsApp
 		*/
 	    Matrix GetWorldMatrix(const wchar_t* boneName);
 
-
+		float GetPlaySpeed() const {
+			return m_playSpeed;
+		}
 	private:	
 		std::unordered_map<CharacterModelType, std::string> m_filePathList;		                                               /* モデルIDからファイルパスを文字列に変化。*/
 		std::unique_ptr<ModelRender> m_characterModelRender;                                                                   /* モデルを管理。*/
@@ -199,6 +203,7 @@ namespace nsApp
 		Vector3 m_zAxis;                                                                                                       /* 武器を装備させるときの右手のボーンの行列から抽出したZ軸を管理する変数。*/
 		Vector3 m_matrixPosition;
 		Vector3 m_weaponOffset;                                                                                                /* 武器の位置のずれを管理する変数。*/
-		Vector3 m_offsetPosition;                                                                                              /* 武器の位置のずれを管理する変数。*/
+		Vector3 m_offsetPosition; 
+		float m_playSpeed = 1.0f; /* 武器の位置のずれを管理する変数。*/
 	};	
 }
