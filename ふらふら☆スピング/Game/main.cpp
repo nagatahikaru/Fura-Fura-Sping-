@@ -6,6 +6,7 @@
 
 //#include "Source/Scene/InGame/Game.h"
 #include "Source/Scene/Titer/Titer.h"
+#include "Source/Effect/EffectManager.h"
 
 
 
@@ -37,7 +38,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	//Gameクラスのオブジェクトを作成。
 	//NewGO<Game>(0, "game");
 
-g_soundManager=NewGO<SoundManager>(0, "soundManager");
+g_soundManager = NewGO<SoundManager>(0, "soundManager");
+// effectManagerの初期化
+g_effectManager = NewGO<EffectManager>(0, "effectManager");
 
 	NewGO<Titer>(0, "titer");
 

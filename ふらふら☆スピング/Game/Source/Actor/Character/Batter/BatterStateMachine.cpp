@@ -173,6 +173,7 @@ void BatterSwingState::Update()
 
 	batter->AnimationUpdate();
 	// š ƒXƒCƒ“ƒO’†‚¾‚¯“–‚½‚è”»’è
+	batter->EffectUpdate();
 	batter->BatHitBoxPosition();
 	batter->HitBat();
 }

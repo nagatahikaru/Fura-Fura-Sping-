@@ -12,7 +12,7 @@
 #include"Source/UI/PauseUI/PauseUI.h"
 #include"Source/UI/SoundTestUI/SoundTestUI.h"
 #include"Source/Scene/Start/Start.h"
-#include "Source/Actor/Character/Catcher/Catcher.h"
+
 
 Game::~Game()
 {
@@ -42,6 +42,7 @@ bool Game::Start()
 	m_catcher = FindGO<Catcher>("catcher");
 	// ★ カウントダウンUIを表示
 	m_start1 =NewGO<Start1>(0, "start1");
+
 
 
 	// ボールをカメラにセット
@@ -93,6 +94,7 @@ void Game::Update()
 	if (m_isPaused) {
 		return;
 	}
+
 
 	// ★ Aボタン押しっぱなしで2倍速
 	// ★ 打った後だけ倍速ボタンを有効化
@@ -207,5 +209,5 @@ void Game::OnBallLanded()
 
 void Game::Render(RenderContext& rc)
 {
-
+	
 }

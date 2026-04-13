@@ -14,10 +14,9 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
     return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
-
 namespace {
 	float PI= 3.1415f / 180.0f;
-	float ZERO_FLOAT = 0.0f;	
+	float ZERO_FLOAT = 0.0f;
 
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
 	std::string FILE_PATH_DDS = (".tka");
@@ -44,7 +43,6 @@ namespace {
 		characterController->IsOnGround();
 	}
 }
-
 
 Batter::Batter()
 {
@@ -106,6 +104,11 @@ bool Batter::Start()
 	m_characterController.SetPosition(m_transform.m_position);
 	m_initialRotation = m_transform.m_rotation;
 
+	g_effectManager->SetEffect(
+		enEffect_DownArrow,
+		m_transform.m_position,
+		Quaternion::Identity,
+		Vector3(50.0f, 50.0f, 50.0f));
 
 	m_guruGuruBatTimer = 5.0f;
 
@@ -149,12 +152,12 @@ void Batter::Update()
 	}
 }
 
-void Batter::UpdateCursor3D()
-{
-	SetCursorPosition();
-	m_meetCursorWorldPos = CalcCursorWorldPos();
-}
 
+/** ぐるぐるバット関連コード */
+
+/**
+* 回転計算処理関数
+*/
 void Batter::Rotation()
 {
 	//キーボード操作
@@ -213,30 +216,44 @@ void Batter::Rotation()
 		}
 	}
 	float currentAngle = atan2f(m_facingDir.x, m_facingDir.z) * 180.0f / 3.14159265f;
-	UpdateRotation(currentAngle);
+	GuruGuruCountUP(currentAngle);
 }
 
-void Batter::RotationUpdate()
+/**
+* この関数はぐるぐるバットの処理を行う関数です。
+* 時間を計測し、一定時間が経過したら方向をresetし
+* カーソル操作が可能になるようにフラグを切り替える処理を行います。
+*/
+void Batter::RoundAndRoundBat()
 {
-	//回転処理の更新
-	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir); // m_rotationAngle はメンバ変数などから取得
-
-	// オフセットを考慮した位置の補正計算
-	Vector3 pivot = m_transform.m_position - pivotOffset;
-	newPosition = pivot + pivotOffset;
-
-
-	m_characterModel->SettRotation(m_transform.m_rotation);
-
-	if (!m_isRotation)
-	{
-		m_characterModel->SettRotation(m_initialRotation);
+	m_guruGuruBatTimer -= g_gameTime->GetFrameDeltaTime();
+	// ★ UI に残り時間を送る
+	if (m_inGameUI) {
+		m_inGameUI->SetGuruGuruTimer(m_guruGuruBatTimer);
 	}
+	if (m_guruGuruBatTimer <= 0.0f)
+	{
+		m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
 
-	m_characterModel->SetPosition(newPosition);
+		Quaternion offset;
+		offset.SetRotationY(-90.0f); // ←ここ調整ポイント
+
+		Quaternion finalRot = m_transform.m_rotation * offset;
+		finalRot.Normalize();
+
+		m_characterModel->SettRotation(finalRot);
+		m_guruGuruBatTimer = 0.0f;
+		SetRotationSeen(false);
+		m_game->SetRotationSeen(false);
+		m_game->SetGameStarted(true);
+		m_characterModel->Update();
+	}
 }
 
-void Batter::UpdateRotation(float currentAngle)
+/**
+* ぐるぐるカウントup処理
+*/
+void Batter::GuruGuruCountUP(float currentAngle)
 {
 	float delta = currentAngle - m_prevAngle;
 
@@ -268,22 +285,35 @@ void Batter::UpdateRotation(float currentAngle)
 	}
 }
 
-void Batter::SetPlayAnimation(int enAnimationClip)
+/**
+* モデルの回転処理
+*/
+void Batter::RotationUpdate()
 {
-	m_characterModel->PlayAnimation(enAnimationClip,0.2);	
+	//回転処理の更新
+	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir); // m_rotationAngle はメンバ変数などから取得
+
+	// オフセットを考慮した位置の補正計算
+	Vector3 pivot = m_transform.m_position - pivotOffset;
+	newPosition = pivot + pivotOffset;
+
+
+	m_characterModel->SettRotation(m_transform.m_rotation);
+
+	if (!m_isRotation)
+	{
+		m_characterModel->SettRotation(m_initialRotation);
+	}
+
+	m_characterModel->SetPosition(newPosition);
 }
 
-void Batter::SetBatSwingPosition()
-{
-	// バットの位置をミートカーソルの位置に合わせて調整する処理
-	// ここでは例として、ミートカーソルの位置を取得してバットの位置を更新するコードを示します。
-	// 実際のミートカーソルの位置はゲームのロジックに応じて取得してください。
-	// 例: ミートカーソルの位置を取得
-	Vector3 meetCursorPosition = m_inGameUI->GetMeetCursorPosition(); // この関数は実装されていると仮定
-	// バットの位置をミートカーソルの位置に合わせて更新
-	m_characterModel->SetWeaponOffset(meetCursorPosition - m_transform.m_position);
-}
 
+/** カーソル関連コード */
+
+/**
+* カーソル操作関数
+*/
 void Batter::SetCursorPosition()
 {
 	float dt = 1.0f / 60.0f;
@@ -328,43 +358,107 @@ void Batter::SetCursorPosition()
 }
 
 /**
-* この関数はぐるぐるバットの処理を行う関数です。
-* 時間を計測し、一定時間が経過したら方向をresetし
-* カーソル操作が可能になるようにフラグを切り替える処理を行います。
+* 3D空間に2Dカーソルを合わせる処理
 */
-void Batter::RoundAndRoundBat()
+Vector3 Batter::CalcCursorWorldPos()
 {
-	m_guruGuruBatTimer -= g_gameTime->GetFrameDeltaTime();
-	// ★ UI に残り時間を送る
-	if (m_inGameUI) {
-		m_inGameUI->SetGuruGuruTimer(m_guruGuruBatTimer);
-	}
-	if (m_guruGuruBatTimer <= 0.0f)
+	float screenW = 1920.0f;
+	float screenH = 1080.0f;
+
+	// UI座標（中心基準なら変換必要）
+	float mouseX = m_meetPosition.x + screenW * 0.5f;
+	float mouseY = m_meetPosition.y + screenH * 0.5f;
+
+	Vector3 camPos = g_camera3D->GetPosition();
+
+	Vector3 rayDir = ScreenToRay(
+		mouseX, mouseY,
+		screenW, screenH,
+		g_camera3D->GetViewMatrix(),
+		g_camera3D->GetProjectionMatrix(),
+		camPos
+	);
+
+	// ★ Z=5500の平面と交差
+	Vector3 planePoint = Vector3(0, 0, m_ball->GetPosition().z);
+	Vector3 planeNormal = Vector3(0, 0, 1);
+
+	return RayToPlane(camPos, rayDir, planePoint, planeNormal);
+}
+
+/**
+* カーソルデバフの段階を分けるための計算処理
+*/
+void Batter::SetRandomCursorTimeRadius()
+{
+	// ★ 回転回数に応じて時間と半径を増加させる
+	int count = m_guruGuruBatCount / 5;
+	if (count >= 10) count = 10; // 上限を設ける（必要に応じて調整）
+	// ★ ランダムな時間と半径を設定
+	m_randomMoveDuration = count * -0.5f + 5.0f;// 例: 回転5回ごとに時間0.5秒減少
+	m_randomSpotRadius = count * 50.0f + 50.0f; // 例: 回転5回ごとに半径50増加
+	m_randomCursorUpdate = true;
+}
+
+
+/** デバフ関連コード */
+void Batter::DebuffDepth() {
+	// ★ 回転回数が0以下ならデバフ無し
+	if (m_guruGuruBatCount <= 4)
 	{
-		m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
+		m_randomCursorMovePwer = Vector3::Zero;
+		return;
+	}
 
-		Quaternion offset;
-		offset.SetRotationY(-90.0f); // ←ここ調整ポイント
+	// ★ デバフの強さを回転回数で決める
+	//ランダムなベクトルを取得
+	if (m_randomCursorUpdate)
+	{
+		//そのベクトルに向かって移動
+		// 基準点から半径250の円範囲内でランダムに出現位置を決定
+		//ランダムな角度と距離を生成
+		float angle = (rand() % 360) * PI;
+		float radius = SetRandom(0, m_randomSpotRadius);
 
-		Quaternion finalRot = m_transform.m_rotation * offset;
-		finalRot.Normalize();
+		// 円の中のランダム位置を生成
+		m_randomCursorTargetPos.x = cosf(angle) * radius;
+		m_randomCursorTargetPos.y = sinf(angle) * radius;
+		m_randomCursorMoveTimer = SetRandom(0, m_randomMoveDuration);
+		m_randomCursorUpdate = false;
+	}
+	Vector3 toTarget = m_randomCursorTargetPos - m_meetPosition;
 
-		m_characterModel->SettRotation(finalRot);
-		m_guruGuruBatTimer = 0.0f;
-		SetRotationSeen(false);
-		m_game->SetRotationSeen(false);
-		m_game->SetGameStarted(true);
-		m_characterModel->Update();
+	// 少しずつ寄せる（ここがデバフの強さ）
+	m_randomCursorMovePwer = toTarget * 0.05f;
+	//一定時間経過後、再度ランダムなベクトルを取得
+	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
+	EffectUpdate();
+	if (m_randomCursorMoveTimer <= ZERO_FLOAT)
+	{
+		m_randomCursorUpdate = true;
 	}
 }
 
+/** Hit計算関連コード */
 void Batter::HitBat()
 {
 	if (!IsSwingAnimationPlaying()) return;
 
-	if (m_collisionObject->IsHit(m_ball->GetCollisionObject()))
+	Vector3 ballPos = m_ball->GetPosition();
+
+	// ① Z制限（打撃ゾーン）
+	if (ballPos.z < 6000.0f || ballPos.z > 6100.0f) return;
+	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
+	// ② カーソル位置（Zはボールに合わせる）
+	Vector3 cursor = m_meetCursorWorldPos;
+	cursor.z = ballPos.z;
+
+	// ③ 距離判定
+	float dist = (ballPos - cursor).Length();
+
+	if (dist < 100.0f)
 	{
-		Vector3 hitDir = m_ball->GetPosition() - m_meetCursorWorldPos;
+		Vector3 hitDir = ballPos - cursor;
 		hitDir.Normalize();
 
 		m_ball->HitBall(hitDir, 1000.0f);
@@ -395,49 +489,8 @@ void Batter::HitBat()
 			m_inGameUI->SetBaisokuVisible(true);
 		}
 	}
-	
 }
 
-float Batter::DistancePointToSegment(const Vector3& ballpos, const Vector3& base, const Vector3& tip)
-{
-	Vector3 ab = tip - base;
-	Vector3 ac = ballpos - base;
-	float lenSq = ab.Dot(ab);
-	if (lenSq < 0.0001f)
-	{
-		return (ballpos - base).Length(); // 線じゃなく点扱い
-	}
-	float t = ac.Dot(ab) / lenSq;
-	t = max(0.0f, min(1.0f, t)); // std::max, std::min を使うために <algorithm> が必要
-	Vector3 closestPoint = base + ab * t;
-	return (ballpos - closestPoint).Length();
-}
-
-Vector3 Batter::CalcCursorWorldPos()
-{
-	float screenW = 1920.0f;
-	float screenH = 1080.0f;
-
-	// UI座標（中心基準なら変換必要）
-	float mouseX = m_meetPosition.x + screenW * 0.5f;
-	float mouseY = m_meetPosition.y + screenH * 0.5f;
-
-	Vector3 camPos = g_camera3D->GetPosition();
-
-	Vector3 rayDir = ScreenToRay(
-		mouseX, mouseY,
-		screenW, screenH,
-		g_camera3D->GetViewMatrix(),
-		g_camera3D->GetProjectionMatrix(),
-		camPos
-	);
-
-	// ★ Z=5500の平面と交差
-	Vector3 planePoint = Vector3(0, 0, 5500.0f);
-	Vector3 planeNormal = Vector3(0, 0, 1);
-
-	return RayToPlane(camPos, rayDir, planePoint, planeNormal);
-}
 
 void Batter::UpdateBatAim()
 {
@@ -471,66 +524,24 @@ void Batter::BatHitBoxPosition()
 	m_collisionObject->Update();
 }
 
-void Batter::SetRandomCursorTimeRadius()
-{
-	// ★ 回転回数に応じて時間と半径を増加させる
-	int count = m_guruGuruBatCount/5;
-	if (count >= 10) count = 10; // 上限を設ける（必要に応じて調整）
-	// ★ ランダムな時間と半径を設定
-	m_randomMoveDuration = count * -0.5f + 5.0f;// 例: 回転5回ごとに時間0.5秒減少
-	m_randomSpotRadius = count * 50.0f + 50.0f; // 例: 回転5回ごとに半径50増加
-	m_randomCursorUpdate = true;
-}
 
-//デバフ無し
-void Batter::DebuffDepth(){
-	// ★ 回転回数が0以下ならデバフ無し
-	if(m_guruGuruBatCount<=0)
-	{
-		m_randomCursorMovePwer = Vector3::Zero;
-		return;
-	}
-
-	// ★ デバフの強さを回転回数で決める
-	//ランダムなベクトルを取得
-	if (m_randomCursorUpdate)
-	{
-		//そのベクトルに向かって移動
-		// 基準点から半径250の円範囲内でランダムに出現位置を決定
-		//ランダムな角度と距離を生成
-		float angle = (rand() % 360) * PI;
-		float radius = SetRandom(0, m_randomSpotRadius);
-
-		// 円の中のランダム位置を生成
-		m_randomCursorTargetPos.x = cosf(angle) * radius;
-		m_randomCursorTargetPos.y = sinf(angle) * radius;
-		m_randomCursorMoveTimer = SetRandom(0, m_randomMoveDuration);
-		m_randomCursorUpdate = false;
-	}
-	Vector3 toTarget = m_randomCursorTargetPos - m_meetPosition;
-
-	// 少しずつ寄せる（ここがデバフの強さ）
-	m_randomCursorMovePwer = toTarget * 0.05f;
-	//一定時間経過後、再度ランダムなベクトルを取得
-	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
-	if (m_randomCursorMoveTimer <= ZERO_FLOAT)
-	{
-		m_randomCursorUpdate = true;
-	}
-}
-
+/** 演出関連コード */
 void Batter::EffectUpdate()
 {
-	// ★ ぐるぐるバットの回転数に応じてエフェクトを更新する処理をここに追加
-	// 例: 回転数が増えるごとにエフェクトの強さや範囲を広げるなど
-	g_effectManager->PlayEffect(
-		enEffect_DownArrow, // 仮のエフェクトタイプ
-		m_transform.m_position, // エフェクトの位置
-		Quaternion::Identity, // エフェクトの回転
-		Vector3(50.0f,50.0f,50.0f) // 回転数に応じてスケールを増加
+	if (m_guruGuruBatCount < 5) return;
+
+	if (g_effectManager->GetIsPlayeEffect())return;
+	Quaternion rot;
+	rot.SetRotationYFromDirectionXZ(Vector3(0.0f,90.0f,0.0f));
+	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
+
+	g_effectManager->SetEffect(
+		enEffect_DownArrow,
+		pos,
+		rot,
+		Vector3(1.0f, 1.0f, 1.0f)
 	);
 }
-
 
 void Batter::Render(RenderContext& rc)
 {
@@ -541,7 +552,7 @@ void Batter::Render(RenderContext& rc)
 	//wchar_t be[129];
 	//m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
 	//m_fontRender.SetColor(g_vec4White);
-	//Vector3 pos = m_meetCursorWorldPos;
+	//Vector3 pos = m_ball->GetPosition();
 	////Quaternion pos = m_transform.m_rotation;
 	//swprintf(be, 129, L"pos:x=%.0f,y=%.0f,z=%.0f", pos.x, pos.y, pos.z);
 	//m_fontRender.SetText(be);

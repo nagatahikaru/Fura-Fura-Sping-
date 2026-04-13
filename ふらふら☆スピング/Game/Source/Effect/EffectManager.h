@@ -1,7 +1,9 @@
 #pragma once
+#include "graphics/effect/EffectEmitter.h"
+#include <map>
+#include <string>
 
 enum EffectType {
-	enEffect_Explosion,
 	enEffect_DownArrow,
 	enEffect_Num
 };
@@ -10,20 +12,40 @@ class EffectManager : public IGameObject
 {
 public:
 	EffectManager();
-	~EffectManager() {};
+	~EffectManager() = default;
 
-	/**
-	* number: 再生するエフェクトの種類を指定します。EffectType列挙体の値を使用してください。
-	* pos: エフェクトの再生位置を指定します。Vector3型で、x、y、zの座標を設定してください。
-	* rot: エフェクトの回転を指定します。Quaternion型で、x、y、z、wの値を設定してください。
-	* scale: エフェクトのスケールを指定します。Vector3型で、x、y、zのスケールを設定してください。
-	*/
-	EffectEmitter* PlayEffect(
-		EffectType number,
-		Vector3 pos,
-		Quaternion rot,
-		Vector3 scale
-	);
+	void SetEffect(
+		EffectType type,
+		const Vector3& pos,
+		const Quaternion& rot,
+		const Vector3& scale);
+
+	//// 再生だけ
+	//void PlayEffect(
+	//	EffectType type,
+	//	const Vector3& pos,
+	//	const Quaternion& rot,
+	//	const Vector3& scale);
+
+	// 停止
+	void StopEffect(int handle);
+
+	bool GetIsPlayeEffect()
+	{
+		return m_effectEmitter->IsPlay();
+	}
+
+private:
+	std::u16string ToU16(const std::string& str);
+
+	const char* m_filePath = "Game/Assets/effect/";
+	const char* m_ext = ".efk";
+
+	const char* m_files[enEffect_Num] = {
+		"DownArrow"
+	};
+
+	EffectEmitter* m_effectEmitter = nullptr;					//effectへの参照。
 };
 
 extern EffectManager* g_effectManager;

@@ -60,7 +60,12 @@ public:
 	virtual void Update();
 
 	virtual void Render(RenderContext& rc);
-	void SetPlayAnimation(int enAnimationClip);
+	void SetPlayAnimation(int enAnimationClip)
+	{
+		m_characterModel->PlayAnimation(enAnimationClip, 0.2);
+	}
+
+
 	EnAnimationClip GetEnAnimationClip() const
 	{
 		if (!g_pad[0]->IsPressAnyKey())
@@ -77,7 +82,16 @@ public:
 	void RotationUpdate();
 	// バットのSwing位置を設定する関数
 	//ミートカーソルの位置に合わせてバットの位置を調整するための関数です。
-	void SetBatSwingPosition();
+	void SetBatSwingPosition()
+	{
+		// バットの位置をミートカーソルの位置に合わせて調整する処理
+		// ここでは例として、ミートカーソルの位置を取得してバットの位置を更新するコードを示します。
+		// 実際のミートカーソルの位置はゲームのロジックに応じて取得してください。
+		// 例: ミートカーソルの位置を取得
+		Vector3 meetCursorPosition = m_inGameUI->GetMeetCursorPosition(); // この関数は実装されていると仮定
+		// バットの位置をミートカーソルの位置に合わせて更新
+		m_characterModel->SetWeaponOffset(meetCursorPosition - m_transform.m_position);
+	}
 
 	// Swingアニメーションを再生する関数
 	void Swing()
@@ -135,7 +149,20 @@ public:
 
 	void HitBat();
 
-	float DistancePointToSegment(const Vector3& ballpos, const Vector3& base, const Vector3& tip);
+	float DistancePointToSegment(const Vector3& ballpos, const Vector3& base, const Vector3& tip)
+	{
+		Vector3 ab = tip - base;
+		Vector3 ac = ballpos - base;
+		float lenSq = ab.Dot(ab);
+		if (lenSq < 0.0001f)
+		{
+			return (ballpos - base).Length(); // 線じゃなく点扱い
+		}
+		float t = ac.Dot(ab) / lenSq;
+		t = max(0.0f, min(1.0f, t)); // std::max, std::min を使うために <algorithm> が必要
+		Vector3 closestPoint = base + ab * t;
+		return (ballpos - closestPoint).Length();
+	}
 
 	void UpdateBatAim();
 
@@ -152,16 +179,17 @@ public:
 	{
 		// ① スクリーン → NDC
 		float x = (2.0f * mouseX / screenWidth) - 1.0f;
-		float y = 1.0f - (2.0f * mouseY / screenHeight); // Y反転
+		float y = 1.0f - (2.0f * mouseY / screenHeight);
 
-		Vector4 rayClip = Vector4(x, y, 1.0f, 1.0f);
+		Vector4 rayClip = Vector4(x, y, -1.0f, 1.0f); // ★ -1 にする（超重要）
 
 		// ② Clip → View
 		Matrix invProj = proj;
 		invProj.Inverse();
 		Vector4 rayView = InverseProjectionMatrix(rayClip, invProj);
-		rayView.z = 1.0f;
-		rayView.w = 0.0f;
+
+		// ★ ここ修正
+		rayView = Vector4(rayView.x, rayView.y, -1.0f, 0.0f);
 
 		// ③ View → World
 		Matrix invView = view;
@@ -210,11 +238,15 @@ public:
 		return m_meetCursorWorldPos;
 	}
 
-	void UpdateCursor3D();
+	void UpdateCursor3D()
+	{
+		SetCursorPosition();
+		m_meetCursorWorldPos = CalcCursorWorldPos();
+	}
 
 	void RoundAndRoundBat();
 
-	void UpdateRotation(float currentAngle);
+	void GuruGuruCountUP(float currentAngle);
 
 	int GetGuruGuruBatCount() const
 	{
@@ -225,10 +257,7 @@ public:
 	void SetRandomCursorTimeRadius();
 	float SetRandom(const float min, const float max)
 	{
-		// 乱数の範囲を[min, max]に設定
-		// rand()は0からRAND_MAXまでの整数を返すため、これを[min, max]の範囲に変換
-		// まず、rand()を0から1の範囲に正規化し、その後、minからmaxの範囲にスケーリングしてシフトします。
-		return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
+		return min + (max - min) * (rand() / (float)RAND_MAX);
 	}
 
 	void EffectUpdate();
@@ -266,5 +295,6 @@ private:
 	float m_randomSpotRadius = 0.0f; // ランダムな位置にカーソルを移動する際の半径
 	float m_randomMoveDuration = 0.0f; // ランダムな位置にカーソルを移動する際の移動時間
 	Vector3 m_randomCursorMovePwer; // ランダムな位置にカーソルを移動する際の移動の強さ
+	bool m_effectSpawned = false;
 };
 
