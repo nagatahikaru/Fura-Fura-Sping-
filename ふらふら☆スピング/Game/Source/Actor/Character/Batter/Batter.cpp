@@ -468,12 +468,14 @@ void Batter::HitBat()
 
 		// ★ 前方向の力を必ず入れる（ここを追加）
 		if (fabs(hitDir.z) >= 0.0f) {
-			hitDir.z = -50.0f;
+			hitDir.z = -250.0f;
 		}
+
+		hitDir.y += 100.0f;   // ← ここを調整すると角度が変わる
 
 		hitDir.Normalize();
 
-		m_ball->HitBall(hitDir, 1000.0f);
+		m_ball->HitBall(hitDir, 1050.0f);
 
 		if (m_inGameUI) {
 			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
@@ -495,10 +497,6 @@ void Batter::HitBat()
 		// ★ ここでカメラ切り替え
 		if (m_game) {
 			m_game->SetCameraMode(Camera_BackBall);
-
-			// ★ 打った瞬間カメラ開始
-			GameCamera* cam = m_game->GetGameCamera();
-			if (cam) cam->StartHitMomentCamera();
 		}
 
 		if (m_inGameUI) {

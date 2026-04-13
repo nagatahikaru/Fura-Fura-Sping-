@@ -99,7 +99,7 @@ void Game::Update()
 	// ★ Aボタン押しっぱなしで2倍速
 	// ★ 打った後だけ倍速ボタンを有効化
 	if (m_canFastForward && g_pad[0]->IsPress(enButtonB)) {
-		m_timeScale = 2.0f;
+		m_timeScale = 5.0f;
 	}
 	else {
 		m_timeScale = 1.0f;
