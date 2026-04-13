@@ -260,7 +260,7 @@ void InGameUI::Render(RenderContext& rc) {
 	if (m_isFontVisible) {
 
 		wchar_t kyu[64];
-		swprintf_s(kyu, 64, L"%d球目", m_ballCount);
+		swprintf_s(kyu, 64, L"%d/3球目", m_ballCount);
 
 		m_fontBallCount.SetText(kyu);
 		m_fontBallCount.SetPosition(-630.0f, 500.0f, 0.0f); // 位置は調整してOK
