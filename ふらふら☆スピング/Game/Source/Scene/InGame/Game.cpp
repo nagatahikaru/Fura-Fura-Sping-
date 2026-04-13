@@ -174,12 +174,22 @@ void Game::Update()
 		m_afterLandingTimer += (1.0f / 60.0f) * m_timeScale;
 
 		if (m_afterLandingTimer >= 1.0f) {
-			Result* result = NewGO<Result>(0);
-			result->SetResultValues(m_guruguru, m_km);
-			DeleteGO(this);
+			m_shots++;
+			// ★ 3球終わった？
+			if (m_shots >= 3) {
+				int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
+				Result* result = NewGO<Result>(0);
+				result->SetResultValues(m_guruguru, best);
+				DeleteGO(this);
+				return;
+			}
+
+			// ★ まだ続く → 次の球へ
+			ResetForNextShot();
 			return;
 		}
 	}
+
 	if (m_km <= 0.1f && m_isGameStarted) {
 		m_zeroDistanceTimer += (1.0f / 60.0f) * m_timeScale;
 
@@ -223,32 +233,22 @@ void Game::ResetForNextShot()
 
 void Game::OnBallLanded()
 {
-    m_isBallLanded = true;
-    m_afterLandingTimer = 0.0f;
-    m_canFastForward = false;
-    m_timeScale = 1.0f;
+	m_isBallLanded = true;
+	m_afterLandingTimer = 0.0f;
+	m_canFastForward = false;
+	m_timeScale = 1.0f;
 
-    // ★ ピッチャーのアニメーションをリセット
-    Pitcher* pitcher = FindGO<Pitcher>("pitcher");
-    if (pitcher) {
-        pitcher->ResetThrow();
-    }
+	// ピッチャーのアニメーションをリセット
+	Pitcher* pitcher = FindGO<Pitcher>("pitcher");
+	if (pitcher) {
+		pitcher->ResetThrow();
+	}
 
-    // ★ スコア保存（3球制）
-    m_scores[m_shots] = m_km;
-    m_shots++;
-
-    if (m_shots >= 3) {
-        // 最高スコアを計算して Result へ
-        int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
-        Result* result = NewGO<Result>(0);
-        result->SetResultValues(m_guruguru, best);
-        DeleteGO(this);
-        return;
-    }
-
-    // ★ 次の球の準備
-    ResetForNextShot();
+	// スコア保存（3球制）
+	m_scores[m_shots] = m_km;
+	
+	// ★ ここでは何もしない（即リセットしない）
+	// ★ 次の球へ行く処理は Update() 側で 1 秒後に行う
 }
 
 
