@@ -85,7 +85,7 @@ void Ball::Update()
 
 
     // Z>=5500 の固定処理
-    if (!m_hasFixed && m_position.z >= 5500.0f) {
+    if (!m_hasFixed && m_position.z >= 6000.0f) {
         if (game) {
             InGameUI* ui = game->GetInGameUI();
             if (ui) {

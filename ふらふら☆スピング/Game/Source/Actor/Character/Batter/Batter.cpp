@@ -465,6 +465,12 @@ void Batter::HitBat()
 	if (dist < 100.0f)
 	{
 		Vector3 hitDir = ballPos - cursor;
+
+		// ★ 前方向の力を必ず入れる（ここを追加）
+		if (fabs(hitDir.z) >= 0.0f) {
+			hitDir.z = -50.0f;
+		}
+
 		hitDir.Normalize();
 
 		m_ball->HitBall(hitDir, 1000.0f);
