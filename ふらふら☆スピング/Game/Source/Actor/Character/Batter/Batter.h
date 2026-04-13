@@ -265,7 +265,10 @@ public:
 	float GetPlaySpeed() const {
 		return m_playSpeed;
 	}
+	void SetCursorMode(bool flag);
+	void ResetCursorPosition();
 	void EffectUpdate();
+	void ResetSwing();
 
 	bool m_isPaused;
 private:

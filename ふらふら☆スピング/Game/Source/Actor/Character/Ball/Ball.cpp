@@ -95,6 +95,18 @@ void Ball::Update()
         m_hasFixed = true;
     }
 
+    // ★ 空振り判定（打撃ゾーンを通過したら次へ）
+    if (!m_hasHit && m_position.z > 7500.0f) {
+        Game* game = FindGO<Game>("game");
+        if (game) {
+            game->SetKmValue(0);   // 空振りは距離0
+            game->OnBallLanded();  // 次の球へ
+        }
+        m_isMove = false;
+        return;
+    }
+
+
     // 着地処理
    // 着地処理
     if (m_position.y <= 0.0f)
@@ -209,6 +221,16 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
             ui->SetStartZ(m_position.z);
         }
     }
+}
+
+void Ball::ResetBall()
+{
+    m_position = { 0.0f, 750.0f, 1200.0f };
+    m_velocity = Vector3::Zero;
+    m_isMove = false;
+    m_hasHit = false;
+
+    SetPosition(m_position);
 }
 
 void Ball::Render(RenderContext& rc)

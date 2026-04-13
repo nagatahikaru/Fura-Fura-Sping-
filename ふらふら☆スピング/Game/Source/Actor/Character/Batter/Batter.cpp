@@ -557,6 +557,33 @@ void Batter::EffectUpdate()
 	);
 }
 
+void Batter::ResetSwing()
+{
+	// 初期の向きに戻す
+	m_transform.m_rotation = m_initialRotation;
+	m_characterModel->SettRotation(m_initialRotation);
+
+	// カーソル位置を中央に戻す（任意）
+	m_meetPosition = Vector3::Zero;
+
+	// 回転フラグをリセット（必要なら）
+	m_isRotation = false;
+
+	// カーソルモード解除（必要なら）
+	m_isCursorMode = false;
+}
+
+void Batter::SetCursorMode(bool flag)
+{
+	m_isCursorMode = flag;
+}
+
+void Batter::ResetCursorPosition()
+{
+	m_meetPosition = Vector3::Zero;
+}
+
+
 void Batter::Render(RenderContext& rc)
 {
 	//モデルの描画

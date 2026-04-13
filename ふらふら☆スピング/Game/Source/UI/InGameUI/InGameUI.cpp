@@ -31,6 +31,7 @@ bool InGameUI::Start() {
 	m_batPositionLeft = Vector3{ 50.0f,-100.0f,0.0f };
 	m_meetPositionRight = Vector3{ 35.0f, 5.0f, 0.0f };
 	m_meetPositionLeft = Vector3{ -70.0f,7.0f,0.0f };
+	m_ballCount = 1;
 	return true;
 }
 
@@ -139,8 +140,13 @@ void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
 }
 
 void InGameUI::SetStartZ(float z) {
-	m_startZ = z;
-	m_isError = false;   // 打つたびにリセット
+    m_startZ = z;
+    m_isError = false;   // 打つたびにリセット
+
+    // ★ ここを追加：ボール予測UIの状態もリセット
+    m_isBallUIFixed    = false;
+    m_hasPredictedBall = false;
+    m_ballAlpha        = 0.0f;
 }
 
 void InGameUI::SetGuruGuruTimer(float time)
@@ -156,6 +162,11 @@ void InGameUI::OnButtonPressed() {
 void InGameUI::SetBaisokuVisible(bool isVisible)
 {
 	m_isBaisokuVisible = isVisible;
+}
+
+void InGameUI::SetBallCount(int count)
+{
+	m_ballCount = count;
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -247,6 +258,14 @@ void InGameUI::Render(RenderContext& rc) {
 	}
 
 	if (m_isFontVisible) {
+
+		wchar_t kyu[64];
+		swprintf_s(kyu, 64, L"%d球目", m_ballCount);
+
+		m_fontBallCount.SetText(kyu);
+		m_fontBallCount.SetPosition(-630.0f, 500.0f, 0.0f); // 位置は調整してOK
+		m_fontBallCount.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
+		m_fontBallCount.Draw(rc);
 
 		m_kiiro.SetPosition(Vector3{ 980.0f, 470.0f, 0.0f });
 		m_kiiro.Update();
