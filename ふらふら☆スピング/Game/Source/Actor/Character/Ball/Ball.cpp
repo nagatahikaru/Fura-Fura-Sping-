@@ -59,7 +59,7 @@ void Ball::Update()
 
     m_throwTimer += dt;
 
-    if (m_throwTimer >= 2.0f && !m_isMove)
+    if (m_throwTimer >= 2.5f && !m_isMove)
     {
         Throw({ 0.0f, 0.0f, 0.0f });
         m_throwTimer = 0.0f;
