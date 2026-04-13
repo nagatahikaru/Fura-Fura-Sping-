@@ -13,6 +13,13 @@ InGameUI::InGameUI() {
 	m_shuchusen.Init("Assets/sprite/shuchusen.DDS", 1920.0f, 1080.0f);
 	m_shuchusen.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
 	m_shuchusen.SetMulColor({ 1,1,1,0 }); // 最初は透明
+	m_konto.Init("Assets/sprite/konto.DDS", 300.0f, 300.0f);
+	m_yazirusi.Init("Assets/sprite/yazirusi.DDS", 130.0f, 100.0f);
+	m_mawase.Init("Assets/sprite/mawase.DDS", 550.0f, 500.0f);
+	m_taimingu.Init("Assets/sprite/taimingu.DDS", 550.0f, 500.0f);
+	m_Abotan.Init("Assets/sprite/Abotann.DDS", 200.0f, 200.0f);
+	m_Abotan2.Init("Assets/sprite/abotann2.DDS", 200.0f, 200.0f);
+	m_gizagiza.Init("Assets/sprite/gizagiza.DDS", 200.0f, 200.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -33,6 +40,26 @@ void InGameUI::Update() {
 
 		float alpha = m_shuchusenTimer / 0.2f; // 0.2秒で消える
 		m_shuchusen.SetMulColor({ 1.0f, 1.0f, 1.0f, alpha });
+	}
+
+	// ★ 矢印の角度を更新（毎秒180度）
+	m_yazirusiAngleDeg -= 180.0f * g_gameTime->GetFrameDeltaTime();
+
+	// ★ Z軸回転のクォータニオンを作る
+	float rad = m_yazirusiAngleDeg * 3.14159265f / 180.0f;
+	m_yazirusiRotation.SetRotation(Vector3::AxisZ, rad);
+
+	if (m_buttonPressTimer > 0.0f) {
+		m_buttonPressTimer -= g_gameTime->GetFrameDeltaTime();
+		if (m_buttonPressTimer <= 0.0f) {
+			m_isButtonPressed = false;
+		}
+	}
+
+	m_uiToggleTimer += g_gameTime->GetFrameDeltaTime();
+	if (m_uiToggleTimer >= 0.5f) {
+		m_uiToggleTimer = 0.0f;
+		m_isAltUI = !m_isAltUI;   // true / false を交互に切り替え
 	}
 }
 
@@ -69,6 +96,16 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 
 	m_predictedBallPos3D = pos3D;
 	m_hasPredictedBall = true;
+
+	// ★ 距離に応じて透明度を決める
+	float startZ = m_startZ;
+	float currentZ = pos3D.z;
+
+	// ボールが近づくほど 0 → 1
+	float t = (startZ - currentZ) / (startZ - 4800.0f);
+	t = std::clamp(t, 0.0f, 1.0f);
+
+	m_ballAlpha = t;
 }
 
 Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
@@ -109,6 +146,11 @@ void InGameUI::SetStartZ(float z) {
 void InGameUI::SetGuruGuruTimer(float time)
 {
 	m_guruGuruTimer = time;
+}
+
+void InGameUI::OnButtonPressed() {
+	m_isButtonPressed = true;
+	m_buttonPressTimer = 0.1f; // 0.1秒だけ押し込み表示
 }
 
 void InGameUI::SetBaisokuVisible(bool isVisible)
@@ -159,18 +201,49 @@ void InGameUI::Render(RenderContext& rc) {
 			Vector3 uiPos;
 
 			if (m_isBallUIFixed) {
-				// ★ 固定モード：変換しない、動かさない
 				uiPos = ConvertBall3DToUI(m_fixedBallUIPos);
 			}
 			else {
-				// ★ 通常モード：リアルタイムで動く
 				uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
 			}
 
 			m_spriteRenderBall.SetPosition(uiPos);
+
+			// ★ 距離に応じた透明度を適用！
+			Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
+			m_spriteRenderBall.SetMulColor(color);
+
 			m_spriteRenderBall.Update();
 			m_spriteRenderBall.Draw(rc);
 		}
+
+
+		// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
+		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed)
+		{
+			m_taimingu.SetPosition(Vector3{ -800.0f, 100.0f, 0.0f });
+			m_taimingu.Update();
+			m_taimingu.Draw(rc);
+
+			// ★ 0.5秒ごとに m_isAltUI が true / false になる
+			if (m_isAltUI) {
+				// 交互UI：Aボタン2
+				m_Abotan2.SetPosition(Vector3{ -800.0f, -130.0f, 0.0f });
+				m_Abotan2.Update();
+				m_Abotan2.Draw(rc);
+
+				m_gizagiza.SetPosition(Vector3{ -800.0f, -30.0f, 0.0f });
+				m_gizagiza.Update();
+				m_gizagiza.Draw(rc);
+			}
+			else {
+				// 交互UI：Aボタン
+				m_Abotan.SetPosition(Vector3{ -800.0f, -130.0f, 0.0f });
+				m_Abotan.Update();
+				m_Abotan.Draw(rc);
+			}
+		}
+
 	}
 
 	if (m_isFontVisible) {
@@ -265,6 +338,23 @@ void InGameUI::Render(RenderContext& rc) {
 			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 			m_baisoku.Update();
 			m_baisoku.Draw(rc);
+
+		}
+
+		if (m_guruGuruTimer > 0.0) {
+			m_konto.SetPosition(Vector3{ -800.0f, 0.0f, 0.0f });
+			m_konto.Update();
+			m_konto.Draw(rc);
+			
+			// ★ 矢印の回転描画
+			m_yazirusi.SetPosition(Vector3{ -840.0f, -5.0f, 0.0f }); // 位置はお好みで
+			m_yazirusi.SetRotation(m_yazirusiRotation);               // ← Quaternion を渡す
+			m_yazirusi.Update();
+			m_yazirusi.Draw(rc);
+
+			m_mawase.SetPosition(Vector3{ -800.0f, -180.0f, 0.0f }); // 位置はお好みで
+			m_mawase.Update();
+			m_mawase.Draw(rc);
 		}
 	}
 }

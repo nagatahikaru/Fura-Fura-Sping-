@@ -44,6 +44,11 @@ public:
 	float m_seVolume = 100.0f;   // 0〜100
 	float m_se2Volume = 100.0f;   // SE2 専用音量
 	SoundSource* m_se2 = nullptr;
+	void StopSE2();
+	float m_se2SavedVolume = 1.0f;
+	float m_se2BaseVolume = 1.0f;
+	void MuteSE2();
+	void UnmuteSE2();
 };
 
 extern SoundManager* g_soundManager;

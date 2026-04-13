@@ -87,10 +87,17 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 			m_se2 = NewGO<SoundSource>(0);
 			m_se2->Init(number);
 		}
-		m_se2->SetVolume(curved);
+
+		float v = m_seVolume / 100.0f;
+		float curved = powf(v, 1.3f);
+
+		m_se2BaseVolume = curved;        // ★ 本来の音量を保存
+		m_se2->SetVolume(curved);        // ★ 実際の音量をセット
 		m_se2->Play(false);
+
 		return m_se2;
 	}
+
 
 	// ★ 通常 SE は今まで通り
 	SoundSource* se = NewGO<SoundSource>(0);
@@ -100,6 +107,14 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 	return se;
 }
 
+void SoundManager::StopSE2()
+{
+	if (m_se2) {
+		m_se2->Stop();
+		DeleteGO(m_se2);
+		m_se2 = nullptr;
+	}
+}
 
 void SoundManager::SetBGMVolume(float vol) {
 	m_bgmVolume = vol;
@@ -116,4 +131,18 @@ void SoundManager::SetBGMVolume(float vol) {
 
 void SoundManager::SetSEVolume(float vol) {
 	m_seVolume = vol;
+}
+
+void SoundManager::MuteSE2()
+{
+	if (m_se2) {
+		m_se2->SetVolume(0.0f); // ミュート
+	}
+}
+
+void SoundManager::UnmuteSE2()
+{
+	if (m_se2) {
+		m_se2->SetVolume(m_se2BaseVolume); // ★ 本来の音量に戻す
+	}
 }

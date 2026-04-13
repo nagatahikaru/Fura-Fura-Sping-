@@ -18,6 +18,7 @@ public:
 	void SetFollowBallBackCamera();
 	// ★ ボールをセットする関数
 	void SetBall(Ball* ball) { m_ball = ball; }
+	void StartHitMomentCamera();
 private:
 	/*Vector3 m_cameraPos;
 	float m_angle;*/
@@ -38,5 +39,7 @@ private:
 	Ball* m_ball = nullptr;        // ボールへのポインタ
 	bool m_isFollowBall = false;   // 追尾モードフラグ
 	FollowMode m_followMode = Follow_None;
+	bool m_isHitMoment = false;
+	float m_hitMomentTimer = 0.0f;
 };
 

@@ -67,6 +67,12 @@ void GameCamera::SetFollowBallBackCamera() {
     m_followMode = Follow_Back;   // ← 後ろ追尾
 }
 
+void GameCamera::StartHitMomentCamera()
+{
+    m_isHitMoment = true;
+    m_hitMomentTimer = 3.5f;   // ← 1秒間だけ“打った瞬間カメラ”を使う
+}
+
 void GameCamera::Update() {
 
 
@@ -89,44 +95,50 @@ void GameCamera::Update() {
     m_rot.Apply(m_forward);
     if (m_followMode == Follow_Back && m_ball != nullptr) {
 
-        Vector3 ballPos = m_ball->GetPosition();
+        if (m_isHitMoment) {
+            // ★ 打った瞬間だけこの式（fixedDir = -1）
+            Vector3 ballPos = m_ball->GetPosition();
 
-        // ボールの進行方向
-        Vector3 dir = m_ball->GetVelocity();
-        if (dir.LengthSq() > 0.001f) {
-            dir.Normalize();
+            Vector3 dir = m_ball->GetVelocity();
+            if (dir.LengthSq() > 0.001f) dir.Normalize();
+            else dir = Vector3(0, 0, 1);
+
+            float ballSpeed = m_ball->GetVelocity().Length();
+            float distanceFromHome = (ballPos - Vector3(0, 0, 0)).Length();
+
+            float zoomBySpeed = 600.0f + ballSpeed * 3.0f;
+            float zoomByDistance = 600.0f + distanceFromHome * 0.5f;
+
+            float followDistance = Clamp((zoomBySpeed + zoomByDistance) * 0.5f, 600.0f, 2000.0f);
+
+            Vector3 fixedDir = Vector3(0, 0, -1);
+            Vector3 targetCamPos = ballPos + fixedDir * followDistance;
+
+            targetCamPos.y = ballPos.y + 50.0f + distanceFromHome * 0.1f;
+
+            m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 0.85f);
+            m_target = ballPos;
         }
         else {
-            dir = Vector3(0, 0, 1);
+            // ★ 1秒後はこの式（あなたが最後に貼った式）
+            Vector3 ballPos = m_ball->GetPosition();
+
+            float ballSpeed = m_ball->GetVelocity().Length();
+            float distanceFromHome = (ballPos - Vector3(0, 0, 0)).Length();
+
+            float zoomBySpeed = 600.0f + ballSpeed * 3.0f;
+            float zoomByDistance = 600.0f + distanceFromHome * 0.2f;
+
+            float followDistance = Clamp((zoomBySpeed + zoomByDistance) * 0.5f, 150.0f, 1000.0f);
+
+            Vector3 fixedDir = Vector3(0, 0, 1);
+            Vector3 targetCamPos = ballPos + fixedDir * followDistance;
+
+            targetCamPos.y = ballPos.y + 20.0f + distanceFromHome * 0.02f;
+
+            m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 1.0f);
+            m_target = ballPos;
         }
-
-        // ボールの速度
-        float ballSpeed = m_ball->GetVelocity().Length();
-
-        // ボールとホームベースの距離（Z軸方向を想定）
-        float distanceFromHome = (ballPos - Vector3(0, 0, 0)).Length();
-
-        // 速度ベースのズーム
-        float zoomBySpeed = 600.0f + ballSpeed * 5.0f;
-
-        // 距離ベースのズーム（遠くへ飛ぶほどズームアウト）
-        float zoomByDistance = 600.0f + distanceFromHome * 0.4f;
-
-        // 2つをミックス（自然なズーム）
-        float followDistance = Clamp((zoomBySpeed + zoomByDistance) * 0.5f, 150.0f, 1300.0f);
-
-        Vector3 fixedDir = Vector3(0, 0, 1);
-        Vector3 targetCamPos = ballPos + fixedDir * followDistance;
-
-        // 高さ調整
-       // 高さ調整（距離に応じて上げる）
-        targetCamPos.y = ballPos.y + 20.0f + distanceFromHome * 0.02f;
-
-        // スムーズ追尾
-        m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 1.0f);
-
-        // ボールを見る
-        m_target = ballPos;
     }
     else if (m_followMode == Follow_Side && m_ball != nullptr) {
 
@@ -135,6 +147,14 @@ void GameCamera::Update() {
     }
     else {
         m_target = m_cameraPos - m_forward * 100.0f;
+    }
+
+    // --- 打撃直後カメラタイマー ---
+    if (m_isHitMoment) {
+        m_hitMomentTimer -= g_gameTime->GetFrameDeltaTime();
+        if (m_hitMomentTimer <= 0.0f) {
+            m_isHitMoment = false;
+        }
     }
 
     // --- カメラ反映 ---

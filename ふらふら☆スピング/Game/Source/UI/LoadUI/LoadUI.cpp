@@ -10,18 +10,19 @@ bool LoadUI::Start()
        "Assets/sprite/tip04.dds",
        "Assets/sprite/tip05.dds",
        "Assets/sprite/tip06.dds",
-       "Assets/sprite/tip07.dds",
-       "Assets/sprite/tip08.dds",
-       "Assets/sprite/tip09.dds",
-       "Assets/sprite/tip10.dds"
     };
 
     for (auto& file : tipFiles) {
         auto tip = new SpriteRender();   // ★ new で生成（コピーしない）
-        tip->Init(file, 1400.0f, 350.0f);
-        tip->SetPosition({ 0.0f, -200.0f, 0.0f });
+        tip->Init(file, 1000.0f, 600.0f);
+        tip->SetPosition({ 0.0f, 200.0f, 0.0f });
         m_tips.push_back(tip);
     }
+
+    m_sannkaku.Init("Assets/sprite/sankaku.dds", 200.0f, 230.0f);
+    m_sannkaku.SetPosition({ 600.0f, 200.0f, 0.0f });
+    m_gyakusann.Init("Assets/sprite/gyakusan.dds", 200.0f, 270.0f);
+    m_gyakusann.SetPosition({ -600.0f, 200.0f, 0.0f });
 
     return true;
 }
@@ -45,6 +46,29 @@ void LoadUI::Update()
 
         m_timer = 0.0f; // 手動操作時もタイマーをリセット
     }
+
+    // ★ 三角の表示制御もここでやる
+    m_sannkaku.SetMulColor({ 1,1,1,0 });
+    m_gyakusann.SetMulColor({ 1,1,1,0 });
+
+    switch (m_currentTip)
+    {
+    case 0:
+        m_sannkaku.SetMulColor({ 1,1,1,1 });
+        break;
+
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        m_sannkaku.SetMulColor({ 1,1,1,1 });
+        m_gyakusann.SetMulColor({ 1,1,1,1 });
+        break;
+
+    case 5:
+        m_gyakusann.SetMulColor({ 1,1,1,1 });
+        break;
+    }
 }
 
 
@@ -54,4 +78,10 @@ void LoadUI::Render(RenderContext& rc)
         m_tips[m_currentTip]->Update();
         m_tips[m_currentTip]->Draw(rc);
     }
+
+    m_sannkaku.Update();
+    m_sannkaku.Draw(rc);
+
+    m_gyakusann.Update();
+    m_gyakusann.Draw(rc);
 }

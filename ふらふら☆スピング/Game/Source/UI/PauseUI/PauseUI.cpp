@@ -48,6 +48,11 @@ bool PauseUI::Start()
         g_bgm->SetVolume(pauseVolume);
     }
 
+    // ★ ここを追加：ポーズに入った瞬間 SE2 を止める
+// ★ ポーズに入った瞬間 SE2 を一時停止
+    if (g_soundManager) {
+        g_soundManager->MuteSE2();
+    }
 
     return true;
 }
@@ -71,6 +76,7 @@ void PauseUI::Update()
                 float curved = powf(v, 1.5f);
                 g_bgm->SetVolume(curved);
             }
+            g_soundManager->UnmuteSE2();
         }
         DeleteGO(this);
         return;
@@ -102,7 +108,8 @@ void PauseUI::Update()
                 float curved = powf(v, 1.5f);
                 g_bgm->SetVolume(curved);
             }
-
+            // ★ SE2 を再開
+            g_soundManager->UnmuteSE2();
             DeleteGO(this);
         }
 
@@ -133,6 +140,16 @@ void PauseUI::Update()
             DeleteGO(this);  // PauseUI を消す
         }
         else if (m_cursor == 2) {
+
+              // ★ SE2 を止める
+            g_soundManager->StopSE2();
+
+            if (g_bgm) {
+                float v = g_soundManager->m_bgmVolume / 100.0f;
+                float curved = powf(v, 1.5f);
+                g_bgm->SetVolume(curved);
+            }
+
             // ★ ゲームをやり直す（ロード画面から再開）
             Game* game = FindGO<Game>("game");
             if (game) {
@@ -144,7 +161,6 @@ void PauseUI::Update()
 
             DeleteGO(this);  // PauseUI を閉じる
         }
-
     }
     if (m_cursor == 0) {
         m_startButton.SetScale({ 1.5f,1.5f,1.0f });
