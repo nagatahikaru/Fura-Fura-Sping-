@@ -59,6 +59,10 @@ void Game::Update()
 	//当たり判定の表示
 	//PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
+	if (m_InGameUI) {
+		m_InGameUI->SetBallCount(m_shots + 1);
+	}
+
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止
 	if (FindGO<Start1>("start1") != nullptr) {
 
