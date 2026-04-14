@@ -269,7 +269,9 @@ public:
 	void ResetCursorPosition();
 	void EffectUpdate();
 	void ResetSwing();
-
+	int GetGuruGuru() const {
+		return m_guruGuruBatCount;
+	}
 	bool m_isPaused;
 private:
 	std::unique_ptr<BatterStateMachine> m_stateMachine;

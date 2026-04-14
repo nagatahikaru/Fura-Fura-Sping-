@@ -9,7 +9,7 @@ public:
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);
-	void SetResultValues(int guruguru, int km);
+	void SetResultValues(int guruguru, int km, int scores[3]);
 private:
 	SpriteRender m_spriteRender;
 	int m_guruguru = 0;
@@ -28,5 +28,8 @@ private:
 	int m_originalKm = 0;   // 元の km
 	float m_displayOriginalKm = 0; // カウントアップ用
 	float m_originalKmAddPerFrame = 0; // 1フレーム加算量
+	int m_threeShots[3] = { 0,0,0 };
+	FontRender m_fontThreeShots[3];
+	SpriteRender m_burakku;
 };
 

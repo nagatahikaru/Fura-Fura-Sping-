@@ -475,7 +475,7 @@ void Batter::HitBat()
 
 		hitDir.Normalize();
 
-		m_ball->HitBall(hitDir, 1050.0f);
+		m_ball->HitBall(hitDir, 950.0f);
 
 		if (m_inGameUI) {
 			m_inGameUI->m_shuchusenTimer = 0.5f;  // © W’†ü‚ğ0.2•b•\¦
