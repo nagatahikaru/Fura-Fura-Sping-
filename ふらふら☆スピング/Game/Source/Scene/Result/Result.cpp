@@ -21,7 +21,7 @@ bool Result::Start()
 	m_grobu.SetPosition({ 730.0f, -400.0f ,0.0f});
 
 	m_burakku.Init("Assets/sprite/burakku.dds", 600.0f, 50.0f);
-	m_burakku.SetPosition({ 195.0f, -40.0f ,0.0f });
+	m_burakku.SetPosition({ 190.0f, -40.0f ,0.0f });
 
 	// ★ SE 音量が 0 の場合は SE2 を即削除
 	if (g_soundManager->m_seVolume <= 0.0f) {
@@ -177,16 +177,45 @@ void Result::Render(RenderContext& rc)
 	m_moto.SetColor(0,0,0,1);
 	m_moto.Draw(rc);
 
+	// ★★★ ここに入れる！ ★★★
+	int bestIndex = 0;
+	for (int i = 1; i < 3; i++) {
+		if (m_threeShots[i] > m_threeShots[bestIndex]) {
+			bestIndex = i;
+		}
+	}
 	// ★★★ ここに追加する！ ★★★
 	wchar_t buf2[256];
 	for (int i = 0; i < 3; i++) {
 		double meter = (double)m_threeShots[i] / 100.0;
-		swprintf_s(buf2, L"%d: %.2f m", i + 1, meter);
 
-		m_fontThreeShots[i].SetText(buf2);
-		m_fontThreeShots[i].SetPosition(-110+i*200, -20 , 0);
+		// ★ 赤い「1:」「2:」「3:」
+		wchar_t numBuf[32];
+		swprintf_s(numBuf, L"%d:", i + 1);
+
+		m_fontThreeShots[i].SetText(numBuf);
+		m_fontThreeShots[i].SetPosition(-110 + i * 200, -20, 0);
 		m_fontThreeShots[i].SetScale(0.8f);
-		m_fontThreeShots[i].SetColor(1, 1, 1, 1);
+		m_fontThreeShots[i].SetColor(1, 0, 0, 1);   // ← 赤
+		// ★ 1番だけ黄色、それ以外は赤
+		if (i == bestIndex) {
+			m_fontThreeShots[i].SetColor(1, 0.84, 0, 1);   // 黄色
+		}
+		else {
+			m_fontThreeShots[i].SetColor(1, 0, 0, 1);   // 赤
+		}
 		m_fontThreeShots[i].Draw(rc);
+
+		// ★ 白い「100.00 m」部分
+		wchar_t meterBuf[64];
+		swprintf_s(meterBuf, L" %.2f m", meter);
+
+		m_fontThreeShotsValue[i].SetText(meterBuf);
+		m_fontThreeShotsValue[i].SetPosition(-110 + i * 200 + 20, -20, 0);
+		// ↑ 数字の後ろに少し右へずらす
+		m_fontThreeShotsValue[i].SetScale(0.8f);
+		m_fontThreeShotsValue[i].SetColor(1, 1, 1, 1);  // ← 白
+		m_fontThreeShotsValue[i].Draw(rc);
 	}
+
 }

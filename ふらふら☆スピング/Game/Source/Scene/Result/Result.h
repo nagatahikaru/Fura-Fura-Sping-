@@ -30,6 +30,7 @@ private:
 	float m_originalKmAddPerFrame = 0; // 1フレーム加算量
 	int m_threeShots[3] = { 0,0,0 };
 	FontRender m_fontThreeShots[3];
+	FontRender m_fontThreeShotsValue[3];
 	SpriteRender m_burakku;
 };
 
