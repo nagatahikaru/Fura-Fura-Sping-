@@ -21,9 +21,11 @@ namespace {
 
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
 	std::string FILE_PATH_DDS = (".tka");
-	std::string FILE_PATH_ANIMATION[2] = {
+	std::string FILE_PATH_ANIMATION[3] = {
 		"idle",
+		"guruguru",
 		"swing"
+		
 	};
 
 	inline std ::string GetAnimationFilePath(int number)
@@ -105,12 +107,6 @@ bool Batter::Start()
 	m_characterController.SetPosition(m_transform.m_position);
 	m_initialRotation = m_transform.m_rotation;
 
-	g_effectManager->SetEffect(
-		enEffect_DownArrow,
-		m_transform.m_position,
-		Quaternion::Identity,
-		Vector3(50.0f, 50.0f, 50.0f));
-
 	m_guruGuruBatTimer = 5.0f;
 
 	m_collisionObject = new CollisionObject;
@@ -131,6 +127,7 @@ void Batter::Update()
 {
 	if(m_isPaused)
 	{
+		
 		return; // ゲームがポーズ中なら更新処理をスキップ
 	}
 	if (!m_inGameUI)
@@ -141,6 +138,7 @@ void Batter::Update()
 	m_game = FindGO<Game>("game");
 	// ★ ポーズ中はキャッチャーのアニメーションを止める	
 	if (m_game && m_game->m_isPaused) {
+		g_effectManager->StopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
 
@@ -304,6 +302,14 @@ void Batter::RotationUpdate()
 	if (!m_isRotation)
 	{
 		m_characterModel->SettRotation(m_initialRotation);
+		Quaternion rot;
+		rot.SetRotationDeg(Vector3(1.0f, 0.0f, 0.0f), 180.0f);
+		m_characterModel->SetWeaponRotation(false);
+		m_characterModel->SetWeaponRotation(rot);
+		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y+200.0f, m_transform.m_position.z));
+	}else
+		{
+		m_characterModel->SetWeaponRotation(true);
 	}
 
 	m_characterModel->SetPosition(newPosition);
@@ -440,6 +446,7 @@ void Batter::DebuffDepth() {
 	}
 }
 
+
 /** Hit計算関連コード */
 void Batter::HitBat()
 {
@@ -572,16 +579,17 @@ void Batter::EffectUpdate()
 {
 	if (m_guruGuruBatCount < 5) return;
 
-	if (g_effectManager->GetIsPlayeEffect())return;
-	Quaternion rot;
-	rot.SetRotationYFromDirectionXZ(Vector3(0.0f,90.0f,0.0f));
+	if (g_effectManager->GetIsPlayeEffect()) {
+		return; // すでにエフェクトが再生中なら新たに出さない
+	}
+	
 	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
 
 	g_effectManager->SetEffect(
 		enEffect_DownArrow,
 		pos,
-		rot,
-		Vector3(100.0f, 100.0f, 100.0f)
+		Quaternion::Identity,
+		Vector3(6.0f, 10.0f, 6.0f)
 	);
 }
 

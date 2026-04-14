@@ -97,6 +97,8 @@ namespace nsApp
 		/* 武器を装備させる。*/
 		if (m_characterModelRender != nullptr && m_weaponModelRender != nullptr)
 		{
+			if (!m_isWeaponRotasition)
+			{
 			/* 右手のボーンの位置と傾きのデータを取得。*/
 			m_handMatrix = GetWorldMatrix(L"mixamorig:RightHand");
 
@@ -125,7 +127,9 @@ namespace nsApp
 
 			/* 正規化した行列から回転を抽出。*/
 			m_matrixRotation.SetRotation(m_rotationMatrix);
-			m_weaponModelRender->SetRotation(m_matrixRotation);
+
+				m_weaponModelRender->SetRotation(m_matrixRotation);
+			}
 
 			/* 武器を更新。*/
 			m_weaponModelRender->Update();

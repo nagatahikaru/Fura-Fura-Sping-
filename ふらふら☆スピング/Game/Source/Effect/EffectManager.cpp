@@ -7,10 +7,10 @@ EffectManager::EffectManager()
 {
 	for (int i = 0; i < enEffect_Num; i++)
 	{
-		std::string path =
-			m_filePath + m_files[i] + m_ext;
+		std::u16string path =
+			std::u16string(m_filePath) + m_files[i] + m_ext;
 
-		EffectEngine::GetInstance()->ResistEffect(i, (const char16_t*)path.c_str());
+		EffectEngine::GetInstance()->ResistEffect(i, path.c_str());
 	}
 }
 
@@ -42,7 +42,8 @@ void EffectManager::SetEffect(
 //	m_effectEmitter->Play();		
 //}
 
-void EffectManager::StopEffect(int handle)
+void EffectManager::StopEffect()
 {
-	EffectEngine::GetInstance()->Stop(handle);
+	if (m_effectEmitter == nullptr)return;
+	m_effectEmitter->Stop();
 }
