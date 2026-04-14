@@ -169,6 +169,10 @@ void InGameUI::SetBallCount(int count)
 	m_ballCount = count;
 }
 
+int InGameUI::GetGuruGuruCount() const {
+	return m_guruGuruCount;
+}
+
 void InGameUI::Render(RenderContext& rc) {
 
 	if (m_isPaused) {

@@ -20,6 +20,9 @@ bool Result::Start()
 	m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
 	m_grobu.SetPosition({ 730.0f, -400.0f ,0.0f});
 
+	m_burakku.Init("Assets/sprite/burakku.dds", 600.0f, 50.0f);
+	m_burakku.SetPosition({ 195.0f, -40.0f ,0.0f });
+
 	// ★ SE 音量が 0 の場合は SE2 を即削除
 	if (g_soundManager->m_seVolume <= 0.0f) {
 		auto se2 = g_soundManager->GetSE2();
@@ -40,6 +43,7 @@ bool Result::Start()
 
 void Result::Update()
 {
+
 	if (m_isFadingSE2) {
 		m_se2Volume -= 0.012f;
 
@@ -116,24 +120,30 @@ void Result::Update()
 
 }
 
-void Result::SetResultValues(int guruguru, int km) {
+void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
+
+	// 3球分の km を保存（倍率なし）
+	for (int i = 0; i < 3; i++) {
+		m_threeShots[i] = scores[i];
+	}
+
+	// ★ ここを追加：ぐるぐる値をメンバに保存
 	m_guruguru = guruguru;
 
-	// ★ 元の km を保存
-	m_originalKm = km;
+	// 元の km（最大距離）
+	m_originalKm = bestKm;
 
-	// ★ ぐるぐる1回につき1.01倍する
+	// ぐるぐる倍率
 	double multiplier = pow(1.01, (double)guruguru);
 
-	// ★ 書けたスコア（倍率後）
-	m_km = (int)(km * multiplier);
+	// 倍率後 km（スコア）
+	m_km = (int)(bestKm * multiplier);
 
-	// ★ カウントアップ初期化
+	// カウントアップ初期化
 	m_displayGuruguru = 0;
 	m_displayKm = 0;
 	m_displayOriginalKm = 0;
 
-	// ★ 5秒（270フレーム）で到達
 	m_kmAddPerFrame = (float)m_km / 258.0f;
 	m_originalKmAddPerFrame = (float)m_originalKm / 180.0f;
 }
@@ -148,6 +158,9 @@ void Result::Render(RenderContext& rc)
 	m_B.Update();
 	m_B.Draw(rc);
 
+	m_burakku.Update();
+	m_burakku.Draw(rc);
+
 	wchar_t buf[256];
 	// ぐるぐる
 	swprintf_s(buf, L"ぐるぐる: %d", m_displayGuruguru);
@@ -157,19 +170,23 @@ void Result::Render(RenderContext& rc)
 	m_fontGuruguru.SetColor(0, 0, 0, 1);
 	m_fontGuruguru.Draw(rc);
 
-	// 元の km（倍率前）
-	double originalMeter = (double)m_displayOriginalKm / 100.0;
-	swprintf_s(buf, L"%.2f m", originalMeter);
-	m_fontKm.SetText(buf);
-	m_fontKm.SetPosition(-50, 0, 0);  // ← 好きな位置に調整
-	m_fontKm.SetScale(1.0f);
-	m_fontKm.SetColor(1, 1, 1, 1);
-	m_fontKm.Draw(rc);
-
 	swprintf_s(buf, L"スコア%.2f",m_displayKm/100.0);
 	m_moto.SetText(buf);
 	m_moto.SetPosition(-200, 120, 0);
 	m_moto.SetScale(2.0f);
 	m_moto.SetColor(0,0,0,1);
 	m_moto.Draw(rc);
+
+	// ★★★ ここに追加する！ ★★★
+	wchar_t buf2[256];
+	for (int i = 0; i < 3; i++) {
+		double meter = (double)m_threeShots[i] / 100.0;
+		swprintf_s(buf2, L"%d: %.2f m", i + 1, meter);
+
+		m_fontThreeShots[i].SetText(buf2);
+		m_fontThreeShots[i].SetPosition(-110+i*200, -20 , 0);
+		m_fontThreeShots[i].SetScale(0.8f);
+		m_fontThreeShots[i].SetColor(1, 1, 1, 1);
+		m_fontThreeShots[i].Draw(rc);
+	}
 }

@@ -59,6 +59,11 @@ void Game::Update()
 	//当たり判定の表示
 	//PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
+	// ★ ぐるぐる値を毎フレーム Game に保存する
+	if (m_batter) {
+		SetGuruGuru(m_batter->GetGuruGuru());
+	}
+
 	if (m_InGameUI) {
 		m_InGameUI->SetBallCount(m_shots + 1);
 	}
@@ -183,7 +188,7 @@ void Game::Update()
 			if (m_shots >= 3) {
 				int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
 				Result* result = NewGO<Result>(0);
-				result->SetResultValues(m_guruguru, best);
+				result->SetResultValues(m_guruguru, best,m_scores);
 				DeleteGO(this);
 				return;
 			}
@@ -199,7 +204,7 @@ void Game::Update()
 
 		if (m_zeroDistanceTimer >= 10.0f) {
 			Result* result = NewGO<Result>(0);
-			result->SetResultValues(m_guruguru, m_km);
+			result->SetResultValues(m_guruguru, m_km,m_scores);
 			DeleteGO(this);
 			return;
 		}
@@ -250,9 +255,6 @@ void Game::OnBallLanded()
 
 	// スコア保存（3球制）
 	m_scores[m_shots] = m_km;
-	
-	// ★ ここでは何もしない（即リセットしない）
-	// ★ 次の球へ行く処理は Update() 側で 1 秒後に行う
 }
 
 

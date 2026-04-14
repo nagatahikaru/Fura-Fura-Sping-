@@ -34,6 +34,7 @@ public:
 	float m_shuchusenTimer = 0.0f;
 	void OnButtonPressed();
 	void SetBallCount(int count);
+	int GetGuruGuruCount() const;
 private:
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
