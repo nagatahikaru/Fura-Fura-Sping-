@@ -1,6 +1,12 @@
 ﻿#include "stdafx.h"
 #include "InGameUI.h"
 
+
+template <typename T>
+constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
+	return (v < lo) ? lo : (hi < v) ? hi : v;
+}
+
 InGameUI::InGameUI() {
 	m_spriteRender.Init("Assets/sprite/waku.DDS", 850.0f, 600.0f);
 	m_spriteRenderBat.Init("Assets/sprite/batto.DDS", 330.0f, 430.0f);
@@ -110,7 +116,7 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 
 	// 0〜1 の線形 t
 	float t = (startZ - currentZ) / (startZ - 6000.0f);
-	t = std::clamp(t, 0.0f, 1.0f);
+	t = clamp(t, 0.0f, 1.0f);
 
 	// ★ 中盤から上がるイージング（後半だけ立ち上がる）
 	float eased = 0.0f;
