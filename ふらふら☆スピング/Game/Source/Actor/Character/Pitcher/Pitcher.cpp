@@ -170,6 +170,15 @@ void Pitcher::AnimationUpdate()
 	m_modelRender[m_UniformNumber].Update();
 }
 
+void Pitcher::ResetThrow()
+{
+	m_timer = 0.0f;
+	m_isThrowing = false;
+
+	// Idle に戻す
+	SetPlayAnimation(enAnimationClip_Idle);
+}
+
 void Pitcher::Render(RenderContext& rc)
 {
 	//モデルの描画

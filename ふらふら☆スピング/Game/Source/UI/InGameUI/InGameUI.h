@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Source/Source.h"
 
 class InGameUI :public Source
@@ -33,6 +33,8 @@ public:
 	void SetBaisokuVisible(bool isVisible);
 	float m_shuchusenTimer = 0.0f;
 	void OnButtonPressed();
+	void SetBallCount(int count);
+	int GetGuruGuruCount() const;
 private:
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
@@ -87,8 +89,10 @@ private:
 	bool m_isButtonPressed = false;
 	float m_buttonPressTimer = 0.0f;
 	float m_uiToggleTimer = 0.0f;
-	bool m_isAltUI = false;   // ŒğŒİUIƒtƒ‰ƒO
+	bool m_isAltUI = false;   // äº¤äº’UIãƒ•ãƒ©ã‚°
 	SpriteRender m_gizagiza;
-	float m_ballAlpha = 0.0f;   // “§–¾“xi0=“§–¾, 1=Š®‘S•\¦j
+	float m_ballAlpha = 0.0f;   // é€æ˜åº¦ï¼ˆ0=é€æ˜, 1=å®Œå…¨è¡¨ç¤ºï¼‰
+	int m_ballCount = 1;  // 1çƒç›®ã€œ3çƒç›®
+	FontRender m_fontBallCount; // æ–°ã—ã„ãƒ•ã‚©ãƒ³ãƒˆ
 };
 

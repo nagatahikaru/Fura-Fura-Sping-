@@ -65,6 +65,7 @@ public:
 	}
 	float GetTimeScale() const { return m_timeScale; }
 	GameCamera* GetGameCamera() const { return m_gameCamera; }
+	void ResetForNextShot();
 	bool m_canFastForward = false;
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
@@ -87,5 +88,10 @@ private:
 	bool m_isGameStarted=false;
 	int m_cameraType = 0;
 	float m_timeScale = 1.0f;
+	int m_shots = 0;          // 何回打ったか
+	int m_scores[3] = { 0,0,0 }; // 各回のスコア保存
+	// Game.h など
+	bool  m_isMissWait = false;
+	float m_missWaitTimer = 0.0f;
 };
 

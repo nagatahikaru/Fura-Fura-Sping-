@@ -259,9 +259,19 @@ public:
 	{
 		return min + (max - min) * (rand() / (float)RAND_MAX);
 	}
-
+	void SetPlaySpeed(float speed) {
+		m_playSpeed = speed;
+	}
+	float GetPlaySpeed() const {
+		return m_playSpeed;
+	}
+	void SetCursorMode(bool flag);
+	void ResetCursorPosition();
 	void EffectUpdate();
-
+	void ResetSwing();
+	int GetGuruGuru() const {
+		return m_guruGuruBatCount;
+	}
 	bool m_isPaused;
 private:
 	std::unique_ptr<BatterStateMachine> m_stateMachine;
@@ -296,5 +306,6 @@ private:
 	float m_randomMoveDuration = 0.0f; // ランダムな位置にカーソルを移動する際の移動時間
 	Vector3 m_randomCursorMovePwer; // ランダムな位置にカーソルを移動する際の移動の強さ
 	bool m_effectSpawned = false;
+	float m_playSpeed = 1.0f;
 };
 

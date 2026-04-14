@@ -59,6 +59,15 @@ void Game::Update()
 	//当たり判定の表示
 	//PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
+	// ★ ぐるぐる値を毎フレーム Game に保存する
+	if (m_batter) {
+		SetGuruGuru(m_batter->GetGuruGuru());
+	}
+
+	if (m_InGameUI) {
+		m_InGameUI->SetBallCount(m_shots + 1);
+	}
+
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止
 	if (FindGO<Start1>("start1") != nullptr) {
 
@@ -99,7 +108,7 @@ void Game::Update()
 	// ★ Aボタン押しっぱなしで2倍速
 	// ★ 打った後だけ倍速ボタンを有効化
 	if (m_canFastForward && g_pad[0]->IsPress(enButtonB)) {
-		m_timeScale = 2.0f;
+		m_timeScale = 5.0f;
 	}
 	else {
 		m_timeScale = 1.0f;
@@ -174,18 +183,28 @@ void Game::Update()
 		m_afterLandingTimer += (1.0f / 60.0f) * m_timeScale;
 
 		if (m_afterLandingTimer >= 1.0f) {
-			Result* result = NewGO<Result>(0);
-			result->SetResultValues(m_guruguru, m_km);
-			DeleteGO(this);
+			m_shots++;
+			// ★ 3球終わった？
+			if (m_shots >= 3) {
+				int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
+				Result* result = NewGO<Result>(0);
+				result->SetResultValues(m_guruguru, best,m_scores);
+				DeleteGO(this);
+				return;
+			}
+
+			// ★ まだ続く → 次の球へ
+			ResetForNextShot();
 			return;
 		}
 	}
+
 	if (m_km <= 0.1f && m_isGameStarted) {
 		m_zeroDistanceTimer += (1.0f / 60.0f) * m_timeScale;
 
 		if (m_zeroDistanceTimer >= 10.0f) {
 			Result* result = NewGO<Result>(0);
-			result->SetResultValues(m_guruguru, m_km);
+			result->SetResultValues(m_guruguru, m_km,m_scores);
 			DeleteGO(this);
 			return;
 		}
@@ -199,13 +218,45 @@ void Game::Update()
 	}
 }
 
+void Game::ResetForNextShot()
+{
+	m_isBallLanded = false;
+	m_afterLandingTimer = 0.0f;
+	m_zeroDistanceTimer = 0.0f;
+	m_km = 0.0f;
+
+	// ボールを初期位置に戻す
+	if (m_ball) {
+		m_ball->ResetBall();
+	}
+
+	// UI のリセット
+	if (m_InGameUI) {
+		m_InGameUI->SetKm(0);
+		m_InGameUI->SetBaisokuVisible(false);
+	}
+
+	// カメラをキャッチャー視点に戻す
+	m_cameraMode = Camera_Catcher;
+}
+
 void Game::OnBallLanded()
 {
 	m_isBallLanded = true;
 	m_afterLandingTimer = 0.0f;
-	m_canFastForward = false;  // ★ 倍速禁止に戻す
-	m_timeScale = 1.0f;        // ★ 通常速度に戻す
+	m_canFastForward = false;
+	m_timeScale = 1.0f;
+
+	// ピッチャーのアニメーションをリセット
+	Pitcher* pitcher = FindGO<Pitcher>("pitcher");
+	if (pitcher) {
+		pitcher->ResetThrow();
+	}
+
+	// スコア保存（3球制）
+	m_scores[m_shots] = m_km;
 }
+
 
 void Game::Render(RenderContext& rc)
 {
