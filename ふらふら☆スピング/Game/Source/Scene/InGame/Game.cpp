@@ -65,7 +65,7 @@ void Game::Update()
 	}
 
 	if (m_InGameUI) {
-		m_InGameUI->SetBallCount(m_shots + 1);
+		m_InGameUI->SetBallCount(3-m_shots);
 	}
 
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止

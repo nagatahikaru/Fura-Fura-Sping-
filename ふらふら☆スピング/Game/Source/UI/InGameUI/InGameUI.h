@@ -94,5 +94,6 @@ private:
 	float m_ballAlpha = 0.0f;   // 透明度（0=透明, 1=完全表示）
 	int m_ballCount = 1;  // 1球目〜3球目
 	FontRender m_fontBallCount; // 新しいフォント
+	SpriteRender m_ballIcon[3];
 };
 

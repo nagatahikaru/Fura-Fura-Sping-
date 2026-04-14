@@ -20,6 +20,12 @@ InGameUI::InGameUI() {
 	m_Abotan.Init("Assets/sprite/Abotann.DDS", 200.0f, 200.0f);
 	m_Abotan2.Init("Assets/sprite/abotann2.DDS", 200.0f, 200.0f);
 	m_gizagiza.Init("Assets/sprite/gizagiza.DDS", 200.0f, 200.0f);
+	m_ballIcon[0].Init("Assets/sprite/ball.dds", 50.0f, 50.0f);
+	m_ballIcon[1].Init("Assets/sprite/ball.dds", 50.0f, 50.0f);
+	m_ballIcon[2].Init("Assets/sprite/ball.dds", 50.0f, 50.0f);
+	m_ballIcon[0].SetPosition(Vector3{ -600, 430, 0 });
+	m_ballIcon[1].SetPosition(Vector3{ -530, 430, 0 });
+	m_ballIcon[2].SetPosition(Vector3{ -460, 430, 0 });
 }
 
 InGameUI::~InGameUI() {
@@ -31,7 +37,7 @@ bool InGameUI::Start() {
 	m_batPositionLeft = Vector3{ 50.0f,-100.0f,0.0f };
 	m_meetPositionRight = Vector3{ 35.0f, 5.0f, 0.0f };
 	m_meetPositionLeft = Vector3{ -70.0f,7.0f,0.0f };
-	m_ballCount = 1;
+	m_ballCount = 3;
 	return true;
 }
 
@@ -264,12 +270,23 @@ void InGameUI::Render(RenderContext& rc) {
 	if (m_isFontVisible) {
 
 		wchar_t kyu[64];
-		swprintf_s(kyu, 64, L"%d/3球目", m_ballCount);
+		swprintf_s(kyu, 64, L"のこり%d球", m_ballCount);
 
 		m_fontBallCount.SetText(kyu);
 		m_fontBallCount.SetPosition(-630.0f, 500.0f, 0.0f); // 位置は調整してOK
 		m_fontBallCount.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
 		m_fontBallCount.Draw(rc);
+
+		for (int i = 0; i < 3; i++) {
+			if (i < m_ballCount) {
+				m_ballIcon[i].SetMulColor({ 1,1,1,1 });   // 表示
+			}
+			else {
+				m_ballIcon[i].SetMulColor({ 1,1,1,0 });   // 非表示
+			}
+			m_ballIcon[i].Update();
+			m_ballIcon[i].Draw(rc);
+		}
 
 		m_kiiro.SetPosition(Vector3{ 980.0f, 470.0f, 0.0f });
 		m_kiiro.Update();

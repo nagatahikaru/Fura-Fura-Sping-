@@ -102,7 +102,10 @@ void PauseUI::Update()
             if (game) {
                 game->m_isPaused = false;
             }
-
+            InGameUI* ui = FindGO<InGameUI>("inGameUI");
+            if (ui) {
+                ui->SetPause(false);
+            }
             if (g_bgm) {
                 float v = g_soundManager->m_bgmVolume / 100.0f;
                 float curved = powf(v, 1.5f);
