@@ -32,16 +32,17 @@ public:
 
 	bool GetIsPlayeEffect()
 	{
-		return m_effectEmitter->IsPlay();
+		return m_effectEmitter->IsPlay(); 
 	}
 
+
+
 private:
-	std::u16string ToU16(const std::string& str);
-
-	const char* m_filePath = "Game/Assets/effect/";
-	const char* m_ext = ".efk";
-
-	const char* m_files[enEffect_Num] = {
+	std::string m_filePath = "Assets/effect/";
+	std::string m_ext = ".efkpkg";
+	std::u16string m_paths[enEffect_Num];
+	//char16_tŒ^‚ðŽg‚Á‚Ä‚¢‚é‚Ì‚Å""‚Ì‘O‚Éu‚ð‚Â‚¯‚éŽ–
+	std::string m_files[enEffect_Num] = {
 		"DownArrow"
 	};
 

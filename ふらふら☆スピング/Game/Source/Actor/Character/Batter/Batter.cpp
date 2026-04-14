@@ -549,7 +549,7 @@ void Batter::EffectUpdate()
 	if (g_effectManager->GetIsPlayeEffect())return;
 	Quaternion rot;
 	rot.SetRotationYFromDirectionXZ(Vector3(0.0f,90.0f,0.0f));
-	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
+	Vector3 pos = Vector3::Zero;
 
 	g_effectManager->SetEffect(
 		enEffect_DownArrow,
