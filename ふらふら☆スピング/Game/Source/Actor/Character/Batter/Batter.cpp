@@ -476,7 +476,7 @@ void Batter::HitBat()
 
 		hitDir.Normalize();
 
-		m_ball->HitBall(hitDir, 950.0f);
+		m_ball->HitBall(hitDir, 935.0f);
 
 		if (m_inGameUI) {
 			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
