@@ -137,6 +137,16 @@ namespace nsApp
 			if (m_weaponModelRender)
 				m_weaponModelRender->SetRotation(rotation);
 		}
+		inline void SetWeaponPosition(const Vector3& position)
+		{
+			if (m_weaponModelRender)
+				m_weaponModelRender->SetPosition(position);
+		}
+
+		void SetWeaponRotation(bool isWeaponRotation)
+		{
+			m_isWeaponRotasition = isWeaponRotation;
+		}
 		void SetPlaySpeed(float speed) {
 			m_playSpeed = speed;
 		}
@@ -205,5 +215,7 @@ namespace nsApp
 		Vector3 m_weaponOffset;                                                                                                /* 武器の位置のずれを管理する変数。*/
 		Vector3 m_offsetPosition; 
 		float m_playSpeed = 1.0f; /* 武器の位置のずれを管理する変数。*/
+		bool m_isWeaponRotasition = false;                                                                                             /* 武器の回転を制御する変数。*/
+		Quaternion m_weaponOffsetRot;
 	};	
 }

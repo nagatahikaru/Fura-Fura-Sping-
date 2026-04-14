@@ -28,22 +28,27 @@ public:
 	//	const Vector3& scale);
 
 	// 停止
-	void StopEffect(int handle);
+	void StopEffect();
 
 	bool GetIsPlayeEffect()
 	{
+		if (!GetEffectEmitter())return false;
 		return m_effectEmitter->IsPlay(); 
+	}
+
+	EffectEmitter* GetEffectEmitter()
+	{
+		return m_effectEmitter;
 	}
 
 
 
 private:
-	std::string m_filePath = "Assets/effect/";
-	std::string m_ext = ".efkpkg";
-	std::u16string m_paths[enEffect_Num];
-	//char16_t型を使っているので""の前にuをつける事
-	std::string m_files[enEffect_Num] = {
-		"DownArrow"
+	const char16_t* m_filePath = u"Assets/effect/";
+	const char16_t* m_ext = u".efk";
+
+	const char16_t* m_files[enEffect_Num] = {
+		u"DownArrow"
 	};
 
 	EffectEmitter* m_effectEmitter = nullptr;					//effectへの参照。

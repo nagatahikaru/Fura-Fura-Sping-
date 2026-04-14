@@ -50,7 +50,8 @@ public:
 	// グローバルでの定義の重複を避けるため、クラス内にEnumを移動（もしくは Character.h で定義されている場合は削除してください）
 	enum EnAnimationClip {
 		enAnimationClip_Idle,
-		enAnimationClip_Swing,
+		enAnimationClip_Rotation,
+		enAnimationClip_Swing,		
 		enAnimationClip_Num
 	};
 
@@ -68,10 +69,10 @@ public:
 
 	EnAnimationClip GetEnAnimationClip() const
 	{
-		if (!g_pad[0]->IsPressAnyKey())
-		{
-			return enAnimationClip_Idle;
-		}
+		//if (!g_pad[0]->IsPressAnyKey())
+		//{
+		//	return enAnimationClip_Idle;
+		//}
 		return m_setAnimation;
 	}
 	const bool GetIsOnGround() const
@@ -114,7 +115,7 @@ public:
 	// 回転アニメーションを再生する関数
 	void SetPlayRotation()
 	{
-		m_setAnimation = enAnimationClip_Idle;
+		m_setAnimation = enAnimationClip_Rotation;
 	}
 
 	void SetIdleAnimation()
@@ -274,6 +275,7 @@ public:
 	}
 	bool m_isPaused;
 private:
+
 	std::unique_ptr<BatterStateMachine> m_stateMachine;
 	AnimationClip m_animationClips[enAnimationClip_Num];
 	EnAnimationClip m_setAnimation = enAnimationClip_Idle;
