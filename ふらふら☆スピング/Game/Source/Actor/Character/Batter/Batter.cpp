@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Batter.h"
 #include "BatterStateMachine.h"
 #include"Source/Scene/InGame/Game.h"
@@ -6,10 +6,10 @@
 #include"Source/Sound/SoundManager.h"
 #include "Source/Effect/EffectManager.h"
 #include "Source/Actor/GameCamera/GameCamera.h"
-#include <algorithm> // ’Ç‰Á
+#include <algorithm> // è¿½åŠ 
 
 
-// ƒtƒ@ƒCƒ‹–`“ª•t‹ß‚É’Ç‰Áistd::clamp‚ªg‚¦‚È‚¢ê‡‚Ì‚½‚ßj
+// ãƒ•ã‚¡ã‚¤ãƒ«å†’é ­ä»˜è¿‘ã«è¿½åŠ ï¼ˆstd::clampãŒä½¿ãˆãªã„å ´åˆã®ãŸã‚ï¼‰
 template <typename T>
 constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
     return (v < lo) ? lo : (hi < v) ? hi : v;
@@ -53,7 +53,7 @@ Batter::Batter()
 Batter::~Batter()
 {
 	m_stateMachine->SetBatter(nullptr);
-	//“–‚½‚è”»’èƒIƒuƒWƒFƒNƒg‚Ìíœ
+	//å½“ãŸã‚Šåˆ¤å®šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å‰Šé™¤
 	if (m_collisionObject)return;
 	delete m_collisionObject;
 	
@@ -61,8 +61,8 @@ Batter::~Batter()
 
 bool Batter::Start()
 {
-	//forƒ‹[ƒv‚Å‚Ü‚Æ‚ß‚é
-//ƒAƒjƒ[ƒVƒ‡ƒ“ƒNƒŠƒbƒv‚Ì“Ç‚İ‚İ
+	//forãƒ«ãƒ¼ãƒ—ã§ã¾ã¨ã‚ã‚‹
+//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒªãƒƒãƒ—ã®èª­ã¿è¾¼ã¿
 	for (int j = enAnimationClip_Idle; j < enAnimationClip_Swing; j++)
 	{
 		InitAnimation(m_animationClips, j, true);
@@ -71,26 +71,26 @@ bool Batter::Start()
 	{
 		InitAnimation(m_animationClips, j, false);
 	}
-	// ƒCƒ“ƒXƒ^ƒ“ƒX‚Ì¶¬
+	// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ç”Ÿæˆ
 	m_characterModel = std::make_unique<nsApp::CharacterModel>();
 
-	// ¦ animationClip ‚Æ numClips ‚ÍŠÂ‹«‚É‡‚í‚¹‚Ä“KØ‚È’l‚ğ“n‚µ‚Ä‚­‚¾‚³‚¢
+	// â€» animationClip ã¨ numClips ã¯ç’°å¢ƒã«åˆã‚ã›ã¦é©åˆ‡ãªå€¤ã‚’æ¸¡ã—ã¦ãã ã•ã„
 	m_characterModel->LoadCharacterModel(
 		nsApp::CharacterModelType::BatterUniformNumber_0, 
 		m_animationClips, 
 		enAnimationClip_Num);
 
-	// 2. •Šíiƒoƒbƒgj‚Ì“Ç‚İ‚İ
+	// 2. æ­¦å™¨ï¼ˆãƒãƒƒãƒˆï¼‰ã®èª­ã¿è¾¼ã¿
 	m_characterModel->LoadWeaponModel(nsApp::CharacterModelType::Bat);
 
-	// 3. ƒAƒ^ƒbƒ`‚·‚éƒ{[ƒ“‚Ìİ’è‚ÆƒIƒtƒZƒbƒg‚Ì’²®
-	m_characterModel->SetWeaponAttackBone(L"mixamorig:RightHand"); // ÀÛ‚Ìƒ{[ƒ“–¼‚É‡‚í‚¹‚é
+	// 3. ã‚¢ã‚¿ãƒƒãƒã™ã‚‹ãƒœãƒ¼ãƒ³ã®è¨­å®šã¨ã‚ªãƒ•ã‚»ãƒƒãƒˆã®èª¿æ•´
+	m_characterModel->SetWeaponAttackBone(L"mixamorig:RightHand"); // å®Ÿéš›ã®ãƒœãƒ¼ãƒ³åã«åˆã‚ã›ã‚‹
 	m_characterModel->SetWeaponOffset(Vector3(100.0f, 150.0f, 0.0f));
 
 	m_transform.m_position = BatterBasicSettings::INITIAL_COORDINATE;
 	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);	
 
-	// 4. ‰ŠúˆÊ’u‚âƒXƒP[ƒ‹‚Ìİ’è
+	// 4. åˆæœŸä½ç½®ã‚„ã‚¹ã‚±ãƒ¼ãƒ«ã®è¨­å®š
 	m_characterModel->SetPosition(m_transform.m_position);
 	m_characterModel->SetCharacterScale(BatterBasicSettings::INITIAL_SCALE);
 	m_characterModel->SettRotation(m_transform.m_rotation);
@@ -131,7 +131,7 @@ void Batter::Update()
 {
 	if(m_isPaused)
 	{
-		return; // ƒQ[ƒ€‚ªƒ|[ƒY’†‚È‚çXVˆ—‚ğƒXƒLƒbƒv
+		return; // ã‚²ãƒ¼ãƒ ãŒãƒãƒ¼ã‚ºä¸­ãªã‚‰æ›´æ–°å‡¦ç†ã‚’ã‚¹ã‚­ãƒƒãƒ—
 	}
 	if (!m_inGameUI)
 	{
@@ -139,65 +139,65 @@ void Batter::Update()
 		return;
 	}
 	m_game = FindGO<Game>("game");
-	// š ƒ|[ƒY’†‚ÍƒLƒƒƒbƒ`ƒƒ[‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ğ~‚ß‚é	
+	// â˜… ãƒãƒ¼ã‚ºä¸­ã¯ã‚­ãƒ£ãƒƒãƒãƒ£ãƒ¼ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æ­¢ã‚ã‚‹	
 	if (m_game && m_game->m_isPaused) {
-		return;   // © ‚±‚ê‚ÅƒLƒƒƒbƒ`ƒƒ[‚Ì“®‚«‚ªŠ®‘S’â~
+		return;   // â† ã“ã‚Œã§ã‚­ãƒ£ãƒƒãƒãƒ£ãƒ¼ã®å‹•ããŒå®Œå…¨åœæ­¢
 	}
 
 	m_stateMachine->Update();
 
 
-	// ššš ‚±‚ê‚ğ’Ç‰ÁI –ˆƒtƒŒ[ƒ€ UI ‚É‘—‚é ššš
+	// â˜…â˜…â˜… ã“ã‚Œã‚’è¿½åŠ ï¼ æ¯ãƒ•ãƒ¬ãƒ¼ãƒ  UI ã«é€ã‚‹ â˜…â˜…â˜…
 	if (m_inGameUI) {
 		m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
 	}
 }
 
 
-/** ‚®‚é‚®‚éƒoƒbƒgŠÖ˜AƒR[ƒh */
+/** ãã‚‹ãã‚‹ãƒãƒƒãƒˆé–¢é€£ã‚³ãƒ¼ãƒ‰ */
 
 /**
-* ‰ñ“]ŒvZˆ—ŠÖ”
+* å›è»¢è¨ˆç®—å‡¦ç†é–¢æ•°
 */
 void Batter::Rotation()
 {
-	//ƒL[ƒ{[ƒh‘€ì
-	//ƒRƒ“ƒgƒ[ƒ‰[‘€ì
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æ“ä½œ
+	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼æ“ä½œ
 	if(ERROR_DEVICE_NOT_CONNECTED != ERROR_SUCCESS)
 	{
-		//xz‚ÌˆÚ“®‘¬“x‚ğ0.0f‚É‚·‚é
+		//xzã®ç§»å‹•é€Ÿåº¦ã‚’0.0fã«ã™ã‚‹
 		m_transform.m_moveSpeed.x = BatterBasicSettings::NONE_SPEED;
 		m_transform.m_moveSpeed.z = BatterBasicSettings::NONE_SPEED;
 
-		//¶ƒXƒeƒBƒbƒN‚Ì“ü—Í—Ê‚ğæ“¾
+		//å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›é‡ã‚’å–å¾—
 		Vector3 stickL = Vector3::Zero;
 		stickL.x = g_pad[0]->GetLStickXF();
 		stickL.y = g_pad[0]->GetLStickYF();
 
-		//ƒJƒƒ‰‚Ì‘O•ûŒü‚Æ‰E•ûŒü‚ÌƒxƒNƒgƒ‹‚ğ‚Á‚Ä—ˆ‚éB
+		//ã‚«ãƒ¡ãƒ©ã®å‰æ–¹å‘ã¨å³æ–¹å‘ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’æŒã£ã¦æ¥ã‚‹ã€‚
 		Vector3 forward = g_camera3D->GetForward();
 		Vector3 right = g_camera3D->GetRight();
-		//‚™•ûŒü‚É‚ÍˆÚ“®‚³‚¹‚È‚¢
+		//ï½™æ–¹å‘ã«ã¯ç§»å‹•ã•ã›ãªã„
 		forward.y = BatterBasicSettings::NONE_SPEED;
 		right.y = BatterBasicSettings::NONE_SPEED;
 
-		//¶ƒXƒeƒBƒbƒN‚Ì“ü—Í—Ê‚Æ200.0f‚ğæZ
+		//å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›é‡ã¨200.0fã‚’ä¹—ç®—
 		right *= stickL.x * BatterBasicSettings::BASICS_SPEED;
 		forward *= stickL.y * BatterBasicSettings::BASICS_SPEED;
 
-		//ˆÚ“®‘¬“x‚ÉƒXƒeƒBƒbƒN‚Ì“ü—Í—Ê‚ğ‰ÁZ‚·‚éB
+		//ç§»å‹•é€Ÿåº¦ã«ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›é‡ã‚’åŠ ç®—ã™ã‚‹ã€‚
 		m_transform.m_moveSpeed += right + forward;
 
 
-		//‰ñ“]ˆ—
+		//å›è»¢å‡¦ç†
 		Vector3 ford = m_transform.m_moveSpeed;
 		ford.y = 0.0f;
 
 		const float kEps = 0.001f;
 		if (ford.Length() > kEps) {
-			// ˆÚ“®‚ª‚ ‚é‚Æ‚«‚¾‚¯Œü‚«‚ğXV‚·‚é
+			// ç§»å‹•ãŒã‚ã‚‹ã¨ãã ã‘å‘ãã‚’æ›´æ–°ã™ã‚‹
 			ford.Normalize();
-			m_facingDir = ford; // last non-zero direction ‚ğ•Û
+			m_facingDir = ford; // last non-zero direction ã‚’ä¿æŒ
 		}
 	}
 	else
@@ -221,14 +221,14 @@ void Batter::Rotation()
 }
 
 /**
-* ‚±‚ÌŠÖ”‚Í‚®‚é‚®‚éƒoƒbƒg‚Ìˆ—‚ğs‚¤ŠÖ”‚Å‚·B
-* ŠÔ‚ğŒv‘ª‚µAˆê’èŠÔ‚ªŒo‰ß‚µ‚½‚ç•ûŒü‚ğreset‚µ
-* ƒJ[ƒ\ƒ‹‘€ì‚ª‰Â”\‚É‚È‚é‚æ‚¤‚Éƒtƒ‰ƒO‚ğØ‚è‘Ö‚¦‚éˆ—‚ğs‚¢‚Ü‚·B
+* ã“ã®é–¢æ•°ã¯ãã‚‹ãã‚‹ãƒãƒƒãƒˆã®å‡¦ç†ã‚’è¡Œã†é–¢æ•°ã§ã™ã€‚
+* æ™‚é–“ã‚’è¨ˆæ¸¬ã—ã€ä¸€å®šæ™‚é–“ãŒçµŒéã—ãŸã‚‰æ–¹å‘ã‚’resetã—
+* ã‚«ãƒ¼ã‚½ãƒ«æ“ä½œãŒå¯èƒ½ã«ãªã‚‹ã‚ˆã†ã«ãƒ•ãƒ©ã‚°ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹å‡¦ç†ã‚’è¡Œã„ã¾ã™ã€‚
 */
 void Batter::RoundAndRoundBat()
 {
 	m_guruGuruBatTimer -= g_gameTime->GetFrameDeltaTime();
-	// š UI ‚Éc‚èŠÔ‚ğ‘—‚é
+	// â˜… UI ã«æ®‹ã‚Šæ™‚é–“ã‚’é€ã‚‹
 	if (m_inGameUI) {
 		m_inGameUI->SetGuruGuruTimer(m_guruGuruBatTimer);
 	}
@@ -237,7 +237,7 @@ void Batter::RoundAndRoundBat()
 		m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
 
 		Quaternion offset;
-		offset.SetRotationY(-90.0f); // ©‚±‚±’²®ƒ|ƒCƒ“ƒg
+		offset.SetRotationY(-90.0f); // â†ã“ã“èª¿æ•´ãƒã‚¤ãƒ³ãƒˆ
 
 		Quaternion finalRot = m_transform.m_rotation * offset;
 		finalRot.Normalize();
@@ -252,13 +252,13 @@ void Batter::RoundAndRoundBat()
 }
 
 /**
-* ‚®‚é‚®‚éƒJƒEƒ“ƒgupˆ—
+* ãã‚‹ãã‚‹ã‚«ã‚¦ãƒ³ãƒˆupå‡¦ç†
 */
 void Batter::GuruGuruCountUP(float currentAngle)
 {
 	float delta = currentAngle - m_prevAngle;
 
-	// š Šp“x‚Ìƒ‰ƒbƒv•â³id—vIj
+	// â˜… è§’åº¦ã®ãƒ©ãƒƒãƒ—è£œæ­£ï¼ˆé‡è¦ï¼ï¼‰
 	if (delta > 180.0f) {
 		delta -= 360.0f;
 	}
@@ -266,10 +266,10 @@ void Batter::GuruGuruCountUP(float currentAngle)
 		delta += 360.0f;
 	}
 
-	// —İÏ
+	// ç´¯ç©
 	m_totalRotation += delta;
 
-	// š 1‰ñ“]”»’è
+	// â˜… 1å›è»¢åˆ¤å®š
 	if (m_totalRotation >= 360.0f) {
 		m_guruGuruBatCount++;
 		m_totalRotation -= 360.0f;
@@ -287,14 +287,14 @@ void Batter::GuruGuruCountUP(float currentAngle)
 }
 
 /**
-* ƒ‚ƒfƒ‹‚Ì‰ñ“]ˆ—
+* ãƒ¢ãƒ‡ãƒ«ã®å›è»¢å‡¦ç†
 */
 void Batter::RotationUpdate()
 {
-	//‰ñ“]ˆ—‚ÌXV
-	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir); // m_rotationAngle ‚Íƒƒ“ƒo•Ï”‚È‚Ç‚©‚çæ“¾
+	//å›è»¢å‡¦ç†ã®æ›´æ–°
+	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir); // m_rotationAngle ã¯ãƒ¡ãƒ³ãƒå¤‰æ•°ãªã©ã‹ã‚‰å–å¾—
 
-	// ƒIƒtƒZƒbƒg‚ğl—¶‚µ‚½ˆÊ’u‚Ì•â³ŒvZ
+	// ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’è€ƒæ…®ã—ãŸä½ç½®ã®è£œæ­£è¨ˆç®—
 	Vector3 pivot = m_transform.m_position - pivotOffset;
 	newPosition = pivot + pivotOffset;
 
@@ -310,10 +310,10 @@ void Batter::RotationUpdate()
 }
 
 
-/** ƒJ[ƒ\ƒ‹ŠÖ˜AƒR[ƒh */
+/** ã‚«ãƒ¼ã‚½ãƒ«é–¢é€£ã‚³ãƒ¼ãƒ‰ */
 
 /**
-* ƒJ[ƒ\ƒ‹‘€ìŠÖ”
+* ã‚«ãƒ¼ã‚½ãƒ«æ“ä½œé–¢æ•°
 */
 void Batter::SetCursorPosition()
 {
@@ -324,7 +324,7 @@ void Batter::SetCursorPosition()
 
 	if (m_isCursorMode)
 	{
-		// ƒJ[ƒ\ƒ‹‘€ì
+		// ã‚«ãƒ¼ã‚½ãƒ«æ“ä½œ
 		Vector3 move;
 		move.x = lx;
 		move.y = ly;
@@ -339,7 +339,7 @@ void Batter::SetCursorPosition()
 	}
 	else
 	{
-		// ]—ˆ‚ÌˆÚ“®ƒƒWƒbƒN
+		// å¾“æ¥ã®ç§»å‹•ãƒ­ã‚¸ãƒƒã‚¯
 		m_transform.m_moveSpeed.x = 0.0f;
 		m_transform.m_moveSpeed.z = 0.0f;
 
@@ -359,14 +359,14 @@ void Batter::SetCursorPosition()
 }
 
 /**
-* 3D‹óŠÔ‚É2DƒJ[ƒ\ƒ‹‚ğ‡‚í‚¹‚éˆ—
+* 3Dç©ºé–“ã«2Dã‚«ãƒ¼ã‚½ãƒ«ã‚’åˆã‚ã›ã‚‹å‡¦ç†
 */
 Vector3 Batter::CalcCursorWorldPos()
 {
 	float screenW = 1920.0f;
 	float screenH = 1080.0f;
 
-	// UIÀ•Wi’†SŠî€‚È‚ç•ÏŠ·•K—vj
+	// UIåº§æ¨™ï¼ˆä¸­å¿ƒåŸºæº–ãªã‚‰å¤‰æ›å¿…è¦ï¼‰
 	float mouseX = m_meetPosition.x + screenW * 0.5f;
 	float mouseY = m_meetPosition.y + screenH * 0.5f;
 
@@ -380,7 +380,7 @@ Vector3 Batter::CalcCursorWorldPos()
 		camPos
 	);
 
-	// š Z=5500‚Ì•½–Ê‚ÆŒğ·
+	// â˜… Z=5500ã®å¹³é¢ã¨äº¤å·®
 	Vector3 planePoint = Vector3(0, 0, m_ball->GetPosition().z);
 	Vector3 planeNormal = Vector3(0, 0, 1);
 
@@ -388,40 +388,40 @@ Vector3 Batter::CalcCursorWorldPos()
 }
 
 /**
-* ƒJ[ƒ\ƒ‹ƒfƒoƒt‚Ì’iŠK‚ğ•ª‚¯‚é‚½‚ß‚ÌŒvZˆ—
+* ã‚«ãƒ¼ã‚½ãƒ«ãƒ‡ãƒãƒ•ã®æ®µéšã‚’åˆ†ã‘ã‚‹ãŸã‚ã®è¨ˆç®—å‡¦ç†
 */
 void Batter::SetRandomCursorTimeRadius()
 {
-	// š ‰ñ“]‰ñ”‚É‰‚¶‚ÄŠÔ‚Æ”¼Œa‚ğ‘‰Á‚³‚¹‚é
+	// â˜… å›è»¢å›æ•°ã«å¿œã˜ã¦æ™‚é–“ã¨åŠå¾„ã‚’å¢—åŠ ã•ã›ã‚‹
 	int count = m_guruGuruBatCount / 5;
-	if (count >= 10) count = 10; // ãŒÀ‚ğİ‚¯‚éi•K—v‚É‰‚¶‚Ä’²®j
-	// š ƒ‰ƒ“ƒ_ƒ€‚ÈŠÔ‚Æ”¼Œa‚ğİ’è
-	m_randomMoveDuration = count * -0.5f + 5.0f;// —á: ‰ñ“]5‰ñ‚²‚Æ‚ÉŠÔ0.5•bŒ¸­
-	m_randomSpotRadius = count * 50.0f + 50.0f; // —á: ‰ñ“]5‰ñ‚²‚Æ‚É”¼Œa50‘‰Á
+	if (count >= 10) count = 10; // ä¸Šé™ã‚’è¨­ã‘ã‚‹ï¼ˆå¿…è¦ã«å¿œã˜ã¦èª¿æ•´ï¼‰
+	// â˜… ãƒ©ãƒ³ãƒ€ãƒ ãªæ™‚é–“ã¨åŠå¾„ã‚’è¨­å®š
+	m_randomMoveDuration = count * -0.5f + 5.0f;// ä¾‹: å›è»¢5å›ã”ã¨ã«æ™‚é–“0.5ç§’æ¸›å°‘
+	m_randomSpotRadius = count * 50.0f + 50.0f; // ä¾‹: å›è»¢5å›ã”ã¨ã«åŠå¾„50å¢—åŠ 
 	m_randomCursorUpdate = true;
 }
 
 
-/** ƒfƒoƒtŠÖ˜AƒR[ƒh */
+/** ãƒ‡ãƒãƒ•é–¢é€£ã‚³ãƒ¼ãƒ‰ */
 void Batter::DebuffDepth() {
-	// š ‰ñ“]‰ñ”‚ª0ˆÈ‰º‚È‚çƒfƒoƒt–³‚µ
+	// â˜… å›è»¢å›æ•°ãŒ0ä»¥ä¸‹ãªã‚‰ãƒ‡ãƒãƒ•ç„¡ã—
 	if (m_guruGuruBatCount <= 4)
 	{
 		m_randomCursorMovePwer = Vector3::Zero;
 		return;
 	}
 
-	// š ƒfƒoƒt‚Ì‹­‚³‚ğ‰ñ“]‰ñ”‚ÅŒˆ‚ß‚é
-	//ƒ‰ƒ“ƒ_ƒ€‚ÈƒxƒNƒgƒ‹‚ğæ“¾
+	// â˜… ãƒ‡ãƒãƒ•ã®å¼·ã•ã‚’å›è»¢å›æ•°ã§æ±ºã‚ã‚‹
+	//ãƒ©ãƒ³ãƒ€ãƒ ãªãƒ™ã‚¯ãƒˆãƒ«ã‚’å–å¾—
 	if (m_randomCursorUpdate)
 	{
-		//‚»‚ÌƒxƒNƒgƒ‹‚ÉŒü‚©‚Á‚ÄˆÚ“®
-		// Šî€“_‚©‚ç”¼Œa250‚Ì‰~”ÍˆÍ“à‚Åƒ‰ƒ“ƒ_ƒ€‚ÉoŒ»ˆÊ’u‚ğŒˆ’è
-		//ƒ‰ƒ“ƒ_ƒ€‚ÈŠp“x‚Æ‹——£‚ğ¶¬
+		//ãã®ãƒ™ã‚¯ãƒˆãƒ«ã«å‘ã‹ã£ã¦ç§»å‹•
+		// åŸºæº–ç‚¹ã‹ã‚‰åŠå¾„250ã®å††ç¯„å›²å†…ã§ãƒ©ãƒ³ãƒ€ãƒ ã«å‡ºç¾ä½ç½®ã‚’æ±ºå®š
+		//ãƒ©ãƒ³ãƒ€ãƒ ãªè§’åº¦ã¨è·é›¢ã‚’ç”Ÿæˆ
 		float angle = (rand() % 360) * PI;
 		float radius = SetRandom(0, m_randomSpotRadius);
 
-		// ‰~‚Ì’†‚Ìƒ‰ƒ“ƒ_ƒ€ˆÊ’u‚ğ¶¬
+		// å††ã®ä¸­ã®ãƒ©ãƒ³ãƒ€ãƒ ä½ç½®ã‚’ç”Ÿæˆ
 		m_randomCursorTargetPos.x = cosf(angle) * radius;
 		m_randomCursorTargetPos.y = sinf(angle) * radius;
 		m_randomCursorMoveTimer = SetRandom(0, m_randomMoveDuration);
@@ -429,9 +429,9 @@ void Batter::DebuffDepth() {
 	}
 	Vector3 toTarget = m_randomCursorTargetPos - m_meetPosition;
 
-	// ­‚µ‚¸‚ÂŠñ‚¹‚éi‚±‚±‚ªƒfƒoƒt‚Ì‹­‚³j
+	// å°‘ã—ãšã¤å¯„ã›ã‚‹ï¼ˆã“ã“ãŒãƒ‡ãƒãƒ•ã®å¼·ã•ï¼‰
 	m_randomCursorMovePwer = toTarget * 0.05f;
-	//ˆê’èŠÔŒo‰ßŒãAÄ“xƒ‰ƒ“ƒ_ƒ€‚ÈƒxƒNƒgƒ‹‚ğæ“¾
+	//ä¸€å®šæ™‚é–“çµŒéå¾Œã€å†åº¦ãƒ©ãƒ³ãƒ€ãƒ ãªãƒ™ã‚¯ãƒˆãƒ«ã‚’å–å¾—
 	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
 	EffectUpdate();
 	if (m_randomCursorMoveTimer <= ZERO_FLOAT)
@@ -440,10 +440,10 @@ void Batter::DebuffDepth() {
 	}
 }
 
-/** HitŒvZŠÖ˜AƒR[ƒh */
+/** Hitè¨ˆç®—é–¢é€£ã‚³ãƒ¼ãƒ‰ */
 void Batter::HitBat()
 {
-	// š ƒ|[ƒY’†‚Íâ‘Î‚É‘ÅŒ‚ˆ—‚µ‚È‚¢
+	// â˜… ãƒãƒ¼ã‚ºä¸­ã¯çµ¶å¯¾ã«æ‰“æ’ƒå‡¦ç†ã—ãªã„
 	if (m_game && m_game->m_isPaused) {
 		return;
 	}
@@ -452,51 +452,53 @@ void Batter::HitBat()
 
 	Vector3 ballPos = m_ball->GetPosition();
 
-	// ‡@ Z§ŒÀi‘ÅŒ‚ƒ][ƒ“j
+	// â‘  Zåˆ¶é™ï¼ˆæ‰“æ’ƒã‚¾ãƒ¼ãƒ³ï¼‰
 	if (ballPos.z < 6000.0f || ballPos.z > 6100.0f) return;
 	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
-	// ‡A ƒJ[ƒ\ƒ‹ˆÊ’uiZ‚Íƒ{[ƒ‹‚É‡‚í‚¹‚éj
+	// â‘¡ ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ï¼ˆZã¯ãƒœãƒ¼ãƒ«ã«åˆã‚ã›ã‚‹ï¼‰
 	Vector3 cursor = m_meetCursorWorldPos;
 	cursor.z = ballPos.z;
 
-	// ‡B ‹——£”»’è
+	// â‘¢ è·é›¢åˆ¤å®š
 	float dist = (ballPos - cursor).Length();
 
 	if (dist < 100.0f)
 	{
 		Vector3 hitDir = ballPos - cursor;
 
-		// š ‘O•ûŒü‚Ì—Í‚ğ•K‚¸“ü‚ê‚éi‚±‚±‚ğ’Ç‰Áj
+		// â˜… å‰æ–¹å‘ã®åŠ›ã‚’å¿…ãšå…¥ã‚Œã‚‹ï¼ˆã“ã“ã‚’è¿½åŠ ï¼‰
 		if (fabs(hitDir.z) >= 0.0f) {
-			hitDir.z = -250.0f;
+			hitDir.z = -50.0f;
 		}
-
-		hitDir.y += 100.0f;   // © ‚±‚±‚ğ’²®‚·‚é‚ÆŠp“x‚ª•Ï‚í‚é
 
 		hitDir.Normalize();
 
-		m_ball->HitBall(hitDir, 950.0f);
+		m_ball->HitBall(hitDir, 1000.0f);
 
 		if (m_inGameUI) {
-			m_inGameUI->m_shuchusenTimer = 0.5f;  // © W’†ü‚ğ0.2•b•\¦
+			m_inGameUI->m_shuchusenTimer = 0.5f;  // â† é›†ä¸­ç·šã‚’0.2ç§’è¡¨ç¤º
 		}
 
-		// š ‘Å‚Á‚½uŠÔ‚É”{‘¬‹–‰Â‚ğ ON
+		// â˜… æ‰“ã£ãŸç¬é–“ã«å€é€Ÿè¨±å¯ã‚’ ON
 		if (m_game) {
 			m_game->m_canFastForward = true;
 		}
 
-		// š ‘ÅŒ‚ SE Ä¶
-	// š ‘ÅŒ‚ SE Ä¶iƒ|[ƒY’†‚Íâ‘Î‚É–Â‚ç‚³‚È‚¢j
+		// â˜… æ‰“æ’ƒ SE å†ç”Ÿ
+	// â˜… æ‰“æ’ƒ SE å†ç”Ÿï¼ˆãƒãƒ¼ã‚ºä¸­ã¯çµ¶å¯¾ã«é³´ã‚‰ã•ãªã„ï¼‰
 		if (!m_game->m_isPaused && g_soundManager) {
 			g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
 			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 100.0f);
 			se2->SetName("SE2");
 		}
 
-		// š ‚±‚±‚ÅƒJƒƒ‰Ø‚è‘Ö‚¦
+		// â˜… ã“ã“ã§ã‚«ãƒ¡ãƒ©åˆ‡ã‚Šæ›¿ãˆ
 		if (m_game) {
 			m_game->SetCameraMode(Camera_BackBall);
+
+			// â˜… æ‰“ã£ãŸç¬é–“ã‚«ãƒ¡ãƒ©é–‹å§‹
+			GameCamera* cam = m_game->GetGameCamera();
+			if (cam) cam->StartHitMomentCamera();
 		}
 
 		if (m_inGameUI) {
@@ -505,17 +507,16 @@ void Batter::HitBat()
 	}
 }
 
-
 void Batter::UpdateBatAim()
 {
 	if (!IsSwingAnimationPlaying()) return;
-	// ƒJ[ƒ\ƒ‹‚Ìƒ[ƒ‹ƒhÀ•W
+	// ã‚«ãƒ¼ã‚½ãƒ«ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™
 	Vector3 target = m_meetCursorWorldPos;
 
-	// š ‰Eè‚ğƒJ[ƒ\ƒ‹‚ÉŒü‚¯‚é
+	// â˜… å³æ‰‹ã‚’ã‚«ãƒ¼ã‚½ãƒ«ã«å‘ã‘ã‚‹
 	m_characterModel->AimRightHand(target);
 
-	// š ƒLƒƒƒ‰–{‘Ì‚Í³–Ê(Z-)ˆÛ
+	// â˜… ã‚­ãƒ£ãƒ©æœ¬ä½“ã¯æ­£é¢(Z-)ç¶­æŒ
 	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
 	m_characterModel->SettRotation(m_transform.m_rotation);
 }
@@ -523,10 +524,10 @@ void Batter::UpdateBatAim()
 void Batter::BatHitBoxPosition()
 {
 
-	// š ƒJ[ƒ\ƒ‹ˆÊ’u‚ğg‚¤
+	// â˜… ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’ä½¿ã†
 	Vector3 pos = m_meetCursorWorldPos;
 
-	// š Œü‚«i”CˆÓj
+	// â˜… å‘ãï¼ˆä»»æ„ï¼‰
 	Vector3 dir = m_ball->GetPosition() - pos;
 	dir.Normalize();
 
@@ -538,38 +539,19 @@ void Batter::BatHitBoxPosition()
 	m_collisionObject->Update();
 }
 
-
-/** ‰‰oŠÖ˜AƒR[ƒh */
-void Batter::EffectUpdate()
-{
-	if (m_guruGuruBatCount < 5) return;
-
-	if (g_effectManager->GetIsPlayeEffect())return;
-	Quaternion rot;
-	rot.SetRotationYFromDirectionXZ(Vector3(0.0f,90.0f,0.0f));
-	Vector3 pos = Vector3::Zero;
-
-	g_effectManager->SetEffect(
-		enEffect_DownArrow,
-		pos,
-		rot,
-		Vector3(1.0f, 1.0f, 1.0f)
-	);
-}
-
 void Batter::ResetSwing()
 {
-	// ‰Šú‚ÌŒü‚«‚É–ß‚·
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ÌŒï¿½ï¿½ï¿½ï¿½É–ß‚ï¿½
 	m_transform.m_rotation = m_initialRotation;
 	m_characterModel->SettRotation(m_initialRotation);
 
-	// ƒJ[ƒ\ƒ‹ˆÊ’u‚ğ’†‰›‚É–ß‚·i”CˆÓj
+	// ï¿½Jï¿½[ï¿½\ï¿½ï¿½ï¿½Ê’uï¿½ğ’†‰ï¿½ï¿½É–ß‚ï¿½ï¿½iï¿½Cï¿½Ój
 	m_meetPosition = Vector3::Zero;
 
-	// ‰ñ“]ƒtƒ‰ƒO‚ğƒŠƒZƒbƒgi•K—v‚È‚çj
+	// ï¿½ï¿½]ï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½iï¿½Kï¿½vï¿½È‚ï¿½j
 	m_isRotation = false;
 
-	// ƒJ[ƒ\ƒ‹ƒ‚[ƒh‰ğœi•K—v‚È‚çj
+	// ï¿½Jï¿½[ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½iï¿½Kï¿½vï¿½È‚ï¿½j
 	m_isCursorMode = false;
 }
 
@@ -584,12 +566,31 @@ void Batter::ResetCursorPosition()
 }
 
 
+
+/** æ¼”å‡ºé–¢é€£ã‚³ãƒ¼ãƒ‰ */
+void Batter::EffectUpdate()
+{
+	if (m_guruGuruBatCount < 5) return;
+
+	if (g_effectManager->GetIsPlayeEffect())return;
+	Quaternion rot;
+	rot.SetRotationYFromDirectionXZ(Vector3(0.0f,90.0f,0.0f));
+	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
+
+	g_effectManager->SetEffect(
+		enEffect_DownArrow,
+		pos,
+		rot,
+		Vector3(100.0f, 100.0f, 100.0f)
+	);
+}
+
 void Batter::Render(RenderContext& rc)
 {
-	//ƒ‚ƒfƒ‹‚Ì•`‰æ
+	//ãƒ¢ãƒ‡ãƒ«ã®æç”»
 	m_characterModel->DrawCharacterModel(rc);
 
-	//•¶š‚Ì•`‰æ
+	//æ–‡å­—ã®æç”»
 	//wchar_t be[129];
 	//m_fontRender.SetPosition(-896.0f, 200.0f, 0.0f);
 	//m_fontRender.SetColor(g_vec4White);

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "GameCamera.h"
 #include"Source/Scene/InGame/Game.h"
 #include"Source/Actor/Character/Ball/Ball.h"
@@ -36,24 +36,24 @@ void GameCamera::SetCatcherCamera() {
     m_pitch = 0.0f;
 
     g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
-    m_followMode = Follow_None;   // š ’Ç‰Á
+    m_followMode = Follow_None;   // â˜… è¿½åŠ 
 }
 
 void GameCamera::SetReplayCamera() {
-    m_cameraPos = { 1080.0f, 630.0f, 1470.0f };  // Î‚ßã‚©‚ç
-    m_target = { 0.0f, 300.0f, 0.0f };        // ŒÅ’èƒ^[ƒQƒbƒgi—áj
+    m_cameraPos = { 1080.0f, 630.0f, 1470.0f };  // æ–œã‚ä¸Šã‹ã‚‰
+    m_target = { 0.0f, 300.0f, 0.0f };        // å›ºå®šã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆä¾‹ï¼‰
     m_yaw = 165.0f;
     m_pitch = 3.0f;
-    m_followMode = Follow_None;   // š ’Ç‰Á
+    m_followMode = Follow_None;   // â˜… è¿½åŠ 
 }
 
 void GameCamera::SetFollowBallCamera() {
-    m_cameraPos = { -3650.0f, 2580.0, 6050.0f }; // ƒ{[ƒ‹Œã•û
+    m_cameraPos = { -3650.0f, 2580.0, 6050.0f }; // ãƒœãƒ¼ãƒ«å¾Œæ–¹
     m_target = { 0.0f, 300.0f, 0.0f };
     m_yaw = -55.0f;
     m_pitch = -53.0f;
     g_camera3D->SetViewAngle(Math::DegToRad(15.0f));
-    m_followMode = Follow_Side;   // © ‰¡’Ç”ö
+    m_followMode = Follow_Side;   // â† æ¨ªè¿½å°¾
 }
 
 void GameCamera::SetFollowBallBackCamera() {
@@ -64,19 +64,19 @@ void GameCamera::SetFollowBallBackCamera() {
     m_pitch = 0.0f;
 
     g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
-    m_followMode = Follow_Back;   // © Œã‚ë’Ç”ö
+    m_followMode = Follow_Back;   // â† å¾Œã‚è¿½å°¾
 }
 
 void GameCamera::Update() {
 
 
-    // š ƒ|[ƒY’†‚ÍƒJƒƒ‰‚ğ~‚ß‚é
+    // â˜… ãƒãƒ¼ã‚ºä¸­ã¯ã‚«ãƒ¡ãƒ©ã‚’æ­¢ã‚ã‚‹
     Game* game = FindGO<Game>("game");
     if (game && game->m_isPaused) {
-        return;   // © ‚±‚ê‚ÅƒJƒƒ‰‚ªŠ®‘S’â~
+        return;   // â† ã“ã‚Œã§ã‚«ãƒ¡ãƒ©ãŒå®Œå…¨åœæ­¢
     }
 
-    // --- ASWD ‚ÅˆÚ“® ---
+    // --- ASWD ã§ç§»å‹• ---
 
       //if (g_pad[0]->IsPress(enButtonB)) {
       //    m_cameraPos.z += m_moveSpeed;
@@ -95,7 +95,7 @@ void GameCamera::Update() {
       //    m_target.x += m_moveSpeed;
       //}
 
-      //// --- ã‰ºˆÚ“®iUpFã¸ADownF‰º~j ---
+      //// --- ä¸Šä¸‹ç§»å‹•ï¼ˆUpï¼šä¸Šæ˜‡ã€Downï¼šä¸‹é™ï¼‰ ---
       //if (g_pad[0]->IsPress(enButtonRB1)) {
       //    m_cameraPos.y += m_moveSpeed;
       //    m_target.y += m_moveSpeed;
@@ -105,7 +105,7 @@ void GameCamera::Update() {
       //    m_target.y -= m_moveSpeed;
       //}
 
-      //// --- ‹“_‚Ìã‰º‰ñ“]iUpFã‚ğŒ©‚éADownF‰º‚ğŒ©‚éj ---
+      //// --- è¦–ç‚¹ã®ä¸Šä¸‹å›è»¢ï¼ˆUpï¼šä¸Šã‚’è¦‹ã‚‹ã€Downï¼šä¸‹ã‚’è¦‹ã‚‹ï¼‰ ---
       //if (g_pad[0]->IsPress(enButtonUp)) {
       //    m_pitch += m_rotSpeed;
       //}
@@ -113,32 +113,32 @@ void GameCamera::Update() {
       //    m_pitch -= m_rotSpeed;
       //}
 
-      //// --- ‰ñ“]iQF¶‰ñ“]AEF‰E‰ñ“]j ---
+      //// --- å›è»¢ï¼ˆQï¼šå·¦å›è»¢ã€Eï¼šå³å›è»¢ï¼‰ ---
       //if (g_pad[0]->IsPress(enButtonLeft)) {
       //    m_yaw -= m_rotSpeed;
       //}
 
-      //// --- ‰ñ“]iQF¶‰ñ“]AEF‰E‰ñ“]j ---
+      //// --- å›è»¢ï¼ˆQï¼šå·¦å›è»¢ã€Eï¼šå³å›è»¢ï¼‰ ---
       //if (g_pad[0]->IsPress(enButtonRight)) {
       //    m_yaw += m_rotSpeed;
       //}
 
-      // --- ‰ñ“]iYaw + Pitchj ---
+      // --- å›è»¢ï¼ˆYaw + Pitchï¼‰ ---
     m_rotYaw.SetRotationDeg(Vector3::AxisY, m_yaw);
 
     m_rotPitch.SetRotationDeg(Vector3::AxisX, m_pitch);
 
-    // ‡¬iPitch ¨ Yawj
+    // åˆæˆï¼ˆPitch â†’ Yawï¼‰
     m_rot = m_rotPitch * m_rotYaw;
 
-    // --- forward ŒvZ ---
+    // --- forward è¨ˆç®— ---
     m_forward = Vector3::AxisZ;
     m_rot.Apply(m_forward);
     if (m_followMode == Follow_Back && m_ball != nullptr) {
 
         Vector3 ballPos = m_ball->GetPosition();
 
-        // ƒ{[ƒ‹‚Ìis•ûŒü
+        // ãƒœãƒ¼ãƒ«ã®é€²è¡Œæ–¹å‘
         Vector3 dir = m_ball->GetVelocity();
         if (dir.LengthSq() > 0.001f) {
             dir.Normalize();
@@ -165,16 +165,22 @@ void GameCamera::Update() {
     }
     else if (m_followMode == Follow_Side && m_ball != nullptr) {
 
-        // ‰¡ƒJƒƒ‰‚ÍŒÅ’èŒü‚«
+        // æ¨ªã‚«ãƒ¡ãƒ©ã¯å›ºå®šå‘ã
         m_target = m_ball->GetPosition();
     }
     else {
         m_target = m_cameraPos - m_forward * 100.0f;
     }
 
-    // --- ƒJƒƒ‰”½‰f ---
+    // --- ã‚«ãƒ¡ãƒ©åæ˜  ---
     g_camera3D->SetPosition(m_cameraPos);
     g_camera3D->SetTarget(m_target);
+}
+
+void GameCamera::StartHitMomentCamera()
+{
+    m_isHitMoment = true;
+    m_hitMomentTimer = 3.5f;
 }
 
 void GameCamera::Render(RenderContext& rc) {
