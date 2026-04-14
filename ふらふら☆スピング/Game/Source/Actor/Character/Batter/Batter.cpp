@@ -468,10 +468,11 @@ void Batter::HitBat()
 
 
 		// 前方向の力
-		hitDir.z = -250.0f;
-
+		if (fabs(hitDir.z) >= 0.0f) {
+			hitDir.z = -100.0f;
+		}
 		// ★ Y軸に強い上昇力を追加
-		hitDir.y += 100.0f;   // ← ここを調整すると角度が変わる
+		hitDir.y += 20.0f;   // ← ここを調整すると角度が変わる
 
 		hitDir.Normalize();
 
@@ -479,6 +480,11 @@ void Batter::HitBat()
 
 		if (m_inGameUI) {
 			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
+		}
+
+		// ★ ヒットストップ開始
+		if (m_game) {
+			m_game->m_hitStopTimer = 0.02f;   // ← 0.08秒停止（調整OK）
 		}
 
 		// ★ 打った瞬間に倍速許可を ON

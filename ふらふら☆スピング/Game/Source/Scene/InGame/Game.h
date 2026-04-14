@@ -67,6 +67,7 @@ public:
 	GameCamera* GetGameCamera() const { return m_gameCamera; }
 	void ResetForNextShot();
 	bool m_canFastForward = false;
+	float m_hitStopTimer = 0.0f;
 private:
 	GameCamera* m_gameCamera;	//ƒQ[ƒ€ƒJƒƒ‰B
 	Background* m_background;	//”wŒiB

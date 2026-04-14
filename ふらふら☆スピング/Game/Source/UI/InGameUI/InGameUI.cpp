@@ -35,8 +35,8 @@ InGameUI::~InGameUI() {
 bool InGameUI::Start() {
 	m_batPositionRight = Vector3{-50.0f, -100.0f, 0.0f };  // ← 初期位置
 	m_batPositionLeft = Vector3{ 50.0f,-100.0f,0.0f };
-	m_meetPositionRight = Vector3{ 35.0f, 5.0f, 0.0f };
-	m_meetPositionLeft = Vector3{ -70.0f,7.0f,0.0f };
+	m_meetPositionRight = Vector3{ 39.0f, 5.0f, 0.0f };
+	m_meetPositionLeft = Vector3{ -46.0f,7.0f,0.0f };
 	m_ballCount = 3;
 	return true;
 }

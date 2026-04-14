@@ -68,6 +68,16 @@ void Game::Update()
 		m_InGameUI->SetBallCount(3-m_shots);
 	}
 
+	// ★★★ ヒットストップ処理 ★★★
+	if (m_hitStopTimer > 0.0f) {
+
+		// 時間を減らす（TimeScaleは無視して固定で減らす）
+		m_hitStopTimer -= (1.0f / 60.0f);
+
+		// ゲームロジック停止（アニメ・物理・移動すべて止める）
+		return;
+	}
+
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止
 	if (FindGO<Start1>("start1") != nullptr) {
 
