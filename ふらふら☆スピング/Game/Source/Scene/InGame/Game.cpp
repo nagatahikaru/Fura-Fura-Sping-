@@ -108,10 +108,13 @@ void Game::Update()
 	// ★ Aボタン押しっぱなしで2倍速
 	// ★ 打った後だけ倍速ボタンを有効化
 	if (m_canFastForward && g_pad[0]->IsPress(enButtonB)) {
-		m_timeScale = 5.0f;
+		m_timeScale = 10.0f;   // B押し → 10倍速
+	}
+	else if (m_canFastForward) {
+		m_timeScale = 5.0f;    // 自動倍速
 	}
 	else {
-		m_timeScale = 1.0f;
+		m_timeScale = 1.0f;    // 通常速度
 	}
 
 	// ★ ボタンでカメラ切り替え
