@@ -78,6 +78,14 @@ void SoundTestUI::Update() {
         else               m_seX -= 5.0f;
     }
 
+    // ▼ Aボタンで SE を再生
+    if (g_pad[0]->IsTrigger(enButtonA)) {
+        // SEスライダーを選択中なら SE を鳴らす
+        if (m_select == 1) {
+            g_soundManager->PlaySE(enSound_SE);
+        }
+    }
+
     // 範囲制限
     m_bgmX = clamp(m_bgmX, m_minX, m_maxX);
     m_seX = clamp(m_seX, m_minX, m_maxX);
