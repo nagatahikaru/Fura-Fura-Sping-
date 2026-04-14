@@ -51,6 +51,9 @@ void Ball::Update()
     if (m_isPaused) return;
 
     Game* game = FindGO<Game>("game");
+    if (game && game->m_isHitStop) {
+        return;   // ← ロジック停止
+    }
     if (game && game->m_isPaused) return;
     if (!game->IsGameStarted())return;
 

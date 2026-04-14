@@ -68,16 +68,6 @@ void Game::Update()
 		m_InGameUI->SetBallCount(3-m_shots);
 	}
 
-	// ★★★ ヒットストップ処理 ★★★
-	if (m_hitStopTimer > 0.0f) {
-
-		// 時間を減らす（TimeScaleは無視して固定で減らす）
-		m_hitStopTimer -= (1.0f / 60.0f);
-
-		// ゲームロジック停止（アニメ・物理・移動すべて止める）
-		return;
-	}
-
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止
 	if (FindGO<Start1>("start1") != nullptr) {
 
@@ -114,6 +104,17 @@ void Game::Update()
 		return;
 	}
 
+	// ★ ヒットストップ処理（ゲーム全体を一瞬停止）
+	if (m_hitStopTimer > 0.0f) {
+		m_hitStopTimer -= g_gameTime->GetFrameDeltaTime();
+
+		// アニメーションだけは進めたい場合はここに AnimationUpdate() を書く
+		if (m_batter)  m_batter->AnimationUpdate();
+		if (m_pitcher) m_pitcher->AnimationUpdate();
+		if (m_catcher) m_catcher->AnimationUpdate();
+
+		return; // ★ これでゲーム全体が停止する
+	}
 
 	// ★ Aボタン押しっぱなしで2倍速
 	// ★ 打った後だけ倍速ボタンを有効化

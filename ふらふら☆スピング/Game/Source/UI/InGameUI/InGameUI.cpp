@@ -104,15 +104,26 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 	m_predictedBallPos3D = pos3D;
 	m_hasPredictedBall = true;
 
-	// ★ 距離に応じて透明度を決める
+	// ★ 距離に応じて透明度を決める（非線形）
 	float startZ = m_startZ;
 	float currentZ = pos3D.z;
 
-	// ボールが近づくほど 0 → 1
+	// 0〜1 の線形 t
 	float t = (startZ - currentZ) / (startZ - 6000.0f);
 	t = std::clamp(t, 0.0f, 1.0f);
 
-	m_ballAlpha = t;
+	// ★ 中盤から上がるイージング（後半だけ立ち上がる）
+	float eased = 0.0f;
+
+	if (t < 0.30f) {
+		eased = 0.0f;               // 最初の45%は完全透明
+	}
+	else {
+		float u = (t - 0.30f) / 0.70f; // 0.45〜1.0 を 0〜1 に圧縮
+		eased = u * u;               // 二乗でゆっくり立ち上がる
+
+		m_ballAlpha = eased;
+	}
 }
 
 Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)

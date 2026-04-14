@@ -68,6 +68,7 @@ public:
 	void ResetForNextShot();
 	bool m_canFastForward = false;
 	float m_hitStopTimer = 0.0f;
+	bool m_isHitStop = false;
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。
@@ -94,5 +95,7 @@ private:
 	// Game.h など
 	bool  m_isMissWait = false;
 	float m_missWaitTimer = 0.0f;
+	// ★ ヒットストップ中かどうか
+	
 };
 
