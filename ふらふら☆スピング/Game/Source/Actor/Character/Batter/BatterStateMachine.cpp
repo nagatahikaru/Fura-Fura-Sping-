@@ -170,7 +170,10 @@ void BatterSwingState::Enter()
 void BatterSwingState::Update()
 {
 	Batter* batter = GetBatter();
-
+	// ★ スイングアニメを1.8倍速にする
+  // ★ スイングアニメを1.8倍速にする
+	   // ★ スイングアニメだけ 1.8倍速
+	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(2.5f);
 	batter->AnimationUpdate();
 	// ★ スイング中だけ当たり判定
 	batter->EffectUpdate();
@@ -180,6 +183,10 @@ void BatterSwingState::Update()
 
 void BatterSwingState::Exit()
 {
+	Batter* batter = GetBatter();
+	// ★ アニメ速度を元に戻す
+	   // ★ スイングアニメだけ 1.8倍速
+	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(1.0f);
 }
 
 bool BatterSwingState::RequestState(uint32_t& request)

@@ -273,6 +273,10 @@ public:
 	int GetGuruGuru() const {
 		return m_guruGuruBatCount;
 	}
+	nsApp::CharacterModel* GetCharacterModel() const
+	{
+		return m_characterModel.get();
+	}
 	bool m_isPaused;
 private:
 
