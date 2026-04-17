@@ -188,6 +188,12 @@ namespace nsApp
 		float GetPlaySpeed() const {
 			return m_playSpeed;
 		}
+
+		ModelRender* GetModelRender()
+		{
+			return m_characterModelRender.get();
+		}
+
 	private:	
 		std::unordered_map<CharacterModelType, std::string> m_filePathList;		                                               /* モデルIDからファイルパスを文字列に変化。*/
 		std::unique_ptr<ModelRender> m_characterModelRender;                                                                   /* モデルを管理。*/
