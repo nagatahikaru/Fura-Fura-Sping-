@@ -78,13 +78,20 @@ void Ball::Update()
   // ★ リアルタイム飛距離更新（HitBall してから着地まで）
     if (m_hasHit) {
 
-        float distance = m_hitStartPos.z - m_position.z;  // ← Z が減るほど距離が伸びる
-        if (distance < 0) distance = 0;                   // ← バッター方向は 0
+        float distance = m_hitStartPos.z - m_position.z;
+        if (distance < 0) distance = 0;
 
         if (game) {
             game->SetKmValue(distance);
+
+            // ★ 空中で100m超えた瞬間にイベント発火
+            if (!game->m_hasTriggered100m && distance >= 8000.0f) {
+                game->OnOver100m();
+                game->m_hasTriggered100m = true;
+            }
         }
     }
+
 
 
     // Z>=5500 の固定処理
@@ -99,7 +106,7 @@ void Ball::Update()
     }
 
     // ★ 空振り判定（打撃ゾーンを通過したら次へ）
-    if (!m_hasHit && m_position.z > 7500.0f) {
+    if (!m_hasHit && m_position.z > 9000.0f) {
         Game* game = FindGO<Game>("game");
         if (game) {
             game->SetKmValue(0);   // 空振りは距離0

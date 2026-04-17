@@ -154,7 +154,7 @@ void PauseUI::Update()
         }
     }
     if (m_cursor == 0) {
-        m_start.SetScale({ 1.5f,1.5f,1.0f });
+        m_start.SetScale({ 1.7f,1.7f,1.0f });
 
         m_Title.SetScale({ 1.0f,1.0f,1.0f });
 
@@ -165,7 +165,7 @@ void PauseUI::Update()
     else if (m_cursor == 1) {
         m_start.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_Title.SetScale({ 1.5f,1.5f,1.0f });
+        m_Title.SetScale({ 1.7f,1.7f,1.0f });
 
         m_option.SetScale({ 1.0f,1.0f,1.0f });
 
@@ -178,14 +178,14 @@ void PauseUI::Update()
 
         m_option.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_yari.SetScale({ 1.5f,1.5f,1.0f });
+        m_yari.SetScale({ 1.7f,1.7f,1.0f });
     }
     else if (m_cursor == 3) {
         m_start.SetScale({ 1.0f,1.0f,1.0f });
 
         m_Title.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_option.SetScale({ 1.5f,1.5f,1.0f });
+        m_option.SetScale({ 1.7f,1.7f,1.0f });
 
         m_yari.SetScale({ 1.0f,1.0f,1.0f });
     }
