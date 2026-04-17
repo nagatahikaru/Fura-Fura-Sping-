@@ -193,7 +193,7 @@ void Ball::Throw(const Vector3& targetPos)
 	Vector3 dir = { 0.0f,-0.1f,3.0f };
 	dir.Normalize();
 
-	float speed = 2250.0f;
+	float speed = 2050.0f;
 
 	m_velocity = dir * speed;
 

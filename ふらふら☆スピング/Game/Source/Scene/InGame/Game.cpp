@@ -288,7 +288,7 @@ void Game::OnOver100m()
 			}
 
 			// ★ フェードアウト完了 → ここで20倍速にする
-			m_timeScale = 20.0f;
+			m_timeScale = 200.0f;
 
 			if (m_shots == 2) {
 				m_fadeInDelayTimer = -1.0f;

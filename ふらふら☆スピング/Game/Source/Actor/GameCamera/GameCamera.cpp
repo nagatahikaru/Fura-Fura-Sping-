@@ -118,7 +118,7 @@ void GameCamera::Update() {
         Vector3 fixedDir = Vector3(0, 0, 1);
         Vector3 targetCamPos = ballPos + fixedDir * followDistance;
 
-        targetCamPos.y = ballPos.y - 150.0f + distanceFromHome * 0.02f;
+        targetCamPos.y = ballPos.y - 200.0f + distanceFromHome * 0.02f;
 
         m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 1.0f);
         m_target = ballPos;
