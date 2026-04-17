@@ -66,7 +66,7 @@ void Ball::Update()
     {
         ResetBall(); 
 
-        Throw({ 0.0f, -30.0f, 0.0f });
+        Throw({ 0.0f, -20.0f, 0.0f });
         m_throwTimer = 0.0f;
     }
 
@@ -150,6 +150,22 @@ void Ball::Update()
     }
 
     SetPosition(m_position);
+
+    //距離に応じてスケール変更
+    float minZ = 1000.0f;
+    float maxZ = 9500.0f;
+
+    float t = (m_position.z - minZ) / (maxZ - minZ);
+
+    if (t < 0.0f) t = 0.0f;
+    if (t > 1.0f) t = 1.0f;
+
+    float scale = 3.5f * (1.0f - t * 0.8f);
+
+    //最小サイズ制限（消え防止）
+    if (scale < 2.0f) scale = 2.0f;
+
+    m_modelRender.SetScale({ scale, scale, scale });
 }
 
 
