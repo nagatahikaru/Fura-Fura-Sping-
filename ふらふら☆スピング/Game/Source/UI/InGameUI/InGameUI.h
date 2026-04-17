@@ -35,7 +35,13 @@ public:
 	void OnButtonPressed();
 	void SetBallCount(int count);
 	int GetGuruGuruCount() const;
+	void StartFadeOut(float speed);
+	void StartFadeIn(float speed);
+	bool IsFadingOut() const { return m_isFadeOut; }
+	std::function<void()> m_onFadeOutFinished;
+	std::function<void()> m_onFadeInFinished;
 private:
+
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
 	SpriteRender m_spriteRender;
@@ -95,5 +101,10 @@ private:
 	int m_ballCount = 1;  // 1球目〜3球目
 	FontRender m_fontBallCount; // 新しいフォント
 	SpriteRender m_ballIcon[3];
+	SpriteRender m_spritekuro;
+	float m_fadeAlpha = 0.0f;
+	bool  m_isFadeOut = false;
+	float m_fadeSpeed = 0.5f; // 2秒で真っ黒になる例
+	bool  m_isFadeIn = false;
 };
 

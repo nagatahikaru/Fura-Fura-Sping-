@@ -32,6 +32,7 @@ InGameUI::InGameUI() {
 	m_ballIcon[0].SetPosition(Vector3{ -600, 430, 0 });
 	m_ballIcon[1].SetPosition(Vector3{ -530, 430, 0 });
 	m_ballIcon[2].SetPosition(Vector3{ -460, 430, 0 });
+	m_spritekuro.Init("Assets/sprite/kuro.DDS",1920.0f, 1080.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -73,6 +74,32 @@ void InGameUI::Update() {
 	if (m_uiToggleTimer >= 0.5f) {
 		m_uiToggleTimer = 0.0f;
 		m_isAltUI = !m_isAltUI;   // true / false を交互に切り替え
+	}
+
+	if (m_isFadeOut) {
+		m_fadeAlpha += m_fadeSpeed * g_gameTime->GetFrameDeltaTime();
+
+		if (m_fadeAlpha >= 1.0f) {
+			m_fadeAlpha = 1.0f;
+			m_isFadeOut = false;
+
+			// ★ フェードアウト完了通知
+			if (m_onFadeOutFinished) {
+				m_onFadeOutFinished();
+			}
+		}
+	}
+	if (m_isFadeIn) {
+		m_fadeAlpha -= m_fadeSpeed * g_gameTime->GetFrameDeltaTime();
+		if (m_fadeAlpha <= 0.0f) {
+			m_fadeAlpha = 0.0f;
+			m_isFadeIn = false;
+		
+			// ★ フェードイン完了通知
+			if (m_onFadeInFinished) {
+				m_onFadeInFinished();
+			}
+		}
 	}
 }
 
@@ -194,6 +221,20 @@ void InGameUI::SetBallCount(int count)
 
 int InGameUI::GetGuruGuruCount() const {
 	return m_guruGuruCount;
+}
+
+void InGameUI::StartFadeOut(float speed)
+{
+	m_isFadeOut = true;
+	m_fadeSpeed = speed;
+}
+
+void InGameUI::StartFadeIn(float speed)
+{
+	m_isFadeIn = true;
+	m_isFadeOut = false;
+	m_fadeSpeed = speed;
+	m_fadeAlpha = 1.0f;   // 真っ黒からスタートして 0 に戻す
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -414,4 +455,12 @@ void InGameUI::Render(RenderContext& rc) {
 			m_mawase.Draw(rc);
 		}
 	}
+	// ★ 黒フェード描画（常に最前面）
+	if (m_fadeAlpha > 0.0f) {
+		m_spritekuro.SetMulColor({ 0,0,0, m_fadeAlpha });
+		m_spritekuro.SetPosition({ 0,0,0 });
+		m_spritekuro.Update();
+		m_spritekuro.Draw(rc);
+	}
+
 }

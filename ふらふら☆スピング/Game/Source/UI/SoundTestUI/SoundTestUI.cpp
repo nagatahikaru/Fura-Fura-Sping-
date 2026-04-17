@@ -16,10 +16,12 @@ bool SoundTestUI::Start() {
 	m_spriteRender.Init("Assets/sprite/SoundTest.DDS", 1920.0f, 1080.0f);
 
 	m_spriteBGM.Init("Assets/sprite/StartButton.dds", 1200.0f, 650.0f);
+    m_spriteBGM.SetScale(Vector3{ -1.0f,1.0f,1.0f });
 	m_spriteBGM.SetPosition({ 0.0f, -50.0f, 0.0f });
 
 
 	m_spriteSE.Init("Assets/sprite/TitleMenu.dds", 1170.0f, 600.0f);
+    m_spriteSE.SetScale(Vector3{ -1.0f,1.0f,1.0f });
 	m_spriteSE.SetPosition({ 0.0f, -300.0f, 0.0f });
 
 
