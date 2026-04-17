@@ -22,7 +22,7 @@ bool Ball::Start()
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
 	m_modelRender.SetScale({ 3.5f,3.5f,3.5f });
 
-	m_position = { -0.0f, 750.0f, 1200.0f };
+	m_position = { -0.0f, 650.0f, 1000.0f };
 	m_modelRender.SetPosition(m_position);
 
     
@@ -64,13 +64,15 @@ void Ball::Update()
 
     if (m_throwTimer >= 2.5f && !m_isMove)
     {
-        Throw({ 0.0f, 0.0f, 0.0f });
+        ResetBall(); 
+
+        Throw({ 0.0f, -30.0f, 0.0f });
         m_throwTimer = 0.0f;
     }
 
    if (m_isMove)
 {
-    m_velocity.y -= 31.0f * dt;
+    m_velocity.y -= 15.0f * dt;
     m_position += m_velocity * dt;
 
     // ★ リアルタイム飛距離更新
@@ -165,10 +167,10 @@ void Ball::Update()
 
 void Ball::Throw(const Vector3& targetPos)
 {
-	Vector3 dir = { 0.0f,0.05f,3.0f };
+	Vector3 dir = { 0.0f,-0.1f,3.0f };
 	dir.Normalize();
 
-	float speed = 1000.0f;
+	float speed = 2250.0f;
 
 	m_velocity = dir * speed;
 
@@ -228,7 +230,7 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
 
 void Ball::ResetBall()
 {
-    m_position = { 0.0f, 750.0f, 1200.0f };
+    m_position = { -0.0f, 650.0f, 1000.0f };
     m_velocity = Vector3::Zero;
     m_isMove = false;
     m_hasHit = false;
