@@ -168,7 +168,9 @@ void Ball::Update()
             game->OnBallLanded();
         }
     }
-
+    if (m_isRecording) {
+        m_replayPath.push_back(m_position);
+    }
     SetPosition(m_position);
 
     //距離に応じてスケール変更
@@ -220,6 +222,10 @@ void Ball::Throw(const Vector3& targetPos)
 
 
 	m_isMove = true;
+
+    // ★ リプレイ記録開始（投球開始時）
+    m_replayPath.clear();
+    m_isRecording = true;
 
     // ★ 投げた瞬間の Z を UI に送る（必須）
     Game* game = FindGO<Game>("game");

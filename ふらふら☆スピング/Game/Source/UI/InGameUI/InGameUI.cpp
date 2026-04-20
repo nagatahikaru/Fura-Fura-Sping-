@@ -158,15 +158,22 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 		m_ballAlpha = eased;
 	}
 }
-
 Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
 {
-	// --- X方向（左右） ---
-	float uiX = ballPos3D.x * 0.20f;
+	// Z の進み具合（0 = 手前、1 = 奥）
+	float minZ = 1000.0f;
+	float maxZ = 6000.0f;
+	float t = (ballPos3D.z - minZ) / (maxZ - minZ);
+	t = clamp(t, 0.0f, 1.0f);
 
-	// --- Y方向（高さ） ---
-	// 3Dの初期高さ 750 → UI の初期位置 -80 に合わせる
-	float uiY = (ballPos3D.y - 750.0f) * 0.15f + (-80.0f);
+	// ★ 横移動 = X の動き + Z による中央寄り
+	float xFromX = -ballPos3D.x * 5.0f;       // ← X の動きを8倍（調整しやすい）
+	float xFromZ = (0.5f - t) * 5.0f;
+
+	float uiX = xFromX + xFromZ;
+
+	// 縦はそのまま
+	float uiY = (ballPos3D.y - 750.0f) * 0.15f - 80.0f;
 
 	return Vector3{ uiX, uiY, 0.0f };
 }
@@ -174,7 +181,7 @@ Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
 void InGameUI::FixBallUI(const Vector3& pos3D)
 {
 	m_isBallUIFixed = true;
-	m_fixedBallUIPos = pos3D;
+	m_fixedBallUIPos = ConvertBall3DToUI(pos3D);
 }
 
 void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
@@ -280,7 +287,7 @@ void InGameUI::Render(RenderContext& rc) {
 			Vector3 uiPos;
 
 			if (m_isBallUIFixed) {
-				uiPos = ConvertBall3DToUI(m_fixedBallUIPos);
+				  uiPos = m_fixedBallUIPos;   // ← 変換しない
 			}
 			else {
 				uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
