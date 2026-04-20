@@ -33,8 +33,10 @@ public:
 
 	void HitBall(const Vector3& hitDirection, float hitPower);
 	CollisionObject* GetCollisionObject() const { return m_collisionObject; }
+	void SetVelocity(const Vector3& v) { m_velocity = v; }
 	void ResetBall();
-
+	std::vector<Vector3> m_replayPath;
+	bool m_isRecording = false;
 private:
 	Vector3 m_position;  //ボールの位置
 	Vector3 m_velocity;  //ボールの速度
@@ -50,5 +52,7 @@ private:
 	Vector3 m_hitStartPos = Vector3::Zero;
 	bool m_hasHit = false;
 	CollisionObject* m_collisionObject = nullptr; // 衝突オブジェクト
+	bool m_isFlying = false;     // ★ 飛行中フラグ
+	bool m_hasLanded = false;    // ★ 着地フラグ
 };
 

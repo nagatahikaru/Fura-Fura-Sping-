@@ -30,6 +30,7 @@ public:
 	bool m_isPaused = true;
 	void AnimationUpdate();
 	void ResetThrow();
+	void PlayPitchAnimation();
 private:
 	Vector3 m_position = Vector3::Zero;
 	Vector3 m_targetPosition = Vector3::Zero;
@@ -41,6 +42,8 @@ private:
 
 	float m_timer = 0.0f;
 	bool m_isThrowing = false;
-	
+	float m_throwReleaseTime = 0.35f; // 投球アニメのどのタイミングでボールを離すか
+	bool m_hasReleasedBall = false;
+	bool m_hasNotifiedThrow = false;
 };
 

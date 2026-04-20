@@ -1,5 +1,6 @@
-#pragma once
+ï»¿#pragma once
 #include "Source/Source.h"
+#include "Source/Actor/Character/Ball/Ball.h"
 class GameCamera;
 class Background;
 class InGameUI;
@@ -29,6 +30,9 @@ public:
 	InGameUI* GetInGameUI() const { return m_InGameUI; }
 	void SetCameraMode(CameraMode mode) { m_cameraMode = mode; }
 	void SetKmValue(float km) { m_km = km; }
+	void StartReplay(int index);
+	void DecideBestReplay();
+	void GoToResult();
 	void OnBallLanded();
 	bool m_isPaused = false;
 
@@ -71,16 +75,51 @@ public:
 	bool m_isHitStop = false;
 	bool m_hasTriggered100m = false;
 	void OnOver100m();
+	void StartEndFade();
+	struct ReplayFrame {
+		Vector3 ballPos;
+		Vector3 ballVel;
+
+		float batterAnimTime;
+		float pitcherAnimTime;
+
+		bool swingTriggered; // Aãƒœã‚¿ãƒ³æŠ¼ã—ãŸç¬é–“
+	};
+	bool IsReplayPlaying() const { return m_isReplayPlaying; }
+
+	// â˜… ä»ŠãŒä½•çƒç›®ã‹è¿”ã™
+	int GetCurrentShotIndex() const { return m_shots; }
+
+	// â˜… ãƒœãƒ¼ãƒ«éŒ²ç”»ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã‚’è¿”ã™ï¼ˆã‚¹ã‚¤ãƒ³ã‚°è¨˜éŒ²ç”¨ï¼‰
+	int GetCurrentReplayRecordFrame() const {
+		return (int)m_ball->m_replayPath.size();
+	}
+	void SetSwingFrame(int shotIndex, int frame)
+	{
+		if (shotIndex >= 0 && shotIndex < 3) {
+			m_swingFrame[shotIndex] = frame;
+		}
+	}
+	int GetReplayFrameCount() const;
+	void StartReplayRecording();
+	int GetShots() const { return m_shots; }
+	bool IsRecording() const { return m_isRecording; }
+	void OnPitcherThrow();
+	std::vector<ReplayFrame> m_replayFrames[3]; // 3çƒåˆ†
+	int m_replayFrameCounter = 0;
+	int m_swingFrame[3] = { -1, -1, -1 };
+	int m_pitchFrame[3] = { 0,0,0 };
+	Vector3 m_hitVelocities[3];
 private:
-	GameCamera* m_gameCamera;	//ƒQ[ƒ€ƒJƒƒ‰B
-	Background* m_background;	//”wŒiB
-	Batter* m_batter;			//ƒoƒbƒ^[B
-	Pitcher* m_pitcher;			//ƒsƒbƒ`ƒƒ[B
-	Catcher* m_catcher;			//ƒLƒƒƒbƒ`ƒƒ[B
-	Ball* m_ball;				//ƒ{[ƒ‹B
-	SkyCube* m_skyCube;			//ƒXƒJƒCƒLƒ…[ƒuB
-	InGameUI* m_InGameUI;		//ƒCƒ“ƒQ[ƒ€UIB
-	CameraMode m_cameraMode = Camera_Catcher;//‰ŠúƒJƒƒ‰
+	GameCamera* m_gameCamera;	//ã‚²ãƒ¼ãƒ ã‚«ãƒ¡ãƒ©ã€‚
+	Background* m_background;	//èƒŒæ™¯ã€‚
+	Batter* m_batter;			//ãƒãƒƒã‚¿ãƒ¼ã€‚
+	Pitcher* m_pitcher;			//ãƒ”ãƒƒãƒãƒ£ãƒ¼ã€‚
+	Catcher* m_catcher;			//ã‚­ãƒ£ãƒƒãƒãƒ£ãƒ¼ã€‚
+	Ball* m_ball;				//ãƒœãƒ¼ãƒ«ã€‚
+	SkyCube* m_skyCube;			//ã‚¹ã‚«ã‚¤ã‚­ãƒ¥ãƒ¼ãƒ–ã€‚
+	InGameUI* m_InGameUI;		//ã‚¤ãƒ³ã‚²ãƒ¼ãƒ UIã€‚
+	CameraMode m_cameraMode = Camera_Catcher;//åˆæœŸã‚«ãƒ¡ãƒ©
 	Start1* m_start1;
 	int m_guruguru = 0;
 	int m_km = 0;
@@ -92,11 +131,23 @@ private:
 	bool m_isGameStarted=false;
 	int m_cameraType = 0;
 	float m_timeScale = 1.0f;
-	int m_shots = 0;          // ‰½‰ñ‘Å‚Á‚½‚©
-	int m_scores[3] = { 0,0,0 }; // Še‰ñ‚ÌƒXƒRƒA•Û‘¶
-	// Game.h ‚È‚Ç
+	int m_shots = 0;          // ä½•å›æ‰“ã£ãŸã‹
+	int m_scores[3] = { 0,0,0 }; // å„å›ã®ã‚¹ã‚³ã‚¢ä¿å­˜
+	// Game.h ãªã©
 	bool  m_isMissWait = false;
 	float m_missWaitTimer = 0.0f;
 	float m_fadeInDelayTimer = -1.0f;
+	std::vector<std::vector<Vector3>> m_replayPaths; // 3çƒåˆ†ã®è»Œé“
+	bool  m_isReplayPlaying = false;
+	float m_replayTimer = 0.0f;
+	float m_replaySpeed = 1.0f;   // 1.0f å›ºå®šã§OK
+	int   m_bestShotIndex = -1;
+	std::vector<Vector3> m_currentReplay; // å†ç”Ÿä¸­ã®è»Œé“
+	bool m_shouldStartReplay = false;
+	float m_replayDuration = 8.0f;   // ãƒªãƒ—ãƒ¬ã‚¤ã¯5ç§’ã§æ‰“ã¡åˆ‡ã‚Š
+	Vector3 m_initialVelocities[3];   // 1çƒç›®ã€œ3çƒç›®ã®æŠ•çƒç›´å¾Œã®é€Ÿåº¦
+	int m_replayStartFrame = 0;
+	int m_replayPitchFrame = 0;
+	bool m_isRecording = false;
 };
 
