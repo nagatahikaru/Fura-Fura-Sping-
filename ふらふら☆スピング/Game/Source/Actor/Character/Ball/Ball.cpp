@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "Ball.h"
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
@@ -22,7 +22,7 @@ bool Ball::Start()
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
 	m_modelRender.SetScale({ 3.5f,3.5f,3.5f });
 
-	m_position = { -0.0f, 650.0f, 1000.0f };
+	m_position = { -0.0f, 800.0f, 1000.0f };
 	m_modelRender.SetPosition(m_position);
 
     
@@ -73,6 +73,17 @@ void Ball::Update()
    if (m_isMove)
 {
     m_velocity.y -= 15.0f * dt;
+
+    //変化球処理
+    if (m_ballType == Curve)
+    {
+        m_velocity.x -= 5.0f * dt; //左に曲がる
+    }
+    else if (m_ballType == Slider)
+    {
+        m_velocity.x += 5.0f * dt; //右に曲がる
+    }
+
     m_position += m_velocity * dt;
 
     // ★ リアルタイム飛距離更新
@@ -124,6 +135,8 @@ void Ball::Update()
     if (m_position.y <= 0.0f)
     {
         m_position.y = 0.0f;
+
+
         m_isMove = false;
 
         Game* game = FindGO<Game>("game");
@@ -193,9 +206,18 @@ void Ball::Throw(const Vector3& targetPos)
 	Vector3 dir = { 0.0f,-0.1f,3.0f };
 	dir.Normalize();
 
-	float speed = 2050.0f;
+
+	float speed = 2000.0f;
+
 
 	m_velocity = dir * speed;
+
+    int r = rand() % 3;
+
+    if (r == 0)m_ballType = Straight;
+    if (r == 1)m_ballType = Curve;
+    if (r == 2)m_ballType = Slider;
+
 
 	m_isMove = true;
 
