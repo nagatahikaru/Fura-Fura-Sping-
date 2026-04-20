@@ -3,6 +3,15 @@
 
 class Ball :public Character
 {
+	enum BallType
+	{
+		Straight,
+		Curve,
+		Slider
+	};
+
+	BallType m_ballType = Straight;
+	
 public:
 	Ball();
 	virtual ~Ball();
