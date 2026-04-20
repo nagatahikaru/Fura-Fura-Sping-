@@ -167,8 +167,8 @@ Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
 	t = clamp(t, 0.0f, 1.0f);
 
 	// ★ 横移動 = X の動き + Z による中央寄り
-	float xFromX = -ballPos3D.x * 5.0f;       // ← X の動きを8倍（調整しやすい）
-	float xFromZ = (0.5f - t) * 5.0f;
+	float xFromX = -ballPos3D.x * 4.5f;       // ← X の動きを8倍（調整しやすい）
+	float xFromZ = (0.5f - t) * 0.5f;
 
 	float uiX = xFromX + xFromZ;
 
