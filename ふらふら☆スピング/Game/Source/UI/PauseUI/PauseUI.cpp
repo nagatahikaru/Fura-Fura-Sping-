@@ -11,33 +11,21 @@ bool PauseUI::Start()
 {
     m_spriteRender.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
     m_spriteRender.SetMulColor({ 1.0f, 1.0f, 1.0f, 0.5f });
-    m_startButton.Init("Assets/sprite/StartButton.dds", 600.0f, 450.0f);
-    m_startButton.SetPosition({ 0.0f, 200.0f, 0.0f });
-
-
-    m_titleMenu.Init("Assets/sprite/TitleMenu.dds", 600.0f, 450.0f);
-    m_titleMenu.SetPosition({ 0.0f, 0.0f, 0.0f });
-
-    m_soundRender.Init("Assets/sprite/sound.dds", 600.0f, 450.0f);
-    m_soundRender.SetPosition({ 0.0f, -400.0f, 0.0f });
 
     m_spritePause.Init("Assets/sprite/Pause.dds", 600.0f, 450.0f);
     m_spritePause.SetPosition({ 0.0f, 380.0f, 0.0f });
 
-    m_spriteRed.Init("Assets/sprite/reseto.dds", 600.0f, 450.0f);
-    m_spriteRed.SetPosition({ 0.0f, -200.0f, 0.0f });
-
     m_start.Init("Assets/sprite/saikai.dds", 250.0f, 150.0f);
-    m_start.SetPosition({ -550.0f, 200.0f, 0.0f });
+    m_start.SetPosition({ 0.0f, 200.0f, 0.0f });
 
     m_option.Init("Assets/sprite/Soundtest2.dds", 250.0f, 150.0f);
-    m_option.SetPosition({ -550.0f, -400.0f, 0.0f });
+    m_option.SetPosition({ 0.0f, -400.0f, 0.0f });
 
     m_Title.Init("Assets/sprite/modoru.dds", 250.0f, 150.0f);
-    m_Title.SetPosition({ -550.0f, 0.0f, 0.0f });
+    m_Title.SetPosition({ 0.0f, 0.0f, 0.0f });
 
     m_yari.Init("Assets/sprite/yari.dds", 250.0f, 150.0f);
-    m_yari.SetPosition({ -550.0f, -200.0f, 0.0f });
+    m_yari.SetPosition({ 0.0f, -200.0f, 0.0f });
     // ★ ポーズ中は BGM を小さくする
     if (g_bgm) {
         float v = g_soundManager->m_bgmVolume / 100.0f;
@@ -166,55 +154,39 @@ void PauseUI::Update()
         }
     }
     if (m_cursor == 0) {
-        m_startButton.SetScale({ 1.5f,1.5f,1.0f });
-        m_start.SetScale({ 1.5f,1.5f,1.0f });
+        m_start.SetScale({ 1.7f,1.7f,1.0f });
 
-        m_titleMenu.SetScale({ 1.0f,1.0f,1.0f });
         m_Title.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_soundRender.SetScale({ 1.0f,1.0f,1.0f });
         m_option.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_spriteRed.SetScale({ 1.0f,1.0f,1.0f });
         m_yari.SetScale({ 1.0f,1.0f,1.0f });
     }
     else if (m_cursor == 1) {
-        m_startButton.SetScale({ 1.0f,1.0f,1.0f });
         m_start.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_titleMenu.SetScale({ 1.5f,1.5f,1.0f });
-        m_Title.SetScale({ 1.5f,1.5f,1.0f });
+        m_Title.SetScale({ 1.7f,1.7f,1.0f });
 
-        m_soundRender.SetScale({ 1.0f,1.0f,1.0f });
         m_option.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_spriteRed.SetScale({ 1.0f,1.0f,1.0f });
         m_yari.SetScale({ 1.0f,1.0f,1.0f });
     }
     else if (m_cursor == 2) {
-        m_startButton.SetScale({ 1.0f,1.0f,1.0f });
         m_start.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_titleMenu.SetScale({ 1.0f,1.0f,1.0f });
         m_Title.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_soundRender.SetScale({ 1.0f,1.0f,1.0f });
         m_option.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_spriteRed.SetScale({ 1.5f,1.5f,1.0f });
-        m_yari.SetScale({ 1.5f,1.5f,1.0f });
+        m_yari.SetScale({ 1.7f,1.7f,1.0f });
     }
     else if (m_cursor == 3) {
-        m_startButton.SetScale({ 1.0f,1.0f,1.0f });
         m_start.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_titleMenu.SetScale({ 1.0f,1.0f,1.0f });
         m_Title.SetScale({ 1.0f,1.0f,1.0f });
 
-        m_soundRender.SetScale({ 1.5f,1.5f,1.0f });
-        m_option.SetScale({ 1.5f,1.5f,1.0f });
+        m_option.SetScale({ 1.7f,1.7f,1.0f });
 
-        m_spriteRed.SetScale({ 1.0f,1.0f,1.0f });
         m_yari.SetScale({ 1.0f,1.0f,1.0f });
     }
 
@@ -224,16 +196,8 @@ void PauseUI::Update()
 void PauseUI::Render(RenderContext& rc)
 {
     m_spriteRender.Draw(rc);
-    m_startButton.Update();
-    m_startButton.Draw(rc);
-    m_titleMenu.Update();
-    m_titleMenu.Draw(rc);
-    m_soundRender.Update();
-    m_soundRender.Draw(rc);
     m_spritePause.Update();
     m_spritePause.Draw(rc);
-    m_spriteRed.Update();
-    m_spriteRed.Draw(rc);
     m_start.Update();
     m_start.Draw(rc);
     m_option.Update();

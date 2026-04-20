@@ -11,11 +11,7 @@ public:
 	void Render(RenderContext& rc);
 private:
 	SpriteRender m_spriteRender;
-	SpriteRender m_startButton;
-	SpriteRender m_titleMenu;
-	SpriteRender m_soundRender;
 	SpriteRender m_spritePause;
-	SpriteRender m_spriteRed;
 	SpriteRender m_start;
 	SpriteRender m_option;
 	SpriteRender m_Title;

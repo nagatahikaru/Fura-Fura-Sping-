@@ -19,6 +19,8 @@ public:
 	// ★ ボールをセットする関数
 	void SetBall(Ball* ball) { m_ball = ball; }
 	void StartHitMomentCamera();
+	void FreezeCamera();
+	void UnfreezeCamera();   // ★ 追加
 private:
 	/*Vector3 m_cameraPos;
 	float m_angle;*/
@@ -41,5 +43,8 @@ private:
 	FollowMode m_followMode = Follow_None;
 	bool m_isHitMoment = false;
 	float m_hitMomentTimer = 0.0f;
+	Vector3 m_frozenPos = Vector3::Zero;
+	Vector3 m_frozenTarget = Vector3::Zero;
+	bool m_isFrozen = false;
 };
 

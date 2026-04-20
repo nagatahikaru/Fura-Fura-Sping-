@@ -118,21 +118,26 @@ void Game::Update()
 
 	// ★ Aボタン押しっぱなしで2倍速
 	// ★ 打った後だけ倍速ボタンを有効化
-	if (m_canFastForward && g_pad[0]->IsPress(enButtonB)) {
-		m_timeScale = 10.0f;   // B押し → 10倍速
+// ★ Aボタン押しっぱなしで2倍速（100m演出中は触らない）
+	// ★ フェードアウト中は timeScale を触らない（1倍のまま）
+// ★ フェードアウト中は絶対に timeScale を触らない
+	if (m_InGameUI && m_InGameUI->IsFadingOut()) {
+		m_timeScale = 1.0f;   // ← フェードアウト中は常に1倍速
 	}
-	else if (m_canFastForward) {
-		m_timeScale = 5.0f;    // 自動倍速
-	}
-	else {
-		m_timeScale = 1.0f;    // 通常速度
+	else if (!m_hasTriggered100m) {
+		// ★ 100m演出前だけ倍速を許可
+		if (m_canFastForward && g_pad[0]->IsPress(enButtonB)) {
+			m_timeScale = 10.0f;
+		}
+		else if (m_canFastForward) {
+			m_timeScale = 5.0f;
+		}
+		else {
+			m_timeScale = 1.0f;
+		}
 	}
 
-	// ★ ボタンでカメラ切り替え
-	// ★ Xボタンでカメラ順番切り替え
-	/*if (g_pad[0]->IsTrigger(enButtonLB1)) {
-		m_cameraMode = static_cast<CameraMode>((m_cameraMode + 1) % 4);
-	}*/
+
 
 	switch (m_cameraMode) {
 	case Camera_Catcher:
@@ -181,18 +186,6 @@ void Game::Update()
 		m_InGameUI->SetGuruGuruCount(GetGuruguru());
 	}
 
-	//if (g_pad[0]->IsTrigger(enButtonRB1)) {
-	//	 Result*result= NewGO<Result>(0);
-	//	//m_guruguru = m_InGameUI->GetGuruguruValue();
-	//	//m_km = m_InGameUI->GetKmValue();
-	//	result->SetResultValues(m_guruguru, m_km);
-	//	if (g_bgm) {
-	//		g_bgm->Stop();
-	//		g_bgm = nullptr;
-	//	}
-	//	DeleteGO(this);
-	//}
-
 	if (m_isBallLanded) {
 		m_afterLandingTimer += (1.0f / 60.0f) * m_timeScale;
 
@@ -213,22 +206,29 @@ void Game::Update()
 		}
 	}
 
-	if (m_km <= 0.1f && m_isGameStarted) {
-		m_zeroDistanceTimer += (1.0f / 60.0f) * m_timeScale;
-
-		if (m_zeroDistanceTimer >= 10.0f) {
-			Result* result = NewGO<Result>(0);
-			result->SetResultValues(m_guruguru, m_km,m_scores);
-			DeleteGO(this);
-			return;
-		}
-	}
-	else {
-		m_zeroDistanceTimer = 0.0f;
-	}
+	
 
 	if (m_InGameUI) {
 		m_InGameUI->SetKm(m_km);
+	}
+
+	// ★ フェードイン遅延処理
+	if (m_fadeInDelayTimer >= 0.0f) {
+		if (m_shots == 2) {
+			m_fadeInDelayTimer = -1.0f;
+			return;
+		}
+		m_fadeInDelayTimer -= g_gameTime->GetFrameDeltaTime();
+
+		if (m_fadeInDelayTimer <= 0.0f) {
+
+			// ★ 1.1秒後にフェードイン開始
+			if (m_InGameUI) {
+				m_InGameUI->StartFadeIn(0.5f);
+
+				m_fadeInDelayTimer = -1.0f;
+			}
+		}
 	}
 }
 
@@ -238,7 +238,7 @@ void Game::ResetForNextShot()
 	m_afterLandingTimer = 0.0f;
 	m_zeroDistanceTimer = 0.0f;
 	m_km = 0.0f;
-
+	m_hasTriggered100m = false;   // ★ これを追加
 	// ボールを初期位置に戻す
 	if (m_ball) {
 		m_ball->ResetBall();
@@ -249,9 +249,6 @@ void Game::ResetForNextShot()
 		m_InGameUI->SetKm(0);
 		m_InGameUI->SetBaisokuVisible(false);
 	}
-
-	// カメラをキャッチャー視点に戻す
-	m_cameraMode = Camera_Catcher;
 }
 
 void Game::OnBallLanded()
@@ -271,6 +268,40 @@ void Game::OnBallLanded()
 	m_scores[m_shots] = m_km;
 }
 
+void Game::OnOver100m()
+{
+	if (m_gameCamera) {
+		m_gameCamera->FreezeCamera();
+	}
+
+	if (m_InGameUI) {
+		m_InGameUI->StartFadeOut(0.5f);
+
+		m_InGameUI->m_onFadeOutFinished = [this]() {
+
+			// ★ 完全に黒くなった瞬間にカメラ切り替え
+			m_cameraMode = Camera_Catcher;
+
+			// ★ カメラの凍結解除もここで行う（重要）
+			if (m_gameCamera) {
+				m_gameCamera->UnfreezeCamera();
+			}
+
+			// ★ フェードアウト完了 → ここで20倍速にする
+			m_timeScale = 200.0f;
+
+			if (m_shots == 2) {
+				m_fadeInDelayTimer = -1.0f;
+				return;
+			}
+
+			// ★ フェードインは 1.1 秒後に実行
+			m_fadeInDelayTimer = 1.0f;
+		};
+	}
+	m_canFastForward = false;
+	m_hasTriggered100m = true;
+}
 
 void Game::Render(RenderContext& rc)
 {
