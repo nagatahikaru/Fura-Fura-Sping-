@@ -321,7 +321,17 @@ void Game::OnBallLanded()
 	if (pitcher) {
 		pitcher->ResetThrow();
 	}
+	// ★ 100m未満のヒットはフェードアウトしないので、着地した瞬間にカメラを戻す
+	if (!m_hasTriggered100m) {
+		m_cameraMode = Camera_Catcher;
 
+		// UI も通常状態に戻す
+		if (m_InGameUI) {
+			m_InGameUI->SetUIVisible(true);
+			m_InGameUI->SetFontVisble(true);
+			m_InGameUI->SetReplayVisible(false);
+		}
+	}
 	// スコア保存
 	m_scores[m_shots] = m_km;
 
