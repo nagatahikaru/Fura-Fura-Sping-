@@ -137,8 +137,6 @@ void Game::Update()
 		}
 	}
 
-
-
 	switch (m_cameraMode) {
 	case Camera_Catcher:
 		m_gameCamera->SetCatcherCamera();
@@ -227,7 +225,6 @@ void Game::Update()
 	}
 
 	if (m_isReplayPlaying) {
-
 		// ▼ スイングタイマーは常に進める（遅延の影響を受けない）
 		m_replaySwingTimer += g_gameTime->GetFrameDeltaTime();
 
@@ -276,7 +273,15 @@ void Game::Update()
 			GoToResult();
 			return;
 		}
+		// ★★★ リプレイスキップ（Bボタン3秒長押し） ★★★
+		if (g_pad[0]->IsTrigger(enButtonB)) {
 
+				// 即リザルトへ
+				m_isReplayPlaying = false;
+				m_cameraMode = Camera_Catcher;
+				GoToResult();
+				return;
+		}
 		return;
 	}
 
