@@ -74,6 +74,17 @@ bool BatterIdleState::RequestState(uint32_t& request)
 
 	if (g_pad[0]->IsTrigger(enButtonA))
 	{
+		Game* game = FindGO<Game>("game");
+		if (game) {
+			int shot = game->GetCurrentShotIndex();
+			int frame = game->GetCurrentReplayRecordFrame();
+
+			// ★ このフレームの swingTriggered を true にする
+			if (frame < game->m_replayFrames[shot].size()) {
+				game->m_replayFrames[shot][frame].swingTriggered = true;
+			}
+		}
+
 		request = BatterSwingState::ID();
 		return true;
 	}
@@ -165,6 +176,14 @@ void BatterSwingState::Enter()
 	batter->Swing();
 	batter->RotationUpdate();
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
+
+	// ★★★ ここに追加！スイングした瞬間をリプレイ用に記録 ★★★
+	Game* game = FindGO<Game>("game");
+	if (game) {
+		int shot = game->GetCurrentShotIndex();
+		int frame = game->GetCurrentReplayRecordFrame();
+		game->SetSwingFrame(shot, frame);   // ← これが正しい
+	}
 }
 
 void BatterSwingState::Update()

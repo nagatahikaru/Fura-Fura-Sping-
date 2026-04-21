@@ -61,9 +61,6 @@
     <Filter Include="Source\UI\TiterUI">
       <UniqueIdentifier>{3c027f7f-e78e-4392-bb52-5102aae0aa37}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Scene\Load">
-      <UniqueIdentifier>{634ffc6e-648f-41ad-af12-19768848e951}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Scene\Result">
       <UniqueIdentifier>{635b93d5-e1e7-410d-bedc-b2e6f16cbdb3}</UniqueIdentifier>
     </Filter>
@@ -81,6 +78,9 @@
     </Filter>
     <Filter Include="Source\UI\LoadUI">
       <UniqueIdentifier>{05823ccc-be60-4054-a628-d80c0ee9bc78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene\InGame\Load">
+      <UniqueIdentifier>{634ffc6e-648f-41ad-af12-19768848e951}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -156,7 +156,7 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Load\Load.cpp">
-      <Filter>Source\Scene\Load</Filter>
+      <Filter>Source\Scene\InGame\Load</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Result\Result.cpp">
       <Filter>Source\Scene\Result</Filter>
@@ -259,7 +259,7 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\Load\Load.h">
-      <Filter>Source\Scene\Load</Filter>
+      <Filter>Source\Scene\InGame\Load</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\Result\Result.h">
       <Filter>Source\Scene\Result</Filter>
