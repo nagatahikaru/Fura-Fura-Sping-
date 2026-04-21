@@ -159,5 +159,7 @@ private:
 	float m_replayAccumulator = 0.0f;   // 再生速度制御用のアキュムレータ
 	float m_replaySwingTimer = 0.0f;
 	bool m_hasPlayedReplaySwing = false;  // ★ リプレイ中にスイングを1回だけ再生するためのフラグ
+	int m_bestSwingFrame = 0;
+	int m_bestPitchFrame = 0;
 };
 
