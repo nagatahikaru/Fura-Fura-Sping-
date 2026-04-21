@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "Ball.h"
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
@@ -20,7 +20,7 @@ bool Ball::Start()
 {
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-	m_modelRender.SetScale({ 3.5f,3.5f,3.5f });
+	m_modelRender.SetScale({ 3.0f,3.0f,3.0f });
 
 	m_position = { -0.0f, 800.0f, 1000.0f };
 	m_modelRender.SetPosition(m_position);
@@ -72,16 +72,16 @@ void Ball::Update()
 
    if (m_isMove)
 {
-    m_velocity.y -= 15.0f * dt;
+    m_velocity.y -= 12.5f * dt;
 
     //変化球処理
-    if (m_ballType == Curve)
+    if (m_curveDir)
     {
-        m_velocity.x -= 5.0f * dt; //左に曲がる
+        m_velocity.x -= 3.0f * dt; //左に曲がる
     }
-    else if (m_ballType == Slider)
+    else if (m_curveDir)
     {
-        m_velocity.x += 5.0f * dt; //右に曲がる
+        m_velocity.x += 3.0f * dt;
     }
 
     m_position += m_velocity * dt;
@@ -180,7 +180,7 @@ void Ball::Update()
     if (t < 0.0f) t = 0.0f;
     if (t > 1.0f) t = 1.0f;
 
-    float scale = 3.5f * (1.0f - t * 0.8f);
+    float scale = 3.0f * (1.0f - t * 0.8f);
 
     //最小サイズ制限（消え防止）
     if (scale < 2.0f) scale = 2.0f;
@@ -203,21 +203,34 @@ void Ball::Update()
 
 void Ball::Throw(const Vector3& targetPos)
 {
-	Vector3 dir = { 0.0f,-0.1f,3.0f };
-	dir.Normalize();
+    Vector3 dir = { 0.0f,-0.1f,3.0f };
+    dir.Normalize();
 
 
-	float speed = 2000.0f;
+    float speed = 1800.0f + (rand() % 350);
+
+    int r = rand() % 100;
 
 
-	m_velocity = dir * speed;
+    if (r < 60)
+    {
+        //60%の確率でストレート
+        m_curveDir = 0;
+    }
+    else
+    {
+        if (rand() % 2 == 0)
+            m_curveDir = -1;
+        else
+            m_curveDir = 1;
+    }
 
-    int r = rand() % 3;
+    if (m_curveDir != 0)
+    {
+        speed *= 0.8f;  // 変化球は少し遅く
+    }
 
-    if (r == 0)m_ballType = Straight;
-    if (r == 1)m_ballType = Curve;
-    if (r == 2)m_ballType = Slider;
-
+    m_velocity = dir * speed;
 
 	m_isMove = true;
 
