@@ -138,7 +138,10 @@ void Batter::Update()
 	m_game = FindGO<Game>("game");
 	// ★ リプレイ中はバッターの通常処理を完全停止
 	if (m_game && m_game->IsReplayPlaying()) {
-
+		// ★ ポーズ中ならアニメーションも止める
+		if (m_game->m_isPaused) {
+			return;   // ← これでスイングアニメも完全停止
+		}
 		// アニメーションだけ進めたい場合はこれを残す
 		m_characterModel->Update();
 
@@ -148,6 +151,27 @@ void Batter::Update()
 	if (m_game && m_game->m_isPaused) {
 		g_effectManager->StopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
+	}
+	// ★ 遅延ヒット処理
+	// ★ 遅延ヒット処理
+	if (m_isHitReserved) {
+		m_hitDelayTimer -= g_gameTime->GetFrameDeltaTime();
+
+		if (m_hitDelayTimer <= 0.0f) {
+
+			// ★ 実際にボールを飛ばす
+			m_ball->HitBall(m_reservedHitDir, m_reservedHitPower);
+
+			// ★★★ カメラ切り替えをここで行う ★★★
+			if (m_game) {
+				m_game->SetCameraMode(Camera_BackBall);
+
+				GameCamera* cam = m_game->GetGameCamera();
+				if (cam) cam->StartHitMomentCamera();
+			}
+
+			m_isHitReserved = false;
+		}
 	}
 
 	m_stateMachine->Update();
@@ -472,7 +496,7 @@ void Batter::HitBat()
 	Vector3 ballPos = m_ball->GetPosition();
 
 	// ① Z制限（打撃ゾーン）
-	if (ballPos.z < 6030.0f || ballPos.z > 6070.0f) return;
+	if (ballPos.z < 6050.0f || ballPos.z > 6070.0f) return;
 	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
 	// ② カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
@@ -485,51 +509,76 @@ void Batter::HitBat()
 	{
 		Vector3 hitDir = ballPos - cursor;
 
-
 		// 前方向の力
 		if (fabs(hitDir.z) >= 0.0f) {
 			hitDir.z = -100.0f;
 		}
-		// ★ Y軸に強い上昇力を追加
-		hitDir.y += 21.0f;   // ← ここを調整すると角度が変わる
 
+		hitDir.y += 21.0f;
 		hitDir.Normalize();
+		// 角度（打ち上げ角）を計算
+		// 角度（打ち上げ角）を計算
+		float angleDeg = atan2f(hitDir.y, -hitDir.z) * 180.0f / 3.14159265f;
 
-		m_ball->HitBall(hitDir, 935.0f);
+		// ★ 角度に応じてパワー補正（真ん中は補正なし）
+		float powerScale = 1.0f;
 
+		// 高いフライほどパワーを弱くする
+		if (angleDeg > 60.0f) {
+			powerScale = 0.35f;   // 高フライ → 40%減衰
+			// ★ Y軸の上昇力を追加（強いフライにする）
+			hitDir.y += 50.0f;    // ← 好きな値に調整（50〜80が自然）
+		}
+		else if (angleDeg > 30.0f) {
+			powerScale = 0.55f;   // 中フライ → 20%減衰
+		}
+		// ★ 真ん中（10〜30度）→ パワー増加
+		else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
+			powerScale = 1.2f;   // ← 好きな倍率に調整
+		}
+		// ゴロ（角度が低すぎる）は少し弱くしてもOK
+		else if (angleDeg < 5.0f) {
+			powerScale = 1.0f;   // ゴロ → 少し弱く
+		}
+
+		// 最終パワー
+		float finalPower = 935.0f * powerScale;
+
+
+		// ★★★ ジャストタイミング判定 ★★★
+		bool isJustTiming = (dist < 20.0f);  // ← 調整ポイント
+
+		if (isJustTiming) {
+			// ★ 遅延ヒット予約（1秒後）
+			m_isHitReserved = true;
+			m_hitDelayTimer = 0.3f;
+			m_reservedHitDir = hitDir;
+			m_reservedHitPower = finalPower;
+		}
+		else {
+			// ★ 通常ヒット（即飛ぶ）
+			m_ball->HitBall(hitDir,+finalPower);
+			// ★ カメラ切り替え
+			if (m_game) {
+				m_game->SetCameraMode(Camera_BackBall);
+
+				GameCamera* cam = m_game->GetGameCamera();
+				if (cam) cam->StartHitMomentCamera();
+			}
+		}
+
+		// UI・SE・カメラなどは共通でOK
 		if (m_inGameUI) {
-			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
+			m_inGameUI->m_shuchusenTimer = 0.5f;
 		}
-
-		// ★ ヒットストップ開始
 		if (m_game) {
-			m_game->m_hitStopTimer = 0.02f;   // ← 0.08秒停止（調整OK）
-		}
-
-		// ★ 打った瞬間に倍速許可を ON
-		if (m_game) {
+			m_game->m_hitStopTimer = 0.02f;
 			m_game->m_canFastForward = true;
 		}
-
-		// ★ 打撃 SE 再生
-	// ★ 打撃 SE 再生（ポーズ中は絶対に鳴らさない）
 		if (!m_game->m_isPaused && g_soundManager) {
 			g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
 			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 100.0f);
 			se2->SetName("SE2");
-		}
-
-		// ★ ここでカメラ切り替え
-		if (m_game) {
-			m_game->SetCameraMode(Camera_BackBall);
-
-			// ★ 打った瞬間カメラ開始
-			GameCamera* cam = m_game->GetGameCamera();
-			if (cam) cam->StartHitMomentCamera();
-		}
-
-		if (m_inGameUI) {
-			m_inGameUI->SetBaisokuVisible(true);
 		}
 	}
 }

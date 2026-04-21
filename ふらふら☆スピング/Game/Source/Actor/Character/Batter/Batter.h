@@ -312,5 +312,10 @@ private:
 	bool m_effectSpawned = false;
 	float m_playSpeed = 1.0f;
 	int m_hitFrameIndex = -1;
+	// ★ 遅延ヒット用の変数（追加）
+	bool m_isHitReserved = false;
+	float m_hitDelayTimer = 0.0f;
+	Vector3 m_reservedHitDir = Vector3::Zero;
+	float m_reservedHitPower = 0.0f;
 };
 
