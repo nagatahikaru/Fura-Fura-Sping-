@@ -55,6 +55,7 @@ Batter::Batter()
 Batter::~Batter()
 {
 	m_stateMachine->SetBatter(nullptr);
+	g_effectManager->StopEffect(); // エフェクトの停止
 	//当たり判定オブジェクトの削除
 	if (m_collisionObject)return;
 	delete m_collisionObject;
@@ -299,17 +300,18 @@ void Batter::RotationUpdate()
 
 	m_characterModel->SettRotation(m_transform.m_rotation);
 
-	if (!m_isRotation)
+	if (m_isRotation)
 	{
-		m_characterModel->SettRotation(m_initialRotation);
+		
 		Quaternion rot;
-		rot.SetRotationDeg(Vector3(1.0f, 0.0f, 0.0f), 180.0f);
-		m_characterModel->SetWeaponRotation(false);
+		rot.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 230.0f);
+		m_characterModel->SetWeaponRotation(true);
 		m_characterModel->SetWeaponRotation(rot);
-		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y+200.0f, m_transform.m_position.z));
+		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y+250.0f, m_transform.m_position.z));
 	}else
 		{
-		m_characterModel->SetWeaponRotation(true);
+		m_characterModel->SettRotation(m_initialRotation);
+		m_characterModel->SetWeaponRotation(false);
 	}
 
 	m_characterModel->SetPosition(newPosition);
@@ -554,34 +556,6 @@ void Batter::BatHitBoxPosition()
 	m_collisionObject->Update();
 }
 
-void Batter::ResetSwing()
-{
-	// �����̌����ɖ߂�
-	m_transform.m_rotation = m_initialRotation;
-	m_characterModel->SettRotation(m_initialRotation);
-
-	// �J�[�\���ʒu�𒆉��ɖ߂��i�C�Ӂj
-	m_meetPosition = Vector3::Zero;
-
-	// ��]�t���O����Z�b�g�i�K�v�Ȃ�j
-	m_isRotation = false;
-
-	// �J�[�\�����[�h����i�K�v�Ȃ�j
-	m_isCursorMode = false;
-}
-
-void Batter::SetCursorMode(bool flag)
-{
-	m_isCursorMode = flag;
-}
-
-void Batter::ResetCursorPosition()
-{
-	m_meetPosition = Vector3::Zero;
-}
-
-
-
 /** 演出関連コード */
 void Batter::EffectUpdate()
 {
@@ -597,7 +571,7 @@ void Batter::EffectUpdate()
 		enEffect_DownArrow,
 		pos,
 		Quaternion::Identity,
-		Vector3(6.0f, 10.0f, 6.0f)
+		Vector3(20.0f, 40.0f, 20.0f)
 	);
 }
 

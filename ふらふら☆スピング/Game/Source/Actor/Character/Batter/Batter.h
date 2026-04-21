@@ -63,7 +63,7 @@ public:
 	virtual void Render(RenderContext& rc);
 	void SetPlayAnimation(int enAnimationClip)
 	{
-		m_characterModel->PlayAnimation(enAnimationClip, 0.2);
+		m_characterModel->PlayAnimation(enAnimationClip,0.2);
 	}
 
 
@@ -266,10 +266,7 @@ public:
 	float GetPlaySpeed() const {
 		return m_playSpeed;
 	}
-	void SetCursorMode(bool flag);
-	void ResetCursorPosition();
 	void EffectUpdate();
-	void ResetSwing();
 	int GetGuruGuru() const {
 		return m_guruGuruBatCount;
 	}

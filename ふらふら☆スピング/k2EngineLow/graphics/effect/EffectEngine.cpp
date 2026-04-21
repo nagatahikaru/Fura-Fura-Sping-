@@ -120,6 +120,8 @@ namespace nsK2EngineLow {
 		// コマンドリストを終了する。
 		m_renderer[backBufferNo]->SetCommandList(nullptr);
 		EffekseerRendererDX12::EndCommandList(m_commandList[backBufferNo]);
+		//下記は追加部分
+		EffekseerRendererDX12::ExecuteCommandList(m_commandList[backBufferNo]);
 	}
 
 	void EffectEngine::ResistEffect(const int number, const char16_t* filePath)

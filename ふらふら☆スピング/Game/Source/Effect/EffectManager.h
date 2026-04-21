@@ -48,7 +48,7 @@ private:
 	const char16_t* m_ext = u".efk";
 
 	const char16_t* m_files[enEffect_Num] = {
-		u"DownArrow"
+		u"DownArrow2"
 	};
 
 	EffectEmitter* m_effectEmitter = nullptr;					//effect‚Ö‚ÌQÆB
