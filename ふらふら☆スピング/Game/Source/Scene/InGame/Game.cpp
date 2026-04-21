@@ -253,11 +253,14 @@ void Game::Update()
 			m_ball->SetPosition(path[index]);
 		}
 
-		int swingTiming = m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex];
+		int swingTiming = m_bestSwingFrame - m_bestPitchFrame;
 
 		if (index == swingTiming) {
 			m_batter->PlaySwingAnimation();
-
+			// ★★★ リプレイ時もスイング速度を通常と同じにする ★★★
+			m_batter->GetCharacterModel()
+				->GetModelRender()
+				->SetAnimationSpeed(4.0f);
 			// ★ 打った瞬間の速度を適用
 			m_ball->SetPosition(m_hitStartPos[m_bestShotIndex]);
 			m_ball->SetVelocity(m_hitVelocities[m_bestShotIndex]);
@@ -378,7 +381,7 @@ void Game::OnOver100m()
 			}
 
 			// ★ フェードアウト完了 → ここで20倍速にする
-			m_timeScale = 30.0f;
+			m_timeScale = 100.0f;
 
 			if (m_shots == 2) {
 				m_fadeInDelayTimer = -1.0f;
@@ -406,7 +409,7 @@ void Game::StartReplay(int index)
 	m_isReplayPlaying = true;
 	m_replayTimer = 0.0f;
 	// ▼ 追加：タイマーとアキュムレータの初期化
-	m_replayDelayTimer = 2.5f;  // 1.5秒待機
+	m_replayDelayTimer = 2.2f;  // 1.5秒待機
 	m_replayAccumulator = 0.0f; // アキュムレータ初期化
 	m_cameraMode = Camera_Replay;
 	m_currentReplay = m_replayPaths[index];
@@ -457,6 +460,12 @@ void Game::DecideBestReplay()
 			best = m_scores[i];
 			m_bestShotIndex = i;
 		}
+	}
+
+	// ★★★ ここを追加：ベストショットのスイングフレームを確定 ★★★
+	if (m_bestShotIndex != -1) {
+		m_bestSwingFrame = m_swingFrame[m_bestShotIndex];
+		m_bestPitchFrame = m_pitchFrame[m_bestShotIndex];
 	}
 }
 
