@@ -43,12 +43,12 @@ bool Game::Start()
 	// ★ カウントダウンUIを表示
 	m_start1 =NewGO<Start1>(0, "start1");
 
-
-
 	// ボールをカメラにセット
 	if (m_gameCamera && m_ball) {
 		m_gameCamera->SetBall(m_ball);
 	}
+
+	m_replayPaths.resize(3);
 
 	return true;
 }
@@ -186,27 +186,22 @@ void Game::Update()
 		m_InGameUI->SetGuruGuruCount(GetGuruguru());
 	}
 
-	if (m_isBallLanded) {
+	// ★ リプレイ中は着地後の待ち処理をスキップ
+	if (m_isBallLanded && !m_isReplayPlaying) {
 		m_afterLandingTimer += (1.0f / 60.0f) * m_timeScale;
 
 		if (m_afterLandingTimer >= 1.0f) {
-			m_shots++;
-			// ★ 3球終わった？
-			if (m_shots >= 3) {
-				int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
-				Result* result = NewGO<Result>(0);
-				result->SetResultValues(m_guruguru, best,m_scores);
-				DeleteGO(this);
+
+			// ★ 3球目なら次の球へ行かない（リプレイへ）
+			if (m_shots == 2) {
 				return;
 			}
 
-			// ★ まだ続く → 次の球へ
+			m_shots++;
 			ResetForNextShot();
 			return;
 		}
 	}
-
-	
 
 	if (m_InGameUI) {
 		m_InGameUI->SetKm(m_km);
@@ -229,6 +224,62 @@ void Game::Update()
 				m_fadeInDelayTimer = -1.0f;
 			}
 		}
+	}
+
+	if (m_isReplayPlaying) {
+
+		// ▼ スイングタイマーは常に進める（遅延の影響を受けない）
+		m_replaySwingTimer += g_gameTime->GetFrameDeltaTime();
+
+		// ▼ ボール再生は遅延が終わるまで止める
+		if (m_replayDelayTimer > 0.0f) {
+			m_replayDelayTimer -= g_gameTime->GetFrameDeltaTime();
+
+			// ★ スイングだけは遅延中でも再生する
+			float swingSec = (m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex]) / 60.0f;
+			if (m_replaySwingTimer >= swingSec && !m_hasPlayedReplaySwing) {
+				m_batter->PlaySwingAnimation();
+				m_hasPlayedReplaySwing = true;
+			}
+
+			return; // ← ボールはまだ動かさない
+		}
+
+		// ▼ 遅延が終わったのでボール再生開始
+		auto& path = m_currentReplay;
+		int index = m_replayStartFrame;
+
+		if (index < path.size()) {
+			m_ball->SetPosition(path[index]);
+		}
+
+		int swingTiming = m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex];
+
+		if (index == swingTiming) {
+			m_batter->PlaySwingAnimation();
+
+			// ★ 打った瞬間の速度を適用
+			m_ball->SetPosition(m_hitStartPos[m_bestShotIndex]);
+			m_ball->SetVelocity(m_hitVelocities[m_bestShotIndex]);
+			m_ball->m_isMove = true;
+			m_ball->m_hasHit = true;
+		}
+
+		m_replayStartFrame++;
+		m_replayTimer += g_gameTime->GetFrameDeltaTime();
+		if (m_replayTimer >= m_replayDuration) {
+			m_isReplayPlaying = false;
+			m_cameraMode = Camera_Catcher;
+			GoToResult();
+			return;
+		}
+
+		return;
+	}
+
+	// ★ 録画中は毎フレームカウンタを進める
+	if (m_isRecording) {
+		m_replayFrameCounter++;
 	}
 }
 
@@ -258,15 +309,41 @@ void Game::OnBallLanded()
 	m_canFastForward = false;
 	m_timeScale = 1.0f;
 
-	// ピッチャーのアニメーションをリセット
 	Pitcher* pitcher = FindGO<Pitcher>("pitcher");
 	if (pitcher) {
 		pitcher->ResetThrow();
 	}
 
-	// スコア保存（3球制）
+	// スコア保存
 	m_scores[m_shots] = m_km;
+
+	// ボール軌道保存（ヒットした時だけ）
+	if (m_ball->m_replayPath.size() > 0) {
+		m_replayPaths[m_shots] = m_ball->m_replayPath;
+	}
+	else {
+		m_replayPaths[m_shots].clear();
+	}
+
+	// 3球目が終わった？
+	if (m_shots == 2) {
+		DecideBestReplay();
+
+		if (m_bestShotIndex != -1) {
+			// ベストショットがある → リプレイ開始を予約
+			m_shouldStartReplay = true;
+		}
+		else {
+			// 全部空振り → そのままリザルト
+			GoToResult();
+		}
+
+		// ここでエンディング用フェード開始（真っ黒になったらリプレイ or リザルト）
+		StartEndFade();
+		return;
+	}
 }
+
 
 void Game::OnOver100m()
 {
@@ -287,8 +364,21 @@ void Game::OnOver100m()
 				m_gameCamera->UnfreezeCamera();
 			}
 
+			// ★ ここでリプレイ開始
+			if (m_shouldStartReplay) {
+				StartReplay(m_bestShotIndex);
+				m_shouldStartReplay = false;
+
+				// ★ リプレイ開始したらフェードインする
+				if (m_InGameUI) {
+					m_InGameUI->StartFadeIn(0.5f);
+				}
+
+				return; // ← リプレイ開始したのでここで終了
+			}
+
 			// ★ フェードアウト完了 → ここで20倍速にする
-			m_timeScale = 200.0f;
+			m_timeScale = 30.0f;
 
 			if (m_shots == 2) {
 				m_fadeInDelayTimer = -1.0f;
@@ -301,6 +391,127 @@ void Game::OnOver100m()
 	}
 	m_canFastForward = false;
 	m_hasTriggered100m = true;
+}
+
+void Game::StartReplay(int index)
+{
+	m_isRecording = false;
+	if (m_ball) {
+		m_ball->m_isRecording = false;
+	}
+	m_replaySwingTimer = 0.0f;  // ★ スイング用タイマー
+	m_hasPlayedReplaySwing = false;
+	m_replayStartFrame = 0;
+	m_replayFrameCounter = 0;   // ★★★ これが絶対必要 ★★★
+	m_isReplayPlaying = true;
+	m_replayTimer = 0.0f;
+	// ▼ 追加：タイマーとアキュムレータの初期化
+	m_replayDelayTimer = 2.5f;  // 1.5秒待機
+	m_replayAccumulator = 0.0f; // アキュムレータ初期化
+	m_cameraMode = Camera_Replay;
+	m_currentReplay = m_replayPaths[index];
+	m_replayPitchFrame = m_pitchFrame[index];  // ← ★追加
+	// ★★★ 追加：ピッチャーとボールをリセットしてタイミングを合わせる ★★★
+
+	if (m_pitcher) {
+		m_pitcher->PlayPitchAnimation();        // ← 投球アニメを再生
+	}
+
+	// バッターも初期姿勢に戻す（スイング前）
+	if (m_batter) {
+		m_batter->ResetSwing();
+		m_batter->AnimationUpdate();
+	}
+
+	// ★★★ ボールを初期位置に戻して完全同期 ★★★
+	if (m_ball) {
+		m_ball->ResetBall();              // ← 初期位置へ
+		m_ball->SetVelocity(Vector3::Zero); // ← 速度ゼロ
+		m_ball->m_isMove = false;           // ← 動作停止
+		m_ball->m_hasHit = false;           // ← ヒットフラグ解除
+	}
+	// ★ 打った瞬間の位置に戻す
+	m_ball->SetPosition(m_hitStartPos[index]);
+	// ★ 打った瞬間の速度をセット（まだ動かさない）
+	m_ball->SetVelocity(m_hitVelocities[index]);
+
+	if (m_InGameUI) {
+		m_InGameUI->SetReplayVisible(true);
+	}
+}
+
+void Game::StartReplayRecording()
+{
+	SetGameStarted(true);
+	m_isRecording = true;        // ★ 録画フラグ ON
+	m_replayFrameCounter = 0;    // ★ 毎回 0 からスタート
+}
+
+void Game::DecideBestReplay()
+{
+	m_bestShotIndex = -1;
+	float best = -1.0f;
+
+	for (int i = 0; i < 3; i++) {
+		if (m_scores[i] > best && m_replayPaths[i].size() > 0) {
+			best = m_scores[i];
+			m_bestShotIndex = i;
+		}
+	}
+}
+
+void Game::GoToResult()
+{
+	int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
+	Result* result = NewGO<Result>(0);
+	result->SetResultValues(m_guruguru, best, m_scores);
+	DeleteGO(this);
+}
+
+// Game.cpp に実装を追加
+void Game::StartEndFade()
+{
+	if (!m_InGameUI) {
+		GoToResult();
+		return;
+	}
+
+	m_InGameUI->StartFadeOut(0.5f);
+
+	m_InGameUI->m_onFadeOutFinished = [this]() {
+
+		// 画面は真っ黒の状態
+
+		if (m_bestShotIndex != -1) {
+			// ベストショットがある → リプレイ開始
+			StartReplay(m_bestShotIndex);
+
+			// リプレイを見せるためにフェードイン
+			if (m_InGameUI) {
+				m_InGameUI->StartFadeIn(0.5f);
+			}
+		}
+		else {
+			// 全部空振り → そのままリザルトへ
+			GoToResult();
+		}
+		};
+}
+
+int Game::GetReplayFrameCount() const {
+	return m_replayFrameCounter;
+}
+void Game::OnPitcherThrow()
+{
+	int shot = m_shots;
+
+	// ★ ピッチャーが投げた瞬間のフレームを保存
+	m_pitchFrame[shot] = m_replayFrameCounter;
+
+	// ★ ボールを飛ばす
+	if (m_ball) {
+		m_ball->Throw({ 0, -20, 0 });
+	}
 }
 
 void Game::Render(RenderContext& rc)

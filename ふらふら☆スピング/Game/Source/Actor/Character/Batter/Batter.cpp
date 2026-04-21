@@ -136,6 +136,14 @@ void Batter::Update()
 		return;
 	}
 	m_game = FindGO<Game>("game");
+	// ★ リプレイ中はバッターの通常処理を完全停止
+	if (m_game && m_game->IsReplayPlaying()) {
+
+		// アニメーションだけ進めたい場合はこれを残す
+		m_characterModel->Update();
+
+		return; // ← 入力・ぐるぐる・カーソル・移動など全部止める
+	}
 	// ★ ポーズ中はキャッチャーのアニメーションを止める	
 	if (m_game && m_game->m_isPaused) {
 		g_effectManager->StopEffect(); // エフェクトも停止
@@ -149,8 +157,8 @@ void Batter::Update()
 	if (m_inGameUI) {
 		m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
 	}
-}
 
+}
 
 /** ぐるぐるバット関連コード */
 
@@ -450,6 +458,10 @@ void Batter::DebuffDepth() {
 /** Hit計算関連コード */
 void Batter::HitBat()
 {
+	// ★ リプレイ中は絶対に打撃処理しない
+	if (m_game && m_game->IsReplayPlaying()) {
+		return;
+	}
 	// ★ ポーズ中は絶対に打撃処理しない
 	if (m_game && m_game->m_isPaused) {
 		return;
@@ -575,12 +587,18 @@ void Batter::SetCursorMode(bool flag)
 	m_isCursorMode = flag;
 }
 
+void Batter::PlaySwingAnimation()
+{
+	// ★ スイングアニメーションを再生
+	m_characterModel->PlayAnimation(enAnimationClip_Swing,1.0);
+
+	// ★ スイング開始時にカーソル位置を固定したいならここで処理
+}
+
 void Batter::ResetCursorPosition()
 {
 	m_meetPosition = Vector3::Zero;
 }
-
-
 
 /** 演出関連コード */
 void Batter::EffectUpdate()

@@ -40,7 +40,7 @@ void GameCamera::SetCatcherCamera() {
 }
 
 void GameCamera::SetReplayCamera() {
-    m_cameraPos = { 1080.0f, 630.0f, 1470.0f };  // 斜め上から
+    m_cameraPos = { 1080.0f, 630.0f, 0.0f };  // 斜め上から
     m_target = { 0.0f, 300.0f, 0.0f };        // 固定ターゲット（例）
     m_yaw = 165.0f;
     m_pitch = 3.0f;

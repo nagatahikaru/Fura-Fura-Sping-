@@ -146,6 +146,15 @@ void Pitcher::Update()
 		SetPlayAnimation(enAnimationClip_Throw);
 		m_isThrowing = true;
 		m_timer = 0.0f;
+		// ★★★ ここで録画開始 ★★★
+		Game* game = FindGO<Game>("game");
+		if (game) {
+			game->StartReplayRecording();
+			game->SetGameStarted(true);   // ★ これを足す
+			// ★ 投球開始フレームを記録
+			int shotIndex = game->GetShots();
+			game->m_pitchFrame[shotIndex] = game->GetReplayFrameCount();
+		}
 	}
 
 	if (m_isThrowing)
@@ -177,6 +186,12 @@ void Pitcher::ResetThrow()
 
 	// Idle に戻す
 	SetPlayAnimation(enAnimationClip_Idle);
+}
+
+void Pitcher::PlayPitchAnimation()
+{
+	// ★ 投球アニメーションを最初から再生
+	m_modelRender[m_UniformNumber].PlayAnimation(enAnimationClip_Throw, 0.0f);
 }
 
 void Pitcher::Render(RenderContext& rc)

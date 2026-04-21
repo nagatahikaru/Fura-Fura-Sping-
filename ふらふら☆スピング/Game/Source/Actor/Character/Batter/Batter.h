@@ -277,6 +277,7 @@ public:
 	{
 		return m_characterModel.get();
 	}
+	void PlaySwingAnimation();
 	bool m_isPaused;
 private:
 
@@ -313,5 +314,6 @@ private:
 	Vector3 m_randomCursorMovePwer; // ランダムな位置にカーソルを移動する際の移動の強さ
 	bool m_effectSpawned = false;
 	float m_playSpeed = 1.0f;
+	int m_hitFrameIndex = -1;
 };
 
