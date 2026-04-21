@@ -433,12 +433,6 @@ void InGameUI::Render(RenderContext& rc) {
 		m_fontBollRender.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
 		m_fontBollRender.Draw(rc);
 
-		if (m_isReplayVisible) {
-			m_spriteRenderReplay.SetPosition(Vector3{ -800.0f, 450.0f, 0.0f });
-			m_spriteRenderReplay.Update();
-			m_spriteRenderReplay.Draw(rc);
-		}
-
 		if (m_isBaisokuVisible) {
 			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 			m_baisoku.Update();
@@ -462,6 +456,11 @@ void InGameUI::Render(RenderContext& rc) {
 			m_mawase.Draw(rc);
 		}
 	}
+	if (m_isReplayVisible) {
+		m_spriteRenderReplay.SetPosition(Vector3{ -800.0f, 450.0f, 0.0f });
+		m_spriteRenderReplay.Update();
+		m_spriteRenderReplay.Draw(rc);
+	}
 	// ★ 黒フェード描画（常に最前面）
 	if (m_fadeAlpha > 0.0f) {
 		m_spritekuro.SetMulColor({ 0,0,0, m_fadeAlpha });
@@ -469,5 +468,4 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spritekuro.Update();
 		m_spritekuro.Draw(rc);
 	}
-
 }

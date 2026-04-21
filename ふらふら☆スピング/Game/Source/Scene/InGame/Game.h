@@ -109,7 +109,13 @@ public:
 	int m_replayFrameCounter = 0;
 	int m_swingFrame[3] = { -1, -1, -1 };
 	int m_pitchFrame[3] = { 0,0,0 };
+	bool  m_isReplayPlaying = false;
+	int     m_hitFrame[3];
 	Vector3 m_hitVelocities[3];
+	Vector3 m_hitDirections[3];
+	Vector3 m_hitStartPos[3];
+	float   m_hitPower[3];
+	int m_shots = 0;          // 何回打ったか
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。
@@ -131,23 +137,27 @@ private:
 	bool m_isGameStarted=false;
 	int m_cameraType = 0;
 	float m_timeScale = 1.0f;
-	int m_shots = 0;          // 何回打ったか
 	int m_scores[3] = { 0,0,0 }; // 各回のスコア保存
 	// Game.h など
 	bool  m_isMissWait = false;
 	float m_missWaitTimer = 0.0f;
 	float m_fadeInDelayTimer = -1.0f;
 	std::vector<std::vector<Vector3>> m_replayPaths; // 3球分の軌道
-	bool  m_isReplayPlaying = false;
+
 	float m_replayTimer = 0.0f;
 	float m_replaySpeed = 1.0f;   // 1.0f 固定でOK
 	int   m_bestShotIndex = -1;
 	std::vector<Vector3> m_currentReplay; // 再生中の軌道
 	bool m_shouldStartReplay = false;
-	float m_replayDuration = 6.0f;   // リプレイは5秒で打ち切り
+	float m_replayDuration = 4.0f;   // リプレイは5秒で打ち切り
 	Vector3 m_initialVelocities[3];   // 1球目〜3球目の投球直後の速度
 	int m_replayStartFrame = 0;
 	int m_replayPitchFrame = 0;
 	bool m_isRecording = false;
+	int m_replayDelayFrames = 0;
+	float m_replayDelayTimer = 0.0f;    // リプレイ開始までの遅延タイマー
+	float m_replayAccumulator = 0.0f;   // 再生速度制御用のアキュムレータ
+	float m_replaySwingTimer = 0.0f;
+	bool m_hasPlayedReplaySwing = false;  // ★ リプレイ中にスイングを1回だけ再生するためのフラグ
 };
 

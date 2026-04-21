@@ -225,9 +225,47 @@ void Game::Update()
 			}
 		}
 	}
+
 	if (m_isReplayPlaying) {
 
-		// 再生時間の管理（5秒制限用）だけタイマーでOK
+		// ▼ スイングタイマーは常に進める（遅延の影響を受けない）
+		m_replaySwingTimer += g_gameTime->GetFrameDeltaTime();
+
+		// ▼ ボール再生は遅延が終わるまで止める
+		if (m_replayDelayTimer > 0.0f) {
+			m_replayDelayTimer -= g_gameTime->GetFrameDeltaTime();
+
+			// ★ スイングだけは遅延中でも再生する
+			float swingSec = (m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex]) / 60.0f;
+			if (m_replaySwingTimer >= swingSec && !m_hasPlayedReplaySwing) {
+				m_batter->PlaySwingAnimation();
+				m_hasPlayedReplaySwing = true;
+			}
+
+			return; // ← ボールはまだ動かさない
+		}
+
+		// ▼ 遅延が終わったのでボール再生開始
+		auto& path = m_currentReplay;
+		int index = m_replayStartFrame;
+
+		if (index < path.size()) {
+			m_ball->SetPosition(path[index]);
+		}
+
+		int swingTiming = m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex];
+
+		if (index == swingTiming) {
+			m_batter->PlaySwingAnimation();
+
+			// ★ 打った瞬間の速度を適用
+			m_ball->SetPosition(m_hitStartPos[m_bestShotIndex]);
+			m_ball->SetVelocity(m_hitVelocities[m_bestShotIndex]);
+			m_ball->m_isMove = true;
+			m_ball->m_hasHit = true;
+		}
+
+		m_replayStartFrame++;
 		m_replayTimer += g_gameTime->GetFrameDeltaTime();
 		if (m_replayTimer >= m_replayDuration) {
 			m_isReplayPlaying = false;
@@ -236,47 +274,9 @@ void Game::Update()
 			return;
 		}
 
-		// ★ リプレイ用フレームカウンタを進める
-		// ★ 実時間ベースでフレームを進める
-		m_replayStartFrame++;
-
-		int pitchFrame = m_pitchFrame[m_bestShotIndex];
-
-		// ★ ボールが動き始めるフレームまでは何もしない
-		if (m_replayStartFrame < pitchFrame) {
-			return;
-		}
-
-		auto& path = m_currentReplay;
-		if (path.empty()) {
-			m_isReplayPlaying = false;
-			m_cameraMode = Camera_Catcher;
-			GoToResult();
-			return;
-		}
-
-		// ★ 「ボールが動き始めたフレーム」からの相対フレームを index にする
-		int localFrame = m_replayStartFrame - pitchFrame;
-		int index = localFrame;
-
-		if (index >= (int)path.size()) {
-			m_isReplayPlaying = false;
-			m_cameraMode = Camera_Catcher;
-			GoToResult();
-			return;
-		}
-
-		// 軌道再生
-		m_ball->SetPosition(path[index]);
-
-		// ヒットの瞬間（ここは今のままでもOKだが、必要なら frame ベースに揃えてもいい）
-		if (index == m_swingFrame[m_bestShotIndex]) {
-			m_batter->PlaySwingAnimation();
-			m_ball->SetVelocity(m_hitVelocities[m_bestShotIndex]);
-		}
-
 		return;
 	}
+
 	// ★ 録画中は毎フレームカウンタを進める
 	if (m_isRecording) {
 		m_replayFrameCounter++;
@@ -378,7 +378,7 @@ void Game::OnOver100m()
 			}
 
 			// ★ フェードアウト完了 → ここで20倍速にする
-			m_timeScale = 200.0f;
+			m_timeScale = 30.0f;
 
 			if (m_shots == 2) {
 				m_fadeInDelayTimer = -1.0f;
@@ -395,11 +395,19 @@ void Game::OnOver100m()
 
 void Game::StartReplay(int index)
 {
+	m_isRecording = false;
+	if (m_ball) {
+		m_ball->m_isRecording = false;
+	}
+	m_replaySwingTimer = 0.0f;  // ★ スイング用タイマー
+	m_hasPlayedReplaySwing = false;
 	m_replayStartFrame = 0;
 	m_replayFrameCounter = 0;   // ★★★ これが絶対必要 ★★★
 	m_isReplayPlaying = true;
 	m_replayTimer = 0.0f;
-
+	// ▼ 追加：タイマーとアキュムレータの初期化
+	m_replayDelayTimer = 2.5f;  // 1.5秒待機
+	m_replayAccumulator = 0.0f; // アキュムレータ初期化
 	m_cameraMode = Camera_Replay;
 	m_currentReplay = m_replayPaths[index];
 	m_replayPitchFrame = m_pitchFrame[index];  // ← ★追加
@@ -414,6 +422,18 @@ void Game::StartReplay(int index)
 		m_batter->ResetSwing();
 		m_batter->AnimationUpdate();
 	}
+
+	// ★★★ ボールを初期位置に戻して完全同期 ★★★
+	if (m_ball) {
+		m_ball->ResetBall();              // ← 初期位置へ
+		m_ball->SetVelocity(Vector3::Zero); // ← 速度ゼロ
+		m_ball->m_isMove = false;           // ← 動作停止
+		m_ball->m_hasHit = false;           // ← ヒットフラグ解除
+	}
+	// ★ 打った瞬間の位置に戻す
+	m_ball->SetPosition(m_hitStartPos[index]);
+	// ★ 打った瞬間の速度をセット（まだ動かさない）
+	m_ball->SetVelocity(m_hitVelocities[index]);
 
 	if (m_InGameUI) {
 		m_InGameUI->SetReplayVisible(true);

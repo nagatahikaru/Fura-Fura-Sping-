@@ -48,15 +48,14 @@ bool Ball::Start()
 
 void Ball::Update()
 {
-    if (m_isPaused) return;
-
     Game* game = FindGO<Game>("game");
-    if (game && game->m_isHitStop) {
-        return;   // ← ロジック停止
-    }
-    if (game && game->m_isPaused) return;
-    if (!game->IsGameStarted())return;
+    bool isReplay = (game && game->m_isReplayPlaying);
+    if(!isReplay){
 
+    if (m_isPaused) return;
+    if (!game->IsGameStarted()) return;
+    if (game->m_isHitStop) return;
+    if (game->m_isPaused) return;
 
     float dt = (1.0f / 60.0f) * game->GetTimeScale();
 
@@ -70,106 +69,107 @@ void Ball::Update()
         m_throwTimer = 0.0f;
     }
 
-   if (m_isMove)
-{
-    m_velocity.y -= 15.0f * dt;
-
-    //変化球処理
-    if (m_ballType == Curve)
+    if (m_isMove)
     {
-        m_velocity.x -= 5.0f * dt; //左に曲がる
-    }
-    else if (m_ballType == Slider)
-    {
-        m_velocity.x += 5.0f * dt; //右に曲がる
-    }
+        m_velocity.y -= 15.0f * dt;
 
-    m_position += m_velocity * dt;
-
-    // ★ リアルタイム飛距離更新
-   // 着地時の最終距離
-  // ★ リアルタイム飛距離更新（HitBall してから着地まで）
-    if (m_hasHit) {
-
-        float distance = m_hitStartPos.z - m_position.z;
-        if (distance < 0) distance = 0;
-
-        if (game) {
-            game->SetKmValue(distance);
-
-            // ★ 空中で100m超えた瞬間にイベント発火
-            if (!game->m_hasTriggered100m && distance >= 8000.0f) {
-                game->OnOver100m();
-                game->m_hasTriggered100m = true;
-            }
+        //変化球処理
+        if (m_ballType == Curve)
+        {
+            m_velocity.x -= 5.0f * dt; //左に曲がる
         }
-    }
-
-
-
-    // Z>=5500 の固定処理
-    if (!m_hasFixed && m_position.z >= 6000.0f) {
-        if (game) {
-            InGameUI* ui = game->GetInGameUI();
-            if (ui) {
-                ui->FixBallUI(m_position);
-            }
+        else if (m_ballType == Slider)
+        {
+            m_velocity.x += 5.0f * dt; //右に曲がる
         }
-        m_hasFixed = true;
-    }
 
-    // ★ 空振り判定（打撃ゾーンを通過したら次へ）
-    if (!m_hasHit && m_position.z > 9000.0f) {
-        Game* game = FindGO<Game>("game");
-        if (game) {
-            game->SetKmValue(0);   // 空振りは距離0
-            game->OnBallLanded();  // 次の球へ
-        }
-        m_isMove = false;
-        return;
-    }
+        m_position += m_velocity * dt;
 
-
-    // 着地処理
-   // 着地処理
-    if (m_position.y <= 0.0f)
-    {
-        m_position.y = 0.0f;
-
-
-        m_isMove = false;
-
-        Game* game = FindGO<Game>("game");
-
-        float distance = 0.0f;
-
+        // ★ リアルタイム飛距離更新
+       // 着地時の最終距離
+      // ★ リアルタイム飛距離更新（HitBall してから着地まで）
         if (m_hasHit) {
 
-            // ★ Z方向の差分で前後を判定
-            float dz = m_position.z - m_hitStartPos.z;
+            float distance = m_hitStartPos.z - m_position.z;
+            if (distance < 0) distance = 0;
 
-            if (dz < 0) {
-                // 前に飛んだ（通常の飛距離）
-                distance = -dz;   // dz は負なので -dz で正の距離
+            if (game) {
+                game->SetKmValue(distance);
+
+                // ★ 空中で100m超えた瞬間にイベント発火
+                if (!game->m_hasTriggered100m && distance >= 8000.0f) {
+                    game->OnOver100m();
+                    game->m_hasTriggered100m = true;
+                }
             }
-            else {
-                // ★ 後ろに飛んだ（ファール）
-                distance = -dz;   // dz は正 → マイナス距離になる
+        }
+
+
+
+        // Z>=5500 の固定処理
+        if (!m_hasFixed && m_position.z >= 6000.0f) {
+            if (game) {
+                InGameUI* ui = game->GetInGameUI();
+                if (ui) {
+                    ui->FixBallUI(m_position);
+                }
+            }
+            m_hasFixed = true;
+        }
+
+        // ★ 空振り判定（打撃ゾーンを通過したら次へ）
+        if (!m_hasHit && m_position.z > 9000.0f) {
+            Game* game = FindGO<Game>("game");
+            if (game) {
+                game->SetKmValue(0);   // 空振りは距離0
+                game->OnBallLanded();  // 次の球へ
+            }
+            m_isMove = false;
+            return;
+        }
+
+
+        // 着地処理
+       // 着地処理
+        if (m_position.y <= 0.0f)
+        {
+            m_position.y = 0.0f;
+
+
+            m_isMove = false;
+
+            Game* game = FindGO<Game>("game");
+
+            float distance = 0.0f;
+
+            if (m_hasHit) {
+
+                // ★ Z方向の差分で前後を判定
+                float dz = m_position.z - m_hitStartPos.z;
+
+                if (dz < 0) {
+                    // 前に飛んだ（通常の飛距離）
+                    distance = -dz;   // dz は負なので -dz で正の距離
+                }
+                else {
+                    // ★ 後ろに飛んだ（ファール）
+                    distance = -dz;   // dz は正 → マイナス距離になる
+                }
+
+                m_hasHit = false;
             }
 
-            m_hasHit = false;
-        }
+            if (game) {
+                game->SetKmValue(distance);   // ← マイナス距離もそのまま送る
+            }
 
-        if (game) {
-            game->SetKmValue(distance);   // ← マイナス距離もそのまま送る
+            if (game) {
+                game->OnBallLanded();
+            }
         }
-
-        if (game) {
-            game->OnBallLanded();
+        if (m_isRecording) {
+            m_replayPath.push_back(m_position);
         }
-    }
-    if (m_isRecording) {
-        m_replayPath.push_back(m_position);
     }
     SetPosition(m_position);
 
@@ -241,6 +241,7 @@ void Ball::SetPosition(const Vector3& pos)
 {
 	m_position = pos;
 	m_modelRender.SetPosition(m_position);
+
 	m_collisionObject->SetPosition(m_position);
     m_collisionObject->Update();
 }
@@ -271,6 +272,16 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     m_hitStartPos = m_position;
     m_hasHit = true;
     Game* game = FindGO<Game>("game");
+    if (game) {
+        int shot = game->m_shots;
+
+        // ★ 打った瞬間のフレームを保存
+        game->m_hitFrame[shot] = game->GetReplayFrameCount();
+        game->m_hitVelocities[game->m_shots] = m_velocity;     // ← 速度
+        game->m_hitDirections[game->m_shots] = dir;            // ← 方向
+        game->m_hitStartPos[game->m_shots] = m_position;       // ← 位置
+        game->m_hitPower[game->m_shots] = hitPower;            // ← パワー
+    }
     if (game) {
         InGameUI* ui = game->GetInGameUI();
         if (ui) {

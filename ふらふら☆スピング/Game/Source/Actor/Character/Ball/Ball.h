@@ -37,12 +37,13 @@ public:
 	void ResetBall();
 	std::vector<Vector3> m_replayPath;
 	bool m_isRecording = false;
+	bool m_isMove = false;
+	bool m_hasHit = false;
 private:
 	Vector3 m_position;  //ボールの位置
 	Vector3 m_velocity;  //ボールの速度
 	Vector3 m_targetPos; //目標位置
 
-	bool m_isMove = false; 
 	float m_throwTimer = 0.0f;
 	float m_radius = 10.0f;
 	float m_baseScale = 50.0f;
@@ -50,7 +51,7 @@ private:
 	bool m_hasReached5500 = false;
 	bool m_hasFixed = false;
 	Vector3 m_hitStartPos = Vector3::Zero;
-	bool m_hasHit = false;
+	
 	CollisionObject* m_collisionObject = nullptr; // 衝突オブジェクト
 	bool m_isFlying = false;     // ★ 飛行中フラグ
 	bool m_hasLanded = false;    // ★ 着地フラグ
