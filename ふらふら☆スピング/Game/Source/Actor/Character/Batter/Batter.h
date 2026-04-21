@@ -275,6 +275,9 @@ public:
 		return m_characterModel.get();
 	}
 	void PlaySwingAnimation();
+	void ResetSwing();
+	void SetCursorMode(bool flag);
+	void ResetCursorPosition();
 	bool m_isPaused;
 private:
 
@@ -317,5 +320,7 @@ private:
 	float m_hitDelayTimer = 0.0f;
 	Vector3 m_reservedHitDir = Vector3::Zero;
 	float m_reservedHitPower = 0.0f;
+	Transform m_transform;            // TransformÇÃå^Ç…çáÇÌÇπÇƒÇ≠ÇæÇ≥Ç¢
+	std::unique_ptr<nsApp::CharacterModel> m_characterModel;
 };
 
