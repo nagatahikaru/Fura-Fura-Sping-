@@ -79,8 +79,11 @@
     <Filter Include="Source\UI\LoadUI">
       <UniqueIdentifier>{05823ccc-be60-4054-a628-d80c0ee9bc78}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Scene\InGame\Load">
+    <Filter Include="Source\Scene\Load">
       <UniqueIdentifier>{634ffc6e-648f-41ad-af12-19768848e951}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene\Ranking">
+      <UniqueIdentifier>{eb546d2f-3a41-406f-b0cb-5c445625805c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -156,7 +159,7 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Load\Load.cpp">
-      <Filter>Source\Scene\InGame\Load</Filter>
+      <Filter>Source\Scene\Load</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Result\Result.cpp">
       <Filter>Source\Scene\Result</Filter>
@@ -181,6 +184,9 @@
     </ClCompile>
     <ClCompile Include="Source\Effect\EffectManager.cpp">
       <Filter>Source\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Ranking\Ranking.cpp">
+      <Filter>Source\Scene\Ranking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -259,7 +265,7 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\Load\Load.h">
-      <Filter>Source\Scene\InGame\Load</Filter>
+      <Filter>Source\Scene\Load</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\Result\Result.h">
       <Filter>Source\Scene\Result</Filter>
@@ -284,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="Source\Effect\EffectManager.h">
       <Filter>Source\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Ranking\Ranking.h">
+      <Filter>Source\Scene\Ranking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

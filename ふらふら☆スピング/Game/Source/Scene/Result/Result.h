@@ -32,5 +32,8 @@ private:
 	FontRender m_fontThreeShots[3];
 	FontRender m_fontThreeShotsValue[3];
 	SpriteRender m_burakku;
+	SpriteRender m_skip;
+	SpriteRender m_rezarut;
+	bool m_isSkipped = false;   // Aでスキップしたかどうか
 };
 

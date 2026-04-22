@@ -241,7 +241,12 @@ void Game::Update()
 
 			return; // ← ボールはまだ動かさない
 		}
-
+		// ★★★ 遅延が終わった瞬間にボールを打った瞬間の位置へ戻す ★★★
+		if (!m_hasAppliedHitMoment) {
+			m_ball->SetPosition(m_hitStartPos[m_bestShotIndex]);
+			m_ball->SetVelocity(m_hitVelocities[m_bestShotIndex]);
+			m_hasAppliedHitMoment = true;
+		}
 		// ▼ 遅延が終わったのでボール再生開始
 		auto& path = m_currentReplay;
 		int index = m_replayStartFrame;
@@ -423,6 +428,7 @@ void Game::StartReplay(int index)
 	m_replayFrameCounter = 0;   // ★★★ これが絶対必要 ★★★
 	m_isReplayPlaying = true;
 	m_replayTimer = 0.0f;
+	m_hasAppliedHitMoment = false;
 	// ▼ 追加：タイマーとアキュムレータの初期化
 	m_replayDelayTimer = 1.2f;  // 1.5秒待機
 	m_replayAccumulator = 0.0f; // アキュムレータ初期化
@@ -448,10 +454,7 @@ void Game::StartReplay(int index)
 		m_ball->m_isMove = false;           // ← 動作停止
 		m_ball->m_hasHit = false;           // ← ヒットフラグ解除
 	}
-	// ★ 打った瞬間の位置に戻す
-	m_ball->SetPosition(m_hitStartPos[index]);
-	// ★ 打った瞬間の速度をセット（まだ動かさない）
-	m_ball->SetVelocity(m_hitVelocities[index]);
+	
 
 	if (m_InGameUI) {
 		m_InGameUI->SetReplayVisible(true);

@@ -534,11 +534,11 @@ void Batter::HitBat()
 		}
 		// ★ 真ん中（10〜30度）→ パワー増加
 		else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
-			powerScale = 1.2f;   // ← 好きな倍率に調整
+			powerScale = 1.0f;   // ← 好きな倍率に調整
 		}
 		// ゴロ（角度が低すぎる）は少し弱くしてもOK
-		else if (angleDeg < 5.0f) {
-			powerScale = 1.0f;   // ゴロ → 少し弱く
+		else if (angleDeg < 0.0f) {
+			powerScale = 0.8f;   // ゴロ → 少し弱く
 		}
 
 		// 最終パワー

@@ -18,6 +18,9 @@ bool TiterUI::Start()
 
     m_option.Init("Assets/sprite/Soundtest2.dds", 250.0f, 150.0f);
     m_option.SetPosition({ 0.0f, -450.0f, 0.0f });
+
+    m_Title.Init("Assets/sprite/hurahura.dds", 1200.0f, 800.0f);
+    m_Title.SetPosition({ 0.0f, 300.0f, 0.0f });
     return true;
 }
 
@@ -65,4 +68,6 @@ void TiterUI::Render(RenderContext& rc)
     m_start.Draw(rc);
     m_option.Update();
     m_option.Draw(rc);
+    m_Title.Update();
+    m_Title.Draw(rc);
 }
