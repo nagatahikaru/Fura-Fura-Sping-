@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Ranking.h"
 #include"Source/UI/RankingUI/RankingUI.h"
 #include"Source/Scene/Titer/Titer.h"
@@ -10,12 +10,12 @@ bool Ranking::Start() {
     m_sukoa.Init("Assets/sprite/sukoa.DDS", 420.0f, 300.0f);
     m_mairu.Init("Assets/sprite/mairu.DDS", 420.0f, 300.0f);
     for (int i = 0; i < 5; i++) {
-        m_fontsScore[i].SetPivot(0.0f, 0.5f); // ¶Šñ‚¹
+        m_fontsScore[i].SetPivot(0.0f, 0.5f); // å·¦å¯„ã›
     }
     for (int i = 0; i < 5; i++) {
-       m_fontsMeter[i].SetPivot(0.0f, 0.5f); // ¶Šñ‚¹
+       m_fontsMeter[i].SetPivot(0.0f, 0.5f); // å·¦å¯„ã›
     }
-    // UI ‚ğ’Ç‰Á
+    // UI ã‚’è¿½åŠ 
     m_rankingUI= NewGO<RankingUI>(0);
     Load();
     return true;
@@ -27,7 +27,7 @@ void Ranking::Load() {
 
     std::ifstream ifs("ranking.dat");
     if (!ifs) {
-        // ƒtƒ@ƒCƒ‹‚ª–³‚¢ê‡‚Í‘S•” 0 ‚Å‰Šú‰»
+        // ãƒ•ã‚¡ã‚¤ãƒ«ãŒç„¡ã„å ´åˆã¯å…¨éƒ¨ 0 ã§åˆæœŸåŒ–
         m_scoresScore.assign(5, 0);
         m_scoresMeter.assign(5, 0);
         Save();
@@ -36,55 +36,81 @@ void Ranking::Load() {
 
     int s;
 
-    // ƒXƒRƒA•”–åi5ŒÂj
+    // ã‚¹ã‚³ã‚¢éƒ¨é–€ï¼ˆ5å€‹ï¼‰
     for (int i = 0; i < 5; i++) {
         if (ifs >> s) m_scoresScore.push_back(s);
         else m_scoresScore.push_back(0);
     }
 
-    // ƒ[ƒgƒ‹•”–åi5ŒÂj
+    // ãƒ¡ãƒ¼ãƒˆãƒ«éƒ¨é–€ï¼ˆ5å€‹ï¼‰
     for (int i = 0; i < 5; i++) {
         if (ifs >> s) m_scoresMeter.push_back(s);
         else m_scoresMeter.push_back(0);
     }
-    // š í‚É10ŒÂ‚Ìó‘Ô‚Å•Û‘¶‚µ’¼‚·
+
+    // ãã‚‹ãã‚‹éƒ¨é–€ï¼ˆ5å€‹ï¼‰
+    for (int i = 0; i < 5; i++) {
+        if (ifs >> s) m_scoresGuruguru.push_back(s);
+        else m_scoresGuruguru.push_back(0);
+    }
+
+    // â˜… å¸¸ã«10å€‹ã®çŠ¶æ…‹ã§ä¿å­˜ã—ç›´ã™
     Save();
 }
 
 void Ranking::Save() {
     std::ofstream ofs("ranking.dat");
-    // ƒXƒRƒA•”–å
+    // ã‚¹ã‚³ã‚¢éƒ¨é–€
     for (int s : m_scoresScore) ofs << s << "\n";
 
-    // ƒ[ƒgƒ‹•”–å
+    // ãƒ¡ãƒ¼ãƒˆãƒ«éƒ¨é–€
     for (int s : m_scoresMeter) ofs << s << "\n";
+
+    // ãã‚‹ãã‚‹éƒ¨é–€
+    for (int s : m_scoresGuruguru) ofs << s << "\n";
 }
 
 void Ranking::Update() { 
-    // ¥ Bƒ{ƒ^ƒ“‚Åƒ^ƒCƒgƒ‹‚Ö–ß‚é
+    // â–¼ Bãƒœã‚¿ãƒ³ã§ã‚¿ã‚¤ãƒˆãƒ«ã¸æˆ»ã‚‹
     if (g_pad[0]->IsTrigger(enButtonB)) {
-        // š RankingUI ‚àíœ
+        // â˜… RankingUI ã‚‚å‰Šé™¤
         if (m_rankingUI) {
             DeleteGO(m_rankingUI);
             m_rankingUI = nullptr;
         }
-        NewGO<Titer>(0);   // ƒ^ƒCƒgƒ‹‚Ö
-        DeleteGO(this);    // ƒ‰ƒ“ƒLƒ“ƒOUIíœ
+        NewGO<Titer>(0);   // ã‚¿ã‚¤ãƒˆãƒ«ã¸
+        DeleteGO(this);    // ãƒ©ãƒ³ã‚­ãƒ³ã‚°UIå‰Šé™¤
     }
 }
 
-void Ranking::AddScore(int scoreKm, int scoreMeter) {
-    // ƒXƒRƒA•”–å
-    m_scoresScore.push_back(scoreKm);
-    std::sort(m_scoresScore.begin(), m_scoresScore.end(), std::greater<int>());
-    if (m_scoresScore.size() > 5) m_scoresScore.resize(5);
+void Ranking::AddScore(int scoreKm, int scoreMeter, int guruguru) {
 
-    // ƒ[ƒgƒ‹•”–å
+    // ã‚¹ã‚³ã‚¢éƒ¨é–€
+    m_scoresScore.push_back(scoreKm);
+    m_scoresGuruguru.push_back(guruguru);
+
+    // â˜… ã‚¹ã‚³ã‚¢ã¨ãã‚‹ãã‚‹ã‚’ã‚»ãƒƒãƒˆã§ã‚½ãƒ¼ãƒˆ
+    std::vector<std::pair<int, int>> scorePairs;
+    for (int i = 0; i < m_scoresScore.size(); i++) {
+        scorePairs.push_back({ m_scoresScore[i], m_scoresGuruguru[i] });
+    }
+
+    std::sort(scorePairs.begin(), scorePairs.end(),
+        [](auto& a, auto& b) { return a.first > b.first; });
+
+    // ä¸Šä½5ä»¶ã«æˆ»ã™
+    m_scoresScore.clear();
+    m_scoresGuruguru.clear();
+    for (int i = 0; i < 5; i++) {
+        m_scoresScore.push_back(scorePairs[i].first);
+        m_scoresGuruguru.push_back(scorePairs[i].second);
+    }
+
+    // ãƒ¡ãƒ¼ãƒˆãƒ«éƒ¨é–€
     m_scoresMeter.push_back(scoreMeter);
     std::sort(m_scoresMeter.begin(), m_scoresMeter.end(), std::greater<int>());
     if (m_scoresMeter.size() > 5) m_scoresMeter.resize(5);
 
-    // •Û‘¶
     Save();
 }
 
@@ -99,22 +125,54 @@ void Ranking::Render(RenderContext& rc) {
     wchar_t buf[256];
     int count = (int)m_scoresScore.size();
     if (count > 5) count = 5;
-    // ƒXƒRƒA•”–å
+    // ã‚¹ã‚³ã‚¢éƒ¨é–€
     for (int i = 0; i < 5; i++) {
-        swprintf_s(buf, L"ˆÊ:%.2f", m_scoresScore[i] / 100.0); // ƒXƒRƒA‚Ì‚İ•\¦
+        swprintf_s(buf, L"ä½:%.2f", m_scoresScore[i] / 100.0); // ã‚¹ã‚³ã‚¢ã®ã¿è¡¨ç¤º
         m_fontsScore[i].SetText(buf);
         m_fontsScore[i].SetPosition(-500, 100 - i * 90, 0);
-        m_fontsScore[i].SetColor(0, 0, 0, 1);  // © ”’
+        m_fontsScore[i].SetColor(0, 0, 0, 1);  // â† ç™½
         m_fontsScore[i].SetScale(1.3f);
         m_fontsScore[i].Draw(rc);
+        // â˜… ã“ã®ã‚¹ã‚³ã‚¢ãŒä½•å›ãã‚‹ãã‚‹ã—ãŸã‹
+        int c = m_scoresGuruguru[i];
+        float r2, g2, b2;
+
+        // 0ã€œ9ï¼šé»’
+        if (c < 10) {
+            r2 = 0.0f; g2 = 0.0f; b2 = 0.0f;
+        }
+        // 10ã€œ14ï¼šé’
+        else if (c < 15) {
+            r2 = 0.0f; g2 = 0.0f; b2 = 1.0f;
+        }
+        // 15ã€œ19ï¼šé»„ç·‘
+        else if (c < 20) {
+            r2 = 0.0f; g2 = 1.0f; b2 = 0.0f;
+        }
+        // 20ã€œ24ï¼šã‚ªãƒ¬ãƒ³ã‚¸
+        else if (c < 25) {
+            r2 = 1.0f; g2 = 0.5f; b2 = 0.0f;
+        }
+        // 25ä»¥ä¸Šï¼šèµ¤
+        else {
+            r2 = 1.0f; g2 = 0.0f; b2 = 0.0f;
+        }
+        // â˜… ã“ã®ã‚¹ã‚³ã‚¢ãŒä½•å›ãã‚‹ãã‚‹ã—ãŸã‹
+        wchar_t bufG[64];
+        swprintf_s(bufG, L"(%då›)", m_scoresGuruguru[i]);
+        m_fontsGuruguru[i].SetText(bufG);
+        m_fontsGuruguru[i].SetPosition(-220, 100 - i * 90, 0);
+        m_fontsGuruguru[i].SetScale(1.2f);
+        m_fontsGuruguru[i].SetColor(r2, g2, b2, 1.0f);
+        m_fontsGuruguru[i].Draw(rc);
     }
 
-    // ƒ[ƒgƒ‹•”–å
+    // ãƒ¡ãƒ¼ãƒˆãƒ«éƒ¨é–€
     for (int i = 0; i < 5; i++) {
-        swprintf_s(buf, L"ˆÊ:%.2f m", m_scoresMeter[i] / 100.0);
+        swprintf_s(buf, L"ä½:%.2f m", m_scoresMeter[i] / 100.0);
         m_fontsMeter[i].SetText(buf);
         m_fontsMeter[i].SetPosition(200, 100 - i * 90, 0);
-        m_fontsMeter[i].SetColor(0, 0, 0, 1);  // © ”’
+        m_fontsMeter[i].SetColor(0, 0, 0, 1);  // â† ç™½
         m_fontsMeter[i].SetScale(1.3f);
         m_fontsMeter[i].Draw(rc);
     }

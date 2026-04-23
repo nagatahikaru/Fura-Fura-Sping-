@@ -158,26 +158,6 @@ void Batter::Update()
 	}
 	// ★ 遅延ヒット処理
 	// ★ 遅延ヒット処理
-	if (m_isHitReserved) {
-		m_hitDelayTimer -= g_gameTime->GetFrameDeltaTime();
-
-		if (m_hitDelayTimer <= 0.0f) {
-
-			// ★ 実際にボールを飛ばす
-			m_ball->HitBall(m_reservedHitDir, m_reservedHitPower);
-
-			// ★★★ カメラ切り替えをここで行う ★★★
-			if (m_game) {
-				m_game->SetCameraMode(Camera_BackBall);
-
-				GameCamera* cam = m_game->GetGameCamera();
-				if (cam) cam->StartHitMomentCamera();
-			}
-
-			m_isHitReserved = false;
-		}
-	}
-
 	m_stateMachine->Update();
 
 
@@ -473,6 +453,7 @@ void Batter::DebuffDepth() {
 /** Hit計算関連コード */
 void Batter::HitBat()
 {
+	if (m_ball->m_hasHit) return;
 	// ★ リプレイ中は絶対に打撃処理しない
 	if (m_game && m_game->IsReplayPlaying()) {
 		return;
@@ -509,9 +490,8 @@ void Batter::HitBat()
 			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
 		}
 
-		// ★ ヒットストップ開始
-		if (m_game) {
-			m_game->m_hitStopTimer = 0.02f;   // ← 0.08秒停止（調整OK）
+		if (m_game && !m_game->m_isHitStop) {
+			m_game->m_hitStopTimer = 0.08f;
 		}
 
 		hitDir.y += 21.0f;
@@ -544,18 +524,6 @@ void Batter::HitBat()
 		// 最終パワー
 		float finalPower = 935.0f * powerScale;
 
-
-		// ★★★ ジャストタイミング判定 ★★★
-		bool isJustTiming = (dist < 50.0f);  // ← 調整ポイント
-
-		if (isJustTiming) {
-			// ★ 遅延ヒット予約（1秒後）
-			m_isHitReserved = true;
-			m_hitDelayTimer = 0.05f;
-			m_reservedHitDir = hitDir;
-			m_reservedHitPower = finalPower;
-		}
-		else {
 			// ★ 通常ヒット（即飛ぶ）
 			m_ball->HitBall(hitDir,+finalPower);
 			// ★ カメラ切り替え
@@ -565,7 +533,6 @@ void Batter::HitBat()
 				GameCamera* cam = m_game->GetGameCamera();
 				if (cam) cam->StartHitMomentCamera();
 			}
-		}
 
 		// UI・SE・カメラなどは共通でOK
 		if (m_inGameUI) {

@@ -127,7 +127,7 @@ void Result::Update()
 		// ★ スコア確定後にランキングへ保存
 		Ranking* ranking = NewGO<Ranking>(0, "ranking");
 		ranking->Load();
-		ranking->AddScore(m_km,m_originalKm);   // ← 倍率後スコアを保存
+		ranking->AddScore(m_km,m_originalKm,m_guruguru);   // ← 倍率後スコアを保存
 		DeleteGO(ranking);
 
 		NewGO<Titer>(0);

@@ -61,9 +61,6 @@
     <Filter Include="Source\UI\TiterUI">
       <UniqueIdentifier>{3c027f7f-e78e-4392-bb52-5102aae0aa37}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Scene\Result">
-      <UniqueIdentifier>{635b93d5-e1e7-410d-bedc-b2e6f16cbdb3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Scene\SoundTest">
       <UniqueIdentifier>{b0696d4c-9c3b-40cd-b09b-0803d53e7fd5}</UniqueIdentifier>
     </Filter>
@@ -87,6 +84,9 @@
     </Filter>
     <Filter Include="Source\UI\RankingUI">
       <UniqueIdentifier>{ab216fc7-73d0-4c44-9716-809649acda79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene\Result">
+      <UniqueIdentifier>{635b93d5-e1e7-410d-bedc-b2e6f16cbdb3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
