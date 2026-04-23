@@ -24,7 +24,7 @@ bool Ranking::Start() {
 void Ranking::Load() {
     m_scoresScore.clear();
     m_scoresMeter.clear();
-
+    m_scoresGuruguru.clear();
     std::ifstream ifs("ranking.dat");
     if (!ifs) {
         // ファイルが無い場合は全部 0 で初期化
