@@ -296,7 +296,7 @@ private:
 	bool m_isAnimation = false; // animationの再生状態を保持するフラグ
 	InGameUI* m_inGameUI; // インゲームUIへのポインタ
 	Vector3 m_meetPosition; // ミートカーソルの位置を保持する変数
-	bool m_isRotation = true; // 回転アニメーションの再生状態を保持するフラグ
+	bool m_isRotation = true; // 回転状態を保持するフラグ
 	Ball* m_ball; // ボールへのポインタ
 	bool m_isCursorMode = true;
 	Vector3 m_meetCursorWorldPos;
