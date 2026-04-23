@@ -2,6 +2,7 @@
 #include "Result.h"
 #include"Source/Scene/Titer/Titer.h"
 #include"Source/Sound/SoundManager.h"
+#include"Source/Scene/Ranking/Ranking.h"
 
 bool Result::Start()
 {
@@ -122,6 +123,12 @@ void Result::Update()
 			DeleteGO(se2);
 			g_soundManager->ClearSE2();
 		}
+
+		// ★ スコア確定後にランキングへ保存
+		Ranking* ranking = NewGO<Ranking>(0, "ranking");
+		ranking->Load();
+		ranking->AddScore(m_km,m_originalKm);   // ← 倍率後スコアを保存
+		DeleteGO(ranking);
 
 		NewGO<Titer>(0);
 		DeleteGO(this);

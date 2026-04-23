@@ -49,6 +49,7 @@ bool Ball::Start()
 void Ball::Update()
 {
     Game* game = FindGO<Game>("game");
+    if (!game) return;  // ← 最重要
     bool isReplay = (game && game->m_isReplayPlaying);
     if(!isReplay){
 

@@ -85,6 +85,9 @@
     <Filter Include="Source\Scene\Ranking">
       <UniqueIdentifier>{eb546d2f-3a41-406f-b0cb-5c445625805c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\UI\RankingUI">
+      <UniqueIdentifier>{ab216fc7-73d0-4c44-9716-809649acda79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -187,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="Source\Scene\Ranking\Ranking.cpp">
       <Filter>Source\Scene\Ranking</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\RankingUI\RankingUI.cpp">
+      <Filter>Source\UI\RankingUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -293,6 +299,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene\Ranking\Ranking.h">
       <Filter>Source\Scene\Ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\RankingUI\RankingUI.h">
+      <Filter>Source\UI\RankingUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

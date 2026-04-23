@@ -10,6 +10,9 @@ namespace nsK2Engine {
 	{
 	public:
 		static const int MAX_TEXT_SIZE = 256;
+		FontRender() {
+			m_text[0] = L'\0';   // š ‹ó•¶š‚Å‰Šú‰»
+		}
 		~FontRender()
 		{
 

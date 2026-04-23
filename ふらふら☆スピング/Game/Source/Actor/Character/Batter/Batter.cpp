@@ -505,6 +505,15 @@ void Batter::HitBat()
 			hitDir.z = -100.0f;
 		}
 
+		if (m_inGameUI) {
+			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
+		}
+
+		// ★ ヒットストップ開始
+		if (m_game) {
+			m_game->m_hitStopTimer = 0.02f;   // ← 0.08秒停止（調整OK）
+		}
+
 		hitDir.y += 21.0f;
 		hitDir.Normalize();
 		// 角度（打ち上げ角）を計算
@@ -537,12 +546,12 @@ void Batter::HitBat()
 
 
 		// ★★★ ジャストタイミング判定 ★★★
-		bool isJustTiming = (dist < 20.0f);  // ← 調整ポイント
+		bool isJustTiming = (dist < 50.0f);  // ← 調整ポイント
 
 		if (isJustTiming) {
 			// ★ 遅延ヒット予約（1秒後）
 			m_isHitReserved = true;
-			m_hitDelayTimer = 0.3f;
+			m_hitDelayTimer = 0.05f;
 			m_reservedHitDir = hitDir;
 			m_reservedHitPower = finalPower;
 		}

@@ -106,16 +106,19 @@ void Game::Update()
 
 	// ★ ヒットストップ処理（ゲーム全体を一瞬停止）
 	if (m_hitStopTimer > 0.0f) {
+		m_isHitStop = true;   // ← これが絶対必要！
 		m_hitStopTimer -= g_gameTime->GetFrameDeltaTime();
 
 		// アニメーションだけは進めたい場合はここに AnimationUpdate() を書く
-		if (m_batter)  m_batter->AnimationUpdate();
-		if (m_pitcher) m_pitcher->AnimationUpdate();
-		if (m_catcher) m_catcher->AnimationUpdate();
+		/*if (m_batter)  m_batter->AnimationUpdate();
+		if (m_pitcher) m_pitcher->AnimationUpdate();*/
+		//if (m_catcher) m_catcher->AnimationUpdate();
 
 		return; // ★ これでゲーム全体が停止する
 	}
-
+	else {
+		m_isHitStop = false;  // ← 終わったら解除
+	}
 	// ★ Aボタン押しっぱなしで2倍速
 	// ★ 打った後だけ倍速ボタンを有効化
 // ★ Aボタン押しっぱなしで2倍速（100m演出中は触らない）
