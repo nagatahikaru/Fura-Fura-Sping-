@@ -93,7 +93,7 @@ void Ranking::Render(RenderContext& rc) {
     m_sukoa.SetPosition({ -350, 160, 0 });
     m_sukoa.Update();
     m_sukoa.Draw(rc);
-    m_mairu.SetPosition({ 370, 160, 0 });
+    m_mairu.SetPosition({ 350, 160, 0 });
     m_mairu.Update();
     m_mairu.Draw(rc);
     wchar_t buf[256];
@@ -101,7 +101,7 @@ void Ranking::Render(RenderContext& rc) {
     if (count > 5) count = 5;
     // スコア部門
     for (int i = 0; i < 5; i++) {
-        swprintf_s(buf, L"位 : %.2f ", i + 1, m_scoresScore[i] / 100.0);
+        swprintf_s(buf, L"位:%.2f", m_scoresScore[i] / 100.0); // スコアのみ表示
         m_fontsScore[i].SetText(buf);
         m_fontsScore[i].SetPosition(-500, 100 - i * 90, 0);
         m_fontsScore[i].SetColor(0, 0, 0, 1);  // ← 白
@@ -111,7 +111,7 @@ void Ranking::Render(RenderContext& rc) {
 
     // メートル部門
     for (int i = 0; i < 5; i++) {
-        swprintf_s(buf, L"位 : %.2f m", i + 1, m_scoresMeter[i] / 100.0);
+        swprintf_s(buf, L"位:%.2f m", m_scoresMeter[i] / 100.0);
         m_fontsMeter[i].SetText(buf);
         m_fontsMeter[i].SetPosition(200, 100 - i * 90, 0);
         m_fontsMeter[i].SetColor(0, 0, 0, 1);  // ← 白
