@@ -83,9 +83,17 @@ void Ranking::Update() {
     }
 }
 
-void Ranking::AddScore(int scoreKm, int scoreMeter, int guruguru) {
+bool Ranking::AddScore(int scoreKm, int scoreMeter, int guruguru) {
+    // ★ 更新前の1位
+    int oldBest = m_scoresScore.empty() ? -1 : m_scoresScore[0];
 
     // スコア部門
+    // ★ まず全ての配列を5個に揃える（不足分は0で埋める）
+    while (m_scoresScore.size() < 5) m_scoresScore.push_back(0);
+    while (m_scoresMeter.size() < 5) m_scoresMeter.push_back(0);
+    while (m_scoresGuruguru.size() < 5) m_scoresGuruguru.push_back(0);
+
+    // ★ 新しいスコアを追加
     m_scoresScore.push_back(scoreKm);
     m_scoresGuruguru.push_back(guruguru);
 
@@ -106,12 +114,20 @@ void Ranking::AddScore(int scoreKm, int scoreMeter, int guruguru) {
         m_scoresGuruguru.push_back(scorePairs[i].second);
     }
 
+    // ★ 更新後の1位
+    int newBest = m_scoresScore[0];
+
+    // ★ 1位更新したか？
+    bool isNewRecord = (scoreKm == newBest && newBest > oldBest);
+
     // メートル部門
     m_scoresMeter.push_back(scoreMeter);
     std::sort(m_scoresMeter.begin(), m_scoresMeter.end(), std::greater<int>());
     if (m_scoresMeter.size() > 5) m_scoresMeter.resize(5);
 
     Save();
+
+    return isNewRecord;     
 }
 
 void Ranking::Render(RenderContext& rc) {
