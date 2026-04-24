@@ -12,6 +12,11 @@ bool RankingUI::Start() {
 	m_33.Init("Assets/sprite/3sd.DDS", 150.0f, 150.0f);
 	m_44.Init("Assets/sprite/4.DDS", 150.0f, 150.0f);
 	m_55.Init("Assets/sprite/5.DDS", 150.0f, 150.0f);
+	m_B.Init("Assets/sprite/Bback.dds", 220.0f, 170.0f);
+	m_B.SetPosition({ 830.0f, -400.0f, 0.0f });
+
+	m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
+	m_grobu.SetPosition({ 830.0f, -400.0f, 0.0f });
 	return true;
 }
 void RankingUI::Update() {
@@ -48,4 +53,8 @@ void RankingUI::Render(RenderContext& rc) {
 	m_55.SetPosition({ 180,-290,0 });
 	m_55.Update();
 	m_55.Draw(rc);
+	m_grobu.Update();
+	m_grobu.Draw(rc);
+	m_B.Update();
+	m_B.Draw(rc);
 }

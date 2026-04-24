@@ -20,4 +20,6 @@ private:
 	SpriteRender m_33;
 	SpriteRender m_44;
 	SpriteRender m_55;
+	SpriteRender m_B;
+	SpriteRender m_grobu;
 };
