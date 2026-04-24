@@ -5,6 +5,7 @@ EffectManager* g_effectManager = nullptr;
 
 EffectManager::EffectManager()
 {
+	//エフェクトの登録。
 	for (int i = 0; i < enEffect_Num; i++)
 	{
 		std::u16string path =
@@ -14,6 +15,13 @@ EffectManager::EffectManager()
 	}
 }
 
+/// <summary>
+/// エフェクトの再生。
+/// </summary>
+/// <param name="type">再生したいエフェクトの種類。</param>
+/// <param name="pos">エフェクトの位置。</param>
+/// <param name="rot">エフェクトの回転。</param>
+/// <param name="scale">エフェクトのスケール。</param>
 void EffectManager::SetEffect(
 	EffectType type,
 	const Vector3& pos,
@@ -29,19 +37,9 @@ void EffectManager::SetEffect(
 	m_effectEmitter = effectEmitter;
 }
 
-//void EffectManager::PlayEffect(
-//	EffectType type,
-//	const Vector3& pos,
-//	const Quaternion& rot,
-//	const Vector3& scale)
-//{
-//	m_effectEmitter->Init(type);
-//	m_effectEmitter->SetPosition(pos);
-//	m_effectEmitter->SetRotation(rot);
-//	m_effectEmitter->SetScale(scale);
-//	m_effectEmitter->Play();		
-//}
-
+// <summary>
+// エフェクトの停止。
+// </summary>
 void EffectManager::StopEffect()
 {
 	if (m_effectEmitter == nullptr)return;
