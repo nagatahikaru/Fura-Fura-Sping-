@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Source/Actor/Character/Character.h"
 
 class Ball :public Character
@@ -45,7 +45,6 @@ private:
 	Vector3 m_targetPos; //目標位置
 
 	int m_curveDir = 0;
-
 	float m_throwTimer = 0.0f;
 	float m_radius = 10.0f;
 	float m_baseScale = 50.0f;

@@ -20,9 +20,9 @@ bool Ball::Start()
 {
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-	m_modelRender.SetScale({ 3.0f,3.0f,3.0f });
+	m_modelRender.SetScale({ 9.0f,9.0f,9.0f });
 
-	m_position = { -0.0f, 800.0f, 1000.0f };
+	m_position = { -0.0f, 1100.0f, 900.0f };
 	m_modelRender.SetPosition(m_position);
 
     
@@ -73,7 +73,7 @@ void Ball::Update()
 
    if (m_isMove)
 {
-    m_velocity.y -= 12.5f * dt;
+    m_velocity.y -= 10.5f * dt;
 
     //変化球処理
     if (m_curveDir)
@@ -89,11 +89,11 @@ void Ball::Update()
         //変化球処理
         if (m_ballType == Curve)
         {
-            m_velocity.x -= 5.0f * dt; //左に曲がる
+            m_velocity.x -= 3.0f * dt; //左に曲がる
         }
         else if (m_ballType == Slider)
         {
-            m_velocity.x += 5.0f * dt; //右に曲がる
+            m_velocity.x += 3.0f * dt; //右に曲がる
         }
 
         m_position += m_velocity * dt;
@@ -187,7 +187,7 @@ void Ball::Update()
     SetPosition(m_position);
 
     //距離に応じてスケール変更
-    float minZ = 1000.0f;
+    float minZ = 500.0f;
     float maxZ = 9500.0f;
 
     float t = (m_position.z - minZ) / (maxZ - minZ);
@@ -195,7 +195,7 @@ void Ball::Update()
     if (t < 0.0f) t = 0.0f;
     if (t > 1.0f) t = 1.0f;
 
-    float scale = 3.0f * (1.0f - t * 0.8f);
+    float scale = 4.0f * (1.0f - t * 0.8f);
 
     //最小サイズ制限（消え防止）
     if (scale < 2.0f) scale = 2.0f;
@@ -218,18 +218,21 @@ void Ball::Update()
 
 void Ball::Throw(const Vector3& targetPos)
 {
+    
+
+
     Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
 
 
-    float speed = 1800.0f + (rand() % 350);
+    float speed =1500.0f + (rand() % 350);
 
     int r = rand() % 100;
 
 
-    if (r < 60)
+    if (r < 70)
     {
-        //60%の確率でストレート
+        //70%の確率でストレート
         m_curveDir = 0;
     }
     else
@@ -242,7 +245,7 @@ void Ball::Throw(const Vector3& targetPos)
 
     if (m_curveDir != 0)
     {
-        speed *= 0.8f;  // 変化球は少し遅く
+        speed *= 0.6f;  // 変化球は少し遅く
     }
 
     m_velocity = dir * speed;
