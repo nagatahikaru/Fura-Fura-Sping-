@@ -68,7 +68,7 @@ Batter::~Batter()
 bool Batter::Start()
 {
 	//forループでまとめる
-//アニメーションクリップの読み込み
+	//アニメーションクリップの読み込み
 	for (int j = enAnimationClip_Idle; j < enAnimationClip_Swing; j++)
 	{
 		InitAnimation(m_animationClips, j, true);
@@ -190,9 +190,7 @@ void Batter::Update()
 
 /** ぐるぐるバット関連コード */
 
-/**
-* 回転計算処理関数
-*/
+/** 回転計算処理関数 */
 void Batter::Rotation()
 {
 	//キーボード操作
@@ -277,9 +275,7 @@ void Batter::RoundAndRoundBat()
 	}
 }
 
-/**
-* ぐるぐるカウントup処理
-*/
+/** ぐるぐるカウントup処理 */
 void Batter::GuruGuruCountUP(float currentAngle)
 {
 	float delta = currentAngle - m_prevAngle;
@@ -312,9 +308,7 @@ void Batter::GuruGuruCountUP(float currentAngle)
 	}
 }
 
-/**
-* モデルの回転処理
-*/
+/** モデルの回転処理 */
 void Batter::RotationUpdate()
 {
 	//回転処理の更新
