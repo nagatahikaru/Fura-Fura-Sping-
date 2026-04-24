@@ -25,36 +25,42 @@ void Ranking::Load() {
     m_scoresScore.clear();
     m_scoresMeter.clear();
     m_scoresGuruguru.clear();
+
     std::ifstream ifs("ranking.dat");
     if (!ifs) {
-        // ファイルが無い場合は全部 0 で初期化
+        // ファイルが無い → 全部0で初期化
         m_scoresScore.assign(5, 0);
         m_scoresMeter.assign(5, 0);
+        m_scoresGuruguru.assign(5, 0);
         Save();
         return;
     }
 
     int s;
 
-    // スコア部門（5個）
+    // スコア部門
     for (int i = 0; i < 5; i++) {
         if (ifs >> s) m_scoresScore.push_back(s);
         else m_scoresScore.push_back(0);
     }
 
-    // メートル部門（5個）
+    // メートル部門
     for (int i = 0; i < 5; i++) {
         if (ifs >> s) m_scoresMeter.push_back(s);
         else m_scoresMeter.push_back(0);
     }
 
-    // ぐるぐる部門（5個）
+    // ぐるぐる部門
     for (int i = 0; i < 5; i++) {
         if (ifs >> s) m_scoresGuruguru.push_back(s);
         else m_scoresGuruguru.push_back(0);
     }
 
-    // ★ 常に10個の状態で保存し直す
+    // ★★★ ここが重要！必ず 5 個に揃える（壊れたファイル対策）★★★
+    while (m_scoresScore.size() < 5) m_scoresScore.push_back(0);
+    while (m_scoresMeter.size() < 5) m_scoresMeter.push_back(0);
+    while (m_scoresGuruguru.size() < 5) m_scoresGuruguru.push_back(0);
+
     Save();
 }
 
