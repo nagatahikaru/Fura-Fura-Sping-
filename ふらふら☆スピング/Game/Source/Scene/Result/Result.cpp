@@ -2,6 +2,7 @@
 #include "Result.h"
 #include"Source/Scene/Titer/Titer.h"
 #include"Source/Sound/SoundManager.h"
+#include"Source/Scene/Ranking/Ranking.h"
 
 bool Result::Start()
 {
@@ -12,7 +13,10 @@ bool Result::Start()
 	float curved = powf(v, 2.0f);
 	g_bgm = g_soundManager->PlayingSound(enSound_ResultBGM, false, curved);
 
-	m_spriteRender.Init("Assets/sprite/result2.dds", 1920.0f, 1080.0f);
+	m_spriteRender.Init("Assets/sprite/siro.dds", 1920.0f, 1080.0f);
+
+	m_rezarut.Init("Assets/sprite/risarut.dds", 800.0f, 600.0f);
+	m_rezarut.SetPosition({ 0.0f, 300.0f, 0.0f });
 
 	m_B.Init("Assets/sprite/AAA.dds", 220.0f, 170.0f);
 	m_B.SetPosition({ 730.0f, -400.0f, 0.0f });
@@ -22,6 +26,9 @@ bool Result::Start()
 
 	m_burakku.Init("Assets/sprite/burakku.dds", 600.0f, 50.0f);
 	m_burakku.SetPosition({ 190.0f, -40.0f ,0.0f });
+
+	m_skip.Init("Assets/sprite/Askep.dds", 220.0f, 170.0f);
+	m_skip.SetPosition({ 730.0f, -400.0f, 0.0f });
 
 	// ★ SE 音量が 0 の場合は SE2 を即削除
 	if (g_soundManager->m_seVolume <= 0.0f) {
@@ -103,6 +110,9 @@ void Result::Update()
 			// 倍率後 km
 			m_displayKm = m_km;
 
+			// ★ スキップしたのでフラグ ON
+			m_isSkipped = true;
+
 			return; // ← ここで終了。次のフレームから A で進める
 		}
 
@@ -114,10 +124,32 @@ void Result::Update()
 			g_soundManager->ClearSE2();
 		}
 
+		// ★ スコア確定後にランキングへ保存
+		Ranking* ranking = NewGO<Ranking>(0, "ranking");
+		ranking->Load();
+		ranking->AddScore(m_km,m_originalKm,m_guruguru);   // ← 倍率後スコアを保存
+		DeleteGO(ranking);
+
 		NewGO<Titer>(0);
 		DeleteGO(this);
 	}
-
+	if (!m_isSkipped) {
+		// ★ スキップ前
+		m_B.SetMulColor({ 1,1,1,0 });
+		m_skip.SetMulColor({ 1,1,1,1 });
+	}
+	else {
+		m_B.SetMulColor({ 1,1,1,1 });
+		m_skip.SetMulColor({ 1,1,1,0 });
+	}
+	// ★ カウントアップがすべて終わったら自動で切り替え
+	if (!m_isSkipped &&
+		m_displayKm >= m_km &&
+		m_displayOriginalKm >= m_originalKm &&
+		m_displayGuruguru >= m_guruguru)
+	{
+		m_isSkipped = true;
+	}
 }
 
 void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
@@ -155,11 +187,17 @@ void Result::Render(RenderContext& rc)
 	m_grobu.Update();
 	m_grobu.Draw(rc);
 
+	m_burakku.Update();
+	m_burakku.Draw(rc);
+
 	m_B.Update();
 	m_B.Draw(rc);
 
-	m_burakku.Update();
-	m_burakku.Draw(rc);
+	m_skip.Update();
+	m_skip.Draw(rc);
+
+	m_rezarut.Update();
+	m_rezarut.Draw(rc);
 
 	wchar_t buf[256];
 	// ぐるぐる

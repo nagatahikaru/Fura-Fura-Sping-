@@ -162,6 +162,11 @@ void BatterCursorSetState::Exit()
 bool BatterCursorSetState::RequestState(uint32_t& request)
 {
 	Batter* batter = GetBatter();
+		if (g_pad[0]->IsTrigger(enButtonA))
+	{
+		request = BatterSwingState::ID();
+		return true;
+	}
 	if (batter->GetIsOnGround())
 	{
 		request = BatterIdleState::ID();

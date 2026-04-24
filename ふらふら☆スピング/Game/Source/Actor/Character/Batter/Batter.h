@@ -63,7 +63,7 @@ public:
 	virtual void Render(RenderContext& rc);
 	void SetPlayAnimation(int enAnimationClip)
 	{
-		m_characterModel->PlayAnimation(enAnimationClip, 0.2);
+		m_characterModel->PlayAnimation(enAnimationClip,0.2);
 	}
 
 
@@ -266,10 +266,7 @@ public:
 	float GetPlaySpeed() const {
 		return m_playSpeed;
 	}
-	void SetCursorMode(bool flag);
-	void ResetCursorPosition();
 	void EffectUpdate();
-	void ResetSwing();
 	int GetGuruGuru() const {
 		return m_guruGuruBatCount;
 	}
@@ -278,6 +275,9 @@ public:
 		return m_characterModel.get();
 	}
 	void PlaySwingAnimation();
+	void ResetSwing();
+	void SetCursorMode(bool flag);
+	void ResetCursorPosition();
 	bool m_isPaused;
 private:
 
@@ -296,7 +296,7 @@ private:
 	bool m_isAnimation = false; // animationの再生状態を保持するフラグ
 	InGameUI* m_inGameUI; // インゲームUIへのポインタ
 	Vector3 m_meetPosition; // ミートカーソルの位置を保持する変数
-	bool m_isRotation = true; // 回転アニメーションの再生状態を保持するフラグ
+	bool m_isRotation = true; // 回転状態を保持するフラグ
 	Ball* m_ball; // ボールへのポインタ
 	bool m_isCursorMode = true;
 	Vector3 m_meetCursorWorldPos;
@@ -315,5 +315,12 @@ private:
 	bool m_effectSpawned = false;
 	float m_playSpeed = 1.0f;
 	int m_hitFrameIndex = -1;
+	// ★ 遅延ヒット用の変数（追加）
+	bool m_isHitReserved = false;
+	float m_hitDelayTimer = 0.0f;
+	Vector3 m_reservedHitDir = Vector3::Zero;
+	float m_reservedHitPower = 0.0f;
+	Transform m_transform;            // Transformの型に合わせてください
+	std::unique_ptr<nsApp::CharacterModel> m_characterModel;
 };
 
