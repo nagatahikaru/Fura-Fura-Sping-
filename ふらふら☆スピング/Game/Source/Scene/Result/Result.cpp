@@ -16,7 +16,7 @@ bool Result::Start()
 	m_spriteRender.Init("Assets/sprite/siro.dds", 1920.0f, 1080.0f);
 
 	m_rezarut.Init("Assets/sprite/risarut.dds", 800.0f, 600.0f);
-	m_rezarut.SetPosition({ 0.0f, 300.0f, 0.0f });
+	m_rezarut.SetPosition({ 0.0f, 400.0f, 0.0f });
 
 	m_B.Init("Assets/sprite/AAA.dds", 220.0f, 170.0f);
 	m_B.SetPosition({ 730.0f, -400.0f, 0.0f });
@@ -29,6 +29,10 @@ bool Result::Start()
 
 	m_skip.Init("Assets/sprite/Askep.dds", 220.0f, 170.0f);
 	m_skip.SetPosition({ 730.0f, -400.0f, 0.0f });
+
+	m_newRecord.Init("Assets/sprite/new.dds", 600.0f, 600.0f);
+	m_newRecord.SetPosition({ 0, 170, 0 });
+	m_newRecord.SetMulColor({ 1,1,1,0 }); // 最初は非表示
 
 	// ★ SE 音量が 0 の場合は SE2 を即削除
 	if (g_soundManager->m_seVolume <= 0.0f) {
@@ -98,41 +102,20 @@ void Result::Update()
 
 	if (g_pad[0]->IsTrigger(enButtonA)) {
 
-		// ★ まだカウントアップ中なら即終了させる
+		// ★ まだカウントアップ中なら即終了（スキップ機能）
 		if (m_displayKm < m_km || m_displayOriginalKm < m_originalKm || m_displayGuruguru < m_guruguru) {
-
-			// ぐるぐる
 			m_displayGuruguru = m_guruguru;
-
-			// 元の km
 			m_displayOriginalKm = m_originalKm;
-
-			// 倍率後 km
 			m_displayKm = m_km;
-
-			// ★ スキップしたのでフラグ ON
 			m_isSkipped = true;
-
-			return; // ← ここで終了。次のフレームから A で進める
+			return;
 		}
 
-		// ★ ここに来たらスコアはすでに完成しているので次へ進む
-		auto se2 = g_soundManager->GetSE2();
-		if (se2) {
-			se2->Stop();
-			DeleteGO(se2);
-			g_soundManager->ClearSE2();
-		}
-
-		// ★ スコア確定後にランキングへ保存
-		Ranking* ranking = NewGO<Ranking>(0, "ranking");
-		ranking->Load();
-		ranking->AddScore(m_km,m_originalKm,m_guruguru);   // ← 倍率後スコアを保存
-		DeleteGO(ranking);
-
+		// ★ カウントアップもスコア確定も終わっている前提でタイトルへ
 		NewGO<Titer>(0);
 		DeleteGO(this);
 	}
+
 	if (!m_isSkipped) {
 		// ★ スキップ前
 		m_B.SetMulColor({ 1,1,1,0 });
@@ -142,14 +125,65 @@ void Result::Update()
 		m_B.SetMulColor({ 1,1,1,1 });
 		m_skip.SetMulColor({ 1,1,1,0 });
 	}
-	// ★ カウントアップがすべて終わったら自動で切り替え
-	if (!m_isSkipped &&
+	// ★ カウントアップがすべて終わったらスコア確定（1回だけ）
+	if (!m_isScoreFixed &&
 		m_displayKm >= m_km &&
 		m_displayOriginalKm >= m_originalKm &&
 		m_displayGuruguru >= m_guruguru)
 	{
-		m_isSkipped = true;
+		m_isSkipped = true;   // ボタン表示切り替え用
+		m_isScoreFixed = true;   // 二重実行防止
+
+		// ▼ ここでランキング保存＆NEW判定
+		auto se2 = g_soundManager->GetSE2();
+		if (se2) {
+			se2->Stop();
+			DeleteGO(se2);
+			g_soundManager->ClearSE2();
+		}
+
+		Ranking* ranking = NewGO<Ranking>(0, "ranking");
+		ranking->Load();
+		bool isNew = ranking->AddScore(m_km, m_originalKm, m_guruguru);
+
+		if (isNew) {
+			m_isNewRecord = true;
+			m_newRecord.SetMulColor({ 1,1,1,1 }); // 自然にポンと出る
+			// ★ 点滅開始
+			m_isBlinking = true;
+			m_blinkCount = 0;
+			m_blinkTimer = 0.0f;
+		}
+		DeleteGO(ranking);
 	}
+	// ★★★ NEW!! 点滅処理 ★★★
+	if (m_isBlinking) {
+
+		m_blinkTimer += g_gameTime->GetFrameDeltaTime();
+
+		// 0.25秒ごとに ON/OFF 切り替え
+		if (m_blinkTimer >= 0.25f) {
+			m_blinkTimer = 0.0f;
+
+			// 現在のアルファを取得
+			float alpha = m_newRecord.GetMulColor().w;
+
+			// ON → OFF、OFF → ON
+			if (alpha > 0.5f) {
+				m_newRecord.SetMulColor({ 1,1,1,0 });
+			}
+			else {
+				m_newRecord.SetMulColor({ 1,1,1,1 });
+				m_blinkCount++;   // ON に戻ったタイミングでカウント
+			}
+
+			// ★ 4回点滅したら終了
+			if (m_blinkCount >= 3) {
+				m_isBlinking = false;
+				m_newRecord.SetMulColor({ 1,1,1,1 }); // 最後は表示ONで固定
+			}
+		}
+	}		
 }
 
 void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
@@ -198,6 +232,11 @@ void Result::Render(RenderContext& rc)
 
 	m_rezarut.Update();
 	m_rezarut.Draw(rc);
+
+	if (m_isNewRecord) {
+		m_newRecord.Update();
+		m_newRecord.Draw(rc);
+	}
 
 	wchar_t buf[256];
 	// ぐるぐる

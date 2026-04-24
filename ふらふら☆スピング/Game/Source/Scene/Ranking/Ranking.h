@@ -11,7 +11,7 @@ public:
 	void Render(RenderContext& rc); 
 	void Load();
 	void Save();
-	void AddScore(int scoreKm,int scoreMeter, int guruguru);
+	bool AddScore(int scoreKm,int scoreMeter, int guruguru);
 private:
 	// ★ スコア一覧（トップ10まで入る）
 	std::vector<int> m_scoresScore;

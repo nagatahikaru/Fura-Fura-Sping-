@@ -35,5 +35,12 @@ private:
 	SpriteRender m_skip;
 	SpriteRender m_rezarut;
 	bool m_isSkipped = false;   // Aでスキップしたかどうか
+	SpriteRender m_newRecord;
+	bool m_isNewRecord = false;
+	bool m_isScoreFixed = false;   // スコア確定＆ランキング保存済みか
+	// ★ NEW!! 点滅用
+	bool m_isBlinking = false;
+	int m_blinkCount = 0;
+	float m_blinkTimer = 0.0f;
 };
 
