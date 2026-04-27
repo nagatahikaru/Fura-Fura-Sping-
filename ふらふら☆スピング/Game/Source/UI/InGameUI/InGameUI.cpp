@@ -33,6 +33,8 @@ InGameUI::InGameUI() {
 	m_ballIcon[1].SetPosition(Vector3{ -530, 430, 0 });
 	m_ballIcon[2].SetPosition(Vector3{ -460, 430, 0 });
 	m_spritekuro.Init("Assets/sprite/kuro.DDS",1920.0f, 1080.0f);
+	m_bbb.Init("Assets/sprite/bbb.dds", 200.0f, 200.0f);
+	m_bsuki.Init("Assets/sprite/bsuki.DDS", 550.0f, 500.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -460,6 +462,12 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spriteRenderReplay.SetPosition(Vector3{ -800.0f, 450.0f, 0.0f });
 		m_spriteRenderReplay.Update();
 		m_spriteRenderReplay.Draw(rc);
+		m_bbb.SetPosition(Vector3{ 700.0f, 400.0f, 0.0f });
+		m_bbb.Update();
+		m_bbb.Draw(rc);
+		m_bsuki.SetPosition(Vector3{ 700.0f, 300.0f, 0.0f });
+		m_bsuki.Update();
+		m_bsuki.Draw(rc);
 	}
 	// ★ 黒フェード描画（常に最前面）
 	if (m_fadeAlpha > 0.0f) {

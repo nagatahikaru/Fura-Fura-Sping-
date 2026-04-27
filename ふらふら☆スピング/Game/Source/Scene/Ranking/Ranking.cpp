@@ -22,44 +22,18 @@ bool Ranking::Start() {
 }
 
 void Ranking::Load() {
-    m_scoresScore.clear();
-    m_scoresMeter.clear();
-    m_scoresGuruguru.clear();
-
     std::ifstream ifs("ranking.dat");
     if (!ifs) {
-        // ファイルが無い → 全部0で初期化
-        m_scoresScore.assign(5, 0);
-        m_scoresMeter.assign(5, 0);
-        m_scoresGuruguru.assign(5, 0);
+        m_scoresScore.fill(0);
+        m_scoresMeter.fill(0);
+        m_scoresGuruguru.fill(0);
         Save();
         return;
     }
 
-    int s;
-
-    // スコア部門
-    for (int i = 0; i < 5; i++) {
-        if (ifs >> s) m_scoresScore.push_back(s);
-        else m_scoresScore.push_back(0);
-    }
-
-    // メートル部門
-    for (int i = 0; i < 5; i++) {
-        if (ifs >> s) m_scoresMeter.push_back(s);
-        else m_scoresMeter.push_back(0);
-    }
-
-    // ぐるぐる部門
-    for (int i = 0; i < 5; i++) {
-        if (ifs >> s) m_scoresGuruguru.push_back(s);
-        else m_scoresGuruguru.push_back(0);
-    }
-
-    // ★★★ ここが重要！必ず 5 個に揃える（壊れたファイル対策）★★★
-    while (m_scoresScore.size() < 5) m_scoresScore.push_back(0);
-    while (m_scoresMeter.size() < 5) m_scoresMeter.push_back(0);
-    while (m_scoresGuruguru.size() < 5) m_scoresGuruguru.push_back(0);
+    for (int i = 0; i < 5; i++) ifs >> m_scoresScore[i];
+    for (int i = 0; i < 5; i++) ifs >> m_scoresMeter[i];
+    for (int i = 0; i < 5; i++) ifs >> m_scoresGuruguru[i];
 
     Save();
 }
@@ -90,50 +64,40 @@ void Ranking::Update() {
 }
 
 bool Ranking::AddScore(int scoreKm, int scoreMeter, int guruguru) {
-    // ★ 更新前の1位
-    int oldBest = m_scoresScore.empty() ? -1 : m_scoresScore[0];
+    int oldBest = m_scoresScore[0];
 
-    // スコア部門
-    // ★ まず全ての配列を5個に揃える（不足分は0で埋める）
-    while (m_scoresScore.size() < 5) m_scoresScore.push_back(0);
-    while (m_scoresMeter.size() < 5) m_scoresMeter.push_back(0);
-    while (m_scoresGuruguru.size() < 5) m_scoresGuruguru.push_back(0);
+    // ★ スコア + ぐるぐる を 6件にしてソート
+    std::array<std::pair<int, int>, 6> pairs;
 
-    // ★ 新しいスコアを追加
-    m_scoresScore.push_back(scoreKm);
-    m_scoresGuruguru.push_back(guruguru);
-
-    // ★ スコアとぐるぐるをセットでソート
-    std::vector<std::pair<int, int>> scorePairs;
-    for (int i = 0; i < m_scoresScore.size(); i++) {
-        scorePairs.push_back({ m_scoresScore[i], m_scoresGuruguru[i] });
+    for (int i = 0; i < 5; i++) {
+        pairs[i] = { m_scoresScore[i], m_scoresGuruguru[i] };
     }
+    pairs[5] = { scoreKm, guruguru };
 
-    std::sort(scorePairs.begin(), scorePairs.end(),
+    std::sort(pairs.begin(), pairs.end(),
         [](auto& a, auto& b) { return a.first > b.first; });
 
-    // 上位5件に戻す
-    m_scoresScore.clear();
-    m_scoresGuruguru.clear();
     for (int i = 0; i < 5; i++) {
-        m_scoresScore.push_back(scorePairs[i].first);
-        m_scoresGuruguru.push_back(scorePairs[i].second);
+        m_scoresScore[i] = pairs[i].first;
+        m_scoresGuruguru[i] = pairs[i].second;
     }
 
-    // ★ 更新後の1位
     int newBest = m_scoresScore[0];
-
-    // ★ 1位更新したか？
     bool isNewRecord = (scoreKm == newBest && newBest > oldBest);
 
-    // メートル部門
-    m_scoresMeter.push_back(scoreMeter);
-    std::sort(m_scoresMeter.begin(), m_scoresMeter.end(), std::greater<int>());
-    if (m_scoresMeter.size() > 5) m_scoresMeter.resize(5);
+    // ★ メートル部門
+    std::array<int, 6> meterTemp;
+    for (int i = 0; i < 5; i++) meterTemp[i] = m_scoresMeter[i];
+    meterTemp[5] = scoreMeter;
+
+    std::sort(meterTemp.begin(), meterTemp.end(), std::greater<int>());
+
+    for (int i = 0; i < 5; i++) {
+        m_scoresMeter[i] = meterTemp[i];
+    }
 
     Save();
-
-    return isNewRecord;     
+    return isNewRecord;
 }
 
 void Ranking::Render(RenderContext& rc) {

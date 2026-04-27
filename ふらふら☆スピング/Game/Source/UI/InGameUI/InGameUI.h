@@ -106,5 +106,7 @@ private:
 	bool  m_isFadeOut = false;
 	float m_fadeSpeed = 0.5f; // 2秒で真っ黒になる例
 	bool  m_isFadeIn = false;
+	SpriteRender m_bbb;
+	SpriteRender m_bsuki;
 };
 
