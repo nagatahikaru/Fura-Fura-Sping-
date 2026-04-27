@@ -55,10 +55,6 @@ Batter::Batter()
 Batter::~Batter()
 {
 	m_stateMachine->SetBatter(nullptr);
-	if(g_effectManager!=nullptr)
-	{
-		g_effectManager->StopEffect(); // エフェクトの停止
-	}
 	//当たり判定オブジェクトの削除
 	if (m_collisionObject)return;
 	delete m_collisionObject;
