@@ -14,6 +14,8 @@ TiterUI::~TiterUI() {
 
 bool TiterUI::Start()
 {
+    m_spriteRender.Init("Assets/sprite/siro.DDS", 1920.0f, 1080.0f);
+
     m_start.Init("Assets/sprite/Start.dds", 250.0f, 150.0f);
     m_start.SetPosition({ 0.0f, -300.0f, 0.0f });
 
@@ -29,11 +31,36 @@ bool TiterUI::Start()
     m_ranking.Init("Assets/sprite/RankingUI.dds", 350.0f, 330.0f);
     m_ranking.SetPosition({ 730.0f, -400.0f, 0.0f });
 
+    m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
+
     return true;
 }
 
 void TiterUI::Update()
 {
+    // ▼ 決定アニメ中は入力を受け付けない
+    if (m_isDeciding) {
+
+        // 1. START ボタン点滅（0.5秒）
+        m_decideTimer += g_gameTime->GetFrameDeltaTime();
+        float blink = (sin(m_decideTimer * 20.0f) * 0.5f) + 0.5f;
+        m_start.SetMulColor({ 1,1,1, blink });
+
+        // 2. 点滅後フェードアウト開始
+        if (m_decideTimer >= 0.5f) {
+            m_fadeAlpha += g_gameTime->GetFrameDeltaTime() * 1.5f;
+            if (m_fadeAlpha > 1.0f) m_fadeAlpha = 1.0f;
+        }
+
+        // 3. フェード完了 → Load へ
+        if (m_fadeAlpha >= 1.0f) {
+            NewGO<Load>(0);
+            DeleteGO(this);
+        }
+
+        return;
+    }
+
     // ▼ カーソル移動（上下）
     if (g_pad[0]->IsTrigger(enButtonUp)) {
         m_cursor = 0;   // ゲーム
@@ -55,8 +82,8 @@ void TiterUI::Update()
     if (g_pad[0]->IsTrigger(enButtonA)) {
         g_soundManager->PlaySE(enSound_SE); // ← 決定音
         if (m_cursor == 0) {
-            // ゲームへ
-            NewGO<Load>(0);
+            m_isDeciding = true;
+            return;
         }
         else if (m_cursor == 1) {
             auto st = NewGO<SoundTestUI>(0); // OPTION
@@ -89,6 +116,7 @@ void TiterUI::Update()
 
 void TiterUI::Render(RenderContext& rc)
 {
+    m_spriteRender.Draw(rc);
     m_start.Update();
     m_start.Draw(rc);
     m_option.Update();
@@ -99,4 +127,10 @@ void TiterUI::Render(RenderContext& rc)
     m_gurobu.Draw(rc);
     m_ranking.Update();
     m_ranking.Draw(rc);
+    // ▼ フェードアウト（黒い板）
+    if (m_isDeciding) {
+
+        m_spritekuro.SetMulColor({ 1,1,1, m_fadeAlpha });
+        m_spritekuro.Draw(rc);
+    }
 }

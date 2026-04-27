@@ -33,8 +33,10 @@ namespace nsK2EngineLow {
 		/// </summary>              
 		void Stop()
 		{
-			//再生中のエフェクトを停止する。
-			EffectEngine::GetInstance()->Stop(m_handle);
+				if (m_handle >= 0) {
+					EffectEngine::GetInstance()->Stop(m_handle);
+					m_handle = -1;   // ★ 二重停止防止
+				}
 		}
 		/*!
 		*@brief	座標を設定。

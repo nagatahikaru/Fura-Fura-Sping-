@@ -15,6 +15,11 @@ private:
 	SpriteRender m_Title;
 	SpriteRender m_ranking;
 	SpriteRender m_gurobu;
+	SpriteRender m_spritekuro;
+	SpriteRender m_spriteRender;
 	int m_cursor = 0; // 0 = ゲーム, 1 = メニュー
+	bool m_isDeciding = false;     // 決定アニメ中
+	float m_decideTimer = 0.0f;    // 点滅用
+	float m_fadeAlpha = 0.0f;      // フェードアウト用
 };
 

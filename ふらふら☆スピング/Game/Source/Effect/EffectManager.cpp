@@ -44,4 +44,5 @@ void EffectManager::StopEffect()
 {
 	if (m_effectEmitter == nullptr)return;
 	m_effectEmitter->Stop();
+	m_effectEmitter = nullptr; // š ‚±‚êd—v
 }
