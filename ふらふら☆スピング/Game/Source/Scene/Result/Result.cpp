@@ -36,18 +36,13 @@ bool Result::Start()
 
 	// ★ SE 音量が 0 の場合は SE2 を即削除
 	if (g_soundManager->m_seVolume <= 0.0f) {
-		auto se2 = g_soundManager->GetSE2();
-		if (se2) {
-			se2->Stop();
-			DeleteGO(se2);
-			g_soundManager->ClearSE2();
-		}
 		m_isFadingSE2 = false;
 	}
 	else {
 		m_se2Volume = 3.0f;
 		m_isFadingSE2 = true;
 	}
+
 	return true;
 }
 
@@ -56,7 +51,14 @@ void Result::Update()
 {
 
 	if (m_isFadingSE2) {
-		m_se2Volume -= 0.012f;
+
+		// ★ ラスト1.5秒（音量1.0以下）になったら高速フェード
+		if (m_se2Volume <= 1.0f) {
+			m_se2Volume -= 0.0333f;   // ← ラスト1.5秒の高速フェード
+		}
+		else {
+			m_se2Volume -= 0.0074f;   // ← 最初の3.5秒のゆっくりフェード
+		}
 
 		if (m_se2Volume <= 0.0f) {
 			m_se2Volume = 0.0f;
@@ -66,13 +68,6 @@ void Result::Update()
 		auto se2 = g_soundManager->GetSE2();
 		if (se2) {
 			se2->SetVolume(m_se2Volume);
-
-			// 完全に 0 になったら消してしまうならここで
-			if (!m_isFadingSE2) {
-				se2->Stop();
-				DeleteGO(se2);
-				g_soundManager->ClearSE2();
-			}
 		}
 	}
 

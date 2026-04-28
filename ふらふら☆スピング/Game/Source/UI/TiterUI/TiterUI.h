@@ -14,7 +14,6 @@ private:
 	SpriteRender m_option;
 	SpriteRender m_Title;
 	SpriteRender m_ranking;
-	SpriteRender m_gurobu;
 	SpriteRender m_spritekuro;
 	SpriteRender m_spriteRender;
 	int m_cursor = 0; // 0 = ƒQ[ƒ€, 1 = ƒƒjƒ…[

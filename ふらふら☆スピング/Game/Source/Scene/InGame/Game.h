@@ -163,5 +163,7 @@ private:
 	int m_bestPitchFrame = 0;
 	float m_replaySkipHoldTime = 0.0f;  // B長押し時間
 	bool m_hasAppliedHitMoment = false;
+	bool m_startFadeSE2 = false;
+	int m_prevGuruGuru = 0;
 };
 

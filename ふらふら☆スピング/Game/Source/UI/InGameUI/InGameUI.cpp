@@ -8,7 +8,7 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
 }
 
 InGameUI::InGameUI() {
-	m_spriteRender.Init("Assets/sprite/waku.DDS", 850.0f, 600.0f);
+	m_wakuModel.Init("Assets/stage/hurahura.tkm");
 	m_spriteRenderBat.Init("Assets/sprite/batto.DDS", 330.0f, 430.0f);
 	m_spriteRenderMeet.Init("Assets/sprite/mi-to.DDS", 45.0f, 45.0f);
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
@@ -260,9 +260,10 @@ void InGameUI::Render(RenderContext& rc) {
 	if (m_isUIVisible) {
 
 		//赤い枠
-		m_spriteRender.SetPosition(Vector3{ 0.0f, -80.0f, 0.0f });
-		m_spriteRender.Update();
-		m_spriteRender.Draw(rc);
+		m_wakuModel.SetPosition(50.0f, 318.0f, 6000.0f);
+		m_wakuModel.SetScale(6.5f, 7.5f, 5.0f);
+		m_wakuModel.Update();
+		m_wakuModel.Draw(rc);
 
 		// --- 左右でバット位置を切り替える ---
 		Vector3 batPos = m_isLeftBatter ? m_batPositionLeft : m_batPositionRight;
@@ -476,4 +477,43 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spritekuro.Update();
 		m_spritekuro.Draw(rc);
 	}
+	//wchar_t dbg[256];
+
+	//swprintf_s(dbg, 256, L"Ball Z = %.1f", m_predictedBallPos3D.z);
+	//m_fontDebug1.SetText(dbg);
+	//m_fontDebug1.SetPosition(300.0f, 500.0f, 0.0f);
+	//m_fontDebug1.SetColor(0, 0, 0, 1);
+	//m_fontDebug1.Draw(rc);
+
+	//Vector3 uiPos = m_isBallUIFixed
+	//	? m_fixedBallUIPos
+	//	: ConvertBall3DToUI(m_predictedBallPos3D);
+	//uiPos.y -= 0.0f;   // ★ これを追加
+	//swprintf_s(dbg, 256, L"UI Pos = (%.1f, %.1f)", uiPos.x, uiPos.y);
+	//m_fontDebug2.SetText(dbg);
+	//m_fontDebug2.SetPosition(300.0f, 460.0f, 0.0f);
+	//m_fontDebug2.SetColor(0, 0, 0, 1);
+	//m_fontDebug2.Draw(rc);
+
+	//if (m_isBallUIFixed) {
+	//	swprintf_s(dbg, 256, L"Fixed UI Pos = (%.1f, %.1f)",
+	//		m_fixedBallUIPos.x, m_fixedBallUIPos.y);
+	//	m_fontDebug3.SetText(dbg);
+	//	m_fontDebug3.SetPosition(300.0f, 420.0f, 0.0f);
+	//	m_fontDebug3.SetColor(1, 0, 0, 1);
+	//	m_fontDebug3.Draw(rc);
+	//}
+
+	//swprintf_s(dbg, 256, L"Ball X = %.2f", m_predictedBallPos3D.x);
+	//m_fontDebug4.SetText(dbg);
+	//m_fontDebug4.SetPosition(300.0f, 380.0f, 0.0f);
+	//m_fontDebug4.SetColor(0, 0, 0, 1);
+	//m_fontDebug4.Draw(rc);
+
+	//swprintf_s(dbg, 256, L"UI X = %.2f", uiPos.x);
+	//m_fontDebug5.SetText(dbg);
+	//m_fontDebug5.SetPosition(300.0f, 340.0f, 0.0f);
+	//m_fontDebug5.SetColor(0, 0, 0, 1);
+	//m_fontDebug5.Draw(rc);
+
 }

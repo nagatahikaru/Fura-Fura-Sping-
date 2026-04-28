@@ -44,7 +44,7 @@ private:
 
 	FontRender m_fontRender;
 	FontRender m_fontBollRender;
-	SpriteRender m_spriteRender;
+	ModelRender m_wakuModel;
 	SpriteRender m_spriteRenderBat;
 	SpriteRender m_spriteRenderMeet;
 	SpriteRender m_spriteRenderReplay;
@@ -108,5 +108,10 @@ private:
 	bool  m_isFadeIn = false;
 	SpriteRender m_bbb;
 	SpriteRender m_bsuki;
+	FontRender m_fontDebug1;
+	FontRender m_fontDebug2;
+	FontRender m_fontDebug3;
+	FontRender m_fontDebug4;
+	FontRender m_fontDebug5;
 };
 

@@ -311,7 +311,7 @@ void Ball::ResetBall()
     m_velocity = Vector3::Zero;
     m_isMove = false;
     m_hasHit = false;
-
+    m_hasFixed = false;
     SetPosition(m_position);
 }
 
