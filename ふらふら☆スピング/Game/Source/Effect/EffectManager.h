@@ -15,7 +15,7 @@ class EffectManager : public IGameObject
 {
 public:
 	EffectManager();
-	~EffectManager() = default;
+	~EffectManager();
 
 	void Update() override;
 

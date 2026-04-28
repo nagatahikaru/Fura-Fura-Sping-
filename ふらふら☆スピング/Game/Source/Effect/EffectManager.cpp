@@ -15,6 +15,13 @@ EffectManager::EffectManager()
 	}
 }
 
+EffectManager::~EffectManager()
+{
+	if (g_effectManager == this) {
+		g_effectManager = nullptr;
+	}
+}
+
 /// <summary>
 /// エフェクトの更新。
 /// </summary>

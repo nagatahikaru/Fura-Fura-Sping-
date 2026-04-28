@@ -103,7 +103,10 @@ void Game::Update()
 
 		if (FindGO<PauseUI>("pause") != nullptr) return;
 		if (FindGO<SoundTestUI>("soundtest") != nullptr) return;
-
+		// ★ ここでポーズ突入SE
+		if (g_soundManager && g_soundManager->m_seVolume > 0) {
+			g_soundManager->PlaySE(enSound_SE);   // 好きなSEに
+		}
 		m_isPaused = true;
 
 		if (m_InGameUI) {

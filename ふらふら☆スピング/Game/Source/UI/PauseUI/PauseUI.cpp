@@ -49,6 +49,10 @@ void PauseUI::Update()
 {
     // ▼ START でも再開
     if (g_pad[0]->IsTrigger(enButtonStart)) {
+        // ★ ここでポーズ突入SE
+        if (g_soundManager && g_soundManager->m_seVolume > 0) {
+            g_soundManager->PlaySE(enSound_SE);   // 好きなSEに
+        }
         Game* game = FindGO<Game>("game");
         if (game) {
             game->m_isPaused = false;
