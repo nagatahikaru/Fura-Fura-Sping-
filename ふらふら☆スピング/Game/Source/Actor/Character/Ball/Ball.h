@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "Source/Actor/Character/Character.h"
 
+
+
 class Ball :public Character
 {
 	enum BallType
@@ -11,8 +13,9 @@ class Ball :public Character
 	};
 
 	BallType m_ballType = Straight;
+	Ball* m_ball;
 	
-public:
+ public:
 	Ball();
 	virtual ~Ball();
 	virtual bool Start();
@@ -39,7 +42,7 @@ public:
 	bool m_isRecording = false;
 	bool m_isMove = false;
 	bool m_hasHit = false;
-private:
+ private:
 	Vector3 m_position;  //ボールの位置
 	Vector3 m_velocity;  //ボールの速度
 	Vector3 m_targetPos; //目標位置
