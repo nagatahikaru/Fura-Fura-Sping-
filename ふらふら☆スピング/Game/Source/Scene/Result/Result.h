@@ -42,5 +42,7 @@ private:
 	bool m_isBlinking = false;
 	int m_blinkCount = 0;
 	float m_blinkTimer = 0.0f;
+	float m_se2Timer = 0.0f; // SE2 再生時間カウント用
+	bool m_hasScore = false;
 };
 

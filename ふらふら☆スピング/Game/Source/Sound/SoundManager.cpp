@@ -28,7 +28,8 @@ namespace {
 		"ResultBGM",
 		"SE",
 		"SE2",
-		"SE3"
+		"SE3",
+		"SE4"
 	};	
 }
 

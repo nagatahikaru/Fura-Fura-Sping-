@@ -511,6 +511,18 @@ void Game::DecideBestReplay()
 
 void Game::GoToResult()
 {
+	// ★ 記録が1でもあれば SE2 を鳴らす
+	bool hasScore = false;
+	for (int i = 0; i < 3; i++) {
+		if (m_scores[i] > 0) {
+			hasScore = true;
+			break;
+		}
+	}
+
+	if (hasScore && g_soundManager->m_seVolume > 0) {
+		g_soundManager->PlaySE(enSound_SE2);
+	}
 	int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
 	Result* result = NewGO<Result>(0);
 	result->SetResultValues(m_guruguru, best, m_scores);

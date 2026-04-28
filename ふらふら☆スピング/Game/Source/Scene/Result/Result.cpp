@@ -34,8 +34,16 @@ bool Result::Start()
 	m_newRecord.SetPosition({ 0, 170, 0 });
 	m_newRecord.SetMulColor({ 1,1,1,0 }); // 最初は非表示
 
+	m_hasScore = false;
+	for (int i = 0; i < 3; i++) {
+		if (m_threeShots[i] > 0) {
+			m_hasScore = true;
+			break;
+		}
+	}
+
 	// ★ SE 音量が 0 の場合は SE2 を即削除
-	if (g_soundManager->m_seVolume <= 0.0f) {
+	if (g_soundManager->m_seVolume <= 0.0f||!m_hasScore) {
 		m_isFadingSE2 = false;
 	}
 	else {
@@ -52,19 +60,24 @@ void Result::Update()
 
 	if (m_isFadingSE2) {
 
-		// ★ ラスト1.5秒（音量1.0以下）になったら高速フェード
-		if (m_se2Volume <= 1.0f) {
-			m_se2Volume -= 0.0333f;   // ← ラスト1.5秒の高速フェード
+		// ★ 再生時間をカウント
+		m_se2Timer += g_gameTime->GetFrameDeltaTime();
+
+		// ★ 4秒までは音量そのまま
+		if (m_se2Timer < 3.5f) {
+			// 何もしない（音量維持）
 		}
 		else {
-			m_se2Volume -= 0.0074f;   // ← 最初の3.5秒のゆっくりフェード
+			// ★ ラスト0.5秒でフェードアウト（30フレームで3.0→0）
+			m_se2Volume -= 0.05f;
+
+			if (m_se2Volume <= 0.0f) {
+				m_se2Volume = 0.0f;
+				m_isFadingSE2 = false;
+			}
 		}
 
-		if (m_se2Volume <= 0.0f) {
-			m_se2Volume = 0.0f;
-			m_isFadingSE2 = false;
-		}
-
+		// 音量反映
 		auto se2 = g_soundManager->GetSE2();
 		if (se2) {
 			se2->SetVolume(m_se2Volume);
@@ -144,6 +157,10 @@ void Result::Update()
 		if (isNew) {
 			m_isNewRecord = true;
 			m_newRecord.SetMulColor({ 1,1,1,1 }); // 自然にポンと出る
+			auto se = g_soundManager->PlaySE(enSound_SE4);
+			if (se) {
+				se->SetVolume(1.5f); // 好きな音量
+			}
 			// ★ 点滅開始
 			m_isBlinking = true;
 			m_blinkCount = 0;
@@ -170,6 +187,10 @@ void Result::Update()
 			else {
 				m_newRecord.SetMulColor({ 1,1,1,1 });
 				m_blinkCount++;   // ON に戻ったタイミングでカウント
+				auto se = g_soundManager->PlaySE(enSound_SE4);
+				if (se) {
+					se->SetVolume(1.5f); // 好きな音量
+				}
 			}
 
 			// ★ 4回点滅したら終了
