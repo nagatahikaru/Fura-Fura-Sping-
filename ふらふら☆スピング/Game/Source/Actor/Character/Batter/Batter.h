@@ -271,6 +271,8 @@ public:
 	void ResetSwing();
 	void SetCursorMode(bool flag);
 	void ResetCursorPosition();
+	void HitEffect();
+
 	bool m_isPaused;
 
 
@@ -278,7 +280,7 @@ private:
 	// ★ ステートマシン関連の変数（追加）
 	std::unique_ptr<BatterStateMachine> m_stateMachine;		// バッターステートマシンへのユニークポインタ
 
-	// ★ ポインタ関連の変数（追加）	
+	// ★ ポインタ関連の変数（追加）
 	Game* m_game;											// ゲームクラスへのポインタ
 	FontRender m_fontRender;								// フォントレンダラー
 	CollisionObject* m_collisionObject;						// 当たり判定オブジェクトへのポインタ
@@ -323,5 +325,12 @@ private:
 	float m_reservedHitPower = 0.0f;						// ヒットの遅延後に使用するヒットの強さを管理する変数
 	Transform m_transform;									// Transformの型に合わせてください
 	std::unique_ptr<nsApp::CharacterModel> m_characterModel;// CharacterModelへのユニークポインタ
+
+	// ★ エフェクト関連の変数（追加）
+	struct EffectInfo {										// エフェクトの情報を管理する構造体
+		uint32_t m_effectDawnID;										// エフェクトのIDを管理する変数
+		uint32_t m_effectHitID;
+	};
+	EffectInfo m_inro;
 };
 
