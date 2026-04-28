@@ -106,16 +106,19 @@ void Game::Update()
 
 	// ★ ヒットストップ処理（ゲーム全体を一瞬停止）
 	if (m_hitStopTimer > 0.0f) {
+		m_isHitStop = true;   // ← これが絶対必要！
 		m_hitStopTimer -= g_gameTime->GetFrameDeltaTime();
 
 		// アニメーションだけは進めたい場合はここに AnimationUpdate() を書く
-		if (m_batter)  m_batter->AnimationUpdate();
-		if (m_pitcher) m_pitcher->AnimationUpdate();
-		if (m_catcher) m_catcher->AnimationUpdate();
+		/*if (m_batter)  m_batter->AnimationUpdate();
+		if (m_pitcher) m_pitcher->AnimationUpdate();*/
+		//if (m_catcher) m_catcher->AnimationUpdate();
 
 		return; // ★ これでゲーム全体が停止する
 	}
-
+	else {
+		m_isHitStop = false;  // ← 終わったら解除
+	}
 	// ★ Aボタン押しっぱなしで2倍速
 	// ★ 打った後だけ倍速ボタンを有効化
 // ★ Aボタン押しっぱなしで2倍速（100m演出中は触らない）
@@ -136,8 +139,6 @@ void Game::Update()
 			m_timeScale = 1.0f;
 		}
 	}
-
-
 
 	switch (m_cameraMode) {
 	case Camera_Catcher:
@@ -227,7 +228,6 @@ void Game::Update()
 	}
 
 	if (m_isReplayPlaying) {
-
 		// ▼ スイングタイマーは常に進める（遅延の影響を受けない）
 		m_replaySwingTimer += g_gameTime->GetFrameDeltaTime();
 
@@ -244,7 +244,12 @@ void Game::Update()
 
 			return; // ← ボールはまだ動かさない
 		}
-
+		// ★★★ 遅延が終わった瞬間にボールを打った瞬間の位置へ戻す ★★★
+		if (!m_hasAppliedHitMoment) {
+			m_ball->SetPosition(m_hitStartPos[m_bestShotIndex]);
+			m_ball->SetVelocity(m_hitVelocities[m_bestShotIndex]);
+			m_hasAppliedHitMoment = true;
+		}
 		// ▼ 遅延が終わったのでボール再生開始
 		auto& path = m_currentReplay;
 		int index = m_replayStartFrame;
@@ -276,7 +281,15 @@ void Game::Update()
 			GoToResult();
 			return;
 		}
+		// ★★★ リプレイスキップ（Bボタン3秒長押し） ★★★
+		if (g_pad[0]->IsTrigger(enButtonB)) {
 
+				// 即リザルトへ
+				m_isReplayPlaying = false;
+				m_cameraMode = Camera_Catcher;
+				GoToResult();
+				return;
+		}
 		return;
 	}
 
@@ -316,7 +329,17 @@ void Game::OnBallLanded()
 	if (pitcher) {
 		pitcher->ResetThrow();
 	}
+	// ★ 100m未満のヒットはフェードアウトしないので、着地した瞬間にカメラを戻す
+	if (!m_hasTriggered100m) {
+		m_cameraMode = Camera_Catcher;
 
+		// UI も通常状態に戻す
+		if (m_InGameUI) {
+			m_InGameUI->SetUIVisible(true);
+			m_InGameUI->SetFontVisble(true);
+			m_InGameUI->SetReplayVisible(false);
+		}
+	}
 	// スコア保存
 	m_scores[m_shots] = m_km;
 
@@ -408,8 +431,9 @@ void Game::StartReplay(int index)
 	m_replayFrameCounter = 0;   // ★★★ これが絶対必要 ★★★
 	m_isReplayPlaying = true;
 	m_replayTimer = 0.0f;
+	m_hasAppliedHitMoment = false;
 	// ▼ 追加：タイマーとアキュムレータの初期化
-	m_replayDelayTimer = 2.2f;  // 1.5秒待機
+	m_replayDelayTimer = 1.2f;  // 1.5秒待機
 	m_replayAccumulator = 0.0f; // アキュムレータ初期化
 	m_cameraMode = Camera_Replay;
 	m_currentReplay = m_replayPaths[index];
@@ -433,10 +457,7 @@ void Game::StartReplay(int index)
 		m_ball->m_isMove = false;           // ← 動作停止
 		m_ball->m_hasHit = false;           // ← ヒットフラグ解除
 	}
-	// ★ 打った瞬間の位置に戻す
-	m_ball->SetPosition(m_hitStartPos[index]);
-	// ★ 打った瞬間の速度をセット（まだ動かさない）
-	m_ball->SetVelocity(m_hitVelocities[index]);
+	
 
 	if (m_InGameUI) {
 		m_InGameUI->SetReplayVisible(true);

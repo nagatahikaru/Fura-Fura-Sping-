@@ -12,6 +12,9 @@ class TiterUI :public Source
 private:
 	SpriteRender m_start;
 	SpriteRender m_option;
+	SpriteRender m_Title;
+	SpriteRender m_ranking;
+	SpriteRender m_gurobu;
 	int m_cursor = 0; // 0 = ƒQ[ƒ€, 1 = ƒƒjƒ…[
 };
 

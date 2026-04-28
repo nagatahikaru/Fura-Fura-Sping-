@@ -55,6 +55,10 @@ Batter::Batter()
 Batter::~Batter()
 {
 	m_stateMachine->SetBatter(nullptr);
+	if(g_effectManager!=nullptr)
+	{
+		g_effectManager->StopEffect(); // エフェクトの停止
+	}
 	//当たり判定オブジェクトの削除
 	if (m_collisionObject)return;
 	delete m_collisionObject;
@@ -138,7 +142,10 @@ void Batter::Update()
 	m_game = FindGO<Game>("game");
 	// ★ リプレイ中はバッターの通常処理を完全停止
 	if (m_game && m_game->IsReplayPlaying()) {
-
+		// ★ ポーズ中ならアニメーションも止める
+		if (m_game->m_isPaused) {
+			return;   // ← これでスイングアニメも完全停止
+		}
 		// アニメーションだけ進めたい場合はこれを残す
 		m_characterModel->Update();
 
@@ -149,7 +156,8 @@ void Batter::Update()
 		g_effectManager->StopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
-
+	// ★ 遅延ヒット処理
+	// ★ 遅延ヒット処理
 	m_stateMachine->Update();
 
 
@@ -238,17 +246,9 @@ void Batter::RoundAndRoundBat()
 	if (m_inGameUI) {
 		m_inGameUI->SetGuruGuruTimer(m_guruGuruBatTimer);
 	}
+	// ★ タイマーが0以下になったら、回転をリセットしてカーソル操作を可能にする
 	if (m_guruGuruBatTimer <= 0.0f)
 	{
-		m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
-
-		Quaternion offset;
-		offset.SetRotationY(-90.0f); // ←ここ調整ポイント
-
-		Quaternion finalRot = m_transform.m_rotation * offset;
-		finalRot.Normalize();
-
-		m_characterModel->SettRotation(finalRot);
 		m_guruGuruBatTimer = 0.0f;
 		SetRotationSeen(false);
 		m_game->SetRotationSeen(false);
@@ -303,32 +303,31 @@ void Batter::RotationUpdate()
 	// オフセットを考慮した位置の補正計算
 	Vector3 pivot = m_transform.m_position - pivotOffset;
 	newPosition = pivot + pivotOffset;
-
-
-	m_characterModel->SettRotation(m_transform.m_rotation);
-
-	if (!m_isRotation)
+	
+	if (m_isRotation)
+	{	
+		m_characterModel->SettRotation(m_transform.m_rotation);
+		Quaternion rot;
+		rot.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 230.0f);
+		m_characterModel->SetWeaponRotation(true);
+		m_characterModel->SetWeaponRotation(rot);
+		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y + 250.0f, m_transform.m_position.z));
+	
+	}
+	else
 	{
 		m_characterModel->SettRotation(m_initialRotation);
-		Quaternion rot;
-		rot.SetRotationDeg(Vector3(1.0f, 0.0f, 0.0f), 180.0f);
 		m_characterModel->SetWeaponRotation(false);
-		m_characterModel->SetWeaponRotation(rot);
-		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y+200.0f, m_transform.m_position.z));
-	}else
-		{
-		m_characterModel->SetWeaponRotation(true);
 	}
 
 	m_characterModel->SetPosition(newPosition);
+	m_characterModel->Update();
 }
 
 
 /** カーソル関連コード */
 
-/**
-* カーソル操作関数
-*/
+/** カーソル操作関数 */
 void Batter::SetCursorPosition()
 {
 	float dt = 1.0f / 60.0f;
@@ -372,9 +371,7 @@ void Batter::SetCursorPosition()
 	m_inGameUI->SetMeetCursorPosition(m_meetPosition);
 }
 
-/**
-* 3D空間に2Dカーソルを合わせる処理
-*/
+/** 3D空間に2Dカーソルを合わせる処理 */
 Vector3 Batter::CalcCursorWorldPos()
 {
 	float screenW = 1920.0f;
@@ -401,9 +398,7 @@ Vector3 Batter::CalcCursorWorldPos()
 	return RayToPlane(camPos, rayDir, planePoint, planeNormal);
 }
 
-/**
-* カーソルデバフの段階を分けるための計算処理
-*/
+/** カーソルデバフの段階を分けるための計算処理 */
 void Batter::SetRandomCursorTimeRadius()
 {
 	// ★ 回転回数に応じて時間と半径を増加させる
@@ -458,6 +453,7 @@ void Batter::DebuffDepth() {
 /** Hit計算関連コード */
 void Batter::HitBat()
 {
+	if (m_ball->m_hasHit) return;
 	// ★ リプレイ中は絶対に打撃処理しない
 	if (m_game && m_game->IsReplayPlaying()) {
 		return;
@@ -472,7 +468,7 @@ void Batter::HitBat()
 	Vector3 ballPos = m_ball->GetPosition();
 
 	// ① Z制限（打撃ゾーン）
-	if (ballPos.z < 6030.0f || ballPos.z > 6070.0f) return;
+	if (ballPos.z < 6050.0f || ballPos.z > 6070.0f) return;
 	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
 	// ② カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
@@ -485,51 +481,71 @@ void Batter::HitBat()
 	{
 		Vector3 hitDir = ballPos - cursor;
 
-
 		// 前方向の力
 		if (fabs(hitDir.z) >= 0.0f) {
 			hitDir.z = -100.0f;
 		}
-		// ★ Y軸に強い上昇力を追加
-		hitDir.y += 21.0f;   // ← ここを調整すると角度が変わる
-
-		hitDir.Normalize();
-
-		m_ball->HitBall(hitDir, 935.0f);
 
 		if (m_inGameUI) {
 			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
 		}
 
-		// ★ ヒットストップ開始
-		if (m_game) {
-			m_game->m_hitStopTimer = 0.02f;   // ← 0.08秒停止（調整OK）
+		if (m_game && !m_game->m_isHitStop) {
+			m_game->m_hitStopTimer = 0.08f;
 		}
 
-		// ★ 打った瞬間に倍速許可を ON
+		hitDir.y += 21.0f;
+		hitDir.Normalize();
+		// 角度（打ち上げ角）を計算
+		// 角度（打ち上げ角）を計算
+		float angleDeg = atan2f(hitDir.y, -hitDir.z) * 180.0f / 3.14159265f;
+
+		// ★ 角度に応じてパワー補正（真ん中は補正なし）
+		float powerScale = 1.0f;
+
+		// 高いフライほどパワーを弱くする
+		if (angleDeg > 60.0f) {
+			powerScale = 0.35f;   // 高フライ → 40%減衰
+			// ★ Y軸の上昇力を追加（強いフライにする）
+			hitDir.y += 50.0f;    // ← 好きな値に調整（50〜80が自然）
+		}
+		else if (angleDeg > 30.0f) {
+			powerScale = 0.55f;   // 中フライ → 20%減衰
+		}
+		// ★ 真ん中（10〜30度）→ パワー増加
+		else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
+			powerScale = 1.0f;   // ← 好きな倍率に調整
+		}
+		// ゴロ（角度が低すぎる）は少し弱くしてもOK
+		else if (angleDeg < 0.0f) {
+			powerScale = 0.8f;   // ゴロ → 少し弱く
+		}
+
+		// 最終パワー
+		float finalPower = 935.0f * powerScale;
+
+			// ★ 通常ヒット（即飛ぶ）
+			m_ball->HitBall(hitDir,+finalPower);
+			// ★ カメラ切り替え
+			if (m_game) {
+				m_game->SetCameraMode(Camera_BackBall);
+
+				GameCamera* cam = m_game->GetGameCamera();
+				if (cam) cam->StartHitMomentCamera();
+			}
+
+		// UI・SE・カメラなどは共通でOK
+		if (m_inGameUI) {
+			m_inGameUI->m_shuchusenTimer = 0.5f;
+		}
 		if (m_game) {
+			m_game->m_hitStopTimer = 0.02f;
 			m_game->m_canFastForward = true;
 		}
-
-		// ★ 打撃 SE 再生
-	// ★ 打撃 SE 再生（ポーズ中は絶対に鳴らさない）
 		if (!m_game->m_isPaused && g_soundManager) {
 			g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
 			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 100.0f);
 			se2->SetName("SE2");
-		}
-
-		// ★ ここでカメラ切り替え
-		if (m_game) {
-			m_game->SetCameraMode(Camera_BackBall);
-
-			// ★ 打った瞬間カメラ開始
-			GameCamera* cam = m_game->GetGameCamera();
-			if (cam) cam->StartHitMomentCamera();
-		}
-
-		if (m_inGameUI) {
-			m_inGameUI->SetBaisokuVisible(true);
 		}
 	}
 }
@@ -568,17 +584,17 @@ void Batter::BatHitBoxPosition()
 
 void Batter::ResetSwing()
 {
-	// �����̌����ɖ߂�
+	// ★ スイングアニメーションをリセット
 	m_transform.m_rotation = m_initialRotation;
 	m_characterModel->SettRotation(m_initialRotation);
 
-	// �J�[�\���ʒu�𒆉��ɖ߂��i�C�Ӂj
+	// ★ カーソル位置もリセット
 	m_meetPosition = Vector3::Zero;
 
-	// ��]�t���O����Z�b�g�i�K�v�Ȃ�j
+	// ★ ぐるぐるバット関連もリセット
 	m_isRotation = false;
 
-	// �J�[�\�����[�h����i�K�v�Ȃ�j
+	// ★ カーソルモードもリセット
 	m_isCursorMode = false;
 }
 
@@ -615,7 +631,7 @@ void Batter::EffectUpdate()
 		enEffect_DownArrow,
 		pos,
 		Quaternion::Identity,
-		Vector3(6.0f, 10.0f, 6.0f)
+		Vector3(20.0f, 40.0f, 20.0f)
 	);
 }
 

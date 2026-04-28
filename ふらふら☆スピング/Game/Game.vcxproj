@@ -242,6 +242,7 @@
     <ClCompile Include="Source\MasterData.cpp" />
     <ClCompile Include="Source\Scene\InGame\Game.cpp" />
     <ClCompile Include="Source\Scene\Load\Load.cpp" />
+    <ClCompile Include="Source\Scene\Ranking\Ranking.cpp" />
     <ClCompile Include="Source\Scene\Result\Result.cpp" />
     <ClCompile Include="Source\Scene\SoundTest\SoundTest.cpp" />
     <ClCompile Include="Source\Scene\Start\Start.cpp" />
@@ -252,6 +253,7 @@
     <ClCompile Include="Source\UI\LoadUI\LoadUI.cpp" />
     <ClCompile Include="Source\UI\LradUI\LradUI.cpp" />
     <ClCompile Include="Source\UI\PauseUI\PauseUI.cpp" />
+    <ClCompile Include="Source\UI\RankingUI\RankingUI.cpp" />
     <ClCompile Include="Source\UI\ResultUI\ResultUI.cpp" />
     <ClCompile Include="Source\UI\SoundTestUI\SoundTestUI.cpp" />
     <ClCompile Include="Source\UI\TiterUI\TiterUI.cpp" />
@@ -282,6 +284,7 @@
     <ClInclude Include="Source\MasterData.h" />
     <ClInclude Include="Source\Scene\InGame\Game.h" />
     <ClInclude Include="Source\Scene\Load\Load.h" />
+    <ClInclude Include="Source\Scene\Ranking\Ranking.h" />
     <ClInclude Include="Source\Scene\Result\Result.h" />
     <ClInclude Include="Source\Scene\SoundTest\SoundTest.h" />
     <ClInclude Include="Source\Scene\Start\Start.h" />
@@ -292,6 +295,7 @@
     <ClInclude Include="Source\UI\LoadUI\LoadUI.h" />
     <ClInclude Include="Source\UI\LradUI\LradUI.h" />
     <ClInclude Include="Source\UI\PauseUI\PauseUI.h" />
+    <ClInclude Include="Source\UI\RankingUI\RankingUI.h" />
     <ClInclude Include="Source\UI\ResultUI\ResultUI.h" />
     <ClInclude Include="Source\UI\SoundTestUI\SoundTestUI.h" />
     <ClInclude Include="Source\UI\TiterUI\TiterUI.h" />
