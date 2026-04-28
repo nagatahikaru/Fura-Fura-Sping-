@@ -17,19 +17,16 @@ bool TiterUI::Start()
     m_spriteRender.Init("Assets/sprite/siro.DDS", 1920.0f, 1080.0f);
 
     m_start.Init("Assets/sprite/Start.dds", 250.0f, 150.0f);
-    m_start.SetPosition({ 0.0f, -300.0f, 0.0f });
+    m_start.SetPosition({ 0.0f, -150.0f, 0.0f });
 
     m_option.Init("Assets/sprite/Soundtest2.dds", 250.0f, 150.0f);
     m_option.SetPosition({ 0.0f, -450.0f, 0.0f });
 
-    m_Title.Init("Assets/sprite/hurahura.dds", 1200.0f, 800.0f);
-    m_Title.SetPosition({ 0.0f, 300.0f, 0.0f });
+    m_Title.Init("Assets/sprite/hurahura.dds", 1900.0f, 1500.0f);
+    m_Title.SetPosition({ 0.0f, 100.0f, 0.0f });
 
-    m_gurobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
-    m_gurobu.SetPosition({ 730.0f, -400.0f, 0.0f });
-
-    m_ranking.Init("Assets/sprite/RankingUI.dds", 350.0f, 330.0f);
-    m_ranking.SetPosition({ 730.0f, -400.0f, 0.0f });
+    m_ranking.Init("Assets/sprite/RankingUI.dds", 250.0f, 150.0f);
+    m_ranking.SetPosition({ 0.0f, -300.0f, 0.0f });
 
     m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
 
@@ -61,22 +58,17 @@ void TiterUI::Update()
         return;
     }
 
-    // ▼ カーソル移動（上下）
+    // ▼ カーソル移動（上下のみ）
     if (g_pad[0]->IsTrigger(enButtonUp)) {
-        m_cursor = 0;   // ゲーム
+        m_cursor--;
+        if (m_cursor < 0) m_cursor = 2;   // 0 → 上 → 2
     }
+
     if (g_pad[0]->IsTrigger(enButtonDown)) {
-        m_cursor = 1;   // メニュー
+        m_cursor++;
+        if (m_cursor > 2) m_cursor = 0;   // 2 → 下 → 0
     }
-    // ▼ 横入力でランキングへ
-    if (g_pad[0]->IsTrigger(enButtonRight)) {
-        m_cursor = 2;  // ランキング選択状態へ
-    }
-    if (g_pad[0]->IsTrigger(enButtonLeft)) {
-        if (m_cursor == 2) {
-            m_cursor = 0;  // ランキングから START に戻る
-        }
-    }
+
 
     // ▼ Aボタンで決定
     if (g_pad[0]->IsTrigger(enButtonA)) {
@@ -86,30 +78,30 @@ void TiterUI::Update()
             return;
         }
         else if (m_cursor == 1) {
-            auto st = NewGO<SoundTestUI>(0); // OPTION
-            st->m_returnType = ReturnToTitle;
+            NewGO<Ranking>(0);  // ★ ランキングへ
         }
         else if (m_cursor == 2) {
-            NewGO<Ranking>(0);  // ★ ランキングへ
+            auto st = NewGO<SoundTestUI>(0); // OPTION
+            st->m_returnType = ReturnToTitle;
         }
         DeleteGO(this); // UI削除
     }
 
     // ▼ カーソルに応じて見た目を変える（例：少し拡大）
     if (m_cursor == 0) {
-        m_start.SetScale({ 1.7f, 1.7f, 1.0f });   // ← 追加
+        m_start.SetScale({ 2.0f, 2.0f, 1.0f });   // ← 追加
         m_option.SetScale({ 1.0f, 1.0f, 1.0f });  // ← 追加
         m_ranking.SetScale({1.0f , 1.0f, 1.0f});
     }
     else if (m_cursor == 1) {
         m_start.SetScale({ 1.0f, 1.0f, 1.0f });   // ← 追加
-        m_option.SetScale({ 1.7f, 1.7f, 1.0f });  // ← 追加
-        m_ranking.SetScale({ 1.0f , 1.0f, 1.0f });
+        m_option.SetScale({ 1.0f, 1.0f, 1.0f });  // ← 追加
+        m_ranking.SetScale({ 2.0f, 2.0f, 1.0f });
     }
     else if (m_cursor == 2) {
         m_start.SetScale({ 1.0f, 1.0f, 1.0f });   // ← 追加
-        m_option.SetScale({ 1.0f, 1.0f, 1.0f });  // ← 追加
-        m_ranking.SetScale({ 1.7f, 1.7f, 1.0f });
+        m_option.SetScale({ 2.0f, 2.0f, 1.0f });  // ← 追加
+        m_ranking.SetScale({ 1.0f , 1.0f, 1.0f });
     }
 }
 
@@ -123,8 +115,6 @@ void TiterUI::Render(RenderContext& rc)
     m_option.Draw(rc);
     m_Title.Update();
     m_Title.Draw(rc);
-    m_gurobu.Update();
-    m_gurobu.Draw(rc);
     m_ranking.Update();
     m_ranking.Draw(rc);
     // ▼ フェードアウト（黒い板）
