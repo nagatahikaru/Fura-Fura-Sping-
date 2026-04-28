@@ -56,11 +56,13 @@ Batter::~Batter()
 {
 	
 	m_stateMachine->SetBatter(nullptr);
-	g_effectManager->OrllStopEffect();
-	//当たり判定オブジェクトの削除
-	if (m_collisionObject)return;
-	delete m_collisionObject;
-	
+	if (g_effectManager) {
+		g_effectManager->OrllStopEffect();
+	}
+
+	if (m_collisionObject) {
+		delete m_collisionObject;
+	}
 }
 
 bool Batter::Start()
