@@ -66,7 +66,7 @@ void Ball::Update()
     {
         ResetBall(); 
 
-        Throw({ 0.0f, -20.0f, 0.0f });
+        Throw({ 0.0f, -10.0f, 0.0f });
         m_throwTimer = 0.0f;
     }
 
@@ -74,17 +74,6 @@ void Ball::Update()
    if (m_isMove)
 {
     m_velocity.y -= 10.5f * dt;
-
-    //変化球処理
-    if (m_curveDir)
-    {
-        m_velocity.x -= 3.0f * dt; //左に曲がる
-    }
-    else if (m_curveDir)
-    {
-        m_velocity.x += 3.0f * dt;
-    }
-
 
         //変化球処理
         if (m_ballType == Curve)
@@ -195,7 +184,7 @@ void Ball::Update()
     if (t < 0.0f) t = 0.0f;
     if (t > 1.0f) t = 1.0f;
 
-    float scale = 4.0f * (1.0f - t * 0.8f);
+    float scale = 2.0f * (1.0f - t * 0.8f);
 
     //最小サイズ制限（消え防止）
     if (scale < 2.0f) scale = 2.0f;
@@ -219,20 +208,17 @@ void Ball::Update()
 void Ball::Throw(const Vector3& targetPos)
 {
     
-
-
     Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
 
-
-    float speed =1500.0f + (rand() % 350);
+    float speed =2000.0f + (rand() % 350);
 
     int r = rand() % 100;
 
 
-    if (r < 70)
+    if (r < 60)
     {
-        //70%の確率でストレート
+        //60%の確率でストレート
         m_curveDir = 0;
     }
     else
@@ -245,7 +231,7 @@ void Ball::Throw(const Vector3& targetPos)
 
     if (m_curveDir != 0)
     {
-        speed *= 0.6f;  // 変化球は少し遅く
+        speed *= 0.8f;  // 変化球は少し遅く
     }
 
     m_velocity = dir * speed;
