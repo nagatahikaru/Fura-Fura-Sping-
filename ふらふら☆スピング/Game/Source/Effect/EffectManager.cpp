@@ -16,13 +16,47 @@ EffectManager::EffectManager()
 }
 
 /// <summary>
+/// エフェクトの更新。
+/// </summary>
+/// エフェクトの更新。再生が終了したエフェクトは削除します。
+/// 再生が終了したエフェクトは削除します。エフェクトの削除はDeleteGOを使用してください。
+/// DeleteGOを使用しないと、エフェクトの参照が残ってしまい、
+/// エフェクトの再生が終了しているのにエフェクトの参照が残っている状態になってしまいます。
+void EffectManager::Update()
+{
+	//再生が終了したエフェクトは削除します。
+	for (auto it = m_effects.begin(); it != m_effects.end(); )
+	{
+		//エフェクトの参照を取得。
+		auto emitter = it->second;
+
+		//エフェクトの再生が終了しているか判定。
+		if (emitter == nullptr || !emitter->IsPlay())
+		{
+			//エフェクトの参照が残っている場合は削除。
+			if (emitter)
+			{
+				DeleteGO(emitter); // ← これ重要
+				it->second = nullptr; // ← これも重要
+			}
+			it = m_effects.erase(it);
+		}
+		//再生が終了していない場合は次のエフェクトへ。
+		else
+		{
+			++it;
+		}
+	}
+}
+
+/// <summary>
 /// エフェクトの再生。
 /// </summary>
 /// <param name="type">再生したいエフェクトの種類。</param>
 /// <param name="pos">エフェクトの位置。</param>
 /// <param name="rot">エフェクトの回転。</param>
 /// <param name="scale">エフェクトのスケール。</param>
-void EffectManager::SetEffect(
+uint32_t EffectManager::SetEffect(
 	EffectType type,
 	const Vector3& pos,
 	const Quaternion& rot,
@@ -34,15 +68,21 @@ void EffectManager::SetEffect(
 	effectEmitter->SetRotation(rot);
 	effectEmitter->SetScale(scale);
 	effectEmitter->Play();
-	m_effectEmitter = effectEmitter;
+	uint32_t id = m_nextId++;
+	m_effects[id] = effectEmitter;
+
+	return id;
 }
 
 // <summary>
 // エフェクトの停止。
 // </summary>
-void EffectManager::StopEffect()
+void EffectManager::StopEffect(uint32_t id)
 {
-	if (m_effectEmitter == nullptr)return;
-	m_effectEmitter->Stop();
-	m_effectEmitter = nullptr; // ★ これ重要
+	auto it = m_effects.find(id);
+	if (it == m_effects.end()) return;
+
+	it->second->Stop();
+	DeleteGO(it->second);
+	m_effects.erase(it);
 }

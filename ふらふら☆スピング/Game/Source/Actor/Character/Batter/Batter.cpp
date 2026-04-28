@@ -54,7 +54,9 @@ Batter::Batter()
 
 Batter::~Batter()
 {
+	
 	m_stateMachine->SetBatter(nullptr);
+	g_effectManager->OrllStopEffect();
 	//当たり判定オブジェクトの削除
 	if (m_collisionObject)return;
 	delete m_collisionObject;
@@ -126,8 +128,7 @@ bool Batter::Start()
 void Batter::Update()
 {
 	if(m_isPaused)
-	{
-		
+	{		
 		return; // ゲームがポーズ中なら更新処理をスキップ
 	}
 	if (!m_inGameUI)
@@ -136,6 +137,7 @@ void Batter::Update()
 		return;
 	}
 	m_game = FindGO<Game>("game");
+	EffectInfo info;
 	// ★ リプレイ中はバッターの通常処理を完全停止
 	if (m_game && m_game->IsReplayPlaying()) {
 		// ★ ポーズ中ならアニメーションも止める
@@ -149,7 +151,7 @@ void Batter::Update()
 	}
 	// ★ ポーズ中はキャッチャーのアニメーションを止める	
 	if (m_game && m_game->m_isPaused) {
-		g_effectManager->StopEffect(); // エフェクトも停止
+		g_effectManager->OrllStopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
 	// ★ 遅延ヒット処理
@@ -477,6 +479,7 @@ void Batter::HitBat()
 		}
 
 		if (m_inGameUI) {
+			HitEffect();
 			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
 		}
 
@@ -609,19 +612,35 @@ void Batter::ResetCursorPosition()
 /** 演出関連コード */
 void Batter::EffectUpdate()
 {
+	
 	if (m_guruGuruBatCount < 5) return;
 
-	if (g_effectManager->GetIsPlayeEffect()) {
+	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)) {
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
 	
 	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
 
-	g_effectManager->SetEffect(
+
+	m_inro.m_effectDawnID=g_effectManager->SetEffect(
 		enEffect_DownArrow,
 		pos,
 		Quaternion::Identity,
-		Vector3(20.0f, 40.0f, 20.0f)
+		Vector3(15.0f, 40.0f, 15.0f)
+	);
+}
+
+void Batter::HitEffect()
+{
+	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectHitID)) {
+		return; // すでにエフェクトが再生中なら新たに出さない
+	}
+	Vector3 pos = m_ball->GetPosition();
+	m_inro.m_effectHitID = g_effectManager->SetEffect(
+		enEffect_HitBat,
+		pos,
+		Quaternion::Identity,
+		Vector3(20.0f, 20.0f, 20.0f)
 	);
 }
 
