@@ -22,7 +22,7 @@ bool Ball::Start()
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
 	m_modelRender.SetScale({ 9.0f,9.0f,9.0f });
 
-	m_position = { -0.0f, 1100.0f, 900.0f };
+	m_position = { -0.0f, 650.0f, 1000.0f };
 	m_modelRender.SetPosition(m_position);
 
     
@@ -66,23 +66,23 @@ void Ball::Update()
     {
         ResetBall(); 
 
-        Throw({ 0.0f, -10.0f, 0.0f });
+        Throw({ 0.0f, -22.0f, 0.0f });
         m_throwTimer = 0.0f;
     }
 
 
    if (m_isMove)
 {
-    m_velocity.y -= 10.5f * dt;
+    m_velocity.y -= 15.0f * dt;
 
         //変化球処理
         if (m_ballType == Curve)
         {
-            m_velocity.x -= 3.0f * dt; //左に曲がる
+            m_velocity.x -= 3.5f * dt; //左に曲がる
         }
         else if (m_ballType == Slider)
         {
-            m_velocity.x += 3.0f * dt; //右に曲がる
+            m_velocity.x += 3.5f * dt; //右に曲がる
         }
 
         m_position += m_velocity * dt;
@@ -184,7 +184,7 @@ void Ball::Update()
     if (t < 0.0f) t = 0.0f;
     if (t > 1.0f) t = 1.0f;
 
-    float scale = 2.0f * (1.0f - t * 0.8f);
+    float scale = 3.0f * (1.0f - t * 0.8f);
 
     //最小サイズ制限（消え防止）
     if (scale < 2.0f) scale = 2.0f;
@@ -208,17 +208,17 @@ void Ball::Update()
 void Ball::Throw(const Vector3& targetPos)
 {
     
-    Vector3 dir = { 0.0f,-0.1f,3.0f };
+    Vector3 dir = { 0.0f,-0.1f,3.5f };
     dir.Normalize();
 
-    float speed =2000.0f + (rand() % 350);
+    float speed =1800.0f + (rand() % 350);
 
     int r = rand() % 100;
 
 
-    if (r < 60)
+    if (r < 70)
     {
-        //60%の確率でストレート
+        //70%の確率でストレート
         m_curveDir = 0;
     }
     else
