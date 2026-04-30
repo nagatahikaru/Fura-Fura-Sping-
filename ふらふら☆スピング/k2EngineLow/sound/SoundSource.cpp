@@ -54,6 +54,9 @@ namespace nsK2EngineLow {
 
 	void SoundSource::Play(bool isLoop)
 	{
+		if (m_sourceVoice == nullptr) {
+			return; // š ‚±‚ê‚ÅƒNƒ‰ƒbƒVƒ…–h~
+		}
 		if (m_isAvailable == false) {
 			return;
 		}

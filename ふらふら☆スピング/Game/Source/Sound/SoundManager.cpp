@@ -29,7 +29,9 @@ namespace {
 		"SE",
 		"SE2",
 		"SE3",
-		"SE4"
+		"SE4",
+		"SE5",
+		"SE6"
 	};	
 }
 

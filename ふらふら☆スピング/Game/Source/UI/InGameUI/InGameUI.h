@@ -4,6 +4,9 @@
 class InGameUI :public Source
 {
 public:
+	inline float Lerp(float a, float b, float t) {
+		return a + (b - a) * t;
+	}
 	InGameUI();
 	virtual ~InGameUI();
 	virtual void Update();
@@ -38,6 +41,7 @@ public:
 	void StartFadeOut(float speed);
 	void StartFadeIn(float speed);
 	bool IsFadingOut() const { return m_isFadeOut; }
+	void StartStrikeAnim();
 	std::function<void()> m_onFadeOutFinished;
 	std::function<void()> m_onFadeInFinished;
 private:
@@ -113,5 +117,10 @@ private:
 	FontRender m_fontDebug3;
 	FontRender m_fontDebug4;
 	FontRender m_fontDebug5;
+	SpriteRender m_strikeSprite;
+	// --- ストライク演出用 ---
+	float m_strikeTimer = 0.0f;
+	bool  m_isStrikeAnim = false;
+	float m_strikeHoldTime = 0.0f;   // 表示を維持する時間
 };
 

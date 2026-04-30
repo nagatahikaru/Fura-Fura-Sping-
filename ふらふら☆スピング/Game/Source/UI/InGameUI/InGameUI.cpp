@@ -35,6 +35,7 @@ InGameUI::InGameUI() {
 	m_spritekuro.Init("Assets/sprite/kuro.DDS",1920.0f, 1080.0f);
 	m_bbb.Init("Assets/sprite/bbb.dds", 200.0f, 200.0f);
 	m_bsuki.Init("Assets/sprite/bsuki.DDS", 550.0f, 500.0f);
+	m_strikeSprite.Init("Assets/sprite/strike.DDS", 550.0f, 500.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -243,7 +244,17 @@ void InGameUI::StartFadeIn(float speed)
 	m_isFadeIn = true;
 	m_isFadeOut = false;
 	m_fadeSpeed = speed;
-	m_fadeAlpha = 1.0f;   // 真っ黒からスタートして 0 に戻す
+	m_fadeAlpha = 0.7f;   // 真っ黒からスタートして 0 に戻す
+}
+
+void InGameUI::StartStrikeAnim()
+{
+	m_strikeTimer = 0.0f;
+	m_strikeHoldTime = 1.0f;   // ★ 1秒残す
+	m_isStrikeAnim = true;
+
+	m_strikeSprite.SetScale({ 0.3f, 0.3f,1.0f });
+	m_strikeSprite.SetMulColor({ 1,1,1,0 }); // 透明
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -332,7 +343,39 @@ void InGameUI::Render(RenderContext& rc) {
 				m_Abotan.Draw(rc);
 			}
 		}
+		if (m_isStrikeAnim) {
 
+			// ① 拡大アニメ（0.4秒）
+			if (m_strikeTimer < 0.4f) {
+
+				m_strikeTimer += g_gameTime->GetFrameDeltaTime();
+				float t = m_strikeTimer / 0.4f;
+				if (t > 1.0f) t = 1.0f;
+
+				float scale;
+				if (t < 0.7f)
+					scale = Lerp(0.3f, 1.2f, t / 0.7f);
+				else
+					scale = Lerp(1.2f, 1.0f, (t - 0.7f) / 0.3f);
+
+				m_strikeSprite.SetScale(Vector3{ scale, scale, 1.0f });
+
+				float alpha = Lerp(0.0f, 1.0f, t);
+				m_strikeSprite.SetMulColor({ 1,1,1,alpha });
+			}
+			else {
+				// ② アニメ終了後の待機時間（1秒）
+				m_strikeHoldTime -= g_gameTime->GetFrameDeltaTime();
+
+				if (m_strikeHoldTime <= 0.0f) {
+					m_isStrikeAnim = false;  // 完全終了
+				}
+			}
+
+			// ★ 描画
+			m_strikeSprite.Update();
+			m_strikeSprite.Draw(rc);
+		}
 	}
 
 	if (m_isFontVisible) {

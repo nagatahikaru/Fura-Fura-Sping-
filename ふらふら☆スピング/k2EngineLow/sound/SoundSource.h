@@ -78,6 +78,9 @@ namespace nsK2EngineLow {
 		/// <param name="vol">ボリューム。</param>
 		void SetVolume(float vol)
 		{
+			if (m_sourceVoice == nullptr) {
+				return; // ★ これでクラッシュ防止
+			}
 			m_sourceVoice->SetVolume(vol);
 		}
 		/// <summary>
