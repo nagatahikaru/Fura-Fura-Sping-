@@ -35,7 +35,7 @@ InGameUI::InGameUI() {
 	m_spritekuro.Init("Assets/sprite/kuro.DDS",1920.0f, 1080.0f);
 	m_bbb.Init("Assets/sprite/bbb.dds", 200.0f, 200.0f);
 	m_bsuki.Init("Assets/sprite/bsuki.DDS", 550.0f, 500.0f);
-	m_strikeSprite.Init("Assets/sprite/strike.DDS", 550.0f, 500.0f);
+	m_strikeSprite.Init("Assets/sprite/strike.DDS", 600.0f, 500.0f);
 }
 
 InGameUI::~InGameUI() {
