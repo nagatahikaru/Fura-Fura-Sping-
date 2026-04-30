@@ -66,7 +66,7 @@ void Ball::Update()
     {
         ResetBall(); 
 
-        Throw({ 0.0f, -22.0f, 0.0f });
+        Throw({ 0.0f, -20.0f, 0.0f });
         m_throwTimer = 0.0f;
     }
 
@@ -208,7 +208,7 @@ void Ball::Update()
 void Ball::Throw(const Vector3& targetPos)
 {
     
-    Vector3 dir = { 0.0f,-0.1f,3.5f };
+    Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
 
     float speed =2000.0f + (rand() % 350);
