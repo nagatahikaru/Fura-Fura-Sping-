@@ -14,7 +14,7 @@ TiterUI::~TiterUI() {
 
 bool TiterUI::Start()
 {
-    m_spriteRender.Init("Assets/sprite/siro.DDS", 1920.0f, 1080.0f);
+    m_spriteRender.Init("Assets/sprite/Title.DDS", 1920.0f, 1080.0f);
 
     m_start.Init("Assets/sprite/Start.dds", 250.0f, 150.0f);
     m_start.SetPosition({ 0.0f, -150.0f, 0.0f });

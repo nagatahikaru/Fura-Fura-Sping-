@@ -76,9 +76,6 @@
     <Filter Include="Source\UI\LoadUI">
       <UniqueIdentifier>{05823ccc-be60-4054-a628-d80c0ee9bc78}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Scene\Load">
-      <UniqueIdentifier>{634ffc6e-648f-41ad-af12-19768848e951}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Scene\Ranking">
       <UniqueIdentifier>{eb546d2f-3a41-406f-b0cb-5c445625805c}</UniqueIdentifier>
     </Filter>
@@ -87,6 +84,9 @@
     </Filter>
     <Filter Include="Source\Scene\Result">
       <UniqueIdentifier>{635b93d5-e1e7-410d-bedc-b2e6f16cbdb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scene\Load">
+      <UniqueIdentifier>{634ffc6e-648f-41ad-af12-19768848e951}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

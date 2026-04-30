@@ -146,6 +146,10 @@ void Batter::Update()
 		if (m_game->m_isPaused) {
 			return;   // ← これでスイングアニメも完全停止
 		}
+		// ★ リプレイ中にスイングアニメが再生されているなら速度を4.0に固定
+		if (IsSwingAnimationPlaying()) {
+			m_characterModel->GetModelRender()->SetAnimationSpeed(4.0f);
+		}
 		// アニメーションだけ進めたい場合はこれを残す
 		m_characterModel->Update();
 
