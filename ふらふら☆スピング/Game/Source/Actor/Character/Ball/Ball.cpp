@@ -74,7 +74,7 @@ void Ball::Update()
 
    if (m_isMove)
 {
-    m_velocity.y -= 15.0f * dt;
+    m_velocity.y -= 14.5f * dt;
 
         //変化球処理
         if (m_ballType == Curve)
@@ -229,7 +229,7 @@ void Ball::Throw(const Vector3& targetPos)
     Vector3 dir = { 0.0f,-0.1f,3.5f };
     dir.Normalize();
 
-    float speed =1800.0f + (rand() % 350);
+    float speed =2000.0f + (rand() % 350);
 
     int r = rand() % 100;
 
