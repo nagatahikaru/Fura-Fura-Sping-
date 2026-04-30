@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
 #include"Source/UI/InGameUI/InGameUI.h"
+#include"Source/Sound/SoundManager.h"
 
 Ball::Ball()
 {
@@ -119,6 +120,24 @@ void Ball::Update()
             m_hasFixed = true;
         }
 
+        // ★ ストライク判定（Z が 7000 を超えた瞬間）
+        if (!m_hasStrike && m_position.z >= 7270.0f) {
+            g_soundManager->PlaySE(Sound::enSound_SE6);
+        }
+
+        // ★ ストライク判定（Z が 7000 を超えた瞬間）
+        if (!m_hasStrike && m_position.z >= 7300.0f) {
+            g_soundManager->PlaySE(Sound::enSound_SE5);
+            Game* game = FindGO<Game>("game");
+            if (game) {
+                InGameUI* ui = game->GetInGameUI();
+                if (ui) {
+                    ui->StartStrikeAnim();   // ← UI にアニメ開始を指示
+                }
+            }
+            m_hasStrike = true;  // 二重発火防止
+        }
+
         // ★ 空振り判定（打撃ゾーンを通過したら次へ）
         if (!m_hasHit && m_position.z > 9000.0f) {
             Game* game = FindGO<Game>("game");
@@ -129,7 +148,6 @@ void Ball::Update()
             m_isMove = false;
             return;
         }
-
 
         // 着地処理
        // 着地処理
@@ -312,6 +330,7 @@ void Ball::ResetBall()
     m_isMove = false;
     m_hasHit = false;
     m_hasFixed = false;
+    m_hasStrike = false;
     SetPosition(m_position);
 }
 
