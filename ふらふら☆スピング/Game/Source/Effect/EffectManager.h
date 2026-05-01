@@ -15,7 +15,9 @@ class EffectManager : public IGameObject
 {
 public:
 	EffectManager();
-	~EffectManager() = default;
+	~EffectManager() {
+		m_effects.clear();
+	};
 
 	void Update() override;
 
@@ -25,11 +27,17 @@ public:
 		const Quaternion& rot,
 		const Vector3& scale);
 
+	uint32_t MoveEffect(
+		uint32_t id,
+		const Vector3& pos,
+		const Quaternion& rot,
+		const Vector3& scale);
+
 	// 停止
 	void StopEffect(uint32_t id);
 
 	//全てのエフェクトを停止。
-	void OrllStopEffect()
+	void ALLStopEffect()
 	{
 		for (auto& effect : m_effects) {
 			if (effect.second != nullptr) {
@@ -58,7 +66,9 @@ public:
 
 
 private:
-	const char16_t* m_filePath = u"Assets/effect/";
+	// 下記はエフェクトのファイルパスを管理するための変数です。
+	// エフェクトのファイルパスを変更する場合は、下記の変数を変更してください。
+	const char16_t* m_filePath = u"Assets/effect/efk";
 	const char16_t* m_ext = u".efk";
 
 	//エフェクトのファイル名。エフェクトの種類と同じ順番で追加してください。
@@ -68,8 +78,8 @@ private:
 		u"HitBat"
 	};
 
-	std::unordered_map<uint32_t, EffectEmitter*> m_effects;					//effectへの参照。
-	uint32_t m_nextId = 0;													//エフェクトのID。エフェクトを識別するために使用します。エフェクトを追加するたびにインクリメントされます。
+	std::unordered_map<uint32_t, EffectEmitter*> m_effects;		//effectへの参照。
+	uint32_t m_nextId = 0;										//エフェクトのID。エフェクトを識別するために使用します。エフェクトを追加するたびにインクリメントされます。
 };
 
 //EffectManagerのグローバルインスタンス。

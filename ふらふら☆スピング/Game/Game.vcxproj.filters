@@ -242,7 +242,6 @@
     <ClInclude Include="Source\UI\UIManager.h">
       <Filter>Source\UI</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Source\Actor\Character\Batter\BatterStateMachine.h">
       <Filter>Source\Actor\Character\Batter</Filter>
     </ClInclude>

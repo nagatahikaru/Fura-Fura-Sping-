@@ -56,7 +56,7 @@ Batter::~Batter()
 {
 	
 	m_stateMachine->SetBatter(nullptr);
-	g_effectManager->OrllStopEffect();
+	g_effectManager->ALLStopEffect();
 	//当たり判定オブジェクトの削除
 	if (m_collisionObject)return;
 	delete m_collisionObject;
@@ -151,7 +151,7 @@ void Batter::Update()
 	}
 	// ★ ポーズ中はキャッチャーのアニメーションを止める	
 	if (m_game && m_game->m_isPaused) {
-		g_effectManager->OrllStopEffect(); // エフェクトも停止
+		g_effectManager->ALLStopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
 	// ★ 遅延ヒット処理
