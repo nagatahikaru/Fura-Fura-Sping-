@@ -361,7 +361,7 @@ namespace nsK2Engine {
 
         // フォワードレンダリング
         ForwardRendering(rc);
-
+        
         // ポストエフェクトを実行
         m_postEffect.Render(rc, m_mainRenderTarget);
 

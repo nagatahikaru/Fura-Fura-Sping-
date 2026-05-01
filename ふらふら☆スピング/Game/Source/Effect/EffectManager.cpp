@@ -81,6 +81,33 @@ uint32_t EffectManager::SetEffect(
 	return id;
 }
 
+/// <summary>
+/// エフェクトの移動。
+/// </summary>
+/// <param name="id">移動したいエフェクトのID。</param>
+/// <param name="pos">エフェクトの位置。</param>
+/// <param name="rot">エフェクトの回転。</param>
+/// <param name="scale">エフェクトのスケール。</param>
+/// <returns>移動に成功したらtrue。エフェクトのIDが存在しない場合はfalse。</returns>
+uint32_t EffectManager::MoveEffect(
+	uint32_t id,
+	const Vector3& pos,
+	const Quaternion& rot,
+	const Vector3& scale)
+{
+	//エフェクトの参照を取得。
+	auto it = m_effects.find(id);
+	//エフェクトのIDが存在しない場合はfalseを返す。
+	if (it == m_effects.end()) return false;
+	//エフェクトの参照が存在しない場合はfalseを返す。
+	auto emitter = it->second;
+	if (emitter == nullptr) return false;
+	emitter->SetPosition(pos);
+	emitter->SetRotation(rot);
+	emitter->SetScale(scale);
+	return true;
+}
+
 // <summary>
 // エフェクトの停止。
 // </summary>
