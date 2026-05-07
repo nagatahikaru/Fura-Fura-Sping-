@@ -328,8 +328,8 @@ private:
 
 	// ★ エフェクト関連の変数（追加）
 	struct EffectInfo {										// エフェクトの情報を管理する構造体
-		uint32_t m_effectDawnID;										// エフェクトのIDを管理する変数
-		uint32_t m_effectHitID;
+		uint32_t m_effectDawnID=0;										// エフェクトのIDを管理する変数
+		uint32_t m_effectHitID=0;										// エフェクトのIDを管理する変数
 	};
 	EffectInfo m_inro;
 };

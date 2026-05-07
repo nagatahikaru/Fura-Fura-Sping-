@@ -20,10 +20,16 @@ public:
 	void Update() override;
 
 	uint32_t SetEffect(
-		EffectType type,
-		const Vector3& pos,
-		const Quaternion& rot,
-		const Vector3& scale);
+		EffectType type=enEffect_DownArrow,
+		const Vector3& pos=Vector3::Zero,
+		const Vector3& scale=Vector3::One,
+		const Quaternion& rot=Quaternion::Identity);
+
+	uint32_t MoveEffect(
+		uint32_t id=0,
+		const Vector3& pos=Vector3::Zero,
+		const Vector3& scale = Vector3::One,
+		const Quaternion& rot = Quaternion::Identity);
 
 	// í‚é~
 	void StopEffect(uint32_t id);

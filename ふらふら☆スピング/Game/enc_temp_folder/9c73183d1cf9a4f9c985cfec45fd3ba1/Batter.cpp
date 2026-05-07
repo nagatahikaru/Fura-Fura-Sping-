@@ -617,7 +617,8 @@ void Batter::ResetCursorPosition()
 
 /** 演出関連コード */
 void Batter::EffectUpdate()
-{	
+{
+	
 	if (m_guruGuruBatCount < 5) return;
 
 	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)or m_inro.m_effectDawnID != 0) {
@@ -625,11 +626,13 @@ void Batter::EffectUpdate()
 			m_inro.m_effectDawnID,
 			Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z),
 			Vector3(15.0f, 40.0f, 15.0f),
-			Quaternion::Identity);
+			Quaternion::Identity
+		);
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
 	
 	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
+
 
 	m_inro.m_effectDawnID = g_effectManager->SetEffect(
 		enEffect_DownArrow,
@@ -639,16 +642,15 @@ void Batter::EffectUpdate()
 
 void Batter::HitEffect()
 {
-	Vector3 pos = m_ball->GetPosition();
 	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectHitID) or m_inro.m_effectHitID != 0) {
-		g_effectManager->MoveEffect(m_inro.m_effectHitID, pos, Vector3(20.0f, 20.0f, 20.0f));
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
-	
+	Vector3 pos = m_ball->GetPosition();
 	m_inro.m_effectHitID = g_effectManager->SetEffect(
 		enEffect_HitBat,
-		pos,
-		Vector3(20.0f, 20.0f, 20.0f));
+		pos,		
+		Vector3(20.0f, 20.0f, 20.0f)
+	);
 }
 
 void Batter::Render(RenderContext& rc)
