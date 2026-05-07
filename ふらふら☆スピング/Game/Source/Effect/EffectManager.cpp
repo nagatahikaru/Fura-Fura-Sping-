@@ -66,8 +66,8 @@ void EffectManager::Update()
 uint32_t EffectManager::SetEffect(
 	EffectType type,
 	const Vector3& pos,
-	const Quaternion& rot,
-	const Vector3& scale)
+	const Vector3& scale,
+	const Quaternion& rot)
 {
 	auto effectEmitter = NewGO<EffectEmitter>(0);	
 	effectEmitter->Init(type);
@@ -91,9 +91,9 @@ uint32_t EffectManager::SetEffect(
 /// <returns>移動に成功したらtrue。エフェクトのIDが存在しない場合はfalse。</returns>
 uint32_t EffectManager::MoveEffect(
 	uint32_t id,
-	const Vector3& pos,
-	const Quaternion& rot,
-	const Vector3& scale)
+	const Vector3& pos,	
+	const Vector3& scale,
+	const Quaternion& rot)
 {
 	//エフェクトの参照を取得。
 	auto it = m_effects.find(id);
