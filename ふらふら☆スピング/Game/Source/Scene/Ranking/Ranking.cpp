@@ -129,7 +129,7 @@ void Ranking::Render(RenderContext& rc) {
         }
         // 10〜14：青
         else if (c < 15) {
-            r2 = 0.0f; g2 = 0.0f; b2 = 1.0f;
+            r2 = 0.0f; g2 = 0.7f; b2 = 1.0f;
         }
         // 15〜19：黄緑
         else if (c < 20) {

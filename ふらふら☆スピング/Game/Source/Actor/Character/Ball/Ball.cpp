@@ -100,7 +100,7 @@ void Ball::Update()
                 game->SetKmValue(distance);
 
                 // ★ 空中で100m超えた瞬間にイベント発火
-                if (!game->m_hasTriggered100m && distance >= 8000.0f) {
+                if (!game->m_hasTriggered100m && distance >= 10700.0f) {
                     game->OnOver100m();
                     game->m_hasTriggered100m = true;
                 }
@@ -189,6 +189,17 @@ void Ball::Update()
         }
         if (m_isRecording) {
             m_replayPath.push_back(m_position);
+        }
+
+        // ★ ホームラン判定（フェードアウト時に y > 700）
+        if (m_isMove == false && m_position.y > 700.0f) {
+            Game* game = FindGO<Game>("game");
+            if (game) {
+                InGameUI* ui = game->GetInGameUI();
+                if (ui) {
+                    ui->ShowHomeRun();   // ← UI にホームラン表示を依頼
+                }
+            }
         }
     }
     SetPosition(m_position);
@@ -307,7 +318,8 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     Game* game = FindGO<Game>("game");
     if (game) {
         int shot = game->m_shots;
-
+        game->m_hitStartZ = m_position.z;   // ★ 追加
+        game->m_hasStartedDistance = true;   // ★ 追加
         // ★ 打った瞬間のフレームを保存
         game->m_hitFrame[shot] = game->GetReplayFrameCount();
         game->m_hitVelocities[game->m_shots] = m_velocity;     // ← 速度

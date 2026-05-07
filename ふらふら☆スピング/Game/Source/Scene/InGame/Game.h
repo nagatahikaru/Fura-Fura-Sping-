@@ -116,6 +116,8 @@ public:
 	Vector3 m_hitStartPos[3];
 	float   m_hitPower[3];
 	int m_shots = 0;          // 何回打ったか
+	float m_hitStartZ = 0.0f;
+	bool m_hasStartedDistance = false;
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。

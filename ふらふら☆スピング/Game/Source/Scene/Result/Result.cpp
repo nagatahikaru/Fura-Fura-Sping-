@@ -28,7 +28,7 @@ bool Result::Start()
 	m_burakku.SetPosition({ 190.0f, -40.0f ,0.0f });*/
 
 	m_skip.Init("Assets/sprite/Askep.dds", 220.0f, 170.0f);
-	m_skip.SetPosition({ 730.0f, -400.0f, 0.0f });
+	m_skip.SetPosition({ 830.0f, -400.0f, 0.0f });
 
 	m_newRecord.Init("Assets/sprite/new.dds", 600.0f, 600.0f);
 	m_newRecord.SetPosition({ 0, 130, 0 });
@@ -258,7 +258,7 @@ void Result::Render(RenderContext& rc)
 	// ぐるぐる
 	swprintf_s(buf, L"ぐるぐる: %d回", m_displayGuruguru);
 	m_fontGuruguru.SetText(buf);
-	m_fontGuruguru.SetPosition(260, 190, 0);
+	m_fontGuruguru.SetPosition(240, 190, 0);
 	m_fontGuruguru.SetScale(1.5f);
 	m_fontGuruguru.SetColor(1, 1, 1, 1);
 	m_fontGuruguru.Draw(rc);

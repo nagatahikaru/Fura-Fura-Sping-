@@ -44,16 +44,22 @@ public:
 	void StartStrikeAnim();
 	std::function<void()> m_onFadeOutFinished;
 	std::function<void()> m_onFadeInFinished;
+	int m_threeShots[3] = { 0,0,0 };      // cm 単位で保存
+	bool m_shotDone[3] = { false,false,false }; // 打ったかどうか
 private:
 
 	FontRender m_fontRender;
-	FontRender m_fontBollRender;
+	FontRender m_fontBollRender1;
+	FontRender m_fontBollRender2;
+	FontRender m_fontBollRender3;
 	ModelRender m_wakuModel;
 	SpriteRender m_spriteRenderBat;
 	SpriteRender m_spriteRenderMeet;
 	SpriteRender m_spriteRenderReplay;
 	SpriteRender m_spriteRenderBall;
-	SpriteRender m_kiiro;
+	SpriteRender m_kiiro1;
+	SpriteRender m_kiiro2;
+	SpriteRender m_kiiro3;
 	SpriteRender m_besu;
 	Vector3 m_batPositionRight = Vector3::Zero;
 	Vector3 m_batPositionLeft = Vector3::Zero;

@@ -13,7 +13,9 @@ InGameUI::InGameUI() {
 	m_spriteRenderMeet.Init("Assets/sprite/mi-to.DDS", 45.0f, 45.0f);
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
 	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 30.0f, 30.0f);
-	m_kiiro.Init("Assets/sprite/kiiro.DDS", 550.0f, 550.0f);
+	m_kiiro1.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
+	m_kiiro2.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
+	m_kiiro3.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
 	m_besu.Init("Assets/sprite/besu.DDS", 400.0f, 450.0f);
 	m_baisoku.Init("Assets/sprite/baisoku.DDS", 150.0f, 150.0f);
 	m_shuchusen.Init("Assets/sprite/shuchusen.DDS", 1920.0f, 1080.0f);
@@ -257,6 +259,12 @@ void InGameUI::StartStrikeAnim()
 	m_strikeSprite.SetMulColor({ 1,1,1,0 }); // 透明
 }
 
+void InGameUI::ShowHomeRun()
+{
+	m_isHomeRunVisible = true;
+	m_homeRunTimer = 1.5f;  // 1.5秒表示
+}
+
 void InGameUI::Render(RenderContext& rc) {
 
 	if (m_isPaused) {
@@ -399,9 +407,15 @@ void InGameUI::Render(RenderContext& rc) {
 			m_ballIcon[i].Draw(rc);
 		}
 
-		m_kiiro.SetPosition(Vector3{ 980.0f, 470.0f, 0.0f });
-		m_kiiro.Update();
-		m_kiiro.Draw(rc);
+		m_kiiro1.SetPosition(Vector3{ 915.0f, 470.0f, 0.0f });
+		m_kiiro1.Update();
+		m_kiiro1.Draw(rc);
+		m_kiiro2.SetPosition(Vector3{ 915.0f, 370.0f, 0.0f });
+		m_kiiro2.Update();
+		m_kiiro2.Draw(rc);
+		m_kiiro3.SetPosition(Vector3{ 915.0f, 270.0f, 0.0f });
+		m_kiiro3.Update();
+		m_kiiro3.Draw(rc);
 
 		m_besu.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 		m_besu.Update();
@@ -468,16 +482,48 @@ void InGameUI::Render(RenderContext& rc) {
 
 		wchar_t boll[256];
 		if (m_isError) {
-			swprintf_s(boll, L"???m");
+			double meter = (double)m_km / 100.0;
+			swprintf_s(boll, L"%.2f m", meter);
 		}
 		else {
 			double meter = (double)m_km / 100.0;
 			swprintf_s(boll, L"%.2f m", meter);
 		}
-		m_fontBollRender.SetText(boll);
-		m_fontBollRender.SetPosition(774.0f, 505.0f, 0.0f);
-		m_fontBollRender.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
-		m_fontBollRender.Draw(rc);
+		// 1球目〜3球目のスコア表示
+		for (int i = 0; i < 3; i++) {
+
+			wchar_t buf[256];
+
+			if (!m_shotDone[i]) {
+				swprintf_s(buf, L"%d:--- m", i + 1);
+			}
+			else {
+				double meter = (double)m_threeShots[i] / 100.0;
+				swprintf_s(buf, L"%d:%.2f m", i + 1, meter);
+			}
+
+			float y = 505.0f - i * 100.0f;  // 縦位置をずらす
+
+			if (i == 0) {
+				m_fontBollRender1.SetText(buf);
+				m_fontBollRender1.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender1.SetColor(0, 0, 0, 1);
+				m_fontBollRender1.Draw(rc);
+			}
+			else if (i == 1) {
+				m_fontBollRender2.SetText(buf);
+				m_fontBollRender2.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender2.SetColor(0, 0, 0, 1);
+				m_fontBollRender2.Draw(rc);
+			}
+			else {
+				m_fontBollRender3.SetText(buf);
+				m_fontBollRender3.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender3.SetColor(0, 0, 0, 1);
+				m_fontBollRender3.Draw(rc);
+			}
+		}
+
 
 		if (m_isBaisokuVisible) {
 			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
