@@ -118,6 +118,7 @@ public:
 	int m_shots = 0;          // 何回打ったか
 	float m_hitStartZ = 0.0f;
 	bool m_hasStartedDistance = false;
+	bool m_isHomeRun = false;
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。

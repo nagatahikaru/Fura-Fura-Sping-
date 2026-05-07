@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "InGameUI.h"
+#include"Source/Sound/SoundManager.h"
 
 
 template <typename T>
@@ -38,6 +39,10 @@ InGameUI::InGameUI() {
 	m_bbb.Init("Assets/sprite/bbb.dds", 200.0f, 200.0f);
 	m_bsuki.Init("Assets/sprite/bsuki.DDS", 550.0f, 500.0f);
 	m_strikeSprite.Init("Assets/sprite/strike.DDS", 600.0f, 500.0f);
+	m_niceSprite.Init("Assets/sprite/nice.dds", 800, 700);
+	m_greatSprite.Init("Assets/sprite/great.dds", 800, 700);
+	m_excellentSprite.Init("Assets/sprite/excellent.dds", 800, 700);
+	m_perfectSprite.Init("Assets/sprite/perfect.dds", 800, 700);
 }
 
 InGameUI::~InGameUI() {
@@ -103,6 +108,32 @@ void InGameUI::Update() {
 			// ★ フェードイン完了通知
 			if (m_onFadeInFinished) {
 				m_onFadeInFinished();
+			}
+		}
+	}
+	if (m_isPredictionAnim) {
+
+		// ① 拡大アニメ（0.4秒）
+		if (m_predictionAnimTimer < 0.4f) {
+
+			m_predictionAnimTimer += g_gameTime->GetFrameDeltaTime();
+			float t = m_predictionAnimTimer / 0.4f;
+			if (t > 1.0f) t = 1.0f;
+
+			if (t < 0.7f)
+				m_predictionScale = Lerp(0.3f, 1.2f, t / 0.7f);
+			else
+				m_predictionScale = Lerp(1.2f, 1.0f, (t - 0.7f) / 0.3f);
+
+			m_predictionAlpha = Lerp(0.0f, 1.0f, t);
+		}
+		else {
+			// ② ホールド（1秒）
+			m_predictionHoldTime -= g_gameTime->GetFrameDeltaTime();
+
+			if (m_predictionHoldTime <= 0.0f) {
+				m_isPredictionAnim = false;
+				m_isPredictionVisible = false;  // 完全終了
 			}
 		}
 	}
@@ -252,17 +283,39 @@ void InGameUI::StartFadeIn(float speed)
 void InGameUI::StartStrikeAnim()
 {
 	m_strikeTimer = 0.0f;
-	m_strikeHoldTime = 1.0f;   // ★ 1秒残す
+	m_strikeHoldTime = 1.5f;   // ★ 1秒残す
 	m_isStrikeAnim = true;
 
 	m_strikeSprite.SetScale({ 0.3f, 0.3f,1.0f });
 	m_strikeSprite.SetMulColor({ 1,1,1,0 }); // 透明
 }
 
-void InGameUI::ShowHomeRun()
+void InGameUI::ShowPrediction(float predicted)
 {
-	m_isHomeRunVisible = true;
-	m_homeRunTimer = 1.5f;  // 1.5秒表示
+	if (predicted < 30000.0f) {
+		m_predictionType = Prediction_Nice;
+		g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
+	}
+	else if (predicted < 45000.0f) {
+		m_predictionType = Prediction_Great;
+		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
+	}
+	else if (predicted < 52000.0f) {
+		m_predictionType = Prediction_Excellent;
+		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
+	}
+	else {
+		m_predictionType = Prediction_Perfect;
+		g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f); // ★ パーフェクト音
+	}
+
+	// ★ アニメ開始
+	m_isPredictionAnim = true;
+	m_predictionAnimTimer = 0.0f;
+	m_predictionHoldTime = 1.5f;
+	m_predictionScale = 0.3f;
+	m_predictionAlpha = 0.0f;
+	m_isPredictionVisible = true;
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -524,12 +577,36 @@ void InGameUI::Render(RenderContext& rc) {
 			}
 		}
 
+		if (m_isPredictionVisible) {
+
+			SpriteRender* spr = nullptr;
+
+			if (m_predictionType == Prediction_Nice) {
+				spr = &m_niceSprite;
+			}
+			else if (m_predictionType == Prediction_Great) {
+				spr = &m_greatSprite;
+			}
+			else if (m_predictionType == Prediction_Excellent) {
+				spr = &m_excellentSprite;
+			}
+			else {
+				spr = &m_perfectSprite;   // ★ 追加
+			}
+
+			spr->SetPosition({ 0,0,0 });
+			spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
+			spr->SetMulColor({ 1,1,1, m_predictionAlpha });
+
+			spr->Update();
+			spr->Draw(rc);
+		}
+
 
 		if (m_isBaisokuVisible) {
 			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 			m_baisoku.Update();
 			m_baisoku.Draw(rc);
-
 		}
 
 		if (m_guruGuruTimer > 0.0) {
@@ -548,6 +625,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_mawase.Draw(rc);
 		}
 	}
+
 	if (m_isReplayVisible) {
 		m_spriteRenderReplay.SetPosition(Vector3{ -800.0f, 450.0f, 0.0f });
 		m_spriteRenderReplay.Update();
@@ -559,6 +637,7 @@ void InGameUI::Render(RenderContext& rc) {
 		m_bsuki.Update();
 		m_bsuki.Draw(rc);
 	}
+
 	// ★ 黒フェード描画（常に最前面）
 	if (m_fadeAlpha > 0.0f) {
 		m_spritekuro.SetMulColor({ 0,0,0, m_fadeAlpha });

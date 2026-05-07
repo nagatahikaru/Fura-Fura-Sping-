@@ -342,6 +342,7 @@ void Game::ResetForNextShot()
 	m_km = 0.0f;
 	m_hasTriggered100m = false;   // ★ これを追加
 	m_hasStartedDistance = false;   // ★ ここでもリセット
+	m_isHomeRun = false;
 	// ボールを初期位置に戻す
 	if (m_ball) {
 		m_ball->ResetBall();

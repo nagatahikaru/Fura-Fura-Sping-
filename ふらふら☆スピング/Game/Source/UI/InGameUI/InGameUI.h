@@ -4,6 +4,14 @@
 class InGameUI :public Source
 {
 public:
+	enum PredictionType {
+		Prediction_None,
+		Prediction_Nice,
+		Prediction_Great,
+		Prediction_Excellent,
+		Prediction_Perfect   
+	};
+	PredictionType m_predictionType = Prediction_None;
 	inline float Lerp(float a, float b, float t) {
 		return a + (b - a) * t;
 	}
@@ -42,6 +50,7 @@ public:
 	void StartFadeIn(float speed);
 	bool IsFadingOut() const { return m_isFadeOut; }
 	void StartStrikeAnim();
+	void ShowPrediction(float predicted);
 	std::function<void()> m_onFadeOutFinished;
 	std::function<void()> m_onFadeInFinished;
 	int m_threeShots[3] = { 0,0,0 };      // cm 単位で保存
@@ -128,5 +137,16 @@ private:
 	float m_strikeTimer = 0.0f;
 	bool  m_isStrikeAnim = false;
 	float m_strikeHoldTime = 0.0f;   // 表示を維持する時間
+	bool m_isPredictionVisible = false;
+	SpriteRender m_niceSprite;
+	SpriteRender m_greatSprite;
+	SpriteRender m_excellentSprite;
+	SpriteRender m_perfectSprite;
+	float m_predictionTimer = 0.0f;   // ← 追加：表示時間管理
+	bool  m_isPredictionAnim = false;
+	float m_predictionAnimTimer = 0.0f;
+	float m_predictionHoldTime = 0.0f;
+	float m_predictionScale = 1.0f;
+	float m_predictionAlpha = 0.0f;
 };
 

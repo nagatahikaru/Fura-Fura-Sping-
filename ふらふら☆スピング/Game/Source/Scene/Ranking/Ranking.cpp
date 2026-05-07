@@ -102,10 +102,10 @@ bool Ranking::AddScore(int scoreKm, int scoreMeter, int guruguru) {
 
 void Ranking::Render(RenderContext& rc) {
     m_spriteRender.Draw(rc);
-    m_sukoa.SetPosition({ -380, 225, 0 });
+    m_sukoa.SetPosition({ -360, 225, 0 });
     m_sukoa.Update();
     m_sukoa.Draw(rc);
-    m_mairu.SetPosition({ 320, 225, 0 });
+    m_mairu.SetPosition({ 340, 225, 0 });
     m_mairu.Update();
     m_mairu.Draw(rc);
     wchar_t buf[256];
