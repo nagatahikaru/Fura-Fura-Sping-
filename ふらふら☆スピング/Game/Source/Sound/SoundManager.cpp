@@ -31,7 +31,11 @@ namespace {
 		"SE3",
 		"SE4",
 		"SE5",
-		"SE6"
+		"SE6",
+		"SE7",
+		"SE8",
+		"SE9",
+		"SE10"
 	};	
 }
 

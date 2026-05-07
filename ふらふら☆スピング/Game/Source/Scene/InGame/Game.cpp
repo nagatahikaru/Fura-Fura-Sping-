@@ -221,8 +221,21 @@ void Game::Update()
 		}
 	}
 
-	if (m_InGameUI) {
-		m_InGameUI->SetKm(m_km);
+	// ★ ボールが飛んでいる間は距離をリアルタイム更新
+	// ★ ボールを打った後だけ距離をリアルタイム更新
+	if (m_ball && m_ball->m_isMove && m_hasStartedDistance && !m_isBallLanded) {
+
+		float dist = m_hitStartZ - m_ball->GetPosition().z;
+		if (dist < 0) dist = 0;
+
+		m_km = dist;
+
+		if (m_InGameUI) {
+			m_InGameUI->m_threeShots[m_shots] = m_km;
+			m_InGameUI->m_shotDone[m_shots] = true;
+
+			m_InGameUI->SetKm(m_km);
+		}
 	}
 
 	// ★ フェードイン遅延処理
@@ -328,6 +341,8 @@ void Game::ResetForNextShot()
 	m_zeroDistanceTimer = 0.0f;
 	m_km = 0.0f;
 	m_hasTriggered100m = false;   // ★ これを追加
+	m_hasStartedDistance = false;   // ★ ここでもリセット
+	m_isHomeRun = false;
 	// ボールを初期位置に戻す
 	if (m_ball) {
 		m_ball->ResetBall();
@@ -346,7 +361,7 @@ void Game::OnBallLanded()
 	m_afterLandingTimer = 0.0f;
 	m_canFastForward = false;
 	m_timeScale = 1.0f;
-
+	m_hasStartedDistance = false;   // ★ ここでもリセット
 	Pitcher* pitcher = FindGO<Pitcher>("pitcher");
 	if (pitcher) {
 		pitcher->ResetThrow();
@@ -364,6 +379,12 @@ void Game::OnBallLanded()
 	}
 	// スコア保存
 	m_scores[m_shots] = m_km;
+
+	// ★ UI にも保存（追加）
+	if (m_InGameUI) {
+		m_InGameUI->m_threeShots[m_shots] = m_km;
+		m_InGameUI->m_shotDone[m_shots] = true;
+	}
 
 	// ボール軌道保存（ヒットした時だけ）
 	if (m_ball->m_replayPath.size() > 0) {

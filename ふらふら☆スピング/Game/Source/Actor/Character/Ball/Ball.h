@@ -38,6 +38,7 @@ class Ball :public Character
 	CollisionObject* GetCollisionObject() const { return m_collisionObject; }
 	void SetVelocity(const Vector3& v) { m_velocity = v; }
 	void ResetBall();
+	float PredictLandingDistance();
 	std::vector<Vector3> m_replayPath;
 	bool m_isRecording = false;
 	bool m_isMove = false;
@@ -60,5 +61,6 @@ class Ball :public Character
 	bool m_isFlying = false;     // ★ 飛行中フラグ
 	bool m_hasLanded = false;    // ★ 着地フラグ
 	bool m_hasStrike = false;
+	bool m_hasShownPrediction = false;
 };
 

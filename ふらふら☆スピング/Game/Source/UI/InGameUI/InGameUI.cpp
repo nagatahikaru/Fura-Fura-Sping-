@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "InGameUI.h"
+#include"Source/Sound/SoundManager.h"
 
 
 template <typename T>
@@ -13,7 +14,9 @@ InGameUI::InGameUI() {
 	m_spriteRenderMeet.Init("Assets/sprite/mi-to.DDS", 45.0f, 45.0f);
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
 	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 30.0f, 30.0f);
-	m_kiiro.Init("Assets/sprite/kiiro.DDS", 550.0f, 550.0f);
+	m_kiiro1.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
+	m_kiiro2.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
+	m_kiiro3.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
 	m_besu.Init("Assets/sprite/besu.DDS", 400.0f, 450.0f);
 	m_baisoku.Init("Assets/sprite/baisoku.DDS", 150.0f, 150.0f);
 	m_shuchusen.Init("Assets/sprite/shuchusen.DDS", 1920.0f, 1080.0f);
@@ -36,6 +39,10 @@ InGameUI::InGameUI() {
 	m_bbb.Init("Assets/sprite/bbb.dds", 200.0f, 200.0f);
 	m_bsuki.Init("Assets/sprite/bsuki.DDS", 550.0f, 500.0f);
 	m_strikeSprite.Init("Assets/sprite/strike.DDS", 600.0f, 500.0f);
+	m_niceSprite.Init("Assets/sprite/nice.dds", 800, 700);
+	m_greatSprite.Init("Assets/sprite/great.dds", 800, 700);
+	m_excellentSprite.Init("Assets/sprite/excellent.dds", 800, 700);
+	m_perfectSprite.Init("Assets/sprite/perfect.dds", 800, 700);
 }
 
 InGameUI::~InGameUI() {
@@ -101,6 +108,32 @@ void InGameUI::Update() {
 			// ★ フェードイン完了通知
 			if (m_onFadeInFinished) {
 				m_onFadeInFinished();
+			}
+		}
+	}
+	if (m_isPredictionAnim) {
+
+		// ① 拡大アニメ（0.4秒）
+		if (m_predictionAnimTimer < 0.4f) {
+
+			m_predictionAnimTimer += g_gameTime->GetFrameDeltaTime();
+			float t = m_predictionAnimTimer / 0.4f;
+			if (t > 1.0f) t = 1.0f;
+
+			if (t < 0.7f)
+				m_predictionScale = Lerp(0.3f, 1.2f, t / 0.7f);
+			else
+				m_predictionScale = Lerp(1.2f, 1.0f, (t - 0.7f) / 0.3f);
+
+			m_predictionAlpha = Lerp(0.0f, 1.0f, t);
+		}
+		else {
+			// ② ホールド（1秒）
+			m_predictionHoldTime -= g_gameTime->GetFrameDeltaTime();
+
+			if (m_predictionHoldTime <= 0.0f) {
+				m_isPredictionAnim = false;
+				m_isPredictionVisible = false;  // 完全終了
 			}
 		}
 	}
@@ -250,11 +283,39 @@ void InGameUI::StartFadeIn(float speed)
 void InGameUI::StartStrikeAnim()
 {
 	m_strikeTimer = 0.0f;
-	m_strikeHoldTime = 1.0f;   // ★ 1秒残す
+	m_strikeHoldTime = 1.5f;   // ★ 1秒残す
 	m_isStrikeAnim = true;
 
 	m_strikeSprite.SetScale({ 0.3f, 0.3f,1.0f });
 	m_strikeSprite.SetMulColor({ 1,1,1,0 }); // 透明
+}
+
+void InGameUI::ShowPrediction(float predicted)
+{
+	if (predicted < 30000.0f) {
+		m_predictionType = Prediction_Nice;
+		g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
+	}
+	else if (predicted < 45000.0f) {
+		m_predictionType = Prediction_Great;
+		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
+	}
+	else if (predicted < 52000.0f) {
+		m_predictionType = Prediction_Excellent;
+		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
+	}
+	else {
+		m_predictionType = Prediction_Perfect;
+		g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f); // ★ パーフェクト音
+	}
+
+	// ★ アニメ開始
+	m_isPredictionAnim = true;
+	m_predictionAnimTimer = 0.0f;
+	m_predictionHoldTime = 1.5f;
+	m_predictionScale = 0.3f;
+	m_predictionAlpha = 0.0f;
+	m_isPredictionVisible = true;
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -399,9 +460,15 @@ void InGameUI::Render(RenderContext& rc) {
 			m_ballIcon[i].Draw(rc);
 		}
 
-		m_kiiro.SetPosition(Vector3{ 980.0f, 470.0f, 0.0f });
-		m_kiiro.Update();
-		m_kiiro.Draw(rc);
+		m_kiiro1.SetPosition(Vector3{ 915.0f, 470.0f, 0.0f });
+		m_kiiro1.Update();
+		m_kiiro1.Draw(rc);
+		m_kiiro2.SetPosition(Vector3{ 915.0f, 370.0f, 0.0f });
+		m_kiiro2.Update();
+		m_kiiro2.Draw(rc);
+		m_kiiro3.SetPosition(Vector3{ 915.0f, 270.0f, 0.0f });
+		m_kiiro3.Update();
+		m_kiiro3.Draw(rc);
 
 		m_besu.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 		m_besu.Update();
@@ -468,22 +535,78 @@ void InGameUI::Render(RenderContext& rc) {
 
 		wchar_t boll[256];
 		if (m_isError) {
-			swprintf_s(boll, L"???m");
+			double meter = (double)m_km / 100.0;
+			swprintf_s(boll, L"%.2f m", meter);
 		}
 		else {
 			double meter = (double)m_km / 100.0;
 			swprintf_s(boll, L"%.2f m", meter);
 		}
-		m_fontBollRender.SetText(boll);
-		m_fontBollRender.SetPosition(774.0f, 505.0f, 0.0f);
-		m_fontBollRender.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
-		m_fontBollRender.Draw(rc);
+		// 1球目〜3球目のスコア表示
+		for (int i = 0; i < 3; i++) {
+
+			wchar_t buf[256];
+
+			if (!m_shotDone[i]) {
+				swprintf_s(buf, L"%d:--- m", i + 1);
+			}
+			else {
+				double meter = (double)m_threeShots[i] / 100.0;
+				swprintf_s(buf, L"%d:%.2f m", i + 1, meter);
+			}
+
+			float y = 505.0f - i * 100.0f;  // 縦位置をずらす
+
+			if (i == 0) {
+				m_fontBollRender1.SetText(buf);
+				m_fontBollRender1.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender1.SetColor(0, 0, 0, 1);
+				m_fontBollRender1.Draw(rc);
+			}
+			else if (i == 1) {
+				m_fontBollRender2.SetText(buf);
+				m_fontBollRender2.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender2.SetColor(0, 0, 0, 1);
+				m_fontBollRender2.Draw(rc);
+			}
+			else {
+				m_fontBollRender3.SetText(buf);
+				m_fontBollRender3.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender3.SetColor(0, 0, 0, 1);
+				m_fontBollRender3.Draw(rc);
+			}
+		}
+
+		if (m_isPredictionVisible) {
+
+			SpriteRender* spr = nullptr;
+
+			if (m_predictionType == Prediction_Nice) {
+				spr = &m_niceSprite;
+			}
+			else if (m_predictionType == Prediction_Great) {
+				spr = &m_greatSprite;
+			}
+			else if (m_predictionType == Prediction_Excellent) {
+				spr = &m_excellentSprite;
+			}
+			else {
+				spr = &m_perfectSprite;   // ★ 追加
+			}
+
+			spr->SetPosition({ 0,0,0 });
+			spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
+			spr->SetMulColor({ 1,1,1, m_predictionAlpha });
+
+			spr->Update();
+			spr->Draw(rc);
+		}
+
 
 		if (m_isBaisokuVisible) {
 			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 			m_baisoku.Update();
 			m_baisoku.Draw(rc);
-
 		}
 
 		if (m_guruGuruTimer > 0.0) {
@@ -502,6 +625,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_mawase.Draw(rc);
 		}
 	}
+
 	if (m_isReplayVisible) {
 		m_spriteRenderReplay.SetPosition(Vector3{ -800.0f, 450.0f, 0.0f });
 		m_spriteRenderReplay.Update();
@@ -513,6 +637,7 @@ void InGameUI::Render(RenderContext& rc) {
 		m_bsuki.Update();
 		m_bsuki.Draw(rc);
 	}
+
 	// ★ 黒フェード描画（常に最前面）
 	if (m_fadeAlpha > 0.0f) {
 		m_spritekuro.SetMulColor({ 0,0,0, m_fadeAlpha });

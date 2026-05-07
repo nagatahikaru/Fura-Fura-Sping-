@@ -30,6 +30,9 @@ bool TiterUI::Start()
 
     m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
 
+    // ★ タイトルに入ってから 0.2秒は A 無効
+    m_inputBlockTime = 0.5f;
+
     return true;
 }
 
@@ -62,13 +65,20 @@ void TiterUI::Update()
     if (g_pad[0]->IsTrigger(enButtonUp)) {
         m_cursor--;
         if (m_cursor < 0) m_cursor = 2;   // 0 → 上 → 2
+        m_inputBlockTime = 0.1f;
     }
 
     if (g_pad[0]->IsTrigger(enButtonDown)) {
         m_cursor++;
         if (m_cursor > 2) m_cursor = 0;   // 2 → 下 → 0
+        m_inputBlockTime = 0.1f;
     }
 
+    // ▼ カーソル移動後の一瞬は A を無効化 ← ★ ここに置く！
+    if (m_inputBlockTime > 0.0f) {
+        m_inputBlockTime -= g_gameTime->GetFrameDeltaTime();
+        return;
+    }
 
     // ▼ Aボタンで決定
     if (g_pad[0]->IsTrigger(enButtonA)) {

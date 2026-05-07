@@ -72,9 +72,9 @@ void Ball::Update()
     }
 
 
-   if (m_isMove)
-{
-    m_velocity.y -= 14.5f * dt;
+    if (m_isMove)
+    {
+        m_velocity.y -= 14.5f * dt;
 
         //変化球処理
         if (m_ballType == Curve)
@@ -99,8 +99,20 @@ void Ball::Update()
             if (game) {
                 game->SetKmValue(distance);
 
+                if (!m_hasShownPrediction && distance >= 10500.0f) {
+
+                    float predicted = PredictLandingDistance();
+
+                    InGameUI* ui = game->GetInGameUI();
+                    if (ui) {
+                        ui->ShowPrediction(predicted);
+                    }
+
+                    m_hasShownPrediction = true;
+                }
+
                 // ★ 空中で100m超えた瞬間にイベント発火
-                if (!game->m_hasTriggered100m && distance >= 8000.0f) {
+                if (!game->m_hasTriggered100m && distance >= 10800.0f) {
                     game->OnOver100m();
                     game->m_hasTriggered100m = true;
                 }
@@ -191,6 +203,7 @@ void Ball::Update()
             m_replayPath.push_back(m_position);
         }
     }
+
     SetPosition(m_position);
 
     //距離に応じてスケール変更
@@ -307,7 +320,8 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     Game* game = FindGO<Game>("game");
     if (game) {
         int shot = game->m_shots;
-
+        game->m_hitStartZ = m_position.z;   // ★ 追加
+        game->m_hasStartedDistance = true;   // ★ 追加
         // ★ 打った瞬間のフレームを保存
         game->m_hitFrame[shot] = game->GetReplayFrameCount();
         game->m_hitVelocities[game->m_shots] = m_velocity;     // ← 速度
@@ -323,6 +337,23 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     }
 }
 
+float Ball::PredictLandingDistance()
+{
+    Vector3 pos = m_position;
+    Vector3 vel = m_velocity;
+
+    float dt = 1.0f / 60.0f;
+
+    // 地面に落ちるまでシミュレーション
+    while (pos.y > 0.0f) {
+        vel.y -= 14.5f * dt;   // 重力
+        pos += vel * dt;
+    }
+
+    // 着地地点の Z から飛距離を算出
+    return m_hitStartPos.z - pos.z;
+}
+
 void Ball::ResetBall()
 {
     m_position = { -0.0f, 650.0f, 1000.0f };
@@ -331,6 +362,7 @@ void Ball::ResetBall()
     m_hasHit = false;
     m_hasFixed = false;
     m_hasStrike = false;
+    m_hasShownPrediction = false;
     SetPosition(m_position);
 }
 
