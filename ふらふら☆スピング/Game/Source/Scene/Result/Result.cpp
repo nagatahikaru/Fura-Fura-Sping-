@@ -13,25 +13,25 @@ bool Result::Start()
 	float curved = powf(v, 2.0f);
 	g_bgm = g_soundManager->PlayingSound(enSound_ResultBGM, false, curved);
 
-	m_spriteRender.Init("Assets/sprite/siro.dds", 1920.0f, 1080.0f);
+	m_spriteRender.Init("Assets/sprite/result2.dds", 1920.0f, 1080.0f);
 
 	m_rezarut.Init("Assets/sprite/risarut.dds", 800.0f, 600.0f);
 	m_rezarut.SetPosition({ 0.0f, 400.0f, 0.0f });
 
 	m_B.Init("Assets/sprite/AAA.dds", 220.0f, 170.0f);
-	m_B.SetPosition({ 730.0f, -400.0f, 0.0f });
+	m_B.SetPosition({ 830.0f, -400.0f, 0.0f });
 
 	m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
-	m_grobu.SetPosition({ 730.0f, -400.0f ,0.0f});
+	m_grobu.SetPosition({ 830.0f, -400.0f, 0.0f});
 
-	m_burakku.Init("Assets/sprite/burakku.dds", 600.0f, 50.0f);
-	m_burakku.SetPosition({ 190.0f, -40.0f ,0.0f });
+	/*m_burakku.Init("Assets/sprite/burakku.dds", 600.0f, 50.0f);
+	m_burakku.SetPosition({ 190.0f, -40.0f ,0.0f });*/
 
 	m_skip.Init("Assets/sprite/Askep.dds", 220.0f, 170.0f);
 	m_skip.SetPosition({ 730.0f, -400.0f, 0.0f });
 
 	m_newRecord.Init("Assets/sprite/new.dds", 600.0f, 600.0f);
-	m_newRecord.SetPosition({ 0, 170, 0 });
+	m_newRecord.SetPosition({ 0, 130, 0 });
 	m_newRecord.SetMulColor({ 1,1,1,0 }); // 最初は非表示
 
 	m_hasScore = false;
@@ -237,8 +237,8 @@ void Result::Render(RenderContext& rc)
 	m_grobu.Update();
 	m_grobu.Draw(rc);
 
-	m_burakku.Update();
-	m_burakku.Draw(rc);
+	/*m_burakku.Update();
+	m_burakku.Draw(rc);*/
 
 	m_B.Update();
 	m_B.Draw(rc);
@@ -256,18 +256,18 @@ void Result::Render(RenderContext& rc)
 
 	wchar_t buf[256];
 	// ぐるぐる
-	swprintf_s(buf, L"ぐるぐる: %d", m_displayGuruguru);
+	swprintf_s(buf, L"ぐるぐる: %d回", m_displayGuruguru);
 	m_fontGuruguru.SetText(buf);
-	m_fontGuruguru.SetPosition(300, 230, 0);
+	m_fontGuruguru.SetPosition(260, 190, 0);
 	m_fontGuruguru.SetScale(1.5f);
-	m_fontGuruguru.SetColor(0, 0, 0, 1);
+	m_fontGuruguru.SetColor(1, 1, 1, 1);
 	m_fontGuruguru.Draw(rc);
 
 	swprintf_s(buf, L"スコア%.2f",m_displayKm/100.0);
 	m_moto.SetText(buf);
-	m_moto.SetPosition(-200, 120, 0);
+	m_moto.SetPosition(-300, 80, 0);
 	m_moto.SetScale(2.0f);
-	m_moto.SetColor(0,0,0,1);
+	m_moto.SetColor(1,1,1,1);
 	m_moto.Draw(rc);
 
 	// ★★★ ここに入れる！ ★★★
@@ -287,8 +287,8 @@ void Result::Render(RenderContext& rc)
 		swprintf_s(numBuf, L"%d:", i + 1);
 
 		m_fontThreeShots[i].SetText(numBuf);
-		m_fontThreeShots[i].SetPosition(-110 + i * 200, -20, 0);
-		m_fontThreeShots[i].SetScale(0.8f);
+		m_fontThreeShots[i].SetPosition(-500 + i * 350, -60, 0);
+		m_fontThreeShots[i].SetScale(1.3f);
 		m_fontThreeShots[i].SetColor(1, 0, 0, 1);   // ← 赤
 		// ★ 1番だけ黄色、それ以外は赤
 		if (i == bestIndex) {
@@ -304,9 +304,9 @@ void Result::Render(RenderContext& rc)
 		swprintf_s(meterBuf, L" %.2f m", meter);
 
 		m_fontThreeShotsValue[i].SetText(meterBuf);
-		m_fontThreeShotsValue[i].SetPosition(-110 + i * 200 + 20, -20, 0);
+		m_fontThreeShotsValue[i].SetPosition(-500 + i * 350 + 20, -60, 0);
 		// ↑ 数字の後ろに少し右へずらす
-		m_fontThreeShotsValue[i].SetScale(0.8f);
+		m_fontThreeShotsValue[i].SetScale(1.3f);
 		m_fontThreeShotsValue[i].SetColor(1, 1, 1, 1);  // ← 白
 		m_fontThreeShotsValue[i].Draw(rc);
 	}
