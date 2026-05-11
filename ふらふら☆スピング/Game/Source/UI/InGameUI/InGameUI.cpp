@@ -240,6 +240,7 @@ void InGameUI::SetStartZ(float z) {
     m_isBallUIFixed    = false;
     m_hasPredictedBall = false;
     m_ballAlpha        = 0.0f;
+	ResetPrediction();
 }
 
 void InGameUI::SetGuruGuruTimer(float time)
@@ -315,7 +316,15 @@ void InGameUI::ShowPrediction(float predicted)
 	m_predictionHoldTime = 1.5f;
 	m_predictionScale = 0.3f;
 	m_predictionAlpha = 0.0f;
+	m_predictedDistance =floorf( predicted+0.01f)  / 100.0f;
 	m_isPredictionVisible = true;
+}
+
+// InGameUI.cpp の一番下などでOK
+void InGameUI::ResetPrediction() {
+	m_isPredictionVisible = false;
+	m_predictedDistance = 0.0f;
+	m_predictionAlpha = 0.0f; // 透明度もリセットしておくと安全
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -603,9 +612,15 @@ void InGameUI::Render(RenderContext& rc) {
 			spr->SetPosition({ 0,0,0 });
 			spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
 			spr->SetMulColor({ 1,1,1, m_predictionAlpha });
-
 			spr->Update();
 			spr->Draw(rc);
+
+			wchar_t predText[64];
+			swprintf_s(predText, L"%.2f m", m_predictedDistance);
+			m_fontPrediction.SetText(predText);
+			m_fontPrediction.SetPosition(0.0f, -150.0f, 0.0f); // Excellent表示の下あたりに配置
+			m_fontPrediction.SetColor(1.0f, 1.0f, 0.0f, m_predictionAlpha); // 黄色で見やすく
+			m_fontPrediction.Draw(rc);
 		}
 
 

@@ -102,7 +102,7 @@ void Ball::Update()
                 if (!m_hasShownPrediction && distance >= 10500.0f) {
 
                     float predicted = PredictLandingDistance();
-
+                    m_storedPredictedDistance = predicted;
                     InGameUI* ui = game->GetInGameUI();
                     if (ui) {
                         ui->ShowPrediction(predicted);
@@ -160,45 +160,37 @@ void Ball::Update()
             m_isMove = false;
             return;
         }
-
-        // 着地処理
-       // 着地処理
+      
         if (m_position.y <= 0.0f)
         {
             m_position.y = 0.0f;
-
-
             m_isMove = false;
 
             Game* game = FindGO<Game>("game");
-
-            float distance = 0.0f;
-
-            if (m_hasHit) {
-
-                // ★ Z方向の差分で前後を判定
-                float dz = m_position.z - m_hitStartPos.z;
-
-                if (dz < 0) {
-                    // 前に飛んだ（通常の飛距離）
-                    distance = -dz;   // dz は負なので -dz で正の距離
-                }
-                else {
-                    // ★ 後ろに飛んだ（ファール）
-                    distance = -dz;   // dz は正 → マイナス距離になる
-                }
-
-                m_hasHit = false;
-            }
-
             if (game) {
-                game->SetKmValue(distance);   // ← マイナス距離もそのまま送る
-            }
+                float finalDistance = 0.0f;
+                InGameUI* ui = game->GetInGameUI();
 
-            if (game) {
+                if (m_hasHit) {
+                    // ★ ポイント1：UIが表示されているなら、UIが持っている数値をそのまま採用する
+                    if (m_hasShownPrediction) {
+                        // Ballが計算した「生の数値」をそのまま使う（単位をcmに合わせる）
+                        finalDistance = m_storedPredictedDistance;
+                    }
+                    else {
+                        // 予測が出る前に着地した場合（ボテボテのゴロなど）
+                        float dz = m_position.z - m_hitStartPos.z;
+                        finalDistance = -dz;
+                    }
+                    m_hasHit = false;
+                }
+
+                // ★ ポイント2：ここで確実に finalDistance をセットする
+                game->SetKmValue(finalDistance);
                 game->OnBallLanded();
             }
         }
+
         if (m_isRecording) {
             m_replayPath.push_back(m_position);
         }

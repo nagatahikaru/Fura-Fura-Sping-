@@ -62,5 +62,6 @@ class Ball :public Character
 	bool m_hasLanded = false;    // ★ 着地フラグ
 	bool m_hasStrike = false;
 	bool m_hasShownPrediction = false;
+	float m_storedPredictedDistance = 0.0f;
 };
 

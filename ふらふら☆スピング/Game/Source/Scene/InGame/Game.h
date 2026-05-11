@@ -131,7 +131,7 @@ private:
 	CameraMode m_cameraMode = Camera_Catcher;//初期カメラ
 	Start1* m_start1;
 	int m_guruguru = 0;
-	int m_km = 0;
+	float m_km = 0;
 	bool m_bgmStarted = false;
 	float m_afterLandingTimer = 0.0f;
 	bool  m_isBallLanded = false;
