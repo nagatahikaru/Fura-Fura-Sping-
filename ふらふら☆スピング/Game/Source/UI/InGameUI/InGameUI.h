@@ -51,6 +51,8 @@ public:
 	bool IsFadingOut() const { return m_isFadeOut; }
 	void StartStrikeAnim();
 	void ShowPrediction(float predicted);
+	void ResetPrediction();
+	float GetPredictedDistance() const { return m_predictedDistance; }
 	std::function<void()> m_onFadeOutFinished;
 	std::function<void()> m_onFadeInFinished;
 	int m_threeShots[3] = { 0,0,0 };      // cm 単位で保存
@@ -148,5 +150,7 @@ private:
 	float m_predictionHoldTime = 0.0f;
 	float m_predictionScale = 1.0f;
 	float m_predictionAlpha = 0.0f;
+	FontRender m_fontPrediction;    // 予測テキスト用
+	float m_predictedDistance = 0.0f; // 予測された飛距離(m)
 };
 
