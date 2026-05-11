@@ -129,6 +129,15 @@ namespace nsK2EngineLow {
 		if (it == m_effectMap.end()) {
 			//êVãKÅB
 			effect = Effekseer::Effect::Create(m_manager, filePath);
+			if (effect == nullptr)
+			{
+				wchar_t msg[512];
+				swprintf_s(msg, L"Effect Load Failed\n%s", filePath);
+
+				MessageBoxW(nullptr, msg, L"Error", MB_OK);
+
+				return;
+			}
 			m_effectMap.insert({ number, effect });
 		}
 	}

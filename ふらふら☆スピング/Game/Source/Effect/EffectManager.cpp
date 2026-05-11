@@ -11,6 +11,13 @@ EffectManager::EffectManager()
 		std::u16string path =
 			std::u16string(m_filePath) + m_files[i] + m_ext;
 
+		MessageBoxW(
+			nullptr,
+			(LPCWSTR)path.c_str(),
+			L"EffectPath",
+			MB_OK
+		);
+
 		EffectEngine::GetInstance()->ResistEffect(i, path.c_str());
 	}
 }
@@ -31,6 +38,24 @@ EffectManager::~EffectManager()
 /// エフェクトの再生が終了しているのにエフェクトの参照が残っている状態になってしまいます。
 void EffectManager::Update()
 {
+	for (auto& follow : m_followEffects)
+	{
+		auto& data = follow.second;
+
+
+		if (data.emitter == nullptr ||
+			data.targetTransform == nullptr)
+		{
+			continue;
+		}
+
+		data.emitter->SetPosition(
+			data.targetTransform->m_position + data.offset);
+
+		data.emitter->SetRotation(
+			data.targetTransform->m_rotation * data.rotOffset);
+	}
+
 	//再生が終了したエフェクトは削除します。
 	for (auto it = m_effects.begin(); it != m_effects.end(); )
 	{
@@ -40,12 +65,12 @@ void EffectManager::Update()
 		//エフェクトの再生が終了しているか判定。
 		if (emitter == nullptr || !emitter->IsPlay())
 		{
-			//エフェクトの参照が残っている場合は削除。
 			if (emitter)
 			{
-				DeleteGO(emitter); // ← これ重要
-				it->second = nullptr; // ← これも重要
+				DeleteGO(emitter);
+				it->second = nullptr;
 			}
+			m_followEffects.erase(it->first);
 			it = m_effects.erase(it);
 		}
 		//再生が終了していない場合は次のエフェクトへ。
@@ -63,7 +88,7 @@ void EffectManager::Update()
 /// <param name="pos">エフェクトの位置。</param>
 /// <param name="rot">エフェクトの回転。</param>
 /// <param name="scale">エフェクトのスケール。</param>
-uint32_t EffectManager::SetEffect(
+uint32_t EffectManager::PlayEffect(
 	EffectType type,
 	const Vector3& pos,
 	const Vector3& scale,
@@ -89,7 +114,7 @@ uint32_t EffectManager::SetEffect(
 /// <param name="rot">エフェクトの回転。</param>
 /// <param name="scale">エフェクトのスケール。</param>
 /// <returns>移動に成功したらtrue。エフェクトのIDが存在しない場合はfalse。</returns>
-uint32_t EffectManager::MoveEffect(
+bool EffectManager::MoveEffect(
 	uint32_t id,
 	const Vector3& pos,	
 	const Vector3& scale,
@@ -108,15 +133,69 @@ uint32_t EffectManager::MoveEffect(
 	return true;
 }
 
+/// <summary>
+/// エフェクトの追従再生。
+/// エフェクトのIDと座標、スケール、回転を指定してエフェクトを追従再生します。
+/// </summary>
+/// <param name="type"></param>
+/// <param name="targetTransform"></param>
+/// <param name="offset"></param>
+/// <param name="scale"></param>
+/// <param name="rot"></param>
+/// <returns></returns>
+uint32_t EffectManager::PlayFollowEffect(
+	EffectType type,
+	Transform* targetTransform,
+	const Vector3& offset,
+	const Vector3& scale,
+	const Quaternion& rot)
+{
+	if (targetTransform == nullptr)
+	{
+		return 0;
+	}
+
+	auto effectEmitter = NewGO<EffectEmitter>(0);
+
+	effectEmitter->Init(type);
+	effectEmitter->SetPosition(
+		targetTransform->m_position + offset);
+	effectEmitter->SetScale(scale);
+	effectEmitter->SetRotation(
+		targetTransform->m_rotation * rot);
+
+	effectEmitter->Play();
+
+	uint32_t id = m_nextId++;
+
+	m_effects[id] = effectEmitter;
+
+	FollowData data;
+	data.emitter = effectEmitter;
+	data.targetTransform = targetTransform;
+	data.offset = offset;
+	data.rotOffset = rot;
+
+	m_followEffects[id] = data;
+
+	return id;
+}
+
 // <summary>
 // エフェクトの停止。
 // </summary>
 void EffectManager::StopEffect(uint32_t id)
 {
 	auto it = m_effects.find(id);
-	if (it == m_effects.end()) return;
+	if (it == m_effects.end()){
+		return;
+	}
 
-	it->second->Stop();
-	DeleteGO(it->second);
+	if (it->second){
+		it->second->Stop();
+		DeleteGO(it->second);
+	}
+
+	m_followEffects.erase(id);
 	m_effects.erase(it);
 }
