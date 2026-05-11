@@ -88,6 +88,12 @@ void Ball::Update()
 
         m_position += m_velocity * dt;
 
+        //左右に揺らす
+        m_position.x += sinf(m_position.z * 0.01f) * 0.8f;
+
+        //少し上下に揺らす
+        m_position.y += cosf(m_position.z * 0.006f) * 0.2f;
+
         // ★ リアルタイム飛距離更新
        // 着地時の最終距離
       // ★ リアルタイム飛距離更新（HitBall してから着地まで）
@@ -246,7 +252,6 @@ void Ball::Throw(const Vector3& targetPos)
 
     int r = rand() % 100;
 
-
     if (r < 70)
     {
         //70%の確率でストレート
@@ -368,7 +373,13 @@ void Ball::ResetBall()
 
 void Ball::Render(RenderContext& rc)
 {
+
+    // 一定距離で消える
+    if (m_position.z > 6000.0f)
+    {
+        return;
+    }
+
 	//モデルの描画
-		m_modelRender.Draw(rc);
-	
+		m_modelRender.Draw(rc);	
 }
