@@ -551,8 +551,14 @@ void InGameUI::Render(RenderContext& rc) {
 				swprintf_s(buf, L"%d:--- m", i + 1);
 			}
 			else {
-				double meter = (double)m_threeShots[i] / 100.0;
-				swprintf_s(buf, L"%d:%.2f m", i + 1, meter);
+				if (m_threeShots[i] == 0) {
+					swprintf_s(buf, L"%d:x", i + 1);
+				}
+				else
+				{
+					double meter = (double)m_threeShots[i] / 100.0;
+					swprintf_s(buf, L"%d:%.2f m", i + 1, meter);
+				}
 			}
 
 			float y = 505.0f - i * 100.0f;  // 縦位置をずらす
