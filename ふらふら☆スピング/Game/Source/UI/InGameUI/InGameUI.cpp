@@ -619,6 +619,7 @@ void InGameUI::Render(RenderContext& rc) {
 			swprintf_s(predText, L"%.2f m", m_predictedDistance);
 			m_fontPrediction.SetText(predText);
 			m_fontPrediction.SetPosition(0.0f, -150.0f, 0.0f); // Excellent表示の下あたりに配置
+			m_fontPrediction.SetScale(1.5f);
 			m_fontPrediction.SetColor(1.0f, 1.0f, 0.0f, m_predictionAlpha); // 黄色で見やすく
 			m_fontPrediction.Draw(rc);
 		}
