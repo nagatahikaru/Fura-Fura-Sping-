@@ -88,10 +88,7 @@ void Ball::Update()
         m_position += m_velocity * dt;
 
         //左右に揺らす
-        m_position.x += sinf(m_position.z * 0.01f) * 0.8f;
-
-        //少し上下に揺らす
-        m_position.y += cosf(m_position.z * 0.006f) * 0.2f;
+        m_position.x += sinf(m_position.z * 0.01f) * 1.0f;
 
         // ★ リアルタイム飛距離更新
        // 着地時の最終距離
@@ -190,7 +187,7 @@ void Ball::Update()
     if (t < 0.0f) t = 0.0f;
     if (t > 1.0f) t = 1.0f;
 
-    float scale = 3.0f * (1.0f - t * 0.8f);
+    float scale = 4.0f * (1.0f - t * 0.8f);
 
     //最小サイズ制限（消え防止）
     if (scale < 2.0f) scale = 2.0f;
@@ -217,7 +214,7 @@ void Ball::Throw(const Vector3& targetPos)
     Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
 
-    float speed =2000.0f + (rand() % 350);
+    float speed = 1900.0f + (rand() % 300);
 
     int r = rand() % 100;
 
@@ -324,7 +321,7 @@ void Ball::Render(RenderContext& rc)
 {
 
     // 一定距離で消える
-    if (m_position.z > 6000.0f)
+    if (m_position.z > 7000.0f)
     {
         return;
     }
