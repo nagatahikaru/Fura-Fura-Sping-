@@ -19,30 +19,82 @@ public:
 
 	void Update() override;
 
-	uint32_t SetEffect(
+	/// 再生関数 ///
+
+	/// <summary>
+	/// エフェクトの再生。
+	/// エフェクトの種類と座標、スケール、回転を指定してエフェクトを再生します。
+	/// </summary>
+	/// <param name="type"></param>
+	/// <param name="pos"></param>
+	/// <param name="scale"></param>
+	/// <param name="rot"></param>
+	/// <returns></returns>
+	uint32_t PlayEffect(
 		EffectType type=enEffect_DownArrow,
 		const Vector3& pos=Vector3::Zero,
 		const Vector3& scale=Vector3::One,
 		const Quaternion& rot=Quaternion::Identity);
 
-	uint32_t MoveEffect(
+	/// 移動関数 ///
+
+	/// <summary>
+	/// エフェクトの移動。
+	/// エフェクトのIDと座標、スケール、回転を指定してエフェクトを移動します。
+	/// </summary>
+	/// <param name="id"></param>
+	/// <param name="pos"></param>
+	/// <param name="scale"></param>
+	/// <param name="rot"></param>
+	/// <returns></returns>
+	bool MoveEffect(
 		uint32_t id=0,
 		const Vector3& pos=Vector3::Zero,
 		const Vector3& scale = Vector3::One,
 		const Quaternion& rot = Quaternion::Identity);
 
+	/// <summary>
+	/// エフェクトの移動。
+	/// エフェクトのIDと座標、スケール、回転を指定してエフェクトを移動します。
+	/// </summary>
+	/// <param name="id"></param>
+	/// <param name="targetTransform"></param>
+	/// <param name="offset"></param>
+	/// <returns></returns>
+	uint32_t PlayFollowEffect(
+		EffectType type,
+		Transform* targetTransform,
+		const Vector3& offset = Vector3::Zero,
+		const Vector3& scale = Vector3::One,
+		const Quaternion& rot = Quaternion::Identity);
+
+	/// 停止関数 ///
+
 	// 停止
 	void StopEffect(uint32_t id);
 
 	//全てのエフェクトを停止。
-	void OrllStopEffect()
+	void AllStopEffect()
 	{
-		for (auto& effect : m_effects) {
-			if (effect.second != nullptr) {
+		for (auto& effect : m_effects)
+		{
+			if (effect.second)
+			{
 				effect.second->Stop();
+				DeleteGO(effect.second);
 			}
 		}
+		m_effects.clear();
+		m_followEffects.clear();
 	}
+
+	//追従停止
+	void RemoveFollow(uint32_t id)
+	{
+		m_followEffects.erase(id);
+	}
+
+	/// 判定取得関数 ///
 
 	//再生中かどうかを取得。
 	bool GetIsPlayeEffect(uint32_t id)
@@ -64,7 +116,7 @@ public:
 
 
 private:
-	const char16_t* m_filePath = u"Assets/effect/";
+	const char16_t* m_filePath = u"Assets/effect/efk/";
 	const char16_t* m_ext = u".efk";
 
 	//エフェクトのファイル名。エフェクトの種類と同じ順番で追加してください。
@@ -76,6 +128,15 @@ private:
 
 	std::unordered_map<uint32_t, EffectEmitter*> m_effects;					//effectへの参照。
 	uint32_t m_nextId = 0;													//エフェクトのID。エフェクトを識別するために使用します。エフェクトを追加するたびにインクリメントされます。
+	struct FollowData
+	{
+		EffectEmitter* emitter = nullptr;
+		Transform* targetTransform = nullptr;
+		Vector3 offset = Vector3::Zero;
+		Quaternion rotOffset = Quaternion::Identity;
+	};
+
+	std::unordered_map<uint32_t, FollowData> m_followEffects;
 };
 
 //EffectManagerのグローバルインスタンス。
