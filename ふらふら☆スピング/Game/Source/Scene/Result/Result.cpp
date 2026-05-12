@@ -215,10 +215,17 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 	// 元の km（最大距離）
 	m_originalKm = bestKm;
 
-	// ぐるぐる倍率
+	// ★ 基本倍率（1.01 × ぐるぐる）
 	double multiplier = pow(1.01, (double)guruguru);
 
-	// 倍率後 km（スコア）
+	// ★ 5回超えるたびに +0.005（＝1.005倍）
+	int step = guruguru / 3;          // 5回ごとに1増える
+	double extra = step * 0.003;      // 0.5% × step
+
+	// ★ 最終倍率
+	multiplier *= (1.0 + extra);
+
+	// ★ km 計算
 	m_km = (int)(bestKm * multiplier);
 
 	// カウントアップ初期化
