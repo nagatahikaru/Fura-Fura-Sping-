@@ -1,7 +1,5 @@
-#pragma once
+﻿#pragma once
 #include "Source/Actor/Character/Character.h"
-
-
 
 class Ball :public Character
 {
