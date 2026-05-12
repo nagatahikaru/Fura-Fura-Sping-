@@ -63,6 +63,20 @@ void Game::Update()
 	if (m_batter) {
 		SetGuruGuru(m_batter->GetGuruGuru());
 	}
+	// ★★★ ぐるぐる 5 回刻みで SE3 を鳴らす ★★★
+	int g = GetGuruguru();
+
+	// 5 の倍数になった瞬間だけ鳴らす
+	if (g > 0 && g % 5 == 0 && g != m_prevGuruGuru) {
+
+		// ★ サウンドテストで SE 音量が 0 のときは鳴らさない
+		if (g_soundManager->m_seVolume > 0) {
+			g_soundManager->PlaySE(enSound_SE3, 1.0f);
+		}
+	}
+
+	// 前回値を更新
+	m_prevGuruGuru = g;
 
 	if (m_InGameUI) {
 		m_InGameUI->SetBallCount(3-m_shots);
@@ -89,7 +103,10 @@ void Game::Update()
 
 		if (FindGO<PauseUI>("pause") != nullptr) return;
 		if (FindGO<SoundTestUI>("soundtest") != nullptr) return;
-
+		// ★ ここでポーズ突入SE
+		if (g_soundManager && g_soundManager->m_seVolume > 0) {
+			g_soundManager->PlaySE(enSound_SE);   // 好きなSEに
+		}
 		m_isPaused = true;
 
 		if (m_InGameUI) {
@@ -119,13 +136,13 @@ void Game::Update()
 	else {
 		m_isHitStop = false;  // ← 終わったら解除
 	}
-	// ★ Aボタン押しっぱなしで2倍速
-	// ★ 打った後だけ倍速ボタンを有効化
-// ★ Aボタン押しっぱなしで2倍速（100m演出中は触らない）
-	// ★ フェードアウト中は timeScale を触らない（1倍のまま）
-// ★ フェードアウト中は絶対に timeScale を触らない
+
 	if (m_InGameUI && m_InGameUI->IsFadingOut()) {
-		m_timeScale = 1.0f;   // ← フェードアウト中は常に1倍速
+		// ★ フェードアウト開始した瞬間だけ実行
+		if (!m_startFadeSE2) {
+			m_startFadeSE2 = true;
+		}
+		m_timeScale = 1.0f;
 	}
 	else if (!m_hasTriggered100m) {
 		// ★ 100m演出前だけ倍速を許可
@@ -204,8 +221,21 @@ void Game::Update()
 		}
 	}
 
-	if (m_InGameUI) {
-		m_InGameUI->SetKm(m_km);
+	// ★ ボールが飛んでいる間は距離をリアルタイム更新
+	// ★ ボールを打った後だけ距離をリアルタイム更新
+	if (m_ball && m_ball->m_isMove && m_hasStartedDistance && !m_isBallLanded) {
+
+		float dist = m_hitStartZ - m_ball->GetPosition().z;
+		if (dist < 0) dist = 0;
+
+		m_km = dist;
+
+		if (m_InGameUI) {
+			m_InGameUI->m_threeShots[m_shots] = m_km;
+			m_InGameUI->m_shotDone[m_shots] = true;
+
+			m_InGameUI->SetKm(m_km);
+		}
 	}
 
 	// ★ フェードイン遅延処理
@@ -293,6 +323,11 @@ void Game::Update()
 		return;
 	}
 
+	// ★ SE2 フェードアウト（フェード演出中だけ）
+	if (m_startFadeSE2 && g_soundManager) {
+		g_soundManager->FadeOutSE2(0.003f);
+	}
+
 	// ★ 録画中は毎フレームカウンタを進める
 	if (m_isRecording) {
 		m_replayFrameCounter++;
@@ -306,6 +341,8 @@ void Game::ResetForNextShot()
 	m_zeroDistanceTimer = 0.0f;
 	m_km = 0.0f;
 	m_hasTriggered100m = false;   // ★ これを追加
+	m_hasStartedDistance = false;   // ★ ここでもリセット
+	m_isHomeRun = false;
 	// ボールを初期位置に戻す
 	if (m_ball) {
 		m_ball->ResetBall();
@@ -324,7 +361,7 @@ void Game::OnBallLanded()
 	m_afterLandingTimer = 0.0f;
 	m_canFastForward = false;
 	m_timeScale = 1.0f;
-
+	m_hasStartedDistance = false;   // ★ ここでもリセット
 	Pitcher* pitcher = FindGO<Pitcher>("pitcher");
 	if (pitcher) {
 		pitcher->ResetThrow();
@@ -342,6 +379,12 @@ void Game::OnBallLanded()
 	}
 	// スコア保存
 	m_scores[m_shots] = m_km;
+
+	// ★ UI にも保存（追加）
+	if (m_InGameUI) {
+		m_InGameUI->m_threeShots[m_shots] = m_km;
+		m_InGameUI->m_shotDone[m_shots] = true;
+	}
 
 	// ボール軌道保存（ヒットした時だけ）
 	if (m_ball->m_replayPath.size() > 0) {
@@ -492,6 +535,18 @@ void Game::DecideBestReplay()
 
 void Game::GoToResult()
 {
+	// ★ 記録が1でもあれば SE2 を鳴らす
+	bool hasScore = false;
+	for (int i = 0; i < 3; i++) {
+		if (m_scores[i] > 0) {
+			hasScore = true;
+			break;
+		}
+	}
+
+	if (hasScore && g_soundManager->m_seVolume > 0) {
+		g_soundManager->PlaySE(enSound_SE2);
+	}
 	int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
 	Result* result = NewGO<Result>(0);
 	result->SetResultValues(m_guruguru, best, m_scores);

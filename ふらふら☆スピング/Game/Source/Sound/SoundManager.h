@@ -14,10 +14,17 @@ enum Sound{
 	enSound_GameBGM8,
 	enSound_GameBGM9,
 	enSound_ResultBGM,
-
+	
 	enSound_SE,
 	enSound_SE2,
-
+	enSound_SE3,
+	enSound_SE4,
+	enSound_SE5,
+	enSound_SE6,
+	enSound_SE7,
+	enSound_SE8,
+	enSound_SE9,
+	enSound_SE10,
 	enSound_Num //このステータスは、サウンドの総数を表しているため、この下には追加しないでください。
 };
 class SoundManager :public IGameObject
@@ -49,6 +56,7 @@ public:
 	float m_se2BaseVolume = 1.0f;
 	void MuteSE2();
 	void UnmuteSE2();
+	void FadeOutSE2(float delta);
 };
 
 extern SoundManager* g_soundManager;

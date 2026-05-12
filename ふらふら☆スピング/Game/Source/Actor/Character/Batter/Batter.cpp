@@ -54,21 +54,21 @@ Batter::Batter()
 
 Batter::~Batter()
 {
-	m_stateMachine->SetBatter(nullptr);
-	if(g_effectManager!=nullptr)
-	{
-		g_effectManager->StopEffect(); // エフェクトの停止
-	}
-	//当たり判定オブジェクトの削除
-	if (m_collisionObject)return;
-	delete m_collisionObject;
 	
+	m_stateMachine->SetBatter(nullptr);
+	if (g_effectManager) {
+		g_effectManager->AllStopEffect();
+	}
+
+	if (m_collisionObject) {
+		delete m_collisionObject;
+	}
 }
 
 bool Batter::Start()
 {
 	//forループでまとめる
-//アニメーションクリップの読み込み
+	//アニメーションクリップの読み込み
 	for (int j = enAnimationClip_Idle; j < enAnimationClip_Swing; j++)
 	{
 		InitAnimation(m_animationClips, j, true);
@@ -130,8 +130,7 @@ bool Batter::Start()
 void Batter::Update()
 {
 	if(m_isPaused)
-	{
-		
+	{		
 		return; // ゲームがポーズ中なら更新処理をスキップ
 	}
 	if (!m_inGameUI)
@@ -140,11 +139,16 @@ void Batter::Update()
 		return;
 	}
 	m_game = FindGO<Game>("game");
+	EffectInfo info;
 	// ★ リプレイ中はバッターの通常処理を完全停止
 	if (m_game && m_game->IsReplayPlaying()) {
 		// ★ ポーズ中ならアニメーションも止める
 		if (m_game->m_isPaused) {
 			return;   // ← これでスイングアニメも完全停止
+		}
+		// ★ リプレイ中にスイングアニメが再生されているなら速度を4.0に固定
+		if (IsSwingAnimationPlaying()) {
+			m_characterModel->GetModelRender()->SetAnimationSpeed(4.0f);
 		}
 		// アニメーションだけ進めたい場合はこれを残す
 		m_characterModel->Update();
@@ -153,7 +157,7 @@ void Batter::Update()
 	}
 	// ★ ポーズ中はキャッチャーのアニメーションを止める	
 	if (m_game && m_game->m_isPaused) {
-		g_effectManager->StopEffect(); // エフェクトも停止
+		g_effectManager->AllStopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
 	// ★ 遅延ヒット処理
@@ -170,9 +174,7 @@ void Batter::Update()
 
 /** ぐるぐるバット関連コード */
 
-/**
-* 回転計算処理関数
-*/
+/** 回転計算処理関数 */
 void Batter::Rotation()
 {
 	//キーボード操作
@@ -257,9 +259,7 @@ void Batter::RoundAndRoundBat()
 	}
 }
 
-/**
-* ぐるぐるカウントup処理
-*/
+/** ぐるぐるカウントup処理 */
 void Batter::GuruGuruCountUP(float currentAngle)
 {
 	float delta = currentAngle - m_prevAngle;
@@ -292,9 +292,7 @@ void Batter::GuruGuruCountUP(float currentAngle)
 	}
 }
 
-/**
-* モデルの回転処理
-*/
+/** モデルの回転処理 */
 void Batter::RotationUpdate()
 {
 	//回転処理の更新
@@ -487,6 +485,7 @@ void Batter::HitBat()
 		}
 
 		if (m_inGameUI) {
+			HitEffect();
 			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
 		}
 
@@ -618,21 +617,32 @@ void Batter::ResetCursorPosition()
 
 /** 演出関連コード */
 void Batter::EffectUpdate()
-{
+{	
 	if (m_guruGuruBatCount < 5) return;
 
-	if (g_effectManager->GetIsPlayeEffect()) {
+	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)){		
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
 	
 	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
 
-	g_effectManager->SetEffect(
+	m_inro.m_effectDawnID = g_effectManager->PlayEffect(
 		enEffect_DownArrow,
 		pos,
-		Quaternion::Identity,
-		Vector3(20.0f, 40.0f, 20.0f)
-	);
+		Vector3(15.0f, 40.0f, 15.0f));
+}
+
+void Batter::HitEffect()
+{
+	Vector3 pos = m_ball->GetPosition();
+	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectHitID)) {
+		return; // すでにエフェクトが再生中なら新たに出さない
+	}
+	
+	m_inro.m_effectHitID = g_effectManager->PlayEffect(
+		enEffect_HitBat,
+		pos,
+		Vector3(20.0f, 20.0f, 20.0f));
 }
 
 void Batter::Render(RenderContext& rc)

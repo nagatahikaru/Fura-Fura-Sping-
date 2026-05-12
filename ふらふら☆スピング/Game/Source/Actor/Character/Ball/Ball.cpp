@@ -1,8 +1,9 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "Ball.h"
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
 #include"Source/UI/InGameUI/InGameUI.h"
+#include"Source/Sound/SoundManager.h"
 
 Ball::Ball()
 {
@@ -70,7 +71,6 @@ void Ball::Update()
         m_throwTimer = 0.0f;
     }
 
-
    if (m_isMove)
 {
     m_velocity.y -= 13.5f * dt;
@@ -100,8 +100,20 @@ void Ball::Update()
             if (game) {
                 game->SetKmValue(distance);
 
+                if (!m_hasShownPrediction && distance >= 10500.0f) {
+
+                    float predicted = PredictLandingDistance();
+                    m_storedPredictedDistance = predicted;
+                    InGameUI* ui = game->GetInGameUI();
+                    if (ui) {
+                        ui->ShowPrediction(predicted);
+                    }
+
+                    m_hasShownPrediction = true;
+                }
+
                 // ★ 空中で100m超えた瞬間にイベント発火
-                if (!game->m_hasTriggered100m && distance >= 8000.0f) {
+                if (!game->m_hasTriggered100m && distance >= 10800.0f) {
                     game->OnOver100m();
                     game->m_hasTriggered100m = true;
                 }
@@ -121,6 +133,24 @@ void Ball::Update()
             m_hasFixed = true;
         }
 
+        // ★ ストライク判定（Z が 7000 を超えた瞬間）
+        if (!m_hasStrike && m_position.z >= 7270.0f) {
+            g_soundManager->PlaySE(Sound::enSound_SE6);
+        }
+
+        // ★ ストライク判定（Z が 7000 を超えた瞬間）
+        if (!m_hasStrike && m_position.z >= 7300.0f) {
+            g_soundManager->PlaySE(Sound::enSound_SE5);
+            Game* game = FindGO<Game>("game");
+            if (game) {
+                InGameUI* ui = game->GetInGameUI();
+                if (ui) {
+                    ui->StartStrikeAnim();   // ← UI にアニメ開始を指示
+                }
+            }
+            m_hasStrike = true;  // 二重発火防止
+        }
+
         // ★ 空振り判定（打撃ゾーンを通過したら次へ）
         if (!m_hasHit && m_position.z > 9000.0f) {
             Game* game = FindGO<Game>("game");
@@ -131,50 +161,42 @@ void Ball::Update()
             m_isMove = false;
             return;
         }
-
-
-        // 着地処理
-       // 着地処理
+      
         if (m_position.y <= 0.0f)
         {
             m_position.y = 0.0f;
-
-
             m_isMove = false;
 
             Game* game = FindGO<Game>("game");
-
-            float distance = 0.0f;
-
-            if (m_hasHit) {
-
-                // ★ Z方向の差分で前後を判定
-                float dz = m_position.z - m_hitStartPos.z;
-
-                if (dz < 0) {
-                    // 前に飛んだ（通常の飛距離）
-                    distance = -dz;   // dz は負なので -dz で正の距離
-                }
-                else {
-                    // ★ 後ろに飛んだ（ファール）
-                    distance = -dz;   // dz は正 → マイナス距離になる
-                }
-
-                m_hasHit = false;
-            }
-
             if (game) {
-                game->SetKmValue(distance);   // ← マイナス距離もそのまま送る
-            }
+                float finalDistance = 0.0f;
+                InGameUI* ui = game->GetInGameUI();
 
-            if (game) {
+                if (m_hasHit) {
+                    // ★ ポイント1：UIが表示されているなら、UIが持っている数値をそのまま採用する
+                    if (m_hasShownPrediction) {
+                        // Ballが計算した「生の数値」をそのまま使う（単位をcmに合わせる）
+                        finalDistance = m_storedPredictedDistance;
+                    }
+                    else {
+                        // 予測が出る前に着地した場合（ボテボテのゴロなど）
+                        float dz = m_position.z - m_hitStartPos.z;
+                        finalDistance = -dz;
+                    }
+                    m_hasHit = false;
+                }
+
+                // ★ ポイント2：ここで確実に finalDistance をセットする
+                game->SetKmValue(finalDistance);
                 game->OnBallLanded();
             }
         }
+
         if (m_isRecording) {
             m_replayPath.push_back(m_position);
         }
     }
+
     SetPosition(m_position);
 
     //距離に応じてスケール変更
@@ -290,7 +312,8 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     Game* game = FindGO<Game>("game");
     if (game) {
         int shot = game->m_shots;
-
+        game->m_hitStartZ = m_position.z;   // ★ 追加
+        game->m_hasStartedDistance = true;   // ★ 追加
         // ★ 打った瞬間のフレームを保存
         game->m_hitFrame[shot] = game->GetReplayFrameCount();
         game->m_hitVelocities[game->m_shots] = m_velocity;     // ← 速度
@@ -306,13 +329,32 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     }
 }
 
+float Ball::PredictLandingDistance()
+{
+    Vector3 pos = m_position;
+    Vector3 vel = m_velocity;
+
+    float dt = 1.0f / 60.0f;
+
+    // 地面に落ちるまでシミュレーション
+    while (pos.y > 0.0f) {
+        vel.y -= 14.5f * dt;   // 重力
+        pos += vel * dt;
+    }
+
+    // 着地地点の Z から飛距離を算出
+    return m_hitStartPos.z - pos.z;
+}
+
 void Ball::ResetBall()
 {
     m_position = { -0.0f, 650.0f, 1000.0f };
     m_velocity = Vector3::Zero;
     m_isMove = false;
     m_hasHit = false;
-
+    m_hasFixed = false;
+    m_hasStrike = false;
+    m_hasShownPrediction = false;
     SetPosition(m_position);
 }
 

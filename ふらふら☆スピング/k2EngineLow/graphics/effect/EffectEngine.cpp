@@ -35,7 +35,7 @@ namespace nsK2EngineLow {
 		// エフェクトマネージャーの作成。
 		m_manager = ::Effekseer::Manager::Create(8000);
 
-		
+
 		m_manager->SetCurveLoader(Effekseer::MakeRefPtr<Effekseer::CurveLoader>());
 	}
 	Effekseer::EffectRef EffectEngine::LoadEffect(const int number)
@@ -120,8 +120,6 @@ namespace nsK2EngineLow {
 		// コマンドリストを終了する。
 		m_renderer[backBufferNo]->SetCommandList(nullptr);
 		EffekseerRendererDX12::EndCommandList(m_commandList[backBufferNo]);
-		//下記は追加部分
-		EffekseerRendererDX12::ExecuteCommandList(m_commandList[backBufferNo]);
 	}
 
 	void EffectEngine::ResistEffect(const int number, const char16_t* filePath)
@@ -131,6 +129,15 @@ namespace nsK2EngineLow {
 		if (it == m_effectMap.end()) {
 			//新規。
 			effect = Effekseer::Effect::Create(m_manager, filePath);
+			if (effect == nullptr)
+			{
+				wchar_t msg[512];
+				swprintf_s(msg, L"Effect Load Failed\n%s", filePath);
+
+				MessageBoxW(nullptr, msg, L"Error", MB_OK);
+
+				return;
+			}
 			m_effectMap.insert({ number, effect });
 		}
 	}

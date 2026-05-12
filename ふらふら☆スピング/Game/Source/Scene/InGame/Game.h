@@ -116,6 +116,9 @@ public:
 	Vector3 m_hitStartPos[3];
 	float   m_hitPower[3];
 	int m_shots = 0;          // 何回打ったか
+	float m_hitStartZ = 0.0f;
+	bool m_hasStartedDistance = false;
+	bool m_isHomeRun = false;
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。
@@ -128,7 +131,7 @@ private:
 	CameraMode m_cameraMode = Camera_Catcher;//初期カメラ
 	Start1* m_start1;
 	int m_guruguru = 0;
-	int m_km = 0;
+	float m_km = 0;
 	bool m_bgmStarted = false;
 	float m_afterLandingTimer = 0.0f;
 	bool  m_isBallLanded = false;
@@ -163,5 +166,7 @@ private:
 	int m_bestPitchFrame = 0;
 	float m_replaySkipHoldTime = 0.0f;  // B長押し時間
 	bool m_hasAppliedHitMoment = false;
+	bool m_startFadeSE2 = false;
+	int m_prevGuruGuru = 0;
 };
 

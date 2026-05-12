@@ -7,8 +7,8 @@
 
 bool Ranking::Start() {
     m_spriteRender.Init("Assets/sprite/Ranking.DDS", 1920.0f, 1080.0f);
-    m_sukoa.Init("Assets/sprite/sukoa.DDS", 420.0f, 300.0f);
-    m_mairu.Init("Assets/sprite/mairu.DDS", 420.0f, 300.0f);
+    m_sukoa.Init("Assets/sprite/sukoa.DDS", 420.0f, 280.0f);
+    m_mairu.Init("Assets/sprite/mairu.DDS", 420.0f, 280.0f);
     for (int i = 0; i < 5; i++) {
         m_fontsScore[i].SetPivot(0.0f, 0.5f); // 左寄せ
     }
@@ -22,39 +22,19 @@ bool Ranking::Start() {
 }
 
 void Ranking::Load() {
-    m_scoresScore.clear();
-    m_scoresMeter.clear();
-    m_scoresGuruguru.clear();
     std::ifstream ifs("ranking.dat");
     if (!ifs) {
-        // ファイルが無い場合は全部 0 で初期化
-        m_scoresScore.assign(5, 0);
-        m_scoresMeter.assign(5, 0);
+        m_scoresScore.fill(0);
+        m_scoresMeter.fill(0);
+        m_scoresGuruguru.fill(0);
         Save();
         return;
     }
 
-    int s;
+    for (int i = 0; i < 5; i++) ifs >> m_scoresScore[i];
+    for (int i = 0; i < 5; i++) ifs >> m_scoresMeter[i];
+    for (int i = 0; i < 5; i++) ifs >> m_scoresGuruguru[i];
 
-    // スコア部門（5個）
-    for (int i = 0; i < 5; i++) {
-        if (ifs >> s) m_scoresScore.push_back(s);
-        else m_scoresScore.push_back(0);
-    }
-
-    // メートル部門（5個）
-    for (int i = 0; i < 5; i++) {
-        if (ifs >> s) m_scoresMeter.push_back(s);
-        else m_scoresMeter.push_back(0);
-    }
-
-    // ぐるぐる部門（5個）
-    for (int i = 0; i < 5; i++) {
-        if (ifs >> s) m_scoresGuruguru.push_back(s);
-        else m_scoresGuruguru.push_back(0);
-    }
-
-    // ★ 常に10個の状態で保存し直す
     Save();
 }
 
@@ -83,43 +63,49 @@ void Ranking::Update() {
     }
 }
 
-void Ranking::AddScore(int scoreKm, int scoreMeter, int guruguru) {
+bool Ranking::AddScore(int scoreKm, int scoreMeter, int guruguru) {
+    int oldBest = m_scoresScore[0];
 
-    // スコア部門
-    m_scoresScore.push_back(scoreKm);
-    m_scoresGuruguru.push_back(guruguru);
+    // ★ スコア + ぐるぐる を 6件にしてソート
+    std::array<std::pair<int, int>, 6> pairs;
 
-    // ★ スコアとぐるぐるをセットでソート
-    std::vector<std::pair<int, int>> scorePairs;
-    for (int i = 0; i < m_scoresScore.size(); i++) {
-        scorePairs.push_back({ m_scoresScore[i], m_scoresGuruguru[i] });
+    for (int i = 0; i < 5; i++) {
+        pairs[i] = { m_scoresScore[i], m_scoresGuruguru[i] };
     }
+    pairs[5] = { scoreKm, guruguru };
 
-    std::sort(scorePairs.begin(), scorePairs.end(),
+    std::sort(pairs.begin(), pairs.end(),
         [](auto& a, auto& b) { return a.first > b.first; });
 
-    // 上位5件に戻す
-    m_scoresScore.clear();
-    m_scoresGuruguru.clear();
     for (int i = 0; i < 5; i++) {
-        m_scoresScore.push_back(scorePairs[i].first);
-        m_scoresGuruguru.push_back(scorePairs[i].second);
+        m_scoresScore[i] = pairs[i].first;
+        m_scoresGuruguru[i] = pairs[i].second;
     }
 
-    // メートル部門
-    m_scoresMeter.push_back(scoreMeter);
-    std::sort(m_scoresMeter.begin(), m_scoresMeter.end(), std::greater<int>());
-    if (m_scoresMeter.size() > 5) m_scoresMeter.resize(5);
+    int newBest = m_scoresScore[0];
+    bool isNewRecord = (scoreKm == newBest && newBest > oldBest);
+
+    // ★ メートル部門
+    std::array<int, 6> meterTemp;
+    for (int i = 0; i < 5; i++) meterTemp[i] = m_scoresMeter[i];
+    meterTemp[5] = scoreMeter;
+
+    std::sort(meterTemp.begin(), meterTemp.end(), std::greater<int>());
+
+    for (int i = 0; i < 5; i++) {
+        m_scoresMeter[i] = meterTemp[i];
+    }
 
     Save();
+    return isNewRecord;
 }
 
 void Ranking::Render(RenderContext& rc) {
     m_spriteRender.Draw(rc);
-    m_sukoa.SetPosition({ -350, 160, 0 });
+    m_sukoa.SetPosition({ -360, 225, 0 });
     m_sukoa.Update();
     m_sukoa.Draw(rc);
-    m_mairu.SetPosition({ 350, 160, 0 });
+    m_mairu.SetPosition({ 340, 225, 0 });
     m_mairu.Update();
     m_mairu.Draw(rc);
     wchar_t buf[256];
@@ -129,8 +115,8 @@ void Ranking::Render(RenderContext& rc) {
     for (int i = 0; i < 5; i++) {
         swprintf_s(buf, L"位:%.2f", m_scoresScore[i] / 100.0); // スコアのみ表示
         m_fontsScore[i].SetText(buf);
-        m_fontsScore[i].SetPosition(-500, 100 - i * 90, 0);
-        m_fontsScore[i].SetColor(0, 0, 0, 1);  // ← 白
+        m_fontsScore[i].SetPosition(-500, 165 - i * 90, 0);
+        m_fontsScore[i].SetColor(1, 1, 1, 1);  // ← 白
         m_fontsScore[i].SetScale(1.3f);
         m_fontsScore[i].Draw(rc);
         // ★ このスコアが何回ぐるぐるしたか
@@ -139,11 +125,11 @@ void Ranking::Render(RenderContext& rc) {
 
         // 0〜9：黒
         if (c < 10) {
-            r2 = 0.0f; g2 = 0.0f; b2 = 0.0f;
+            r2 = 1.0f; g2 = 1.0f; b2 = 1.0f;
         }
         // 10〜14：青
         else if (c < 15) {
-            r2 = 0.0f; g2 = 0.0f; b2 = 1.0f;
+            r2 = 0.0f; g2 = 0.7f; b2 = 1.0f;
         }
         // 15〜19：黄緑
         else if (c < 20) {
@@ -161,7 +147,7 @@ void Ranking::Render(RenderContext& rc) {
         wchar_t bufG[64];
         swprintf_s(bufG, L"(%d回)", m_scoresGuruguru[i]);
         m_fontsGuruguru[i].SetText(bufG);
-        m_fontsGuruguru[i].SetPosition(-220, 100 - i * 90, 0);
+        m_fontsGuruguru[i].SetPosition(-220, 165 - i * 90, 0);
         m_fontsGuruguru[i].SetScale(1.2f);
         m_fontsGuruguru[i].SetColor(r2, g2, b2, 1.0f);
         m_fontsGuruguru[i].Draw(rc);
@@ -171,8 +157,8 @@ void Ranking::Render(RenderContext& rc) {
     for (int i = 0; i < 5; i++) {
         swprintf_s(buf, L"位:%.2f m", m_scoresMeter[i] / 100.0);
         m_fontsMeter[i].SetText(buf);
-        m_fontsMeter[i].SetPosition(200, 100 - i * 90, 0);
-        m_fontsMeter[i].SetColor(0, 0, 0, 1);  // ← 白
+        m_fontsMeter[i].SetPosition(200, 165 - i * 90, 0);
+        m_fontsMeter[i].SetColor(1, 1, 1, 1);  // ← 白
         m_fontsMeter[i].SetScale(1.3f);
         m_fontsMeter[i].Draw(rc);
     }

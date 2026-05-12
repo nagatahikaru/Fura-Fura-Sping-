@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "InGameUI.h"
+#include"Source/Sound/SoundManager.h"
 
 
 template <typename T>
@@ -8,12 +9,14 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
 }
 
 InGameUI::InGameUI() {
-	m_spriteRender.Init("Assets/sprite/waku.DDS", 850.0f, 600.0f);
+	m_wakuModel.Init("Assets/stage/hurahura.tkm");
 	m_spriteRenderBat.Init("Assets/sprite/batto.DDS", 330.0f, 430.0f);
 	m_spriteRenderMeet.Init("Assets/sprite/mi-to.DDS", 45.0f, 45.0f);
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
 	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 30.0f, 30.0f);
-	m_kiiro.Init("Assets/sprite/kiiro.DDS", 550.0f, 550.0f);
+	m_kiiro1.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
+	m_kiiro2.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
+	m_kiiro3.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
 	m_besu.Init("Assets/sprite/besu.DDS", 400.0f, 450.0f);
 	m_baisoku.Init("Assets/sprite/baisoku.DDS", 150.0f, 150.0f);
 	m_shuchusen.Init("Assets/sprite/shuchusen.DDS", 1920.0f, 1080.0f);
@@ -33,6 +36,13 @@ InGameUI::InGameUI() {
 	m_ballIcon[1].SetPosition(Vector3{ -530, 430, 0 });
 	m_ballIcon[2].SetPosition(Vector3{ -460, 430, 0 });
 	m_spritekuro.Init("Assets/sprite/kuro.DDS",1920.0f, 1080.0f);
+	m_bbb.Init("Assets/sprite/bbb.dds", 200.0f, 200.0f);
+	m_bsuki.Init("Assets/sprite/bsuki.DDS", 550.0f, 500.0f);
+	m_strikeSprite.Init("Assets/sprite/strike.DDS", 600.0f, 500.0f);
+	m_niceSprite.Init("Assets/sprite/nice.dds", 800, 700);
+	m_greatSprite.Init("Assets/sprite/great.dds", 800, 700);
+	m_excellentSprite.Init("Assets/sprite/excellent.dds", 800, 700);
+	m_perfectSprite.Init("Assets/sprite/perfect.dds", 800, 700);
 }
 
 InGameUI::~InGameUI() {
@@ -98,6 +108,32 @@ void InGameUI::Update() {
 			// ★ フェードイン完了通知
 			if (m_onFadeInFinished) {
 				m_onFadeInFinished();
+			}
+		}
+	}
+	if (m_isPredictionAnim) {
+
+		// ① 拡大アニメ（0.4秒）
+		if (m_predictionAnimTimer < 0.4f) {
+
+			m_predictionAnimTimer += g_gameTime->GetFrameDeltaTime();
+			float t = m_predictionAnimTimer / 0.4f;
+			if (t > 1.0f) t = 1.0f;
+
+			if (t < 0.7f)
+				m_predictionScale = Lerp(0.3f, 1.2f, t / 0.7f);
+			else
+				m_predictionScale = Lerp(1.2f, 1.0f, (t - 0.7f) / 0.3f);
+
+			m_predictionAlpha = Lerp(0.0f, 1.0f, t);
+		}
+		else {
+			// ② ホールド（1秒）
+			m_predictionHoldTime -= g_gameTime->GetFrameDeltaTime();
+
+			if (m_predictionHoldTime <= 0.0f) {
+				m_isPredictionAnim = false;
+				m_isPredictionVisible = false;  // 完全終了
 			}
 		}
 	}
@@ -204,6 +240,7 @@ void InGameUI::SetStartZ(float z) {
     m_isBallUIFixed    = false;
     m_hasPredictedBall = false;
     m_ballAlpha        = 0.0f;
+	ResetPrediction();
 }
 
 void InGameUI::SetGuruGuruTimer(float time)
@@ -241,7 +278,53 @@ void InGameUI::StartFadeIn(float speed)
 	m_isFadeIn = true;
 	m_isFadeOut = false;
 	m_fadeSpeed = speed;
-	m_fadeAlpha = 1.0f;   // 真っ黒からスタートして 0 に戻す
+	m_fadeAlpha = 0.7f;   // 真っ黒からスタートして 0 に戻す
+}
+
+void InGameUI::StartStrikeAnim()
+{
+	m_strikeTimer = 0.0f;
+	m_strikeHoldTime = 1.5f;   // ★ 1秒残す
+	m_isStrikeAnim = true;
+
+	m_strikeSprite.SetScale({ 0.3f, 0.3f,1.0f });
+	m_strikeSprite.SetMulColor({ 1,1,1,0 }); // 透明
+}
+
+void InGameUI::ShowPrediction(float predicted)
+{
+	if (predicted < 30000.0f) {
+		m_predictionType = Prediction_Nice;
+		g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
+	}
+	else if (predicted < 45000.0f) {
+		m_predictionType = Prediction_Great;
+		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
+	}
+	else if (predicted < 50000.0f) {
+		m_predictionType = Prediction_Excellent;
+		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
+	}
+	else {
+		m_predictionType = Prediction_Perfect;
+		g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f); // ★ パーフェクト音
+	}
+
+	// ★ アニメ開始
+	m_isPredictionAnim = true;
+	m_predictionAnimTimer = 0.0f;
+	m_predictionHoldTime = 1.5f;
+	m_predictionScale = 0.3f;
+	m_predictionAlpha = 0.0f;
+	m_predictedDistance =floorf( predicted+0.01f)  / 100.0f;
+	m_isPredictionVisible = true;
+}
+
+// InGameUI.cpp の一番下などでOK
+void InGameUI::ResetPrediction() {
+	m_isPredictionVisible = false;
+	m_predictedDistance = 0.0f;
+	m_predictionAlpha = 0.0f; // 透明度もリセットしておくと安全
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -258,9 +341,10 @@ void InGameUI::Render(RenderContext& rc) {
 	if (m_isUIVisible) {
 
 		//赤い枠
-		m_spriteRender.SetPosition(Vector3{ 0.0f, -80.0f, 0.0f });
-		m_spriteRender.Update();
-		m_spriteRender.Draw(rc);
+		m_wakuModel.SetPosition(50.0f, 318.0f, 6000.0f);
+		m_wakuModel.SetScale(6.5f, 7.5f, 5.0f);
+		m_wakuModel.Update();
+		m_wakuModel.Draw(rc);
 
 		// --- 左右でバット位置を切り替える ---
 		Vector3 batPos = m_isLeftBatter ? m_batPositionLeft : m_batPositionRight;
@@ -329,7 +413,39 @@ void InGameUI::Render(RenderContext& rc) {
 				m_Abotan.Draw(rc);
 			}
 		}
+		if (m_isStrikeAnim) {
 
+			// ① 拡大アニメ（0.4秒）
+			if (m_strikeTimer < 0.4f) {
+
+				m_strikeTimer += g_gameTime->GetFrameDeltaTime();
+				float t = m_strikeTimer / 0.4f;
+				if (t > 1.0f) t = 1.0f;
+
+				float scale;
+				if (t < 0.7f)
+					scale = Lerp(0.3f, 1.2f, t / 0.7f);
+				else
+					scale = Lerp(1.2f, 1.0f, (t - 0.7f) / 0.3f);
+
+				m_strikeSprite.SetScale(Vector3{ scale, scale, 1.0f });
+
+				float alpha = Lerp(0.0f, 1.0f, t);
+				m_strikeSprite.SetMulColor({ 1,1,1,alpha });
+			}
+			else {
+				// ② アニメ終了後の待機時間（1秒）
+				m_strikeHoldTime -= g_gameTime->GetFrameDeltaTime();
+
+				if (m_strikeHoldTime <= 0.0f) {
+					m_isStrikeAnim = false;  // 完全終了
+				}
+			}
+
+			// ★ 描画
+			m_strikeSprite.Update();
+			m_strikeSprite.Draw(rc);
+		}
 	}
 
 	if (m_isFontVisible) {
@@ -353,9 +469,15 @@ void InGameUI::Render(RenderContext& rc) {
 			m_ballIcon[i].Draw(rc);
 		}
 
-		m_kiiro.SetPosition(Vector3{ 980.0f, 470.0f, 0.0f });
-		m_kiiro.Update();
-		m_kiiro.Draw(rc);
+		m_kiiro1.SetPosition(Vector3{ 915.0f, 470.0f, 0.0f });
+		m_kiiro1.Update();
+		m_kiiro1.Draw(rc);
+		m_kiiro2.SetPosition(Vector3{ 915.0f, 370.0f, 0.0f });
+		m_kiiro2.Update();
+		m_kiiro2.Draw(rc);
+		m_kiiro3.SetPosition(Vector3{ 915.0f, 270.0f, 0.0f });
+		m_kiiro3.Update();
+		m_kiiro3.Draw(rc);
 
 		m_besu.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 		m_besu.Update();
@@ -422,22 +544,91 @@ void InGameUI::Render(RenderContext& rc) {
 
 		wchar_t boll[256];
 		if (m_isError) {
-			swprintf_s(boll, L"???m");
+			double meter = (double)m_km / 100.0;
+			swprintf_s(boll, L"%.2f m", meter);
 		}
 		else {
 			double meter = (double)m_km / 100.0;
 			swprintf_s(boll, L"%.2f m", meter);
 		}
-		m_fontBollRender.SetText(boll);
-		m_fontBollRender.SetPosition(774.0f, 505.0f, 0.0f);
-		m_fontBollRender.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
-		m_fontBollRender.Draw(rc);
+		// 1球目〜3球目のスコア表示
+		for (int i = 0; i < 3; i++) {
+
+			wchar_t buf[256];
+
+			if (!m_shotDone[i]) {
+				swprintf_s(buf, L"%d:--- m", i + 1);
+			}
+			else {
+				if (m_threeShots[i] == 0) {
+					swprintf_s(buf, L"%d:x", i + 1);
+				}
+				else
+				{
+					double meter = (double)m_threeShots[i] / 100.0;
+					swprintf_s(buf, L"%d:%.2f m", i + 1, meter);
+				}
+			}
+
+			float y = 505.0f - i * 100.0f;  // 縦位置をずらす
+
+			if (i == 0) {
+				m_fontBollRender1.SetText(buf);
+				m_fontBollRender1.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender1.SetColor(0, 0, 0, 1);
+				m_fontBollRender1.Draw(rc);
+			}
+			else if (i == 1) {
+				m_fontBollRender2.SetText(buf);
+				m_fontBollRender2.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender2.SetColor(0, 0, 0, 1);
+				m_fontBollRender2.Draw(rc);
+			}
+			else {
+				m_fontBollRender3.SetText(buf);
+				m_fontBollRender3.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender3.SetColor(0, 0, 0, 1);
+				m_fontBollRender3.Draw(rc);
+			}
+		}
+
+		if (m_isPredictionVisible) {
+
+			SpriteRender* spr = nullptr;
+
+			if (m_predictionType == Prediction_Nice) {
+				spr = &m_niceSprite;
+			}
+			else if (m_predictionType == Prediction_Great) {
+				spr = &m_greatSprite;
+			}
+			else if (m_predictionType == Prediction_Excellent) {
+				spr = &m_excellentSprite;
+			}
+			else {
+				spr = &m_perfectSprite;   // ★ 追加
+			}
+
+			spr->SetPosition({ 0,0,0 });
+			spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
+			spr->SetMulColor({ 1,1,1, m_predictionAlpha });
+			spr->Update();
+			spr->Draw(rc);
+
+			wchar_t predText[64];
+			swprintf_s(predText, L"%.2f m", m_predictedDistance);
+			m_fontPrediction.SetText(predText);
+			m_fontPrediction.SetPosition(0.0f, -150.0f, 0.0f); // Excellent表示の下あたりに配置
+			m_fontPrediction.SetScale(1.5f);
+			m_fontPrediction.SetColor(1.0f, 1.0f, 0.0f, m_predictionAlpha); // 黄色で見やすく
+			m_fontPrediction.Draw(rc);
+		}
+
 
 		if (m_isBaisokuVisible) {
 			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 			m_baisoku.Update();
 			m_baisoku.Draw(rc);
-
 		}
 
 		if (m_guruGuruTimer > 0.0) {
@@ -456,11 +647,19 @@ void InGameUI::Render(RenderContext& rc) {
 			m_mawase.Draw(rc);
 		}
 	}
+
 	if (m_isReplayVisible) {
 		m_spriteRenderReplay.SetPosition(Vector3{ -800.0f, 450.0f, 0.0f });
 		m_spriteRenderReplay.Update();
 		m_spriteRenderReplay.Draw(rc);
+		m_bbb.SetPosition(Vector3{ 700.0f, 400.0f, 0.0f });
+		m_bbb.Update();
+		m_bbb.Draw(rc);
+		m_bsuki.SetPosition(Vector3{ 700.0f, 300.0f, 0.0f });
+		m_bsuki.Update();
+		m_bsuki.Draw(rc);
 	}
+
 	// ★ 黒フェード描画（常に最前面）
 	if (m_fadeAlpha > 0.0f) {
 		m_spritekuro.SetMulColor({ 0,0,0, m_fadeAlpha });
@@ -468,4 +667,43 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spritekuro.Update();
 		m_spritekuro.Draw(rc);
 	}
+	//wchar_t dbg[256];
+
+	//swprintf_s(dbg, 256, L"Ball Z = %.1f", m_predictedBallPos3D.z);
+	//m_fontDebug1.SetText(dbg);
+	//m_fontDebug1.SetPosition(300.0f, 500.0f, 0.0f);
+	//m_fontDebug1.SetColor(0, 0, 0, 1);
+	//m_fontDebug1.Draw(rc);
+
+	//Vector3 uiPos = m_isBallUIFixed
+	//	? m_fixedBallUIPos
+	//	: ConvertBall3DToUI(m_predictedBallPos3D);
+	//uiPos.y -= 0.0f;   // ★ これを追加
+	//swprintf_s(dbg, 256, L"UI Pos = (%.1f, %.1f)", uiPos.x, uiPos.y);
+	//m_fontDebug2.SetText(dbg);
+	//m_fontDebug2.SetPosition(300.0f, 460.0f, 0.0f);
+	//m_fontDebug2.SetColor(0, 0, 0, 1);
+	//m_fontDebug2.Draw(rc);
+
+	//if (m_isBallUIFixed) {
+	//	swprintf_s(dbg, 256, L"Fixed UI Pos = (%.1f, %.1f)",
+	//		m_fixedBallUIPos.x, m_fixedBallUIPos.y);
+	//	m_fontDebug3.SetText(dbg);
+	//	m_fontDebug3.SetPosition(300.0f, 420.0f, 0.0f);
+	//	m_fontDebug3.SetColor(1, 0, 0, 1);
+	//	m_fontDebug3.Draw(rc);
+	//}
+
+	//swprintf_s(dbg, 256, L"Ball X = %.2f", m_predictedBallPos3D.x);
+	//m_fontDebug4.SetText(dbg);
+	//m_fontDebug4.SetPosition(300.0f, 380.0f, 0.0f);
+	//m_fontDebug4.SetColor(0, 0, 0, 1);
+	//m_fontDebug4.Draw(rc);
+
+	//swprintf_s(dbg, 256, L"UI X = %.2f", uiPos.x);
+	//m_fontDebug5.SetText(dbg);
+	//m_fontDebug5.SetPosition(300.0f, 340.0f, 0.0f);
+	//m_fontDebug5.SetColor(0, 0, 0, 1);
+	//m_fontDebug5.Draw(rc);
+
 }

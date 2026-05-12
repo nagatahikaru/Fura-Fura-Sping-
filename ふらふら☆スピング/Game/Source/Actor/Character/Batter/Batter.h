@@ -46,8 +46,7 @@ namespace {
 
 class Batter :public Character
 {
-public:
-	// グローバルでの定義の重複を避けるため、クラス内にEnumを移動（もしくは Character.h で定義されている場合は削除してください）
+public:	
 	enum EnAnimationClip {
 		enAnimationClip_Idle,
 		enAnimationClip_Rotation,
@@ -69,10 +68,6 @@ public:
 
 	EnAnimationClip GetEnAnimationClip() const
 	{
-		//if (!g_pad[0]->IsPressAnyKey())
-		//{
-		//	return enAnimationClip_Idle;
-		//}
 		return m_setAnimation;
 	}
 	const bool GetIsOnGround() const
@@ -215,9 +210,7 @@ public:
 		return result;
 	}
 
-	/**
-	* 
-	*/
+	// レイと平面の交点を計算する関数
 	Vector3 RayToPlane(
 		const Vector3& rayOrigin,
 		const Vector3& rayDir,
@@ -278,49 +271,66 @@ public:
 	void ResetSwing();
 	void SetCursorMode(bool flag);
 	void ResetCursorPosition();
-	bool m_isPaused;
-private:
+	void HitEffect();
 
-	std::unique_ptr<BatterStateMachine> m_stateMachine;
-	AnimationClip m_animationClips[enAnimationClip_Num];
-	EnAnimationClip m_setAnimation = enAnimationClip_Idle;
-	int m_UniformNumber = BatterNumber::UniformNumber_1;
-	Game* m_game; // ゲームクラスへのポインタ
-	Vector3 newPosition;
-	Vector3 m_facingDir = Vector3(0.0f, 0.0f, -1.0f); // 初期向き
-	Quaternion m_rotation; // 回転を保持するクォータニオン
-	Vector3 pivotOffset = { 0.0f, 0.0f, 10.0f }; // 例: 回転の軸となるオフセット座標（ローカル）
-	FontRender m_fontRender;
-	CollisionObject* m_collisionObject;
-	Quaternion m_batRotation; // バットの回転を保持するクォータニオン
-	bool m_isAnimation = false; // animationの再生状態を保持するフラグ
-	InGameUI* m_inGameUI; // インゲームUIへのポインタ
-	Vector3 m_meetPosition; // ミートカーソルの位置を保持する変数
-	bool m_isRotation = true; // 回転状態を保持するフラグ
-	Ball* m_ball; // ボールへのポインタ
-	bool m_isCursorMode = true;
-	Vector3 m_meetCursorWorldPos;
-	float m_guruGuruBatTimer = 0.0f; // グルグルバットのタイマー
-	float m_prevAngle = 0.0f;
-	float m_totalRotation = 0.0f;
-	int m_guruGuruBatCount = 0; // グルグルバットの回数
-	Vector3 m_initialFacingDir;
-	Quaternion m_initialRotation;
-	bool m_randomCursorUpdate = false; // ランダムな位置にカーソルを更新するフラグ
-	Vector3 m_randomCursorTargetPos; // ランダムな位置に更新するためのターゲット座標
-	float m_randomCursorMoveTimer = 0.0f; // ランダムな位置にカーソルを移動するためのタイマー
-	float m_randomSpotRadius = 0.0f; // ランダムな位置にカーソルを移動する際の半径
-	float m_randomMoveDuration = 0.0f; // ランダムな位置にカーソルを移動する際の移動時間
-	Vector3 m_randomCursorMovePwer; // ランダムな位置にカーソルを移動する際の移動の強さ
-	bool m_effectSpawned = false;
-	float m_playSpeed = 1.0f;
-	int m_hitFrameIndex = -1;
+	bool m_isPaused;
+
+
+private:
+	// ★ ステートマシン関連の変数（追加）
+	std::unique_ptr<BatterStateMachine> m_stateMachine;		// バッターステートマシンへのユニークポインタ
+
+	// ★ ポインタ関連の変数（追加）
+	Game* m_game;											// ゲームクラスへのポインタ
+	FontRender m_fontRender;								// フォントレンダラー
+	CollisionObject* m_collisionObject;						// 当たり判定オブジェクトへのポインタ
+	InGameUI* m_inGameUI;									// インゲームUIへのポインタ
+	Ball* m_ball;											// ボールへのポインタ
+
+	// ★ 記憶数値関連の変数（追加）
+	Vector3 m_facingDir = Vector3(0.0f, 0.0f, -1.0f);		// 初期向き
+	Vector3 newPosition;									// 新しい位置を保持する変数
+	float m_prevAngle = 0.0f;								// 前回の角度を保持する変数
+	Quaternion m_initialRotation;							// 初期の向きを保存する変数
+	int m_UniformNumber = BatterNumber::UniformNumber_1;	// ユニフォームの番号
+
+	// ★ アニメーションを管理する変数（追加）
+	float m_playSpeed = 1.0f;								// アニメーションの再生速度を管理する変数
+	AnimationClip m_animationClips[enAnimationClip_Num];	// アニメーションクリップの配列
+	EnAnimationClip m_setAnimation = enAnimationClip_Idle;	// 現在再生中のアニメーションクリップ
+
+	// ★ カーソル関連の変数（追加）
+	Vector3 m_meetPosition;									// ミートカーソルの位置を保持する変数
+	bool m_isCursorMode = true;								// カーソルモードの状態を保持するフラグ
+	Vector3 m_meetCursorWorldPos;							// ミートカーソルのワールド座標を保持する変数
+	bool m_randomCursorUpdate = false;						// ランダムな位置にカーソルを更新するフラグ
+	Vector3 m_randomCursorTargetPos;						// ランダムな位置に更新するためのターゲット座標
+	float m_randomCursorMoveTimer = 0.0f;					// ランダムな位置にカーソルを移動するためのタイマー
+	float m_randomSpotRadius = 0.0f;						// ランダムな位置にカーソルを移動する際の半径
+	float m_randomMoveDuration = 0.0f;						// ランダムな位置にカーソルを移動する際の移動時間
+	Vector3 m_randomCursorMovePwer;							// ランダムな位置にカーソルを移動する際の移動の強さ
+
+	// ★ グルグルバットの回転に関する変数（追加）
+	Quaternion m_rotation;									// 回転を保持するクォータニオン
+	Vector3 pivotOffset = { 0.0f, 0.0f, 10.0f };			// 例: 回転の軸となるオフセット座標（ローカル）
+	bool m_isRotation = true;								// 回転状態を保持するフラグ
+	float m_guruGuruBatTimer = 0.0f;						// グルグルバットのタイマー
+	float m_totalRotation = 0.0f;							// グルグルバットの累積回転量
+	int m_guruGuruBatCount = 0;								// グルグルバットの回数
+
 	// ★ 遅延ヒット用の変数（追加）
-	bool m_isHitReserved = false;
-	float m_hitDelayTimer = 0.0f;
-	Vector3 m_reservedHitDir = Vector3::Zero;
-	float m_reservedHitPower = 0.0f;
-	Transform m_transform;            // Transformの型に合わせてください
-	std::unique_ptr<nsApp::CharacterModel> m_characterModel;
+	bool m_isHitReserved = false;							// ヒットが予約されているかどうかを管理するフラグ
+	float m_hitDelayTimer = 0.0f;							// ヒットの遅延時間を管理するタイマー
+	Vector3 m_reservedHitDir = Vector3::Zero;				// ヒットの遅延後に使用するヒットの方向を管理する変数
+	float m_reservedHitPower = 0.0f;						// ヒットの遅延後に使用するヒットの強さを管理する変数
+	Transform m_transform;									// Transformの型に合わせてください
+	std::unique_ptr<nsApp::CharacterModel> m_characterModel;// CharacterModelへのユニークポインタ
+
+	// ★ エフェクト関連の変数（追加）
+	struct EffectInfo {										// エフェクトの情報を管理する構造体
+		uint32_t m_effectDawnID;										// エフェクトのIDを管理する変数
+		uint32_t m_effectHitID;										// エフェクトのIDを管理する変数
+	};
+	EffectInfo m_inro;
 };
 

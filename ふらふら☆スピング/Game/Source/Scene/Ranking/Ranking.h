@@ -11,12 +11,12 @@ public:
 	void Render(RenderContext& rc); 
 	void Load();
 	void Save();
-	void AddScore(int scoreKm,int scoreMeter, int guruguru);
+	bool AddScore(int scoreKm,int scoreMeter, int guruguru);
 private:
 	// ★ スコア一覧（トップ10まで入る）
-	std::vector<int> m_scoresScore;
-	std::vector<int> m_scoresMeter;   // メートル部門（倍率前
-	std::vector<int> m_scoresGuruguru;   // ★ ぐるぐる回数（5件）
+	std::array<int, 5> m_scoresScore{};
+	std::array<int, 5> m_scoresMeter{};
+	std::array<int, 5> m_scoresGuruguru{};
 	FontRender m_fontsScore[5];
 	FontRender m_fontsMeter[5];
 	FontRender m_fontsGuruguru[5];

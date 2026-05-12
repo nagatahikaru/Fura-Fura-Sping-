@@ -27,7 +27,15 @@ namespace {
 	    "GameBGM9",
 		"ResultBGM",
 		"SE",
-		"SE2"
+		"SE2",
+		"SE3",
+		"SE4",
+		"SE5",
+		"SE6",
+		"SE7",
+		"SE8",
+		"SE9",
+		"SE10"
 	};	
 }
 
@@ -146,3 +154,19 @@ void SoundManager::UnmuteSE2()
 		m_se2->SetVolume(m_se2BaseVolume); // ★ 本来の音量に戻す
 	}
 }
+
+void SoundManager::FadeOutSE2(float delta)
+{
+	if (!m_se2) return;
+
+	float v = m_se2->GetVolume();
+	v -= delta;
+
+	if (v <= 0.0f) {
+		v = 0.0f;
+		m_se2->Stop();
+	}
+
+	m_se2->SetVolume(v);
+}
+

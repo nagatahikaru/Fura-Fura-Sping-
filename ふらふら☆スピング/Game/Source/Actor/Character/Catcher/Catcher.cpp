@@ -138,7 +138,7 @@ void Catcher::Update()
 
 void Catcher::Catch()
 {
-	if(m_collisionObject->IsHit(m_ball->GetCollisionObject()));
+	if(m_collisionObject->IsHit(m_ball->GetCollisionObject()))
 	{
 		m_game->OnBallLanded();
 	}
