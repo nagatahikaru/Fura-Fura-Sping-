@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "Ball.h"
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
@@ -71,25 +71,23 @@ void Ball::Update()
         m_throwTimer = 0.0f;
     }
 
-
-    if (m_isMove)
-    {
-        m_velocity.y -= 14.5f * dt;
+   if (m_isMove)
+{
+    m_velocity.y -= 13.5f * dt;
 
         //変化球処理
         if (m_ballType == Curve)
         {
-            m_velocity.x -= 3.5f * dt; //左に曲がる
+            m_velocity.x -= 2.0f * dt; //左に曲がる
         }
         else if (m_ballType == Slider)
         {
-            m_velocity.x += 3.5f * dt; //右に曲がる
+            m_velocity.x += 3.0f * dt; //右に曲がる
         }
 
         m_position += m_velocity * dt;
 
-        //左右に揺らす
-        m_position.x += sinf(m_position.z * 0.01f) * 1.0f;
+            m_position.x += sinf(m_position.z * 0.008f) * 0.5f;
 
         // ★ リアルタイム飛距離更新
        // 着地時の最終距離
@@ -202,7 +200,7 @@ void Ball::Update()
     SetPosition(m_position);
 
     //距離に応じてスケール変更
-    float minZ = 500.0f;
+    float minZ = 1000.0f;
     float maxZ = 9500.0f;
 
     float t = (m_position.z - minZ) / (maxZ - minZ);
@@ -213,7 +211,7 @@ void Ball::Update()
     float scale = 4.0f * (1.0f - t * 0.8f);
 
     //最小サイズ制限（消え防止）
-    if (scale < 2.0f) scale = 2.0f;
+    if (scale < 2.5f) scale = 2.0f;
 
     m_modelRender.SetScale({ scale, scale, scale });
 }
@@ -237,7 +235,7 @@ void Ball::Throw(const Vector3& targetPos)
     Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
 
-    float speed = 1900.0f + (rand() % 300);
+    float speed = 2000.0f + (rand() % 250);
 
     int r = rand() % 100;
 
