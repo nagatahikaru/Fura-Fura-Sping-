@@ -43,6 +43,9 @@ InGameUI::InGameUI() {
 	m_greatSprite.Init("Assets/sprite/great.dds", 800, 700);
 	m_excellentSprite.Init("Assets/sprite/excellent.dds", 800, 700);
 	m_perfectSprite.Init("Assets/sprite/perfect.dds", 800, 700);
+	m_batu[0].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
+	m_batu[1].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
+	m_batu[2].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -301,7 +304,7 @@ void InGameUI::ShowPrediction(float predicted)
 		m_predictionType = Prediction_Great;
 		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
 	}
-	else if (predicted < 50000.0f) {
+	else if (predicted < 50500.0f) {
 		m_predictionType = Prediction_Excellent;
 		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
 	}
@@ -325,6 +328,13 @@ void InGameUI::ResetPrediction() {
 	m_isPredictionVisible = false;
 	m_predictedDistance = 0.0f;
 	m_predictionAlpha = 0.0f; // 透明度もリセットしておくと安全
+}
+
+void InGameUI::OnStrike(int ballIndex)
+{
+	if (ballIndex < 0 || ballIndex >= 3) return;
+
+	m_isMiss[ballIndex] = true;  // ← この球は空振り
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -483,6 +493,31 @@ void InGameUI::Render(RenderContext& rc) {
 		m_besu.Update();
 		m_besu.Draw(rc);
 
+		// ★ ストライク（バツ）スプライトを縦に並べて表示
+		for (int i = 0; i < 3; i++) {
+
+			if (m_isMiss[i]) {
+				// 位置：左上あたりに縦並び（好きな位置に調整OK）
+				float baseX = 760.0f;
+				float baseY = 482.5f;
+
+				m_batu[i].SetPosition(Vector3{
+					baseX,
+					baseY - i * 100.0f,   // ← 縦に並べる
+					0.0f
+					});
+
+				m_batu[i].SetScale({ 2.0f, 2.0f, 1.0f }); // 大きさ調整（必要なら）
+				m_batu[i].SetMulColor({ 1, 0, 0, 1 });      // 赤色で表示
+			}
+			else {
+				m_batu[i].SetMulColor({ 1, 1, 1, 0 });      // 非表示
+			}
+
+			m_batu[i].Update();
+			m_batu[i].Draw(rc);
+		}
+
 		// --- ぐるぐるカウント色変更 ---
 	// --- ぐるぐるカウント色変更（5刻み） ---
 		// --- ぐるぐるカウント色変更（5刻み） ---
@@ -561,7 +596,7 @@ void InGameUI::Render(RenderContext& rc) {
 			}
 			else {
 				if (m_threeShots[i] == 0) {
-					swprintf_s(buf, L"%d:x", i + 1);
+					swprintf_s(buf, L"%d: ", i + 1);
 				}
 				else
 				{
@@ -618,7 +653,7 @@ void InGameUI::Render(RenderContext& rc) {
 			wchar_t predText[64];
 			swprintf_s(predText, L"%.2f m", m_predictedDistance);
 			m_fontPrediction.SetText(predText);
-			m_fontPrediction.SetPosition(0.0f, -150.0f, 0.0f); // Excellent表示の下あたりに配置
+			m_fontPrediction.SetPosition(-150.0f, -150.0f, 0.0f); // Excellent表示の下あたりに配置
 			m_fontPrediction.SetScale(1.5f);
 			m_fontPrediction.SetColor(1.0f, 1.0f, 0.0f, m_predictionAlpha); // 黄色で見やすく
 			m_fontPrediction.Draw(rc);

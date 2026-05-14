@@ -16,5 +16,10 @@ private:
 	SpriteRender m_Start;
 	float m_timer = 0.0f;   // ★ カウントダウン用タイマー
 	bool m_playedStartSE = false;
+	float m_scale3 = 1.5f;
+	float m_scale2 = 1.5f;
+	float m_scale1 = 1.5f;
+	float m_scaleStart = 0.5f;
+	float m_alpha = 0.0f;
 };
 
