@@ -44,5 +44,11 @@ private:
 	float m_blinkTimer = 0.0f;
 	float m_se2Timer = 0.0f; // SE2 再生時間カウント用
 	bool m_hasScore = false;
+	double m_multiplier = 1.0f;
+	FontRender m_fontMultiplier;
+	bool m_step1 = true;   // 最大mのカウントアップ中
+	bool m_step2 = false;  // ぐるぐる回数のカウントアップ中
+	bool m_step3 = false;  // 最終スコアのカウントアップ中
+	double m_displayMultiplier = 1.0; // 係数のカウントアップ用
 };
 

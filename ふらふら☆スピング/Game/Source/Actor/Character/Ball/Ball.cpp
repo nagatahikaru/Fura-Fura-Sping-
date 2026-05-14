@@ -155,6 +155,11 @@ void Ball::Update()
         if (!m_hasHit && m_position.z > 9000.0f) {
             Game* game = FindGO<Game>("game");
             if (game) {
+                // ★ 追加：UI にバツを通知
+                InGameUI* ui = game->GetInGameUI();
+                if (ui) {
+                    ui->OnStrike(game->m_shots);   // ← 今の球にバツを付ける
+                }
                 game->SetKmValue(0);   // 空振りは距離0
                 game->OnBallLanded();  // 次の球へ
             }
@@ -331,18 +336,22 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
 
 float Ball::PredictLandingDistance()
 {
-    Vector3 pos = m_position;
-    Vector3 vel = m_velocity;
+    Game* game = FindGO<Game>("game");
+    if (!game) return 0.0f;
+
+    int shot = game->m_shots;
+
+    // ★ 打った瞬間の位置と速度を使う
+    Vector3 pos = m_hitStartPos;
+    Vector3 vel = game->m_hitVelocities[shot];
 
     float dt = 1.0f / 60.0f;
 
-    // 地面に落ちるまでシミュレーション
     while (pos.y > 0.0f) {
-        vel.y -= 14.5f * dt;   // 重力
+        vel.y -= 14.5f * dt;
         pos += vel * dt;
     }
 
-    // 着地地点の Z から飛距離を算出
     return m_hitStartPos.z - pos.z;
 }
 

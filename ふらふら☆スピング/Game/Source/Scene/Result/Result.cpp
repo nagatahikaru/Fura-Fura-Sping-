@@ -31,7 +31,7 @@ bool Result::Start()
 	m_skip.SetPosition({ 830.0f, -400.0f, 0.0f });
 
 	m_newRecord.Init("Assets/sprite/new.dds", 600.0f, 600.0f);
-	m_newRecord.SetPosition({ 0, 130, 0 });
+	m_newRecord.SetPosition({ -500, 130, 0 });
 	m_newRecord.SetMulColor({ 1,1,1,0 }); // 最初は非表示
 
 	m_hasScore = false;
@@ -204,31 +204,34 @@ void Result::Update()
 
 void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 
-	// 3球分の km を保存（倍率なし）
 	for (int i = 0; i < 3; i++) {
 		m_threeShots[i] = scores[i];
 	}
 
-	// ★ ここを追加：ぐるぐる値をメンバに保存
 	m_guruguru = guruguru;
-
-	// 元の km（最大距離）
 	m_originalKm = bestKm;
 
-	// ★ 基本倍率（1.01 × ぐるぐる）
+	// ★ 基本倍率
 	double multiplier = pow(1.01, (double)guruguru);
 
-	// ★ 5回超えるたびに +0.005（＝1.005倍）
-	int step = guruguru / 3;          // 5回ごとに1増える
-	double extra = step * 0.003;      // 0.5% × step
+	// ★ 追加倍率
+	int step = guruguru / 3;
+	double extra = step * 0.003;
 
-	// ★ 最終倍率
 	multiplier *= (1.0 + extra);
 
+	// ★ 小数点第4位で切り捨て
+	multiplier = floor(multiplier * 10000.0) / 10000.0;
+
+	// ★★★ 30回MAXボーナス（強制1.4倍） ★★★
+	if (guruguru >= 30) {
+		multiplier = 1.4;
+	}
+
 	// ★ km 計算
+	m_multiplier = multiplier;   // ← 表示用に保存
 	m_km = (int)(bestKm * multiplier);
 
-	// カウントアップ初期化
 	m_displayGuruguru = 0;
 	m_displayKm = 0;
 	m_displayOriginalKm = 0;
@@ -265,7 +268,7 @@ void Result::Render(RenderContext& rc)
 	// ぐるぐる
 	swprintf_s(buf, L"ぐるぐる: %d回", m_displayGuruguru);
 	m_fontGuruguru.SetText(buf);
-	m_fontGuruguru.SetPosition(240, 190, 0);
+	m_fontGuruguru.SetPosition(-200, 190, 0);
 	m_fontGuruguru.SetScale(1.5f);
 	m_fontGuruguru.SetColor(1, 1, 1, 1);
 	m_fontGuruguru.Draw(rc);
@@ -317,5 +320,25 @@ void Result::Render(RenderContext& rc)
 		m_fontThreeShotsValue[i].SetColor(1, 1, 1, 1);  // ← 白
 		m_fontThreeShotsValue[i].Draw(rc);
 	}
+	// ★★★ ぐるぐる倍率の表示 ★★★
+	wchar_t mulBuf[64];
+	swprintf_s(mulBuf, L"%.4f", m_multiplier);
 
+	// ★ 末尾の0を削る
+	int len = (int)wcslen(mulBuf);
+	while (len > 0 && mulBuf[len - 1] == L'0') {
+		mulBuf[--len] = L'\0';
+	}
+	// 小数点だけ残ったら消す
+	if (len > 0 && mulBuf[len - 1] == L'.') {
+		mulBuf[--len] = L'\0';
+	}
+
+	wchar_t mulText[128];
+	swprintf_s(mulText, L"(%ls倍)", mulBuf);
+	m_fontMultiplier.SetText(mulText);
+	m_fontMultiplier.SetPosition(270, 190, 0);
+	m_fontMultiplier.SetScale(1.5f);
+	m_fontMultiplier.SetColor(1, 1, 0.2f, 1); // 黄色で強調
+	m_fontMultiplier.Draw(rc);
 }
