@@ -5,9 +5,9 @@ class Ball :public Character
 {
 	enum BallType
 	{
-		Straight,
-		Curve,
-		Slider
+		Straight,        //真っ直ぐ
+		ShakeHorizontal, //横揺れ
+		ShakeVertical    //縦揺れ
 	};
 
 	BallType m_ballType = Straight;
