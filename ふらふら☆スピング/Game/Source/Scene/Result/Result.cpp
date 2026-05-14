@@ -31,7 +31,7 @@ bool Result::Start()
 	m_skip.SetPosition({ 830.0f, -400.0f, 0.0f });
 
 	m_newRecord.Init("Assets/sprite/new.dds", 600.0f, 600.0f);
-	m_newRecord.SetPosition({ -500, 130, 0 });
+	m_newRecord.SetPosition({ 450, 130, 0 });
 	m_newRecord.SetMulColor({ 1,1,1,0 }); // 最初は非表示
 
 	m_hasScore = false;
@@ -96,29 +96,41 @@ void Result::Update()
 		m_phaseTimer += dt;
 
 		switch (m_phase) {
-		case enPhase_ScoreStep1: // 【1.5秒】 0 ～ 元のスコア
+		case enPhase_ScoreStep1: // 【2.0秒】 飛距離 ＆ スコア（暫定）カウントアップ
 			m_displayKm += m_originalKmAddPerFrame * dt;
-			if (m_phaseTimer >= 2.0f) {
-				m_displayKm = (float)m_originalKm; // 補正
+			// ★スコアも飛距離と同じ速度で増やす
+			m_displayFinalScore = m_displayKm;
+
+			if (m_phaseTimer >= 1.5f) {
+				m_displayKm = (float)m_originalKm;
+				m_displayFinalScore = (float)m_originalKm; // 飛距離で一旦止める
 				m_phase = enPhase_Guruguru;
 				m_phaseTimer = 0.0f;
 			}
 			break;
-		case enPhase_Guruguru:
+
+		case enPhase_Guruguru:  // 【1.0秒】 ぐるぐる演出
 			m_guruguruAccumulator += m_countSpeed * dt;
 			m_displayGuruguru = (int)m_guruguruAccumulator;
 
-			if (m_phaseTimer >= 1.0f) {
+			// ★ここでは m_displayFinalScore は m_originalKm のまま維持
+
+			if (m_phaseTimer >= 1.5f) {
 				m_displayGuruguru = m_guruguru;
-				m_guruguruAccumulator = 0.0f; // メンバ変数をリセット
+				m_guruguruAccumulator = 0.0f;
 				m_phase = enPhase_ScoreStep2;
 				m_phaseTimer = 0.0f;
+
+				// ★最終スコアまでの差分を 0.5秒で埋める計算
+				// (m_km - 現在のスコア) を 0.5秒で割る
+				m_kmAddPerFrame = (m_km - m_displayFinalScore) / 2.0f;
 			}
 			break;
-		case enPhase_ScoreStep2: // 【1.5秒】 元のスコア ～ 最終スコア
-			m_displayKm += m_kmAddPerFrame * dt;
-			if (m_phaseTimer >= 2.0f) {
-				m_displayKm = (float)m_km;         // 最終確定
+
+		case enPhase_ScoreStep2: // 【0.5秒で最大飛距離から最終スコアへ】
+			m_displayFinalScore += m_kmAddPerFrame * dt;
+			if (m_displayFinalScore >= (float)m_km || m_phaseTimer >= 2.0f) {
+				m_displayFinalScore = (float)m_km;
 				m_phase = enPhase_WaitKey;
 			}
 			break;
@@ -213,9 +225,9 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 	m_displayOriginalKm = 0;
 
 	// 1.5秒で originalKm まで
-	m_originalKmAddPerFrame = (float)m_originalKm / 2.0f;
+	m_originalKmAddPerFrame = (float)m_originalKm / 1.5f;
 	// 2.0秒で guruguru まで
-	m_countSpeed = (float)m_guruguru / 1.0f;
+	m_countSpeed = (float)m_guruguru / 1.5f;
 	// 1.5秒で差分(km - originalKm)を増やす
 	m_kmAddPerFrame = (float)(m_km - m_originalKm) / 2.0f;
 
@@ -248,85 +260,95 @@ void Result::Render(RenderContext& rc)
 	}
 
 	wchar_t buf[256];
-	// ぐるぐる
-	if (m_phase >= enPhase_Guruguru) {
-		swprintf_s(buf, L"ぐるぐる: %d回", m_displayGuruguru);
-		m_fontGuruguru.SetText(buf);
-		m_fontGuruguru.SetPosition(-200, 190, 0);
-		m_fontGuruguru.SetScale(1.5f);
-		m_fontGuruguru.SetColor(1, 1, 1, 1);
-		m_fontGuruguru.Draw(rc);
-	}
 
-	swprintf_s(buf, L"スコア%.2f",m_displayKm/100.0);
-	m_moto.SetText(buf);
-	m_moto.SetPosition(-300, 80, 0);
-	m_moto.SetScale(2.0f);
-	m_moto.SetColor(1,1,1,1);
+	// --- ① 一番上の「距離」 (最初から表示) ---
+	swprintf_s(buf, L"距離　%.2fm", m_displayKm / 100.0f);
+	m_fontTopKm.SetText(buf);
+	m_fontTopKm.SetPosition(-600, 200, 0); // 位置は適宜調整
+	m_fontTopKm.SetColor(1, 1, 1, 1);
+	m_fontTopKm.Draw(rc);
+
+	//スコア
+	swprintf_s(buf, L"スコア　%.2f", m_displayFinalScore / 100.0f);
+	m_moto.SetText(buf); // 既存のスコア用フォントを使用
+	m_moto.SetPosition(-600, -50, 0);
+	m_moto.SetScale(2.5f); // 最終結果なので大きく
+	m_moto.SetColor(1, 1, 1, 1); // 黄色などで強調
 	m_moto.Draw(rc);
 
-	// ★★★ ここに入れる！ ★★★
-	int bestIndex = 0;
-	for (int i = 1; i < 3; i++) {
-		if (m_threeShots[i] > m_threeShots[bestIndex]) {
-			bestIndex = i;
-		}
-	}
-	// ★★★ ここに追加する！ ★★★
-	wchar_t buf2[256];
-	for (int i = 0; i < 3; i++) {
-		double meter = (double)m_threeShots[i] / 100.0;
-
-		// ★ 赤い「1:」「2:」「3:」
-		wchar_t numBuf[32];
-		swprintf_s(numBuf, L"%d:", i + 1);
-
-		m_fontThreeShots[i].SetText(numBuf);
-		m_fontThreeShots[i].SetPosition(-500 + i * 350, -60, 0);
-		m_fontThreeShots[i].SetScale(1.3f);
-		m_fontThreeShots[i].SetColor(1, 0, 0, 1);   // ← 赤
-		// ★ 1番だけ黄色、それ以外は赤
-		if (i == bestIndex) {
-			m_fontThreeShots[i].SetColor(1, 0.84, 0, 1);   // 黄色
-		}
-		else {
-			m_fontThreeShots[i].SetColor(1, 0, 0, 1);   // 赤
-		}
-		m_fontThreeShots[i].Draw(rc);
-
-		// ★ 白い「100.00 m」部分
-		wchar_t meterBuf[64];
-		swprintf_s(meterBuf, L" %.2f m", meter);
-
-		m_fontThreeShotsValue[i].SetText(meterBuf);
-		m_fontThreeShotsValue[i].SetPosition(-500 + i * 350 + 20, -60, 0);
-		// ↑ 数字の後ろに少し右へずらす
-		m_fontThreeShotsValue[i].SetScale(1.3f);
-		m_fontThreeShotsValue[i].SetColor(1, 1, 1, 1);  // ← 白
-		m_fontThreeShotsValue[i].Draw(rc);
-	}
 	// ★★★ ぐるぐる倍率の表示 ★★★
 	if (m_phase >= enPhase_Guruguru) {
+		// ① 動的な係数計算
 		double currentMul = 1.0 + (m_multiplier - 1.0) * ((double)m_displayGuruguru / (m_guruguru > 0 ? m_guruguru : 1));
+
+		// ② ★修正：%.4f に変更し、1.1402 などの数値を隠さないようにする
 		wchar_t mulBuf[64];
 		swprintf_s(mulBuf, L"%.4f", currentMul);
 
-		// ★ 末尾の0を削る
+		// ③ 末尾の 0 を削る（1.4000 -> 1.4 / 1.1402 -> 1.1402）
 		int len = (int)wcslen(mulBuf);
 		while (len > 0 && mulBuf[len - 1] == L'0') {
 			mulBuf[--len] = L'\0';
 		}
-		// 小数点だけ残ったら消す
 		if (len > 0 && mulBuf[len - 1] == L'.') {
 			mulBuf[--len] = L'\0';
 		}
 
-		wchar_t mulText[128];
-		swprintf_s(mulText, L"(%ls倍)", mulBuf);
-		m_fontMultiplier.SetText(mulText);
-		m_fontMultiplier.SetPosition(270, 190, 0);
-		m_fontMultiplier.SetScale(1.5f);
-		m_fontMultiplier.SetColor(1, 1, 0.2f, 1); // 黄色で強調
-		m_fontMultiplier.Draw(rc);
+		// 上の行：ぐるぐる回数と係数
+		swprintf_s(buf, L"ぐるぐる回数: %d回    倍率(%ls倍)", m_displayGuruguru, mulBuf);
+		m_fontGuruguru.SetText(buf);
+		m_fontGuruguru.SetPosition(-600, 120, 0);
+		m_fontGuruguru.SetColor(1, 1, 1, 1);
+		m_fontGuruguru.Draw(rc);
+
+		// 下の行：式の部分 (%.2fm * 係数)
+		swprintf_s(buf, L"最終距離 = %.2fm * %ls", m_displayKm / 100.0f, mulBuf);
+		m_fontFormula.SetText(buf);
+		m_fontFormula.SetPosition(-600, 40, 0);
+		m_fontFormula.SetColor(1, 1, 1, 1);
+		m_fontFormula.Draw(rc);
+	}
+
+	//３つの飛距離
+	if (m_phase == enPhase_WaitKey) {
+		int bestIndex = 0;
+		for (int i = 1; i < 3; i++) {
+			if (m_threeShots[i] > m_threeShots[bestIndex]) {
+				bestIndex = i;
+			}
+		}
+
+		wchar_t buf2[256];
+		for (int i = 0; i < 3; i++) {
+			double meter = (double)m_threeShots[i] / 100.0;
+
+			// ★ 赤い「1:」「2:」「3:」
+			wchar_t numBuf[32];
+			swprintf_s(numBuf, L"%d:", i + 1);
+
+			m_fontThreeShots[i].SetText(numBuf);
+			m_fontThreeShots[i].SetPosition(-600 + i * 350, -200, 0);
+			m_fontThreeShots[i].SetScale(1.3f);
+			m_fontThreeShots[i].SetColor(1, 0, 0, 1);   // ← 赤
+			// ★ 1番だけ黄色、それ以外は赤
+			if (i == bestIndex) {
+				m_fontThreeShots[i].SetColor(1, 0.84, 0, 1);   // 黄色
+			}
+			else {
+				m_fontThreeShots[i].SetColor(1, 0, 0, 1);   // 赤
+			}
+			m_fontThreeShots[i].Draw(rc);
+
+			// ★ 白い「100.00 m」部分
+			wchar_t meterBuf[64];
+			swprintf_s(meterBuf, L" %.2f m", meter);
+
+			m_fontThreeShotsValue[i].SetText(meterBuf);
+			m_fontThreeShotsValue[i].SetPosition(-600 + i * 350 + 20, -200, 0);
+			// ↑ 数字の後ろに少し右へずらす
+			m_fontThreeShotsValue[i].SetScale(1.3f);
+			m_fontThreeShotsValue[i].SetColor(1, 1, 1, 1);  // ← 白
+			m_fontThreeShotsValue[i].Draw(rc);
+		}
 	}
 }

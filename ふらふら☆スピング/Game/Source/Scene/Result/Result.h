@@ -55,5 +55,8 @@ private:
 	EnPhase m_phase = enPhase_ScoreStep1;
 	float m_phaseTimer = 0.0f; // フェーズ内の経過時間
 	float m_guruguruAccumulator = 0.0f;
+	float m_displayFinalScore = 0.0f; // 0から一気に上がるスコア用
+	FontRender m_fontFormula;
+	FontRender m_fontTopKm;
 };
 
