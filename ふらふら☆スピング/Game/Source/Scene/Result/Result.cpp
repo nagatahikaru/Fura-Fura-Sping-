@@ -34,6 +34,9 @@ bool Result::Start()
 	m_newRecord.SetPosition({ 450, 130, 0 });
 	m_newRecord.SetMulColor({ 1,1,1,0 }); // 最初は非表示
 
+	m_fadeSprite.Init("Assets/sprite/kuro.dds", 1920.0f, 1080.0f);
+	m_fadeAlpha = 0.0f;
+
 	m_hasScore = false;
 	for (int i = 0; i < 3; i++) {
 		if (m_threeShots[i] > 0) {
@@ -85,10 +88,19 @@ void Result::Update()
 			m_isSkipped = true;
 		}
 		else {
-			// 【タイトルへ】演出が終わっていれば遷移
-			NewGO<Titer>(0);
-			DeleteGO(this);
-			return;
+			StartFadeOut(1.0f, [this]() {
+
+				// ★ BGM フェードアウト
+				if (g_bgm) g_bgm->SetVolume(0.0f);
+
+				// ★ SE2 もフェードアウト
+				auto se2 = g_soundManager->GetSE2();
+				if (se2) se2->SetVolume(0.0f);
+
+				// ★ フェード完了後にタイトルへ
+				NewGO<Titer>(0);
+				DeleteGO(this);
+			});
 		}
 	}
 
@@ -187,7 +199,17 @@ void Result::Update()
 				m_isBlinking = false; m_newRecord.SetMulColor({ 1,1,1,1 });
 			}
 		}
-	}		
+	}
+
+	// ★ フェードアウト処理
+	if (m_isFadeOut) {
+		m_fadeAlpha += m_fadeSpeed * dt;
+		if (m_fadeAlpha >= 1.0f) {
+			m_fadeAlpha = 1.0f;
+			m_isFadeOut = false;
+			if (m_onFadeOutFinished) m_onFadeOutFinished();
+		}
+	}
 }
 
 void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
@@ -233,6 +255,13 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 
 	m_phase = enPhase_ScoreStep1;
 	m_phaseTimer = 0.0f;
+}
+
+void Result::StartFadeOut(float speed, std::function<void()> onFinished)
+{
+	m_isFadeOut = true;
+	m_fadeSpeed = speed;
+	m_onFadeOutFinished = onFinished;
 }
 
 void Result::Render(RenderContext& rc)
@@ -350,5 +379,12 @@ void Result::Render(RenderContext& rc)
 			m_fontThreeShotsValue[i].SetColor(1, 1, 1, 1);  // ← 白
 			m_fontThreeShotsValue[i].Draw(rc);
 		}
+	}
+
+	if (m_fadeAlpha > 0.0f) {
+		m_fadeSprite.SetMulColor({ 0,0,0, m_fadeAlpha });
+		m_fadeSprite.SetPosition({ 0,0,0 });
+		m_fadeSprite.Update();
+		m_fadeSprite.Draw(rc);
 	}
 }
