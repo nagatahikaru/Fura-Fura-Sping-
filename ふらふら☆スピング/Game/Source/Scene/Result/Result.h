@@ -4,6 +4,12 @@
 class Result : public Source
 {
 public:
+	enum EnPhase {
+		enPhase_ScoreStep1, // 1.5秒：0 ～ 元のスコア(m_originalKm)
+		enPhase_Guruguru,   // 2.0秒：ぐるぐる回数と倍率
+		enPhase_ScoreStep2, // 1.5秒：元のスコア ～ 最終スコア(m_km)
+		enPhase_WaitKey     // 演出完了：ボタン入力待ち
+	};
 	Result() {}
 	~Result() {}
 	bool Start();
@@ -46,9 +52,8 @@ private:
 	bool m_hasScore = false;
 	double m_multiplier = 1.0f;
 	FontRender m_fontMultiplier;
-	bool m_step1 = true;   // 最大mのカウントアップ中
-	bool m_step2 = false;  // ぐるぐる回数のカウントアップ中
-	bool m_step3 = false;  // 最終スコアのカウントアップ中
-	double m_displayMultiplier = 1.0; // 係数のカウントアップ用
+	EnPhase m_phase = enPhase_ScoreStep1;
+	float m_phaseTimer = 0.0f; // フェーズ内の経過時間
+	float m_guruguruAccumulator = 0.0f;
 };
 

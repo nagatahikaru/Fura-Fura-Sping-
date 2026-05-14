@@ -57,23 +57,15 @@ bool Result::Start()
 
 void Result::Update()
 {
-
+	float dt = g_gameTime->GetFrameDeltaTime();
 	if (m_isFadingSE2) {
 
-		// ★ 再生時間をカウント
-		m_se2Timer += g_gameTime->GetFrameDeltaTime();
+		m_se2Timer += dt;
 
-		// ★ 4秒までは音量そのまま
-		if (m_se2Timer < 3.5f) {
-			// 何もしない（音量維持）
-		}
-		else {
-			// ★ ラスト0.5秒でフェードアウト（30フレームで3.0→0）
+		if (m_se2Timer >= 3.5f) {
 			m_se2Volume -= 0.05f;
-
 			if (m_se2Volume <= 0.0f) {
-				m_se2Volume = 0.0f;
-				m_isFadingSE2 = false;
+				m_se2Volume = 0.0f; m_isFadingSE2 = false;
 			}
 		}
 
@@ -84,44 +76,75 @@ void Result::Update()
 		}
 	}
 
-	// ★ ぐるぐるのカウントアップ
-	if (m_displayGuruguru < m_guruguru) {
-		m_displayGuruguru += (int)(m_countSpeed * 60); // 1秒で60増える
-		if (m_displayGuruguru > m_guruguru)
-			m_displayGuruguru = m_guruguru;
-	}
-
-	// ★ km のカウントアップ
-	// ★ km を必ず5秒でカウントアップ
-	if (m_displayKm < m_km) {
-		m_displayKm += m_kmAddPerFrame;
-
-		if (m_displayKm > m_km)
-			m_displayKm = m_km;
-	}
-
-	// ★ 元の km のカウントアップ
-	if (m_displayOriginalKm < m_originalKm) {
-		m_displayOriginalKm += m_originalKmAddPerFrame;
-
-		if (m_displayOriginalKm > m_originalKm)
-			m_displayOriginalKm = m_originalKm;
-	}
-
 	if (g_pad[0]->IsTrigger(enButtonA)) {
-
-		// ★ まだカウントアップ中なら即終了（スキップ機能）
-		if (m_displayKm < m_km || m_displayOriginalKm < m_originalKm || m_displayGuruguru < m_guruguru) {
+		if (m_phase != enPhase_WaitKey) {
+			// 【スキップ】即座に全数値を最大にする
 			m_displayGuruguru = m_guruguru;
-			m_displayOriginalKm = m_originalKm;
-			m_displayKm = m_km;
+			m_displayKm = (float)m_km;
+			m_phase = enPhase_WaitKey;
 			m_isSkipped = true;
+		}
+		else {
+			// 【タイトルへ】演出が終わっていれば遷移
+			NewGO<Titer>(0);
+			DeleteGO(this);
 			return;
 		}
+	}
 
-		// ★ カウントアップもスコア確定も終わっている前提でタイトルへ
-		NewGO<Titer>(0);
-		DeleteGO(this);
+	if (m_phase != enPhase_WaitKey) {
+		m_phaseTimer += dt;
+
+		switch (m_phase) {
+		case enPhase_ScoreStep1: // 【1.5秒】 0 ～ 元のスコア
+			m_displayKm += m_originalKmAddPerFrame * dt;
+			if (m_phaseTimer >= 2.0f) {
+				m_displayKm = (float)m_originalKm; // 補正
+				m_phase = enPhase_Guruguru;
+				m_phaseTimer = 0.0f;
+			}
+			break;
+		case enPhase_Guruguru:
+			m_guruguruAccumulator += m_countSpeed * dt;
+			m_displayGuruguru = (int)m_guruguruAccumulator;
+
+			if (m_phaseTimer >= 1.0f) {
+				m_displayGuruguru = m_guruguru;
+				m_guruguruAccumulator = 0.0f; // メンバ変数をリセット
+				m_phase = enPhase_ScoreStep2;
+				m_phaseTimer = 0.0f;
+			}
+			break;
+		case enPhase_ScoreStep2: // 【1.5秒】 元のスコア ～ 最終スコア
+			m_displayKm += m_kmAddPerFrame * dt;
+			if (m_phaseTimer >= 2.0f) {
+				m_displayKm = (float)m_km;         // 最終確定
+				m_phase = enPhase_WaitKey;
+			}
+			break;
+		}
+	}
+
+	if (m_phase == enPhase_WaitKey && !m_isScoreFixed) {
+		m_isScoreFixed = true;
+		m_isSkipped = true;
+
+		// (ランキング保存やNewRecord判定など、元々あった「if(!m_isScoreFixed)」の中身をここに)
+		auto se2 = g_soundManager->GetSE2();
+		if (se2) { se2->Stop(); DeleteGO(se2); g_soundManager->ClearSE2(); }
+
+		Ranking* ranking = NewGO<Ranking>(0, "ranking");
+		ranking->Load();
+		if (ranking->AddScore(m_km, m_originalKm, m_guruguru)) {
+			m_isNewRecord = true;
+			m_newRecord.SetMulColor({ 1,1,1,1 });
+			auto se = g_soundManager->PlaySE(enSound_SE4);
+			if (se) se->SetVolume(1.5f);
+			m_isBlinking = true;
+			m_blinkCount = 0;
+			m_blinkTimer = 0.0f;
+		}
+		DeleteGO(ranking);
 	}
 
 	if (!m_isSkipped) {
@@ -133,70 +156,23 @@ void Result::Update()
 		m_B.SetMulColor({ 1,1,1,1 });
 		m_skip.SetMulColor({ 1,1,1,0 });
 	}
-	// ★ カウントアップがすべて終わったらスコア確定（1回だけ）
-	if (!m_isScoreFixed &&
-		m_displayKm >= m_km &&
-		m_displayOriginalKm >= m_originalKm &&
-		m_displayGuruguru >= m_guruguru)
-	{
-		m_isSkipped = true;   // ボタン表示切り替え用
-		m_isScoreFixed = true;   // 二重実行防止
 
-		// ▼ ここでランキング保存＆NEW判定
-		auto se2 = g_soundManager->GetSE2();
-		if (se2) {
-			se2->Stop();
-			DeleteGO(se2);
-			g_soundManager->ClearSE2();
-		}
-
-		Ranking* ranking = NewGO<Ranking>(0, "ranking");
-		ranking->Load();
-		bool isNew = ranking->AddScore(m_km, m_originalKm, m_guruguru);
-
-		if (isNew) {
-			m_isNewRecord = true;
-			m_newRecord.SetMulColor({ 1,1,1,1 }); // 自然にポンと出る
-			auto se = g_soundManager->PlaySE(enSound_SE4);
-			if (se) {
-				se->SetVolume(1.5f); // 好きな音量
-			}
-			// ★ 点滅開始
-			m_isBlinking = true;
-			m_blinkCount = 0;
-			m_blinkTimer = 0.0f;
-		}
-		DeleteGO(ranking);
-	}
 	// ★★★ NEW!! 点滅処理 ★★★
 	if (m_isBlinking) {
 
-		m_blinkTimer += g_gameTime->GetFrameDeltaTime();
+		m_blinkTimer += dt;
 
-		// 0.25秒ごとに ON/OFF 切り替え
 		if (m_blinkTimer >= 0.25f) {
 			m_blinkTimer = 0.0f;
-
-			// 現在のアルファを取得
-			float alpha = m_newRecord.GetMulColor().w;
-
-			// ON → OFF、OFF → ON
+			float alpha = (m_newRecord.GetMulColor().w > 0.5f) ? 0.0f : 1.0f;
+			m_newRecord.SetMulColor({ 1,1,1,alpha });
 			if (alpha > 0.5f) {
-				m_newRecord.SetMulColor({ 1,1,1,0 });
-			}
-			else {
-				m_newRecord.SetMulColor({ 1,1,1,1 });
-				m_blinkCount++;   // ON に戻ったタイミングでカウント
+				m_blinkCount++;
 				auto se = g_soundManager->PlaySE(enSound_SE4);
-				if (se) {
-					se->SetVolume(1.5f); // 好きな音量
-				}
+				if (se) se->SetVolume(1.5f);
 			}
-
-			// ★ 4回点滅したら終了
 			if (m_blinkCount >= 3) {
-				m_isBlinking = false;
-				m_newRecord.SetMulColor({ 1,1,1,1 }); // 最後は表示ONで固定
+				m_isBlinking = false; m_newRecord.SetMulColor({ 1,1,1,1 });
 			}
 		}
 	}		
@@ -207,9 +183,6 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 	for (int i = 0; i < 3; i++) {
 		m_threeShots[i] = scores[i];
 	}
-
-	m_guruguru = guruguru;
-	m_originalKm = bestKm;
 
 	// ★ 基本倍率
 	double multiplier = pow(1.01, (double)guruguru);
@@ -228,16 +201,26 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 		multiplier = 1.4;
 	}
 
-	// ★ km 計算
-	m_multiplier = multiplier;   // ← 表示用に保存
+	// --- (倍率計算のロジックは変更なし) ---
 	m_km = (int)(bestKm * multiplier);
+	m_originalKm = bestKm;
+	m_guruguru = guruguru;
+	m_multiplier = multiplier;
 
+	// --- ここから修正：カウントスピードを秒数ベースに変更 ---
 	m_displayGuruguru = 0;
 	m_displayKm = 0;
 	m_displayOriginalKm = 0;
 
-	m_kmAddPerFrame = (float)m_km / 258.0f;
-	m_originalKmAddPerFrame = (float)m_originalKm / 180.0f;
+	// 1.5秒で originalKm まで
+	m_originalKmAddPerFrame = (float)m_originalKm / 2.0f;
+	// 2.0秒で guruguru まで
+	m_countSpeed = (float)m_guruguru / 1.0f;
+	// 1.5秒で差分(km - originalKm)を増やす
+	m_kmAddPerFrame = (float)(m_km - m_originalKm) / 2.0f;
+
+	m_phase = enPhase_ScoreStep1;
+	m_phaseTimer = 0.0f;
 }
 
 void Result::Render(RenderContext& rc)
@@ -266,12 +249,14 @@ void Result::Render(RenderContext& rc)
 
 	wchar_t buf[256];
 	// ぐるぐる
-	swprintf_s(buf, L"ぐるぐる: %d回", m_displayGuruguru);
-	m_fontGuruguru.SetText(buf);
-	m_fontGuruguru.SetPosition(-200, 190, 0);
-	m_fontGuruguru.SetScale(1.5f);
-	m_fontGuruguru.SetColor(1, 1, 1, 1);
-	m_fontGuruguru.Draw(rc);
+	if (m_phase >= enPhase_Guruguru) {
+		swprintf_s(buf, L"ぐるぐる: %d回", m_displayGuruguru);
+		m_fontGuruguru.SetText(buf);
+		m_fontGuruguru.SetPosition(-200, 190, 0);
+		m_fontGuruguru.SetScale(1.5f);
+		m_fontGuruguru.SetColor(1, 1, 1, 1);
+		m_fontGuruguru.Draw(rc);
+	}
 
 	swprintf_s(buf, L"スコア%.2f",m_displayKm/100.0);
 	m_moto.SetText(buf);
@@ -321,24 +306,27 @@ void Result::Render(RenderContext& rc)
 		m_fontThreeShotsValue[i].Draw(rc);
 	}
 	// ★★★ ぐるぐる倍率の表示 ★★★
-	wchar_t mulBuf[64];
-	swprintf_s(mulBuf, L"%.4f", m_multiplier);
+	if (m_phase >= enPhase_Guruguru) {
+		double currentMul = 1.0 + (m_multiplier - 1.0) * ((double)m_displayGuruguru / (m_guruguru > 0 ? m_guruguru : 1));
+		wchar_t mulBuf[64];
+		swprintf_s(mulBuf, L"%.4f", currentMul);
 
-	// ★ 末尾の0を削る
-	int len = (int)wcslen(mulBuf);
-	while (len > 0 && mulBuf[len - 1] == L'0') {
-		mulBuf[--len] = L'\0';
-	}
-	// 小数点だけ残ったら消す
-	if (len > 0 && mulBuf[len - 1] == L'.') {
-		mulBuf[--len] = L'\0';
-	}
+		// ★ 末尾の0を削る
+		int len = (int)wcslen(mulBuf);
+		while (len > 0 && mulBuf[len - 1] == L'0') {
+			mulBuf[--len] = L'\0';
+		}
+		// 小数点だけ残ったら消す
+		if (len > 0 && mulBuf[len - 1] == L'.') {
+			mulBuf[--len] = L'\0';
+		}
 
-	wchar_t mulText[128];
-	swprintf_s(mulText, L"(%ls倍)", mulBuf);
-	m_fontMultiplier.SetText(mulText);
-	m_fontMultiplier.SetPosition(270, 190, 0);
-	m_fontMultiplier.SetScale(1.5f);
-	m_fontMultiplier.SetColor(1, 1, 0.2f, 1); // 黄色で強調
-	m_fontMultiplier.Draw(rc);
+		wchar_t mulText[128];
+		swprintf_s(mulText, L"(%ls倍)", mulBuf);
+		m_fontMultiplier.SetText(mulText);
+		m_fontMultiplier.SetPosition(270, 190, 0);
+		m_fontMultiplier.SetScale(1.5f);
+		m_fontMultiplier.SetColor(1, 1, 0.2f, 1); // 黄色で強調
+		m_fontMultiplier.Draw(rc);
+	}
 }
