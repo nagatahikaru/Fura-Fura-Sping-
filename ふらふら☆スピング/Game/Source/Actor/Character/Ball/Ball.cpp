@@ -141,13 +141,14 @@ void Ball::Update()
         }
 
         // ★ ストライク判定（Z が 7000 を超えた瞬間）
-        if (!m_hasStrike && m_position.z >= 7270.0f) {
+        if (!m_hasPlayedSE6 && m_position.z >= 7270.0f) {
             g_soundManager->PlaySE(Sound::enSound_SE6);
+            m_hasPlayedSE6 = true;
         }
 
         // ★ ストライク判定（Z が 7000 を超えた瞬間）
-        if (!m_hasStrike && m_position.z >= 7300.0f) {
-            g_soundManager->PlaySE(Sound::enSound_SE5);
+        if (!m_hasStrike && m_position.z >= 7700.0f) {
+            g_soundManager->PlaySE(Sound::enSound_SE11);
             Game* game = FindGO<Game>("game");
             if (game) {
                 InGameUI* ui = game->GetInGameUI();
@@ -368,6 +369,7 @@ void Ball::ResetBall()
     m_hasFixed = false;
     m_hasStrike = false;
     m_hasShownPrediction = false;
+    m_hasPlayedSE6 = false;
     SetPosition(m_position);
 }
 
