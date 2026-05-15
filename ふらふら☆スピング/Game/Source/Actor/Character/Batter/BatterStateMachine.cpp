@@ -142,14 +142,13 @@ void BatterCursorSetState::Enter()
 {
 	Batter* batter = GetBatter();
 	batter->SetIdleAnimation();
-	batter->SetRandomCursorTimeRadius();
 
 }
 
 void BatterCursorSetState::Update()
 {
 	Batter* batter = GetBatter();
-	batter->DebuffDepth();
+	batter->EffectUpdate();
 	batter->UpdateCursor3D();   // ★ 位置更新だけ
 	batter->BatHitBoxPosition(); // ★ 当たり判定の位置更新
 	batter->AnimationUpdate();

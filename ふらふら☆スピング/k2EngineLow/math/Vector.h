@@ -71,6 +71,9 @@ namespace nsK2EngineLow {
 			float v[3];
 			struct { float x, y, z; };
 		};
+		// 定数ベクトル
+		//呼び出し方
+		//Vector3::Zero
 		static const Vector3 Zero;
 		static const Vector3 Right;
 		static const Vector3 Left;

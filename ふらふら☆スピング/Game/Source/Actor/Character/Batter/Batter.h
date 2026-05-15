@@ -5,6 +5,8 @@
 #include "Source/Actor/Character/Ball/Ball.h"
 #include "Source/Scene/InGame/Game.h"
 #include "Source/Effect/EffectManager.h"
+#include "Debuff/DebuffStageStateMachine.h"
+#include "Debuff/DebuffStage/DebuffStage.h"
 
 namespace {
 	namespace BatterNumber {
@@ -44,293 +46,471 @@ namespace {
 	}
 };
 
-class Batter :public Character
+class Batter : public Character
 {
-public:	
-	enum EnAnimationClip {
-		enAnimationClip_Idle,
-		enAnimationClip_Rotation,
-		enAnimationClip_Swing,		
-		enAnimationClip_Num
-	};
+public:
 
-	Batter();
-	virtual ~Batter();
-	virtual bool Start();
-	virtual void Update();
+    //=========================================================
+    // enum
+    //=========================================================
 
-	virtual void Render(RenderContext& rc);
-	void SetPlayAnimation(int enAnimationClip)
-	{
-		m_characterModel->PlayAnimation(enAnimationClip,0.2);
+    // アニメーションID
+    enum EnAnimationClip
+    {
+        enAnimationClip_Idle,       // 待機
+        enAnimationClip_Rotation,   // 回転
+        enAnimationClip_Swing,      // スイング
+        enAnimationClip_Num
+    };
+
+    //=========================================================
+    // constructor / destructor
+    //=========================================================
+
+    Batter();
+    virtual ~Batter();
+
+    //=========================================================
+    // override
+    //=========================================================
+
+    // 初期化
+    virtual bool Start();
+
+    // 更新処理
+    virtual void Update();
+
+    // 描画処理
+    virtual void Render(RenderContext& rc);
+
+    //=========================================================
+    // animation
+    //=========================================================
+
+    // アニメーション再生
+    void SetPlayAnimation(int enAnimationClip)
+    {
+        m_characterModel->PlayAnimation(enAnimationClip, 0.2f);
+    }
+
+    // 現在のアニメーション取得
+    EnAnimationClip GetEnAnimationClip() const
+    {
+        return m_setAnimation;
+    }
+
+    // スイング開始
+    void Swing()
+    {
+        m_setAnimation = enAnimationClip_Swing;
+    }
+
+    // スイングアニメーション再生
+    void PlaySwingAnimation();
+
+    // スイング状態リセット
+    void ResetSwing();
+
+    // アニメーション更新
+    void AnimationUpdate()
+    {
+        m_characterModel->Update();
+    }
+
+    // 回転アニメーション設定
+    void SetPlayRotation()
+    {
+        m_setAnimation = enAnimationClip_Rotation;
+    }
+
+    // 待機アニメーション設定
+    void SetIdleAnimation()
+    {
+        m_setAnimation = enAnimationClip_Idle;
+    }
+
+    // アニメーション再生中判定
+    bool IsPlayAnimation()
+    {
+        return m_characterModel->IsPlayAnimation();
+    }
+
+    // スイング再生中判定
+    bool IsSwingAnimationPlaying()
+    {
+        return m_characterModel->IsPlayAnimation()
+            && m_setAnimation == enAnimationClip_Swing;
+    }
+
+    // 再生速度設定
+    void SetPlaySpeed(float speed)
+    {
+        m_playSpeed = speed;
+    }
+
+    // 再生速度取得
+    float GetPlaySpeed() const
+    {
+        return m_playSpeed;
+    }
+
+    //=========================================================
+    // cursor
+    //=========================================================
+
+    // カーソル座標更新
+    void SetCursorPosition();
+
+    // 3Dカーソル更新
+    void UpdateCursor3D()
+    {
+        SetCursorPosition();
+        m_meetCursorWorldPos = CalcCursorWorldPos();
+    }
+
+    // カーソル位置リセット
+    void ResetCursorPosition();
+
+    // カーソルモード切り替え
+    void SetCursorMode(bool flag);
+
+    // ワールド座標変換
+    Vector3 CalcCursorWorldPos();
+
+    // カーソル座標取得
+    Vector3 GetCursorWorldPos() const
+    {
+        return m_meetCursorWorldPos;
+    }
+
+	//デバフによるカーソル揺れのオフセット追加
+    void AddCursorOffset(const Vector3& offset)
+    {
+        m_cursorOffset += offset;
+    }
+
+    void SetHitRange(float range)
+    {
+        m_hitRange = range;
 	}
 
-
-	EnAnimationClip GetEnAnimationClip() const
-	{
-		return m_setAnimation;
-	}
-	const bool GetIsOnGround() const
-	{
-		return m_characterController.IsOnGround();
-	}
-	void Rotation();
-	void RotationUpdate();
-	// バットのSwing位置を設定する関数
-	//ミートカーソルの位置に合わせてバットの位置を調整するための関数です。
-	void SetBatSwingPosition()
-	{
-		// バットの位置をミートカーソルの位置に合わせて調整する処理
-		// ここでは例として、ミートカーソルの位置を取得してバットの位置を更新するコードを示します。
-		// 実際のミートカーソルの位置はゲームのロジックに応じて取得してください。
-		// 例: ミートカーソルの位置を取得
-		Vector3 meetCursorPosition = m_inGameUI->GetMeetCursorPosition(); // この関数は実装されていると仮定
-		// バットの位置をミートカーソルの位置に合わせて更新
-		m_characterModel->SetWeaponOffset(meetCursorPosition - m_transform.m_position);
+    Vector3 GetMeetCursorPosition() const
+    {
+        return m_meetPosition;
 	}
 
-	// Swingアニメーションを再生する関数
-	void Swing()
-	{
-		m_setAnimation = enAnimationClip_Swing;
-	}
+    //=========================================================
+    // bat control
+    //=========================================================
 
-	// アニメーションが再生中かどうかを判定する関数
-	bool IsPlayAnimation()
-	{
-		return m_characterModel->IsPlayAnimation();
-	}
+    // バット回転開始
+    void Rotation();
 
-	// アニメーションの更新を行う関数
-	void AnimationUpdate()
-	{
-		m_characterModel->Update();
-	}
+    // 回転更新
+    void RotationUpdate();
 
-	// 回転アニメーションを再生する関数
-	void SetPlayRotation()
-	{
-		m_setAnimation = enAnimationClip_Rotation;
-	}
+    // バット位置更新
+    void SetBatSwingPosition()
+    {
+        Vector3 meetCursorPosition =
+            m_inGameUI->GetMeetCursorPosition();
 
-	void SetIdleAnimation()
-	{
-		m_setAnimation = enAnimationClip_Idle;
-	}
+        m_characterModel->SetWeaponOffset(
+            meetCursorPosition - m_transform.m_position);
+    }
 
-	// Swingアニメーションが再生中かどうかを判定する関数
-	// Swingアニメーションが再生中であればtrueを返し、そうでなければfalseを返す
-	// 例えば、Swingアニメーションが再生中であれば、攻撃の当たり判定を有効にするなどの処理に利用できます。
-	bool IsSwingAnimationPlaying()
-	{
-		return m_characterModel->IsPlayAnimation() && m_setAnimation == enAnimationClip_Swing;
-	}
+    // バットの向き更新
+    void UpdateBatAim();
 
-	void SetCursorPosition();
+    // 当たり判定更新
+    void BatHitBoxPosition();
 
-	void SetRotationSeen(bool isRotation)
-	{
-		m_isRotation = isRotation;
-	}
+    // グルグルバット更新
+    void RoundAndRoundBat();
 
-	bool GetRotationSeen() const
-	{
-		return m_isRotation;
-	}
+    // 回転回数カウント
+    void GuruGuruCountUP(float currentAngle);
 
-	Vector3 GetBatPostion() const
-	{
-		return m_characterModel->GetWeaponWorldPosition();
-	}
+    // 回転回数取得
+    int GetGuruGuruBatCount() const
+    {
+        return m_guruGuruBatCount;
+    }
 
-	void HitBat();
+    // グルグル回数取得
+    int GetGuruGuru() const
+    {
+        return m_guruGuruBatCount;
+    }
 
-	float DistancePointToSegment(const Vector3& ballpos, const Vector3& base, const Vector3& tip)
-	{
-		Vector3 ab = tip - base;
-		Vector3 ac = ballpos - base;
-		float lenSq = ab.Dot(ab);
-		if (lenSq < 0.0001f)
-		{
-			return (ballpos - base).Length(); // 線じゃなく点扱い
-		}
-		float t = ac.Dot(ab) / lenSq;
-		t = max(0.0f, min(1.0f, t)); // std::max, std::min を使うために <algorithm> が必要
-		Vector3 closestPoint = base + ab * t;
-		return (ballpos - closestPoint).Length();
-	}
+    // バット座標取得
+    Vector3 GetBatPostion() const
+    {
+        return m_characterModel->GetWeaponWorldPosition();
+    }
 
-	void UpdateBatAim();
+    // 打撃処理
+    void HitBat();
 
-	Vector3 CalcCursorWorldPos();
+    // ヒットエフェクト
+    void HitEffect();
 
-	void BatHitBoxPosition();
+    //=========================================================
+    // collision
+    //=========================================================
 
-	Vector3 ScreenToRay(
-		float mouseX, float mouseY,
-		float screenWidth, float screenHeight,
-		const Matrix& view,
-		const Matrix& proj,
-		const Vector3& cameraPos)
-	{
-		// ① スクリーン → NDC
-		float x = (2.0f * mouseX / screenWidth) - 1.0f;
-		float y = 1.0f - (2.0f * mouseY / screenHeight);
+    // 点と線分距離計算
+    float DistancePointToSegment(
+        const Vector3& ballpos,
+        const Vector3& base,
+        const Vector3& tip)
+    {
+        Vector3 ab = tip - base;
+        Vector3 ac = ballpos - base;
 
-		Vector4 rayClip = Vector4(x, y, -1.0f, 1.0f); // ★ -1 にする（超重要）
+        float lenSq = ab.Dot(ab);
 
-		// ② Clip → View
-		Matrix invProj = proj;
-		invProj.Inverse();
-		Vector4 rayView = InverseProjectionMatrix(rayClip, invProj);
+        if (lenSq < 0.0001f)
+        {
+            return (ballpos - base).Length();
+        }
 
-		// ★ ここ修正
-		rayView = Vector4(rayView.x, rayView.y, -1.0f, 0.0f);
+        float t = ac.Dot(ab) / lenSq;
 
-		// ③ View → World
-		Matrix invView = view;
-		invView.Inverse();
-		Vector4 rayWorld4 = InverseProjectionMatrix(rayView, invView);
+        t = max(0.0f, min(1.0f, t));
 
-		Vector3 rayDir = Vector3(rayWorld4.x, rayWorld4.y, rayWorld4.z);
-		rayDir.Normalize();
+        Vector3 closestPoint = base + ab * t;
 
-		return rayDir;
-	}
+        return (ballpos - closestPoint).Length();
+    }
 
-	Vector4 InverseProjectionMatrix(const Vector4& v, const Matrix& m)
-	{
-		Vector4 result;
+    //=========================================================
+    // raycast
+    //=========================================================
 
-		result.x = v.x * m._11 + v.y * m._21 + v.z * m._31 + v.w * m._41;
-		result.y = v.x * m._12 + v.y * m._22 + v.z * m._32 + v.w * m._42;
-		result.z = v.x * m._13 + v.y * m._23 + v.z * m._33 + v.w * m._43;
-		result.w = v.x * m._14 + v.y * m._24 + v.z * m._34 + v.w * m._44;
+    // スクリーン座標 → レイ変換
+    Vector3 ScreenToRay(
+        float mouseX,
+        float mouseY,
+        float screenWidth,
+        float screenHeight,
+        const Matrix& view,
+        const Matrix& proj,
+        const Vector3& cameraPos);
 
-		return result;
-	}
+    // 行列逆変換
+    Vector4 InverseProjectionMatrix(
+        const Vector4& v,
+        const Matrix& m);
 
-	// レイと平面の交点を計算する関数
-	Vector3 RayToPlane(
-		const Vector3& rayOrigin,
-		const Vector3& rayDir,
-		const Vector3& planePoint,
-		const Vector3& planeNormal)
-	{
-		float denom = planeNormal.Dot(rayDir);
+    // レイと平面の交点取得
+    Vector3 RayToPlane(
+        const Vector3& rayOrigin,
+        const Vector3& rayDir,
+        const Vector3& planePoint,
+        const Vector3& planeNormal);
 
-		if (fabs(denom) < 0.0001f)
-			return rayOrigin; // 平行（適当回避）
 
-		float t = (planePoint - rayOrigin).Dot(planeNormal) / denom;
+    //=========================================================
+    // effect
+    //=========================================================
 
-		return rayOrigin + rayDir * t;
-	}
+    // エフェクト更新
+    void EffectUpdate();
 
-	Vector3 GetCursorWorldPos() const
-	{
-		return m_meetCursorWorldPos;
-	}
+    //=========================================================
+    // utility
+    //=========================================================
 
-	void UpdateCursor3D()
-	{
-		SetCursorPosition();
-		m_meetCursorWorldPos = CalcCursorWorldPos();
-	}
+    // 接地判定
+    const bool GetIsOnGround() const
+    {
+        return m_characterController.IsOnGround();
+    }
 
-	void RoundAndRoundBat();
+    // 回転状態設定
+    void SetRotationSeen(bool isRotation)
+    {
+        m_isRotation = isRotation;
+    }
 
-	void GuruGuruCountUP(float currentAngle);
+    // 回転状態取得
+    bool GetRotationSeen() const
+    {
+        return m_isRotation;
+    }
 
-	int GetGuruGuruBatCount() const
-	{
-		return m_guruGuruBatCount;
-	}
+    // CharacterModel取得
+    nsApp::CharacterModel* GetCharacterModel() const
+    {
+        return m_characterModel.get();
+    }
 
-	void DebuffDepth();
-	void SetRandomCursorTimeRadius();
-	float SetRandom(const float min, const float max)
-	{
-		return min + (max - min) * (rand() / (float)RAND_MAX);
-	}
-	void SetPlaySpeed(float speed) {
-		m_playSpeed = speed;
-	}
-	float GetPlaySpeed() const {
-		return m_playSpeed;
-	}
-	void EffectUpdate();
-	int GetGuruGuru() const {
-		return m_guruGuruBatCount;
-	}
-	nsApp::CharacterModel* GetCharacterModel() const
-	{
-		return m_characterModel.get();
-	}
-	void PlaySwingAnimation();
-	void ResetSwing();
-	void SetCursorMode(bool flag);
-	void ResetCursorPosition();
-	void HitEffect();
+    // ランダム値取得
+    float SetRandom(const float min, const float max)
+    {
+        return min + (max - min)
+            * (rand() / (float)RAND_MAX);
+    }
 
-	bool m_isPaused;
+public:
 
+    // 一時停止フラグ
+    bool m_isPaused = false;
 
 private:
-	// ★ ステートマシン関連の変数（追加）
-	std::unique_ptr<BatterStateMachine> m_stateMachine;		// バッターステートマシンへのユニークポインタ
 
-	// ★ ポインタ関連の変数（追加）
-	Game* m_game;											// ゲームクラスへのポインタ
-	FontRender m_fontRender;								// フォントレンダラー
-	CollisionObject* m_collisionObject;						// 当たり判定オブジェクトへのポインタ
-	InGameUI* m_inGameUI;									// インゲームUIへのポインタ
-	Ball* m_ball;											// ボールへのポインタ
+    //=========================================================
+    // state machine
+    //=========================================================
 
-	// ★ 記憶数値関連の変数（追加）
-	Vector3 m_facingDir = Vector3(0.0f, 0.0f, -1.0f);		// 初期向き
-	Vector3 newPosition;									// 新しい位置を保持する変数
-	float m_prevAngle = 0.0f;								// 前回の角度を保持する変数
-	Quaternion m_initialRotation;							// 初期の向きを保存する変数
-	int m_UniformNumber = BatterNumber::UniformNumber_1;	// ユニフォームの番号
+    // バッターステート管理
+    std::unique_ptr<BatterStateMachine> m_stateMachine;
 
-	// ★ アニメーションを管理する変数（追加）
-	float m_playSpeed = 1.0f;								// アニメーションの再生速度を管理する変数
-	AnimationClip m_animationClips[enAnimationClip_Num];	// アニメーションクリップの配列
-	EnAnimationClip m_setAnimation = enAnimationClip_Idle;	// 現在再生中のアニメーションクリップ
+    // デバフステート管理
+    std::unique_ptr<DebuffStageStateMachine>
+        m_debuffStageStateMachine;
 
-	// ★ カーソル関連の変数（追加）
-	Vector3 m_meetPosition;									// ミートカーソルの位置を保持する変数
-	bool m_isCursorMode = true;								// カーソルモードの状態を保持するフラグ
-	Vector3 m_meetCursorWorldPos;							// ミートカーソルのワールド座標を保持する変数
-	bool m_randomCursorUpdate = false;						// ランダムな位置にカーソルを更新するフラグ
-	Vector3 m_randomCursorTargetPos;						// ランダムな位置に更新するためのターゲット座標
-	float m_randomCursorMoveTimer = 0.0f;					// ランダムな位置にカーソルを移動するためのタイマー
-	float m_randomSpotRadius = 0.0f;						// ランダムな位置にカーソルを移動する際の半径
-	float m_randomMoveDuration = 0.0f;						// ランダムな位置にカーソルを移動する際の移動時間
-	Vector3 m_randomCursorMovePwer;							// ランダムな位置にカーソルを移動する際の移動の強さ
+    //=========================================================
+    // external reference
+    //=========================================================
 
-	// ★ グルグルバットの回転に関する変数（追加）
-	Quaternion m_rotation;									// 回転を保持するクォータニオン
-	Vector3 pivotOffset = { 0.0f, 0.0f, 10.0f };			// 例: 回転の軸となるオフセット座標（ローカル）
-	bool m_isRotation = true;								// 回転状態を保持するフラグ
-	float m_guruGuruBatTimer = 0.0f;						// グルグルバットのタイマー
-	float m_totalRotation = 0.0f;							// グルグルバットの累積回転量
-	int m_guruGuruBatCount = 0;								// グルグルバットの回数
+    // ゲーム本体
+    Game* m_game = nullptr;
 
-	// ★ 遅延ヒット用の変数（追加）
-	bool m_isHitReserved = false;							// ヒットが予約されているかどうかを管理するフラグ
-	float m_hitDelayTimer = 0.0f;							// ヒットの遅延時間を管理するタイマー
-	Vector3 m_reservedHitDir = Vector3::Zero;				// ヒットの遅延後に使用するヒットの方向を管理する変数
-	float m_reservedHitPower = 0.0f;						// ヒットの遅延後に使用するヒットの強さを管理する変数
-	Transform m_transform;									// Transformの型に合わせてください
-	std::unique_ptr<nsApp::CharacterModel> m_characterModel;// CharacterModelへのユニークポインタ
+    // UI
+    InGameUI* m_inGameUI = nullptr;
 
-	// ★ エフェクト関連の変数（追加）
-	struct EffectInfo {										// エフェクトの情報を管理する構造体
-		uint32_t m_effectDawnID;										// エフェクトのIDを管理する変数
-		uint32_t m_effectHitID;										// エフェクトのIDを管理する変数
-	};
-	EffectInfo m_inro;
+    // ボール
+    Ball* m_ball = nullptr;
+
+    // 当たり判定
+    CollisionObject* m_collisionObject = nullptr;
+
+    // フォント描画
+    FontRender m_fontRender;
+
+    DebuffStage m_debuffStage;
+
+    //=========================================================
+    // transform / model
+    //=========================================================
+
+    // Transform
+    Transform m_transform;
+
+    // キャラクターモデル
+    std::unique_ptr<nsApp::CharacterModel>
+        m_characterModel;
+
+    // 初期回転
+    Quaternion m_initialRotation;
+
+    // 現在回転
+    Quaternion m_rotation;
+
+    // 向き
+    Vector3 m_facingDir =
+        Vector3(0.0f, 0.0f, -1.0f);
+
+    // 新座標
+    Vector3 newPosition;
+
+    //=========================================================
+    // animation
+    //=========================================================
+
+    // 再生速度
+    float m_playSpeed = 1.0f;
+
+    // アニメーション配列
+    AnimationClip m_animationClips[enAnimationClip_Num];
+
+    // 現在アニメーション
+    EnAnimationClip m_setAnimation =
+        enAnimationClip_Idle;
+
+    //=========================================================
+    // cursor
+    //=========================================================
+
+    // カーソルモード
+    bool m_isCursorMode = true;
+
+    // ミート位置
+    Vector3 m_meetPosition;
+
+    // カーソルワールド座標
+    Vector3 m_meetCursorWorldPos;
+
+	// カーソルオフセット
+    Vector3 m_cursorOffset;
+
+	// ヒット範囲
+    float m_hitRange = 100.0f;
+
+    //=========================================================
+    // bat
+    //=========================================================
+
+    // 回転有効
+    bool m_isRotation = true;
+
+    // 回転中心
+    Vector3 pivotOffset =
+    {
+        0.0f,
+        0.0f,
+        10.0f
+    };
+
+    // 前回角度
+    float m_prevAngle = 0.0f;
+
+    // 回転タイマー
+    float m_guruGuruBatTimer = 0.0f;
+
+    // 総回転量
+    float m_totalRotation = 0.0f;
+
+    // 回転回数
+    int m_guruGuruBatCount = 0;
+
+    // ユニフォーム番号
+    int m_UniformNumber =
+        BatterNumber::UniformNumber_1;
+
+    //=========================================================
+    // hit
+    //=========================================================
+
+    // ヒット予約
+    bool m_isHitReserved = false;
+
+    // ヒット遅延
+    float m_hitDelayTimer = 0.0f;
+
+    // ヒット威力
+    float m_reservedHitPower = 0.0f;
+
+    // ヒット方向
+    Vector3 m_reservedHitDir =
+        Vector3::Zero;
+
+    //=========================================================
+    // effect
+    //=========================================================
+
+    struct EffectInfo
+    {
+        // 出現エフェクト
+        uint32_t m_effectDawnID;
+
+        // ヒットエフェクト
+        uint32_t m_effectHitID;
+    };
+
+    // エフェクト情報
+    EffectInfo m_inro;
 };
 
