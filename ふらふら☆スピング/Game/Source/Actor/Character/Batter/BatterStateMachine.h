@@ -20,6 +20,7 @@ class BatterStateMachine : public StatePatternBase
 		{
 			m_batter = player;
 		}
+		//GetBatter関数を使うには、BatterIStateBess.Cppファイル内でコメント通りに記載してください。
 		Batter* GetBatter()const
 		{
 			return m_batter;
