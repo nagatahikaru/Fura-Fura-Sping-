@@ -310,27 +310,37 @@ void Result::Render(RenderContext& rc)
 		// ① 動的な係数計算
 		double currentMul = 1.0 + (m_multiplier - 1.0) * ((double)m_displayGuruguru / (m_guruguru > 0 ? m_guruguru : 1));
 
-		// ② ★修正：%.4f に変更し、1.1402 などの数値を隠さないようにする
-		wchar_t mulBuf[64];
-		swprintf_s(mulBuf, L"%.4f", currentMul);
+		// ② パーセント表記用の計算 (例: 1.1402 -> 0.1402 -> 14.02)
+		double bonusPercent = (currentMul - 1.0) * 100.0;
 
-		// ③ 末尾の 0 を削る（1.4000 -> 1.4 / 1.1402 -> 1.1402）
-		int len = (int)wcslen(mulBuf);
-		while (len > 0 && mulBuf[len - 1] == L'0') {
-			mulBuf[--len] = L'\0';
+		// ③ パーセント文字列の作成
+		wchar_t percentBuf[64];
+		swprintf_s(percentBuf, L"%.2f", bonusPercent);
+
+		// ④ 末尾の無駄な 0 を削る (14.00 -> 14 / 14.50 -> 14.5)
+		int pLen = (int)wcslen(percentBuf);
+		while (pLen > 0 && percentBuf[pLen - 1] == L'0') {
+			percentBuf[--pLen] = L'\0';
 		}
-		if (len > 0 && mulBuf[len - 1] == L'.') {
-			mulBuf[--len] = L'\0';
+		if (pLen > 0 && percentBuf[pLen - 1] == L'.') {
+			percentBuf[--pLen] = L'\0';
 		}
 
-		// 上の行：ぐるぐる回数と係数
-		swprintf_s(buf, L"ぐるぐる回数: %d回    倍率(%ls倍)", m_displayGuruguru, mulBuf);
+		// --- 上の行：ボーナス表記に変更 ---
+		// 「%%」と2つ書くことで、画面に1つの「%」が表示されます
+		swprintf_s(buf, L"ぐるぐる回数: %d回    ボーナス(+%ls%%)", m_displayGuruguru, percentBuf);
 		m_fontGuruguru.SetText(buf);
 		m_fontGuruguru.SetPosition(-600, 120, 0);
 		m_fontGuruguru.SetColor(1, 1, 1, 1);
 		m_fontGuruguru.Draw(rc);
 
-		// 下の行：式の部分 (%.2fm * 係数)
+		// --- 下の行：計算式の表示 ---
+		wchar_t mulBuf[64];
+		swprintf_s(mulBuf, L"%.4f", currentMul);
+		int len = (int)wcslen(mulBuf);
+		while (len > 0 && mulBuf[len - 1] == L'0') { mulBuf[--len] = L'\0'; }
+		if (len > 0 && mulBuf[len - 1] == L'.') { mulBuf[--len] = L'\0'; }
+
 		swprintf_s(buf, L"最終距離 = %.2fm * %ls", m_displayKm / 100.0f, mulBuf);
 		m_fontFormula.SetText(buf);
 		m_fontFormula.SetPosition(-600, 40, 0);
