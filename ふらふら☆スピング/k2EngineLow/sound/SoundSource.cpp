@@ -80,7 +80,6 @@ namespace nsK2EngineLow {
 			m_sourceVoice = nullptr;
 		}
 		Remove3DSound();
-		DeleteGO(this);
 	}
 	void SoundSource::Play(char* buff, unsigned int bufferSize)
 	{
@@ -120,7 +119,6 @@ namespace nsK2EngineLow {
 				Play(m_isLoop);
 			}
 			else {
-				DeleteGO(this);
 				Remove3DSound();
 			}
 		}

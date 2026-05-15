@@ -16,6 +16,8 @@ public:
 	void Update();
 	void Render(RenderContext& rc);
 	void SetResultValues(int guruguru, int km, int scores[3]);
+	void StartFadeOut(float speed, std::function<void()> onFinished);
+	std::function<void()> m_onFadeOutFinished;
 private:
 	SpriteRender m_spriteRender;
 	int m_guruguru = 0;
@@ -58,5 +60,9 @@ private:
 	float m_displayFinalScore = 0.0f; // 0から一気に上がるスコア用
 	FontRender m_fontFormula;
 	FontRender m_fontTopKm;
+	SpriteRender m_fadeSprite;
+	bool m_isFadeOut = false;
+	float m_fadeAlpha = 0.0f;
+	float m_fadeSpeed = 1.0f;
 };
 
