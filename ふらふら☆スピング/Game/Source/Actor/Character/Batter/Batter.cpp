@@ -154,7 +154,7 @@ void Batter::Update()
 		}
 		// ★ リプレイ中にスイングアニメが再生されているなら速度を4.0に固定
 		if (IsSwingAnimationPlaying()) {
-			m_characterModel->GetModelRender()->SetAnimationSpeed(2.0f);
+			m_characterModel->GetModelRender()->SetAnimationSpeed(4.0f);
 		}
 		// アニメーションだけ進めたい場合はこれを残す
 		m_characterModel->Update();
@@ -539,18 +539,25 @@ void Batter::BatHitBoxPosition()
 
 void Batter::ResetSwing()
 {
-	// ★ スイングアニメーションをリセット
+	// 1. スイングアニメーション・姿勢を初期状態にリセット
 	m_transform.m_rotation = m_initialRotation;
-	m_characterModel->SettRotation(m_initialRotation);
+	if (m_characterModel) {
+		m_characterModel->SettRotation(m_initialRotation);
+	}
 
-	// ★ カーソル位置もリセット
-	m_meetPosition = Vector3::Zero;
+	// 2. 【最重要】プレイヤーがスティックで動かしたカーソル位置の累積を完全にゼロに戻す
+	m_meetPosition = Vector3::Zero;       // ← これが残っていたのが原因！
+	m_cursorOffset = Vector3::Zero;       // デバフ用のオフセットもリセット
+	m_meetCursorWorldPos = Vector3::Zero; // 3D空間の衝突判定用座標もクリア
 
-	// ★ ぐるぐるバット関連もリセット
-	m_isRotation = false;
+	// 3. 各種状態フラグをリセット
+	m_isRotation = false;   // ぐるぐる状態解除
+	m_isCursorMode = false; // カーソル操作モードを一旦オフに
 
-	// ★ カーソルモードもリセット
-	m_isCursorMode = false;
+	// 4. 【追加】即座に UI 側にもリセットされたクリーンな座標（ゼロ）を通知する
+	if (m_inGameUI) {
+		m_inGameUI->SetMeetCursorPosition(Vector3::Zero);
+	}
 }
 
 void Batter::SetCursorMode(bool flag)

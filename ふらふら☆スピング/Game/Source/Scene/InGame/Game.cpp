@@ -340,18 +340,31 @@ void Game::ResetForNextShot()
 	m_afterLandingTimer = 0.0f;
 	m_zeroDistanceTimer = 0.0f;
 	m_km = 0.0f;
-	m_hasTriggered100m = false;   // ★ これを追加
-	m_hasStartedDistance = false;   // ★ ここでもリセット
+	m_hasTriggered100m = false;
+	m_hasStartedDistance = false;
 	m_isHomeRun = false;
-	// ボールを初期位置に戻す
+
+	// 1. ボールを初期位置に戻す
 	if (m_ball) {
 		m_ball->ResetBall();
 	}
 
-	// UI のリセット
+	// 2. ★バッター内部のスティック移動累積（m_meetPosition）を完全にゼロリセット
+	if (m_batter) {
+		m_batter->ResetSwing();
+	}
+
+	// 3. UI のリセット
 	if (m_InGameUI) {
 		m_InGameUI->SetKm(0);
 		m_InGameUI->SetBaisokuVisible(false);
+
+		// 対処法2（FindGO）を使っている場合は自動でBatUIを探してリセットしてくれます
+		m_InGameUI->ResetBatAndMeetOnly();
+	}
+
+	if (m_batter) {
+		m_batter->SetCursorMode(true);
 	}
 }
 
@@ -375,6 +388,12 @@ void Game::OnBallLanded()
 			m_InGameUI->SetUIVisible(true);
 			m_InGameUI->SetFontVisble(true);
 			m_InGameUI->SetReplayVisible(false);
+
+			// ★ここでも次の球に備えてバッターとUIを先行リセット
+			if (m_batter) {
+				m_batter->ResetSwing();
+			}
+			m_InGameUI->ResetBatAndMeetOnly();
 		}
 	}
 	// スコア保存
@@ -592,6 +611,10 @@ void Game::OnPitcherThrow()
 
 	// ★ ピッチャーが投げた瞬間のフレームを保存
 	m_pitchFrame[shot] = m_replayFrameCounter;
+
+	if (m_batter) {
+		m_batter->SetCursorMode(true); // これで2球目・3球目もスティックで動くようになります！
+	}
 
 	// ★ ボールを飛ばす
 	if (m_ball) {
