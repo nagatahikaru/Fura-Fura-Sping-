@@ -196,7 +196,7 @@ void BatterSwingState::Update()
 	// ★ スイングアニメを1.8倍速にする
   // ★ スイングアニメを1.8倍速にする
 	   // ★ スイングアニメだけ 1.8倍速
-	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
+	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(2.0f);
 	batter->AnimationUpdate();
 	// ★ スイング中だけ当たり判定
 	batter->EffectUpdate();
