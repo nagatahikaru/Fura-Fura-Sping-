@@ -304,7 +304,7 @@ void InGameUI::ShowPrediction(float predicted)
 		m_predictionType = Prediction_Great;
 		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
 	}
-	else if (predicted < 50500.0f) {
+	else if (predicted < 51000.0f) {
 		m_predictionType = Prediction_Excellent;
 		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
 	}
@@ -321,6 +321,28 @@ void InGameUI::ShowPrediction(float predicted)
 	m_predictionAlpha = 0.0f;
 	m_predictedDistance =floorf( predicted+0.01f)  / 100.0f;
 	m_isPredictionVisible = true;
+}
+
+void InGameUI::ResetBatAndMeetOnly()
+{
+	// 1. バット・ミートゾーンのベース座標を初期値にリセット
+	m_batPositionRight = Vector3{ -50.0f, -100.0f, 0.0f };
+	m_batPositionLeft = Vector3{ 50.0f, -100.0f, 0.0f };
+	m_meetPositionRight = Vector3{ 39.0f, 5.0f, 0.0f };
+	m_meetPositionLeft = Vector3{ -46.0f, 7.0f, 0.0f };
+
+	// 2. 現在の移動先座標（m_batPos, m_meetPos）も初期位置（オフセットなし）にリセット
+	m_batPos = m_isLeftBatter ? m_batPositionLeft : m_batPositionRight;
+	Vector3 meetOffset = m_isLeftBatter ? m_meetPositionLeft : m_meetPositionRight;
+	m_meetPos = m_batPos + meetOffset;
+
+	// 3. バットの回転（角度）を 0 にリセット
+	m_rad = 0.0f;
+	m_batRotation.SetRotation(Vector3::AxisZ, 0.0f);
+
+	// 4. スケール（左右反転フラグ）の再設定
+	batScaleX = m_isLeftBatter ? -1.0f : 1.0f;
+	m_meetScaleX = m_isLeftBatter ? -1.0f : 1.0f;
 }
 
 // InGameUI.cpp の一番下などでOK

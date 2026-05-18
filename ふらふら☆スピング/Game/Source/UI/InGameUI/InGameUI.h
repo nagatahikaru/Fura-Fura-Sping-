@@ -54,6 +54,7 @@ public:
 	void ResetPrediction();
 	float GetPredictedDistance() const { return m_predictedDistance; }
 	void OnStrike(int ballIndex);
+	void ResetBatAndMeetOnly();
 	std::function<void()> m_onFadeOutFinished;
 	std::function<void()> m_onFadeInFinished;
 	int m_threeShots[3] = { 0,0,0 };      // cm 単位で保存

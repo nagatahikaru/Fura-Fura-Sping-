@@ -163,10 +163,10 @@ void Ball::Update()
         if (!m_hasHit && m_position.z > 9000.0f) {
             Game* game = FindGO<Game>("game");
             if (game) {
-                // ★ 追加：UI にバツを通知
                 InGameUI* ui = game->GetInGameUI();
                 if (ui) {
-                    ui->OnStrike(game->m_shots);   // ← 今の球にバツを付ける
+                    ui->OnStrike(game->m_shots);   // 今の球にバツを付ける
+                    ui->ResetBatAndMeetOnly();     // ★ 追加：空振りした瞬間にバットとミートをリセット
                 }
                 game->SetKmValue(0);   // 空振りは距離0
                 game->OnBallLanded();  // 次の球へ
@@ -335,6 +335,7 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
             ui->SetStartZ(m_position.z);
+            ui->ResetBatAndMeetOnly(); 
         }
     }
 }
@@ -371,6 +372,13 @@ void Ball::ResetBall()
     m_hasShownPrediction = false;
     m_hasPlayedSE6 = false;
     SetPosition(m_position);
+    Game* game = FindGO<Game>("game");
+    if (game) {
+        InGameUI* ui = game->GetInGameUI();
+        if (ui) {
+            ui->ResetBatAndMeetOnly();
+        }
+    }
 }
 
 void Ball::Render(RenderContext& rc)
