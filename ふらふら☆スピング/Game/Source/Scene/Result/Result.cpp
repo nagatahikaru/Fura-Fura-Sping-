@@ -84,6 +84,7 @@ void Result::Update()
 			// 【スキップ】即座に全数値を最大にする
 			m_displayGuruguru = m_guruguru;
 			m_displayKm = (float)m_km;
+			m_displayFinalScore = (float)m_km;
 			m_phase = enPhase_WaitKey;
 			m_isSkipped = true;
 		}
@@ -231,8 +232,8 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 	multiplier = floor(multiplier * 10000.0) / 10000.0;
 
 	// ★★★ 30回MAXボーナス（強制1.4倍） ★★★
-	if (guruguru >= 30) {
-		multiplier = 1.4;
+	if (guruguru >= 40) {
+		multiplier = 1.5;
 	}
 
 	// --- (倍率計算のロジックは変更なし) ---
