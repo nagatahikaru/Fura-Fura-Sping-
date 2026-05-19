@@ -83,8 +83,8 @@ void Result::Update()
 		if (m_phase != enPhase_WaitKey) {
 			// 【スキップ】即座に全数値を最大にする
 			m_displayGuruguru = m_guruguru;
-			m_displayKm = (float)m_km;
-			m_displayFinalScore = (float)m_km;
+			m_displayKm = (float)m_originalKm; // 距離は元の最大飛距離
+			m_displayFinalScore = (float)m_km;         // スコアは倍率がかかった最終スコア
 			m_phase = enPhase_WaitKey;
 			m_isSkipped = true;
 		}

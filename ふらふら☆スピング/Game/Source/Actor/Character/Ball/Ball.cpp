@@ -61,13 +61,21 @@ void Ball::Update()
 
     float dt = (1.0f / 60.0f) * game->GetTimeScale();
 
-    if (!game->IsBallLanded()) {
-        m_throwTimer += dt;
+    // 🌟【修正】次の球への移行待ち（2秒間）や、録画再生中などはタイマーを進めないように厳格に管理する
+    if (!game->IsBallLanded() && game->IsGameStarted() && !game->m_isPaused && !game->m_isHitStop) {
+        if (!m_isMove) {
+            m_throwTimer += dt;
+        }
+    }
+    else {
+        // 画面切り替え待ちなどの間はタイマーを常に安全にクリアしておく
+        m_throwTimer = 0.0f;
     }
 
+    // 自動投球処理
     if (m_throwTimer >= 2.2f && !m_isMove)
     {
-        ResetBall(); 
+        ResetBall();
 
         Throw({ 0.0f, -20.0f, 0.0f });
         m_throwTimer = 0.0f;
@@ -187,9 +195,15 @@ void Ball::Update()
                 if (m_hasHit) {
                     // 地面に当たったら、Y軸（上下）の移動を止め、XとZだけで転がす
                     m_velocity.y = 0.0f;
-                    // 摩擦で少しずつ減速させたい場合は、速度を少し落とす（例: 毎フレーム0.98倍）
-                    m_velocity.x *= 0.98f;
-                    m_velocity.z *= 0.98f;
+
+                    // 摩擦でさらに強く減速させる（0.98f から 0.94f に変更して減速を強化）
+                    m_velocity.x *= 0.94f;
+                    m_velocity.z *= 0.94f;
+
+                    // 🌟【追加】速度が一定以下になったら完全にピタッと止める（ずるずる滑るのを防ぐ）
+                    if (m_velocity.LengthSq() < 10.0f) {
+                        m_velocity = Vector3::Zero;
+                    }
 
                     // まだGame側が着地処理を開始していなければ、1秒タイマーをスタート
                     if (!game->IsBallLanded()) {
@@ -205,7 +219,7 @@ void Ball::Update()
                         game->OnBallLanded(); // ★ Game側の1秒タイマーを起動（カメラはそのまま）
                     }
                 }
-                // 🌟 打撃していない場合（基本は空振りが奥に行くのでここには来ないが、念のため）
+                // 🌟 打撃していない場合
                 else {
                     m_isMove = false;
                     game->SetKmValue(0.0f);
@@ -250,48 +264,37 @@ void Ball::Update()
     m_modelRender.Update();
 }
 
-
 void Ball::Throw(const Vector3& targetPos)
 {
-    
-    Vector3 dir = { 0.0f,-0.1f,3.0f };
+    // 🌟【修正】フライング防止パッチを関数の「先頭」に移動
+    Game* game = FindGO<Game>("game");
+    if (game) {
+        InGameUI* ui = game->GetInGameUI();
+        if (ui && (ui->IsFadingOut() || ui->IsFadingIn())) {
+            OutputDebugStringA("Ball::Throw ignored because UI is fading\n");
+            return; // 完全にここで処理を弾く（フラグ類を汚さない）
+        }
+    }
+
+    Vector3 dir = { 0.0f, -0.1f, 3.0f };
     dir.Normalize();
 
     float speed = 1900.0f + (rand() % 200);
-
     int type = rand() % 3;
 
     switch (type)
     {
-    case 0:
-        m_ballType = Straight;
-        break;
-
-    case 1:
-        m_ballType = ShakeHorizontal;
-        break;
-
-    case 2:
-        m_ballType = ShakeVertical;
-        break;
+    case 0:  m_ballType = Straight;       break;
+    case 1:  m_ballType = ShakeHorizontal; break;
+    case 2:  m_ballType = ShakeVertical;   break;
     }
-    
+
     m_velocity = dir * speed;
+    m_isMove = true;
 
-	m_isMove = true;
-
-    // ★ リプレイ記録開始（投球開始時）
+    // ★ リプレイ記録開始
     m_replayPath.clear();
     m_isRecording = true;
-
-    // ★ 投げた瞬間の Z を UI に送る（必須）
-    Game* game = FindGO<Game>("game");
-    if (game) {
-        InGameUI* ui = game->GetInGameUI();
-        if (ui) {
-            ui->SetStartZ(m_position.z);
-        }
-    }
 }
 
 void Ball::SetPosition(const Vector3& pos)
@@ -381,15 +384,19 @@ void Ball::ResetBall()
     m_hasShownPrediction = false;
     m_hasPlayedSE6 = false;
 
-    // 🌟 【追加】ボールがリセットされるときは、投球タイマーも確実にゼロに戻す
+    // 🌟 【追加】投球タイマーを確実にゼロに戻す
     m_throwTimer = 0.0f;
 
     SetPosition(m_position);
+
     Game* game = FindGO<Game>("game");
     if (game) {
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
-            ui->ResetBatAndMeetOnly();
+            // 🌟【重要】ボールの初期位置をUIに再通知して予測円を初期状態に戻す
+            ui->SetPredictedBallPos(m_position);
+            ui->SetStartZ(m_position.z);
+            ui->ResetBatAndMeetOnly(); // ミート位置・バット表示のリセット
         }
     }
 }

@@ -25,6 +25,7 @@ public:
 	void SetUIVisible(bool isVisible) { m_isUIVisible = isVisible; }
 	void SetFontVisble(bool isVisible) { m_isFontVisible = isVisible; }
 	void SetReplayVisible(bool isVisible) { m_isReplayVisible = isVisible; }
+	void SetniceVisible(bool isVisible) { m_isPredictionVisible = isVisible; }
 	void SetBatterSide(bool isLeft);
 	void SetPause(bool isPaused);
 	void SetPredictedBallPos(const Vector3& pos3D);
@@ -55,6 +56,7 @@ public:
 	void OnStrike(int ballIndex);
 	void ResetBatAndMeetOnly();
 	void ShowPrediction(float predicted, bool isGoro = false);
+	bool IsFadingIn() const { return m_isFadeIn; }
 	std::function<void()> m_onFadeOutFinished;
 	std::function<void()> m_onFadeInFinished;
 	int m_threeShots[3] = { 0,0,0 };      // cm 単位で保存

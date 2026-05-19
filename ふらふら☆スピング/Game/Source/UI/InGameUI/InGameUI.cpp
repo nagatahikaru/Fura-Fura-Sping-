@@ -58,6 +58,7 @@ bool InGameUI::Start() {
 	m_meetPositionRight = Vector3{ 39.0f, 5.0f, 0.0f };
 	m_meetPositionLeft = Vector3{ -46.0f,7.0f,0.0f };
 	m_ballCount = 3;
+
 	return true;
 }
 
@@ -296,37 +297,48 @@ void InGameUI::StartStrikeAnim()
 
 void InGameUI::ShowPrediction(float predicted, bool isGoro)
 {
-	// 🌟 ゴロじゃない時（大飛球の時）だけSEを鳴らす
 	if (!isGoro) {
+		// 【追加】10800.0f 未満の場合は何も表示せずに処理を抜ける
+		if (predicted < 10800.0f) {
+			m_predictionType = (PredictionType)-1; // 評価文字タイプを無効化
+			m_isPredictionVisible = false;        // UIを非表示にする
+			return;                                // これ以降の処理（SEやタイマー設定）を行わない
+		}
+
 		if (predicted < 30000.0f) {
 			m_predictionType = Prediction_Nice;
-			g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
+			g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);
 		}
 		else if (predicted < 45000.0f) {
 			m_predictionType = Prediction_Great;
-			g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
+			g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);
 		}
 		else if (predicted < 51000.0f) {
 			m_predictionType = Prediction_Excellent;
-			g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
+			g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);
 		}
 		else {
 			m_predictionType = Prediction_Perfect;
-			g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f); // ★ パーフェクト音
+			g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f);
 		}
+
+		// 大飛球の時は通常どおり拡大アニメーションを行う
+		m_isPredictionAnim = true;
+		m_predictionAnimTimer = 0.0f;
+		m_predictionScale = 0.3f;
 	}
 	else {
-		// 🌟 ゴロの時は文字を出さない特別なタイプ（新設するか、None扱いに指定）
-		// ここでは m_predictionType を使わないので何でもOKですが、安全のため区別しておきます
+		// 🌟 ゴロの時は評価文字タイプを無効化
 		m_predictionType = (PredictionType)-1;
+
+		// 🌟 拡大ポップアップアニメをスキップし、最初から等倍で表示する
+		m_isPredictionAnim = false;
+		m_predictionScale = 1.0f;
 	}
 
-	// ★ アニメ開始（ここは共通）
-	m_isPredictionAnim = true;
-	m_predictionAnimTimer = 0.0f;
+	// ★ 共通の初期化
 	m_predictionHoldTime = 1.5f;
-	m_predictionScale = 0.3f;
-	m_predictionAlpha = 0.0f;
+	m_predictionAlpha = 1.0f; // ゴロの時は最初から不透明表示
 	m_predictedDistance = floorf(predicted + 0.01f) / 100.0f;
 	m_isPredictionVisible = true;
 }
@@ -408,25 +420,31 @@ void InGameUI::Render(RenderContext& rc) {
 
 		if (m_hasPredictedBall) {
 
-			Vector3 uiPos;
-
-			if (m_isBallUIFixed) {
-				  uiPos = m_fixedBallUIPos;   // ← 変換しない
+			// 🛑 安全ガード：透明度が完全に 0.0f 以下の時は、計算も描画もスキップする
+			if (m_ballAlpha <= 0.0f) {
+				// まだ遠くにあって透明な状態なので描画自体をしない
 			}
 			else {
-				uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
+				Vector3 uiPos;
+
+				if (m_isBallUIFixed) {
+					uiPos = m_fixedBallUIPos;   // ← 変換しない
+				}
+				else {
+					uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
+				}
+
+				m_spriteRenderBall.SetPosition(uiPos);
+
+				// ★ 距離に応じた透明度を確実に適用（1.0を超えるのを防ぐclamp付き）
+				float finalAlpha = clamp(m_ballAlpha, 0.0f, 1.0f);
+				Vector4 color = Vector4(1.0f, 1.0f, 1.0f, finalAlpha);
+				m_spriteRenderBall.SetMulColor(color);
+
+				m_spriteRenderBall.Update();
+				m_spriteRenderBall.Draw(rc);
 			}
-
-			m_spriteRenderBall.SetPosition(uiPos);
-
-			// ★ 距離に応じた透明度を適用！
-			Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
-			m_spriteRenderBall.SetMulColor(color);
-
-			m_spriteRenderBall.Update();
-			m_spriteRenderBall.Draw(rc);
 		}
-
 
 		// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
 		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed)
