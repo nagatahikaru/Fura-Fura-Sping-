@@ -61,7 +61,9 @@ void Ball::Update()
 
     float dt = (1.0f / 60.0f) * game->GetTimeScale();
 
-    m_throwTimer += dt;
+    if (!game->IsBallLanded()) {
+        m_throwTimer += dt;
+    }
 
     if (m_throwTimer >= 2.2f && !m_isMove)
     {
@@ -166,7 +168,6 @@ void Ball::Update()
                 InGameUI* ui = game->GetInGameUI();
                 if (ui) {
                     ui->OnStrike(game->m_shots);   // 今の球にバツを付ける
-                    ui->ResetBatAndMeetOnly();     // ★ 追加：空振りした瞬間にバットとミートをリセット
                 }
                 game->SetKmValue(0);   // 空振りは距離0
                 game->OnBallLanded();  // 次の球へ
@@ -178,30 +179,38 @@ void Ball::Update()
         if (m_position.y <= 0.0f)
         {
             m_position.y = 0.0f;
-            m_isMove = false;
 
             Game* game = FindGO<Game>("game");
             if (game) {
-                float finalDistance = 0.0f;
-                InGameUI* ui = game->GetInGameUI();
 
+                // 🌟 ゴロ（打撃後）の場合
                 if (m_hasHit) {
-                    // ★ ポイント1：UIが表示されているなら、UIが持っている数値をそのまま採用する
-                    if (m_hasShownPrediction) {
-                        // Ballが計算した「生の数値」をそのまま使う（単位をcmに合わせる）
-                        finalDistance = m_storedPredictedDistance;
-                    }
-                    else {
-                        // 予測が出る前に着地した場合（ボテボテのゴロなど）
-                        float dz = m_position.z - m_hitStartPos.z;
-                        finalDistance = -dz;
-                    }
-                    m_hasHit = false;
-                }
+                    // 地面に当たったら、Y軸（上下）の移動を止め、XとZだけで転がす
+                    m_velocity.y = 0.0f;
+                    // 摩擦で少しずつ減速させたい場合は、速度を少し落とす（例: 毎フレーム0.98倍）
+                    m_velocity.x *= 0.98f;
+                    m_velocity.z *= 0.98f;
 
-                // ★ ポイント2：ここで確実に finalDistance をセットする
-                game->SetKmValue(finalDistance);
-                game->OnBallLanded();
+                    // まだGame側が着地処理を開始していなければ、1秒タイマーをスタート
+                    if (!game->IsBallLanded()) {
+                        float finalDistance = 0.0f;
+                        if (m_hasShownPrediction) {
+                            finalDistance = m_storedPredictedDistance;
+                        }
+                        else {
+                            float dz = m_position.z - m_hitStartPos.z;
+                            finalDistance = -dz;
+                        }
+                        game->SetKmValue(finalDistance);
+                        game->OnBallLanded(); // ★ Game側の1秒タイマーを起動（カメラはそのまま）
+                    }
+                }
+                // 🌟 打撃していない場合（基本は空振りが奥に行くのでここには来ないが、念のため）
+                else {
+                    m_isMove = false;
+                    game->SetKmValue(0.0f);
+                    game->OnBallLanded();
+                }
             }
         }
 
@@ -371,6 +380,10 @@ void Ball::ResetBall()
     m_hasStrike = false;
     m_hasShownPrediction = false;
     m_hasPlayedSE6 = false;
+
+    // 🌟 【追加】ボールがリセットされるときは、投球タイマーも確実にゼロに戻す
+    m_throwTimer = 0.0f;
+
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
     if (game) {

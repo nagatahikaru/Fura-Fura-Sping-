@@ -294,32 +294,40 @@ void InGameUI::StartStrikeAnim()
 	m_strikeSprite.SetMulColor({ 1,1,1,0 }); // 透明
 }
 
-void InGameUI::ShowPrediction(float predicted)
+void InGameUI::ShowPrediction(float predicted, bool isGoro)
 {
-	if (predicted < 30000.0f) {
-		m_predictionType = Prediction_Nice;
-		g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
-	}
-	else if (predicted < 45000.0f) {
-		m_predictionType = Prediction_Great;
-		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
-	}
-	else if (predicted < 51000.0f) {
-		m_predictionType = Prediction_Excellent;
-		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
+	// 🌟 ゴロじゃない時（大飛球の時）だけSEを鳴らす
+	if (!isGoro) {
+		if (predicted < 30000.0f) {
+			m_predictionType = Prediction_Nice;
+			g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
+		}
+		else if (predicted < 45000.0f) {
+			m_predictionType = Prediction_Great;
+			g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
+		}
+		else if (predicted < 51000.0f) {
+			m_predictionType = Prediction_Excellent;
+			g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
+		}
+		else {
+			m_predictionType = Prediction_Perfect;
+			g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f); // ★ パーフェクト音
+		}
 	}
 	else {
-		m_predictionType = Prediction_Perfect;
-		g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f); // ★ パーフェクト音
+		// 🌟 ゴロの時は文字を出さない特別なタイプ（新設するか、None扱いに指定）
+		// ここでは m_predictionType を使わないので何でもOKですが、安全のため区別しておきます
+		m_predictionType = (PredictionType)-1;
 	}
 
-	// ★ アニメ開始
+	// ★ アニメ開始（ここは共通）
 	m_isPredictionAnim = true;
 	m_predictionAnimTimer = 0.0f;
 	m_predictionHoldTime = 1.5f;
 	m_predictionScale = 0.3f;
 	m_predictionAlpha = 0.0f;
-	m_predictedDistance =floorf( predicted+0.01f)  / 100.0f;
+	m_predictedDistance = floorf(predicted + 0.01f) / 100.0f;
 	m_isPredictionVisible = true;
 }
 
@@ -651,36 +659,43 @@ void InGameUI::Render(RenderContext& rc) {
 
 		if (m_isPredictionVisible) {
 
-			SpriteRender* spr = nullptr;
+			// 🌟 タイプが -1（ゴロ用）ではない時だけ、ナイスなどの評価文字を描画する
+			if ((int)m_predictionType != -1) {
+				SpriteRender* spr = nullptr;
 
-			if (m_predictionType == Prediction_Nice) {
-				spr = &m_niceSprite;
-			}
-			else if (m_predictionType == Prediction_Great) {
-				spr = &m_greatSprite;
-			}
-			else if (m_predictionType == Prediction_Excellent) {
-				spr = &m_excellentSprite;
-			}
-			else {
-				spr = &m_perfectSprite;   // ★ 追加
+				if (m_predictionType == Prediction_Nice) {
+					spr = &m_niceSprite;
+				}
+				else if (m_predictionType == Prediction_Great) {
+					spr = &m_greatSprite;
+				}
+				else if (m_predictionType == Prediction_Excellent) {
+					spr = &m_excellentSprite;
+				}
+				else {
+					spr = &m_perfectSprite;
+				}
+
+				spr->SetPosition({ 0,0,0 });
+				spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
+				spr->SetMulColor({ 1,1,1, m_predictionAlpha });
+				spr->Update();
+				spr->Draw(rc);
 			}
 
-			spr->SetPosition({ 0,0,0 });
-			spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
-			spr->SetMulColor({ 1,1,1, m_predictionAlpha });
-			spr->Update();
-			spr->Draw(rc);
-
+			// 🌟 黄色の「〇〇 m」フォント表示は、大飛球でもゴロでも【常に】表示する！
 			wchar_t predText[64];
 			swprintf_s(predText, L"%.2f m", m_predictedDistance);
 			m_fontPrediction.SetText(predText);
-			m_fontPrediction.SetPosition(-150.0f, -150.0f, 0.0f); // Excellent表示の下あたりに配置
+
+			// 位置調整：大飛球の時は文字の下(-150)、ゴロの時はど真ん中(0)に自動切り替え
+			float textY = ((int)m_predictionType == -1) ? 0.0f : -150.0f;
+			m_fontPrediction.SetPosition(-150.0f, textY, 0.0f);
+
 			m_fontPrediction.SetScale(1.5f);
-			m_fontPrediction.SetColor(1.0f, 1.0f, 0.0f, m_predictionAlpha); // 黄色で見やすく
+			m_fontPrediction.SetColor(1.0f, 1.0f, 0.0f, m_predictionAlpha); // 黄色
 			m_fontPrediction.Draw(rc);
 		}
-
 
 		if (m_isBaisokuVisible) {
 			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });

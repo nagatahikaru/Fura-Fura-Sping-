@@ -204,19 +204,31 @@ void Game::Update()
 		m_InGameUI->SetGuruGuruCount(GetGuruguru());
 	}
 
-	// ★ リプレイ中は着地後の待ち処理をスキップ
 	if (m_isBallLanded && !m_isReplayPlaying) {
 		m_afterLandingTimer += (1.0f / 60.0f) * m_timeScale;
 
-		if (m_afterLandingTimer >= 1.0f) {
+		if (m_afterLandingTimer >= 1.0f) { // ⏰ 1秒経過
 
-			// ★ 3球目なら次の球へ行かない（リプレイへ）
 			if (m_shots == 2) {
 				return;
 			}
 
-			m_shots++;
+			// 🌟 ゴロ（打撃あり）だった場合、1秒間転がしたあとのここでカメラを戻す
+			if (!m_hasTriggered100m && (m_ball && m_ball->IsHit())) {
+				m_cameraMode = Camera_Catcher;
+
+				if (m_InGameUI) {
+					m_InGameUI->SetUIVisible(true);
+					m_InGameUI->SetFontVisble(true);
+					m_InGameUI->SetReplayVisible(false);
+				}
+			}
+
+			// 🌟 【修正】順番を入れ替えます！
+			// カウントアップする「前」に、ボールの位置やタイマー、ピッチャーの構えをリセットする
 			ResetForNextShot();
+
+			m_shots++; // リセットが完全に終わった後に次の球へカウントアップ
 			return;
 		}
 	}
@@ -374,64 +386,64 @@ void Game::OnBallLanded()
 	m_afterLandingTimer = 0.0f;
 	m_canFastForward = false;
 	m_timeScale = 1.0f;
-	m_hasStartedDistance = false;   // ★ ここでもリセット
+	m_hasStartedDistance = false;
+
 	Pitcher* pitcher = FindGO<Pitcher>("pitcher");
 	if (pitcher) {
 		pitcher->ResetThrow();
 	}
-	// ★ 100m未満のヒットはフェードアウトしないので、着地した瞬間にカメラを戻す
+
+	// 🌟 ここを修正：空振りとゴロ（打撃）で処理を分ける
 	if (!m_hasTriggered100m) {
-		m_cameraMode = Camera_Catcher;
 
-		// UI も通常状態に戻す
-		if (m_InGameUI) {
-			m_InGameUI->SetUIVisible(true);
-			m_InGameUI->SetFontVisble(true);
-			m_InGameUI->SetReplayVisible(false);
+		if (m_ball && !m_ball->IsHit()) {
+			// 🛑 【空振りの場合】今まで通り「即座に」カメラやUIをリセット（テンポ重視）
+			m_cameraMode = Camera_Catcher;
 
-			// ★ここでも次の球に備えてバッターとUIを先行リセット
-			if (m_batter) {
-				m_batter->ResetSwing();
+			if (m_InGameUI) {
+				m_InGameUI->SetUIVisible(true);
+				m_InGameUI->SetFontVisble(true);
+				m_InGameUI->SetReplayVisible(false);
+
+				if (m_batter) {
+					m_batter->ResetSwing();
+				}
+				m_InGameUI->ResetBatAndMeetOnly();
 			}
-			m_InGameUI->ResetBatAndMeetOnly();
+		}
+		else {
+			if (m_InGameUI && m_ball && m_ball->IsHit()) {
+				m_InGameUI->ShowPrediction(m_km, true);
+			}
 		}
 	}
-	// スコア保存
-	m_scores[m_shots] = m_km;
 
-	// ★ UI にも保存（追加）
+	// スコア保存（ここは共通）
+	m_scores[m_shots] = m_km;
 	if (m_InGameUI) {
 		m_InGameUI->m_threeShots[m_shots] = m_km;
 		m_InGameUI->m_shotDone[m_shots] = true;
 	}
 
-	// ボール軌道保存（ヒットした時だけ）
-	if (m_ball->m_replayPath.size() > 0) {
+	if (m_ball && m_ball->m_replayPath.size() > 0) {
 		m_replayPaths[m_shots] = m_ball->m_replayPath;
 	}
 	else {
 		m_replayPaths[m_shots].clear();
 	}
 
-	// 3球目が終わった？
 	if (m_shots == 2) {
 		DecideBestReplay();
-
 		if (m_bestShotIndex != -1) {
-			// ベストショットがある → リプレイ開始を予約
 			m_shouldStartReplay = true;
 		}
 		else {
-			// 全部空振り → そのままリザルト
 			GoToResult();
 		}
-
-		// ここでエンディング用フェード開始（真っ黒になったらリプレイ or リザルト）
 		StartEndFade();
 		return;
 	}
 }
-
 
 void Game::OnOver100m()
 {
@@ -599,7 +611,7 @@ void Game::StartEndFade()
 			// 全部空振り → そのままリザルトへ
 			GoToResult();
 		}
-		};
+	};
 }
 
 int Game::GetReplayFrameCount() const {

@@ -76,6 +76,7 @@ public:
 	bool m_hasTriggered100m = false;
 	void OnOver100m();
 	void StartEndFade();
+	bool IsBallLanded() const { return m_isBallLanded; }
 	struct ReplayFrame {
 		Vector3 ballPos;
 		Vector3 ballVel;

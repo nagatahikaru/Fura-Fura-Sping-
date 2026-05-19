@@ -19,7 +19,7 @@ class Ball :public Character
 	virtual bool Start();
 	virtual void Update();
 	virtual void Render(RenderContext& rc);
-
+	bool IsHit() const { return m_hasHit; }
 	//ボールを投げる関数
 	void Throw(const Vector3& targetPos);
 	void SetPosition(const Vector3& pos);
