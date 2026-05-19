@@ -23,7 +23,7 @@ bool Ball::Start()
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
 	m_modelRender.SetScale({ 9.0f,9.0f,9.0f });
 
-	m_position = { -0.0f, 650.0f, 1000.0f };
+	m_position = { -0.0f, 700.0f, 1000.0f };
 	m_modelRender.SetPosition(m_position);
 
     
@@ -71,9 +71,14 @@ void Ball::Update()
         m_throwTimer = 0.0f;
     }
 
+    if (!m_hasHit)
+    {
+        m_velocity.x += m_curveDir * 2.0f * dt;
+    }
+
    if (m_isMove)
 {
-    m_velocity.y -= 14.0f * dt;
+    m_velocity.y -= 13.5f * dt;
 
         m_position += m_velocity * dt;
 
@@ -90,6 +95,9 @@ void Ball::Update()
                 break;
 
             case Straight:
+                break;
+
+            case  Curve:
             default:
                 break;
             }
@@ -218,7 +226,7 @@ void Ball::Update()
     float scale = 5.0f * (1.0f - t * 0.8f);
 
     //最小サイズ制限（消え防止）
-    if (scale < 2.5f) scale = 2.0f;
+    if (scale < 3.0f) scale = 2.0f;
 
     m_modelRender.SetScale({ scale, scale, scale });
 }
@@ -242,9 +250,9 @@ void Ball::Throw(const Vector3& targetPos)
     Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
 
-    float speed = 1900.0f + (rand() % 200);
+    float speed = 2000.0f + (rand() % 250);
 
-    int type = rand() % 3;
+    int type = rand() % 4;
 
     switch (type)
     {
@@ -259,6 +267,23 @@ void Ball::Throw(const Vector3& targetPos)
     case 2:
         m_ballType = ShakeVertical;
         break;
+
+    case 3:
+        m_ballType = Curve;
+        break;
+    }
+
+    //カーブ
+    if (m_ballType == Curve)
+    {
+        if (rand() % 2 == 0)
+            m_curveDir = -1;
+        else
+            m_curveDir = 1;
+    }
+    else
+    {
+        m_curveDir = 0;
     }
     
     m_velocity = dir * speed;
@@ -342,7 +367,7 @@ float Ball::PredictLandingDistance()
 
     // 地面に落ちるまでシミュレーション
     while (pos.y > 0.0f) {
-        vel.y -= 14.5f * dt;   // 重力
+        vel.y -= 13.5f * dt;   // 重力
         pos += vel * dt;
     }
 
