@@ -35,7 +35,7 @@ InGameUI::InGameUI() {
 	m_ballIcon[0].SetPosition(Vector3{ -600, 430, 0 });
 	m_ballIcon[1].SetPosition(Vector3{ -530, 430, 0 });
 	m_ballIcon[2].SetPosition(Vector3{ -460, 430, 0 });
-	m_spritekuro.Init("Assets/sprite/kuro.DDS",1920.0f, 1080.0f);
+	m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
 	m_bbb.Init("Assets/sprite/bbb.dds", 200.0f, 200.0f);
 	m_bsuki.Init("Assets/sprite/bsuki.DDS", 550.0f, 500.0f);
 	m_strikeSprite.Init("Assets/sprite/strike.DDS", 600.0f, 500.0f);
@@ -53,12 +53,11 @@ InGameUI::~InGameUI() {
 }
 
 bool InGameUI::Start() {
-	m_batPositionRight = Vector3{-50.0f, -100.0f, 0.0f };  // ← 初期位置
+	m_batPositionRight = Vector3{ -50.0f, -100.0f, 0.0f };  // ← 初期位置
 	m_batPositionLeft = Vector3{ 50.0f,-100.0f,0.0f };
 	m_meetPositionRight = Vector3{ 39.0f, 5.0f, 0.0f };
 	m_meetPositionLeft = Vector3{ -46.0f,7.0f,0.0f };
 	m_ballCount = 3;
-
 	return true;
 }
 
@@ -108,7 +107,7 @@ void InGameUI::Update() {
 		if (m_fadeAlpha <= 0.0f) {
 			m_fadeAlpha = 0.0f;
 			m_isFadeIn = false;
-		
+
 			// ★ フェードイン完了通知
 			if (m_onFadeInFinished) {
 				m_onFadeInFinished();
@@ -226,7 +225,7 @@ void InGameUI::FixBallUI(const Vector3& pos3D)
 
 void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
 {
-	
+
 	m_batPos = m_isLeftBatter ? m_batPositionLeft : m_batPositionRight;
 	Vector3 meetOffset = m_isLeftBatter ? m_meetPositionLeft : m_meetPositionRight;
 
@@ -237,13 +236,13 @@ void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
 }
 
 void InGameUI::SetStartZ(float z) {
-    m_startZ = z;
-    m_isError = false;   // 打つたびにリセット
+	m_startZ = z;
+	m_isError = false;   // 打つたびにリセット
 
-    // ★ ここを追加：ボール予測UIの状態もリセット
-    m_isBallUIFixed    = false;
-    m_hasPredictedBall = false;
-    m_ballAlpha        = 0.0f;
+	// ★ ここを追加：ボール予測UIの状態もリセット
+	m_isBallUIFixed = false;
+	m_hasPredictedBall = false;
+	m_ballAlpha = 0.0f;
 	ResetPrediction();
 }
 
@@ -295,50 +294,31 @@ void InGameUI::StartStrikeAnim()
 	m_strikeSprite.SetMulColor({ 1,1,1,0 }); // 透明
 }
 
-void InGameUI::ShowPrediction(float predicted, bool isGoro)
+void InGameUI::ShowPrediction(float predicted)
 {
-	if (!isGoro) {
-		// 【追加】10800.0f 未満の場合は何も表示せずに処理を抜ける
-		if (predicted < 10800.0f) {
-			m_predictionType = (PredictionType)-1; // 評価文字タイプを無効化
-			m_isPredictionVisible = false;        // UIを非表示にする
-			return;                                // これ以降の処理（SEやタイマー設定）を行わない
-		}
-
-		if (predicted < 30000.0f) {
-			m_predictionType = Prediction_Nice;
-			g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);
-		}
-		else if (predicted < 45000.0f) {
-			m_predictionType = Prediction_Great;
-			g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);
-		}
-		else if (predicted < 51000.0f) {
-			m_predictionType = Prediction_Excellent;
-			g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);
-		}
-		else {
-			m_predictionType = Prediction_Perfect;
-			g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f);
-		}
-
-		// 大飛球の時は通常どおり拡大アニメーションを行う
-		m_isPredictionAnim = true;
-		m_predictionAnimTimer = 0.0f;
-		m_predictionScale = 0.3f;
+	if (predicted < 30000.0f) {
+		m_predictionType = Prediction_Nice;
+		g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
+	}
+	else if (predicted < 45000.0f) {
+		m_predictionType = Prediction_Great;
+		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
+	}
+	else if (predicted < 51000.0f) {
+		m_predictionType = Prediction_Excellent;
+		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
 	}
 	else {
-		// 🌟 ゴロの時は評価文字タイプを無効化
-		m_predictionType = (PredictionType)-1;
-
-		// 🌟 拡大ポップアップアニメをスキップし、最初から等倍で表示する
-		m_isPredictionAnim = false;
-		m_predictionScale = 1.0f;
+		m_predictionType = Prediction_Perfect;
+		g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f); // ★ パーフェクト音
 	}
 
-	// ★ 共通の初期化
+	// ★ アニメ開始
+	m_isPredictionAnim = true;
+	m_predictionAnimTimer = 0.0f;
 	m_predictionHoldTime = 1.5f;
-	m_predictionAlpha = 1.0f; // ゴロの時は最初から不透明表示
+	m_predictionScale = 0.3f;
+	m_predictionAlpha = 0.0f;
 	m_predictedDistance = floorf(predicted + 0.01f) / 100.0f;
 	m_isPredictionVisible = true;
 }
@@ -420,31 +400,25 @@ void InGameUI::Render(RenderContext& rc) {
 
 		if (m_hasPredictedBall) {
 
-			// 🛑 安全ガード：透明度が完全に 0.0f 以下の時は、計算も描画もスキップする
-			if (m_ballAlpha <= 0.0f) {
-				// まだ遠くにあって透明な状態なので描画自体をしない
+			Vector3 uiPos;
+
+			if (m_isBallUIFixed) {
+				uiPos = m_fixedBallUIPos;   // ← 変換しない
 			}
 			else {
-				Vector3 uiPos;
-
-				if (m_isBallUIFixed) {
-					uiPos = m_fixedBallUIPos;   // ← 変換しない
-				}
-				else {
-					uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
-				}
-
-				m_spriteRenderBall.SetPosition(uiPos);
-
-				// ★ 距離に応じた透明度を確実に適用（1.0を超えるのを防ぐclamp付き）
-				float finalAlpha = clamp(m_ballAlpha, 0.0f, 1.0f);
-				Vector4 color = Vector4(1.0f, 1.0f, 1.0f, finalAlpha);
-				m_spriteRenderBall.SetMulColor(color);
-
-				m_spriteRenderBall.Update();
-				m_spriteRenderBall.Draw(rc);
+				uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
 			}
+
+			m_spriteRenderBall.SetPosition(uiPos);
+
+			// ★ 距離に応じた透明度を適用！
+			Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
+			m_spriteRenderBall.SetMulColor(color);
+
+			m_spriteRenderBall.Update();
+			m_spriteRenderBall.Draw(rc);
 		}
+
 
 		// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
 		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed)
@@ -677,43 +651,36 @@ void InGameUI::Render(RenderContext& rc) {
 
 		if (m_isPredictionVisible) {
 
-			// 🌟 タイプが -1（ゴロ用）ではない時だけ、ナイスなどの評価文字を描画する
-			if ((int)m_predictionType != -1) {
-				SpriteRender* spr = nullptr;
+			SpriteRender* spr = nullptr;
 
-				if (m_predictionType == Prediction_Nice) {
-					spr = &m_niceSprite;
-				}
-				else if (m_predictionType == Prediction_Great) {
-					spr = &m_greatSprite;
-				}
-				else if (m_predictionType == Prediction_Excellent) {
-					spr = &m_excellentSprite;
-				}
-				else {
-					spr = &m_perfectSprite;
-				}
-
-				spr->SetPosition({ 0,0,0 });
-				spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
-				spr->SetMulColor({ 1,1,1, m_predictionAlpha });
-				spr->Update();
-				spr->Draw(rc);
+			if (m_predictionType == Prediction_Nice) {
+				spr = &m_niceSprite;
+			}
+			else if (m_predictionType == Prediction_Great) {
+				spr = &m_greatSprite;
+			}
+			else if (m_predictionType == Prediction_Excellent) {
+				spr = &m_excellentSprite;
+			}
+			else {
+				spr = &m_perfectSprite;   // ★ 追加
 			}
 
-			// 🌟 黄色の「〇〇 m」フォント表示は、大飛球でもゴロでも【常に】表示する！
+			spr->SetPosition({ 0,0,0 });
+			spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
+			spr->SetMulColor({ 1,1,1, m_predictionAlpha });
+			spr->Update();
+			spr->Draw(rc);
+
 			wchar_t predText[64];
 			swprintf_s(predText, L"%.2f m", m_predictedDistance);
 			m_fontPrediction.SetText(predText);
-
-			// 位置調整：大飛球の時は文字の下(-150)、ゴロの時はど真ん中(0)に自動切り替え
-			float textY = ((int)m_predictionType == -1) ? 0.0f : -150.0f;
-			m_fontPrediction.SetPosition(-150.0f, textY, 0.0f);
-
+			m_fontPrediction.SetPosition(-150.0f, -150.0f, 0.0f); // Excellent表示の下あたりに配置
 			m_fontPrediction.SetScale(1.5f);
-			m_fontPrediction.SetColor(1.0f, 1.0f, 0.0f, m_predictionAlpha); // 黄色
+			m_fontPrediction.SetColor(1.0f, 1.0f, 0.0f, m_predictionAlpha); // 黄色で見やすく
 			m_fontPrediction.Draw(rc);
 		}
+
 
 		if (m_isBaisokuVisible) {
 			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
@@ -725,7 +692,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_konto.SetPosition(Vector3{ -800.0f, 0.0f, 0.0f });
 			m_konto.Update();
 			m_konto.Draw(rc);
-			
+
 			// ★ 矢印の回転描画
 			m_yazirusi.SetPosition(Vector3{ -840.0f, -5.0f, 0.0f }); // 位置はお好みで
 			m_yazirusi.SetRotation(m_yazirusiRotation);               // ← Quaternion を渡す

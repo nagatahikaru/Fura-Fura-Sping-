@@ -14,11 +14,11 @@
 // ファイル冒頭付近に追加（std::clampが使えない場合のため）
 template <typename T>
 constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
-    return (v < lo) ? lo : (hi < v) ? hi : v;
+	return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
 namespace {
-	float PI= 3.1415f / 180.0f;
+	float PI = 3.1415f / 180.0f;
 	float ZERO_FLOAT = 0.0f;
 
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
@@ -27,10 +27,10 @@ namespace {
 		"idle",
 		"guruguru",
 		"swing"
-		
+
 	};
 
-	inline std ::string GetAnimationFilePath(int number)
+	inline std::string GetAnimationFilePath(int number)
 	{
 		return FILE_PATH_BATTER + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
 	}
@@ -38,7 +38,7 @@ namespace {
 	void InitAnimation(AnimationClip animation[], int number, bool loop)
 	{
 		animation[number].Load(GetAnimationFilePath(number).c_str());
-		animation[number].SetLoopFlag(loop);		
+		animation[number].SetLoopFlag(loop);
 	}
 
 	void InitCharacterController(CharacterController* characterController, const Vector3& scale, const Vector3& pos)
@@ -57,7 +57,7 @@ Batter::Batter()
 
 Batter::~Batter()
 {
-	
+
 	m_stateMachine->SetBatter(nullptr);
 	m_debuffStageStateMachine->SetBatter(nullptr);
 	if (g_effectManager) {
@@ -77,7 +77,7 @@ bool Batter::Start()
 	{
 		InitAnimation(m_animationClips, j, true);
 	}
-	for(int j = enAnimationClip_Swing; j < enAnimationClip_Num; j++)
+	for (int j = enAnimationClip_Swing; j < enAnimationClip_Num; j++)
 	{
 		InitAnimation(m_animationClips, j, false);
 	}
@@ -86,8 +86,8 @@ bool Batter::Start()
 
 	// ※ animationClip と numClips は環境に合わせて適切な値を渡してください
 	m_characterModel->LoadCharacterModel(
-		nsApp::CharacterModelType::BatterUniformNumber_0, 
-		m_animationClips, 
+		nsApp::CharacterModelType::BatterUniformNumber_0,
+		m_animationClips,
 		enAnimationClip_Num);
 
 	// 2. 武器（バット）の読み込み
@@ -98,14 +98,14 @@ bool Batter::Start()
 	m_characterModel->SetWeaponOffset(Vector3(100.0f, 150.0f, 0.0f));
 
 	m_transform.m_position = BatterBasicSettings::INITIAL_COORDINATE;
-	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);	
+	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
 
 	// 4. 初期位置やスケールの設定
 	m_characterModel->SetPosition(m_transform.m_position);
 	m_characterModel->SetCharacterScale(BatterBasicSettings::INITIAL_SCALE);
 	m_characterModel->SettRotation(m_transform.m_rotation);
 	m_characterModel->SetWeaponScale(BatterBasicSettings::INITIAL_SCALE);
-	
+
 
 	InitCharacterController(&m_characterController,
 		BatterBasicSettings::COLLISION_SCALE,
@@ -125,7 +125,7 @@ bool Batter::Start()
 		Quaternion::Identity,
 		BatBasicSettings::COLLISION_SCALE_BAT);
 
-	m_characterModel->Update();	
+	m_characterModel->Update();
 	m_inGameUI = FindGO<InGameUI>("inGameUI");
 	m_game = FindGO<Game>("game");
 	m_ball = FindGO<Ball>("ball");
@@ -135,8 +135,8 @@ bool Batter::Start()
 
 void Batter::Update()
 {
-	if(m_isPaused)
-	{		
+	if (m_isPaused)
+	{
 		return; // ゲームがポーズ中なら更新処理をスキップ
 	}
 	if (!m_inGameUI)
@@ -170,7 +170,7 @@ void Batter::Update()
 	// ★ 遅延ヒット処理
 	m_stateMachine->Update();
 	// ★ フラグが切り替わったら、ぐるぐるバットの処理を行う
-	if(!m_isRotation)
+	if (!m_isRotation)
 	{
 		m_debuffStageStateMachine->Update();
 	}
@@ -189,7 +189,7 @@ void Batter::Rotation()
 {
 	//キーボード操作
 	//コントローラー操作
-	if(ERROR_DEVICE_NOT_CONNECTED != ERROR_SUCCESS)
+	if (ERROR_DEVICE_NOT_CONNECTED != ERROR_SUCCESS)
 	{
 		//xzの移動速度を0.0fにする
 		m_transform.m_moveSpeed.x = BatterBasicSettings::NONE_SPEED;
@@ -311,17 +311,17 @@ void Batter::RotationUpdate()
 	// オフセットを考慮した位置の補正計算
 	Vector3 pivot = m_transform.m_position - pivotOffset;
 	newPosition = pivot + pivotOffset;
-	
+
 	//　フラグが立っているときは回転を適用、そうでないときは初期回転に戻す
 	if (m_isRotation)
-	{	
+	{
 		m_characterModel->SettRotation(m_transform.m_rotation);
 		Quaternion rot;
 		rot.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 230.0f);
 		m_characterModel->SetWeaponRotation(true);
 		m_characterModel->SetWeaponRotation(rot);
 		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y + 250.0f, m_transform.m_position.z));
-	
+
 	}
 	else
 	{
@@ -378,7 +378,7 @@ Vector3 Batter::CalcCursorWorldPos()
 {
 	float screenW = 1920.0f;
 	float screenH = 1080.0f;
-	Vector3 finalPos =m_meetPosition + m_cursorOffset;
+	Vector3 finalPos = m_meetPosition + m_cursorOffset;
 	// UI座標（中心基準なら変換必要）
 	float mouseX =
 		finalPos.x + screenW * 0.5f;
@@ -422,7 +422,7 @@ void Batter::HitBat()
 	Vector3 ballPos = m_ball->GetPosition();
 
 	// ① Z制限（打撃ゾーン）
-	if (ballPos.z < 6050.0f || ballPos.z > 6080.0f) return;
+	if (ballPos.z < 6060.0f || ballPos.z > 6080.0f) return;
 	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
 	// ② カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
@@ -479,15 +479,15 @@ void Batter::HitBat()
 		// 最終パワー
 		float finalPower = 935.0f * powerScale;
 
-			// ★ 通常ヒット（即飛ぶ）
-			m_ball->HitBall(hitDir,+finalPower);
-			// ★ カメラ切り替え
-			if (m_game) {
-				m_game->SetCameraMode(Camera_BackBall);
+		// ★ 通常ヒット（即飛ぶ）
+		m_ball->HitBall(hitDir, +finalPower);
+		// ★ カメラ切り替え
+		if (m_game) {
+			m_game->SetCameraMode(Camera_BackBall);
 
-				GameCamera* cam = m_game->GetGameCamera();
-				if (cam) cam->StartHitMomentCamera();
-			}
+			GameCamera* cam = m_game->GetGameCamera();
+			if (cam) cam->StartHitMomentCamera();
+		}
 
 		// UI・SE・カメラなどは共通でOK
 		if (m_inGameUI) {
@@ -568,7 +568,7 @@ void Batter::SetCursorMode(bool flag)
 void Batter::PlaySwingAnimation()
 {
 	// ★ スイングアニメーションを再生
-	m_characterModel->PlayAnimation(enAnimationClip_Swing,1.0);
+	m_characterModel->PlayAnimation(enAnimationClip_Swing, 1.0);
 
 	// ★ スイング開始時にカーソル位置を固定したいならここで処理
 }
@@ -580,13 +580,13 @@ void Batter::ResetCursorPosition()
 
 /** 演出関連コード */
 void Batter::EffectUpdate()
-{	
+{
 	if (m_guruGuruBatCount < 5) return;
 
-	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)){		
+	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)) {
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
-	
+
 	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
 
 	m_inro.m_effectDawnID = g_effectManager->PlayEffect(
@@ -601,7 +601,7 @@ void Batter::HitEffect()
 	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectHitID)) {
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
-	
+
 	m_inro.m_effectHitID = g_effectManager->PlayEffect(
 		enEffect_HitBat,
 		pos,

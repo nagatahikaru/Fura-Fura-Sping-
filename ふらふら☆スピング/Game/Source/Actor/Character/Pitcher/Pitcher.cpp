@@ -124,28 +124,12 @@ void Pitcher::Update()
 		return; // 完全停止
 	}
 
-	Game* game = FindGO<Game>("game");
-	if (game) {
-		InGameUI* ui = game->GetInGameUI();
-		if (ui && (ui->IsFadingOut() || ui->IsFadingIn())) {
-			// 画面が暗い間は、見た目のアニメーションだけ更新してロジックはここでせき止めます
-			m_modelRender[m_UniformNumber].Update();
-			return;
-		}
-	}
-
 	float dt = 1.0f / 60.0f;
 
 	// ★ ポーズ中はアニメーションを止める
-	Game* game2 = FindGO<Game>("game");
-	if (game2 && game2->m_isPaused) {
+	Game* game = FindGO<Game>("game");
+	if (game && game->m_isPaused) {
 		return;   // ← これで投球アニメが途中で停止する
-	}
-
-	// リプレイ再生中の処理（通常時はスルーされます）
-	if (game2 && game2->m_isReplayPlaying) {
-		m_modelRender[m_UniformNumber].Update();
-		return;
 	}
 
 	Batter* batter = FindGO<Batter>("batter");
@@ -162,13 +146,14 @@ void Pitcher::Update()
 		SetPlayAnimation(enAnimationClip_Throw);
 		m_isThrowing = true;
 		m_timer = 0.0f;
-		// ★ Rhine 録画開始 ★
-		if (game2) {
-			game2->StartReplayRecording();
-			game2->SetGameStarted(true);
+		// ★★★ ここで録画開始 ★★★
+		Game* game = FindGO<Game>("game");
+		if (game) {
+			game->StartReplayRecording();
+			game->SetGameStarted(true);   // ★ これを足す
 			// ★ 投球開始フレームを記録
-			int shotIndex = game2->GetShots();
-			game2->m_pitchFrame[shotIndex] = game2->GetReplayFrameCount();
+			int shotIndex = game->GetShots();
+			game->m_pitchFrame[shotIndex] = game->GetReplayFrameCount();
 		}
 	}
 

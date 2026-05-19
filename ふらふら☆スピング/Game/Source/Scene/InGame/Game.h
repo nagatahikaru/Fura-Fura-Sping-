@@ -169,7 +169,5 @@ private:
 	bool m_hasAppliedHitMoment = false;
 	bool m_startFadeSE2 = false;
 	int m_prevGuruGuru = 0;
-	bool m_hasTriggeredReplayPitch = false;
-	bool m_ballLandedDuringFade = false;
 };
 

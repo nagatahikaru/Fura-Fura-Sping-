@@ -55,7 +55,7 @@ public:
 	float GetPredictedDistance() const { return m_predictedDistance; }
 	void OnStrike(int ballIndex);
 	void ResetBatAndMeetOnly();
-	void ShowPrediction(float predicted, bool isGoro = false);
+	void ShowPrediction(float predicted);
 	bool IsFadingIn() const { return m_isFadeIn; }
 	std::function<void()> m_onFadeOutFinished;
 	std::function<void()> m_onFadeInFinished;
