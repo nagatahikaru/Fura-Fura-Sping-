@@ -5,18 +5,20 @@ EffectManager* g_effectManager = nullptr;
 
 EffectManager::EffectManager()
 {
+	EffectEngine::GetInstance()->BeginFrame();
+
 	//エフェクトの登録。
 	for (int i = 0; i < enEffect_Num; i++)
 	{
 		std::u16string path =
 			std::u16string(m_filePath) + m_files[i] + m_ext;
 
-		MessageBoxW(
-			nullptr,
-			(LPCWSTR)path.c_str(),
-			L"EffectPath",
-			MB_OK
-		);
+		//MessageBoxW(
+		//	nullptr,
+		//	(LPCWSTR)path.c_str(),
+		//	L"EffectPath",
+		//	MB_OK
+		//);
 
 		EffectEngine::GetInstance()->ResistEffect(i, path.c_str());
 	}

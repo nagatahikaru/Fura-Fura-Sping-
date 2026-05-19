@@ -28,7 +28,6 @@ bool Start1::Start()
 void Start1::Update()
 {
     m_timer += g_gameTime->GetFrameDeltaTime();
-
     if (m_timer >= 4.0f) {
 
         // ★ カウントダウン終了 → ゲーム再開
@@ -42,23 +41,35 @@ void Start1::Update()
 
     // 0〜1秒 → 3
     if (m_timer < 1.0f) {
-        m_3.SetMulColor({ 1,1,1,1 });
+        float t = m_timer / 1.0f;   // 0 → 1
+        m_alpha = 1.0 - t;
+        m_scale3 = 1.5f + (0.5f - 1.5f) * t;   // 1.5 → 0.5
+        m_3.SetScale({ m_scale3, m_scale3, 1.0f });
+        m_3.SetMulColor({ 1,1,1,m_alpha });
         m_2.SetMulColor({ 1,1,1,0 });
         m_1.SetMulColor({ 1,1,1,0 });
         m_Start.SetMulColor({ 1,1,1,0 });
     }
     // 1〜2秒 → 2
     else if (m_timer < 2.0f) {
+        float t = (m_timer - 1.0f) / 1.0f;
+        m_alpha = 1.0 - t;
+        m_scale2 = 1.5f + (0.5f - 1.5f) * t;
         m_3.SetMulColor({ 1,1,1,0 });
-        m_2.SetMulColor({ 1,1,1,1 });
+        m_2.SetMulColor({ 1,1,1,m_alpha });
+        m_2.SetScale({ m_scale2, m_scale2, 1.0f });
         m_1.SetMulColor({ 1,1,1,0 });
         m_Start.SetMulColor({ 1,1,1,0 });
     }
     // 2〜3秒 → 1
     else if (m_timer < 3.0f) {
+        float t = (m_timer - 2.0f) / 1.0f;
+        m_alpha = 1.0 - t;
+        m_scale1 = 1.5f + (0.5f - 1.5f) * t;
         m_3.SetMulColor({ 1,1,1,0 });
         m_2.SetMulColor({ 1,1,1,0 });
-        m_1.SetMulColor({ 1,1,1,1 });
+        m_1.SetMulColor({ 1,1,1,m_alpha });
+        m_1.SetScale({ m_scale1, m_scale1, 1.0f });
         m_Start.SetMulColor({ 1,1,1,0 });
     }
     // 3〜4秒 → START!!
@@ -70,10 +81,14 @@ void Start1::Update()
             }
             m_playedStartSE = true;
         }
+        float t = (m_timer - 3.0f) / 1.0f;
+        m_alpha = 1.0 - t;
+        m_scaleStart = 0.5f + (1.5f - 0.5f) * t;  // 0.5 → 1.5
         m_3.SetMulColor({ 1,1,1,0 });
         m_2.SetMulColor({ 1,1,1,0 });
         m_1.SetMulColor({ 1,1,1,0 });
-        m_Start.SetMulColor({ 1,1,1,1 });
+        m_Start.SetMulColor({ 1,1,1,m_alpha });
+        m_Start.SetScale({ m_scaleStart, m_scaleStart, 1.0f });
     }
     // 4秒後 → 自動削除
     else {

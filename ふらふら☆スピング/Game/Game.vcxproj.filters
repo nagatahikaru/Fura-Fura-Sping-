@@ -88,6 +88,15 @@
     <Filter Include="Source\Scene\Load">
       <UniqueIdentifier>{634ffc6e-648f-41ad-af12-19768848e951}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Actor\Character\Batter\Debuff">
+      <UniqueIdentifier>{9fcc5b27-2719-4760-a6d8-48889c5ce918}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor\Character\Batter\Debuff\Pattern">
+      <UniqueIdentifier>{fd4acf7e-892c-4cb7-8a34-e5f0e098ab5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor\Character\Batter\Debuff\DebuffStage">
+      <UniqueIdentifier>{56b4eccf-0e68-46ef-8b85-67ccaf08af27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -193,6 +202,42 @@
     </ClCompile>
     <ClCompile Include="Source\UI\RankingUI\RankingUI.cpp">
       <Filter>Source\UI\RankingUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStageStateMachine.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffIStateBess.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\IDebuffPattern.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffShakePattern.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DebuffStage.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffDriftPattern.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffLagPattern.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffReversePattern.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffAimPattern.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffNoisePattern.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffPatternBase.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffMagnetPattern.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -301,6 +346,42 @@
     </ClInclude>
     <ClInclude Include="Source\UI\RankingUI\RankingUI.h">
       <Filter>Source\UI\RankingUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStageStateMachine.h">
+      <Filter>Source\Actor\Character\Batter\Debuff</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffIStateBess.h">
+      <Filter>Source\Actor\Character\Batter\Debuff</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\IDebuffPattern.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffShakePattern.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DebuffStage.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffDriftPattern.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffLagPattern.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffReversePattern.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffAimPattern.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffNoisePattern.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffPatternBase.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffMagnetPattern.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -23,7 +23,7 @@ namespace nsK2Engine {
 		/// <param name="text">表示する文字。</param>
 		void SetText(const wchar_t* text)
 		{
-			swprintf_s(m_text, text);
+			swprintf_s(m_text, L"%s", text);
 		}
 		/// <summary>
 		/// 表示する文字を取得。

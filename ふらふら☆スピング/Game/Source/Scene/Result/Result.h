@@ -4,12 +4,20 @@
 class Result : public Source
 {
 public:
+	enum EnPhase {
+		enPhase_ScoreStep1, // 1.5秒：0 ～ 元のスコア(m_originalKm)
+		enPhase_Guruguru,   // 2.0秒：ぐるぐる回数と倍率
+		enPhase_ScoreStep2, // 1.5秒：元のスコア ～ 最終スコア(m_km)
+		enPhase_WaitKey     // 演出完了：ボタン入力待ち
+	};
 	Result() {}
 	~Result() {}
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);
 	void SetResultValues(int guruguru, int km, int scores[3]);
+	void StartFadeOut(float speed, std::function<void()> onFinished);
+	std::function<void()> m_onFadeOutFinished;
 private:
 	SpriteRender m_spriteRender;
 	int m_guruguru = 0;
@@ -44,5 +52,17 @@ private:
 	float m_blinkTimer = 0.0f;
 	float m_se2Timer = 0.0f; // SE2 再生時間カウント用
 	bool m_hasScore = false;
+	double m_multiplier = 1.0f;
+	FontRender m_fontMultiplier;
+	EnPhase m_phase = enPhase_ScoreStep1;
+	float m_phaseTimer = 0.0f; // フェーズ内の経過時間
+	float m_guruguruAccumulator = 0.0f;
+	float m_displayFinalScore = 0.0f; // 0から一気に上がるスコア用
+	FontRender m_fontFormula;
+	FontRender m_fontTopKm;
+	SpriteRender m_fadeSprite;
+	bool m_isFadeOut = false;
+	float m_fadeAlpha = 0.0f;
+	float m_fadeSpeed = 1.0f;
 };
 

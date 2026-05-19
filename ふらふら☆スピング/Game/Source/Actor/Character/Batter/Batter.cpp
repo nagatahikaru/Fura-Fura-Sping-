@@ -1,11 +1,13 @@
 ﻿#include "stdafx.h"
 #include "Batter.h"
 #include "BatterStateMachine.h"
+#include "Debuff/DebuffStageStateMachine.h"
 #include"Source/Scene/InGame/Game.h"
 #include "Source/Actor/Character/Ball/Ball.h"
 #include"Source/Sound/SoundManager.h"
 #include "Source/Effect/EffectManager.h"
 #include "Source/Actor/GameCamera/GameCamera.h"
+#include "Debuff/DebuffStage/DebuffStage.h"
 #include <algorithm> // 追加
 
 
@@ -50,12 +52,14 @@ namespace {
 Batter::Batter()
 {
 	m_stateMachine = std::make_unique<BatterStateMachine>();
+	m_debuffStageStateMachine = std::make_unique<DebuffStageStateMachine>();
 }
 
 Batter::~Batter()
 {
 	
 	m_stateMachine->SetBatter(nullptr);
+	m_debuffStageStateMachine->SetBatter(nullptr);
 	if (g_effectManager) {
 		g_effectManager->AllStopEffect();
 	}
@@ -108,6 +112,8 @@ bool Batter::Start()
 		BatterBasicSettings::INITIAL_COORDINATE);
 
 	m_stateMachine->SetBatter(this);
+	m_debuffStageStateMachine->SetBatter(this);
+	m_debuffStageStateMachine->SetDebuffStage(m_debuffStage.GetDebuffStage());
 	m_characterController.SetPosition(m_transform.m_position);
 	m_initialRotation = m_transform.m_rotation;
 
@@ -119,7 +125,7 @@ bool Batter::Start()
 		Quaternion::Identity,
 		BatBasicSettings::COLLISION_SCALE_BAT);
 
-	m_characterModel->Update();
+	m_characterModel->Update();	
 	m_inGameUI = FindGO<InGameUI>("inGameUI");
 	m_game = FindGO<Game>("game");
 	m_ball = FindGO<Ball>("ball");
@@ -163,7 +169,11 @@ void Batter::Update()
 	// ★ 遅延ヒット処理
 	// ★ 遅延ヒット処理
 	m_stateMachine->Update();
-
+	// ★ フラグが切り替わったら、ぐるぐるバットの処理を行う
+	if(!m_isRotation)
+	{
+		m_debuffStageStateMachine->Update();
+	}
 
 	// ★★★ これを追加！ 毎フレーム UI に送る ★★★
 	if (m_inGameUI) {
@@ -302,6 +312,7 @@ void Batter::RotationUpdate()
 	Vector3 pivot = m_transform.m_position - pivotOffset;
 	newPosition = pivot + pivotOffset;
 	
+	//　フラグが立っているときは回転を適用、そうでないときは初期回転に戻す
 	if (m_isRotation)
 	{	
 		m_characterModel->SettRotation(m_transform.m_rotation);
@@ -333,9 +344,11 @@ void Batter::SetCursorPosition()
 	float lx = g_pad[0]->GetLStickXF();
 	float ly = g_pad[0]->GetLStickYF();
 
+	// 毎フレームリセット
+	m_cursorOffset = Vector3::Zero;
+
 	if (m_isCursorMode)
 	{
-		// カーソル操作
 		Vector3 move;
 		move.x = lx;
 		move.y = ly;
@@ -343,30 +356,21 @@ void Batter::SetCursorPosition()
 
 		float speed = 500.0f;
 
-		m_meetPosition += move * speed * dt+ m_randomCursorMovePwer;
+		// プレイヤー入力だけ
+		m_meetPosition += move * speed * dt;
 
-		m_meetPosition.x = clamp(m_meetPosition.x, -300.0f, 300.0f);
-		m_meetPosition.y = clamp(m_meetPosition.y, -300.0f, 300.0f);
-	}
-	else
-	{
-		// 従来の移動ロジック
-		m_transform.m_moveSpeed.x = 0.0f;
-		m_transform.m_moveSpeed.z = 0.0f;
+		m_meetPosition.x =
+			clamp(m_meetPosition.x, -300.0f, 300.0f);
 
-		Vector3 forward = g_camera3D->GetForward();
-		Vector3 right = g_camera3D->GetRight();
-
-		forward.y = 0.0f;
-		right.y = 0.0f;
-
-		right *= lx * 400.0f;
-		forward *= ly * 400.0f;
-
-		m_meetPosition += right + forward+ m_randomCursorMovePwer;
+		m_meetPosition.y =
+			clamp(m_meetPosition.y, -300.0f, 300.0f);
 	}
 
-	m_inGameUI->SetMeetCursorPosition(m_meetPosition);
+	// デバフ適用後の最終座標
+	Vector3 finalPos =
+		m_meetPosition + m_cursorOffset;
+
+	m_inGameUI->SetMeetCursorPosition(finalPos);
 }
 
 /** 3D空間に2Dカーソルを合わせる処理 */
@@ -374,10 +378,13 @@ Vector3 Batter::CalcCursorWorldPos()
 {
 	float screenW = 1920.0f;
 	float screenH = 1080.0f;
-
+	Vector3 finalPos =m_meetPosition + m_cursorOffset;
 	// UI座標（中心基準なら変換必要）
-	float mouseX = m_meetPosition.x + screenW * 0.5f;
-	float mouseY = m_meetPosition.y + screenH * 0.5f;
+	float mouseX =
+		finalPos.x + screenW * 0.5f;
+
+	float mouseY =
+		finalPos.y + screenH * 0.5f;
 
 	Vector3 camPos = g_camera3D->GetPosition();
 
@@ -394,57 +401,6 @@ Vector3 Batter::CalcCursorWorldPos()
 	Vector3 planeNormal = Vector3(0, 0, 1);
 
 	return RayToPlane(camPos, rayDir, planePoint, planeNormal);
-}
-
-/** カーソルデバフの段階を分けるための計算処理 */
-void Batter::SetRandomCursorTimeRadius()
-{
-	// ★ 回転回数に応じて時間と半径を増加させる
-	int count = m_guruGuruBatCount / 5;
-	if (count >= 10) count = 10; // 上限を設ける（必要に応じて調整）
-	// ★ ランダムな時間と半径を設定
-	m_randomMoveDuration = count * -0.5f + 5.0f;// 例: 回転5回ごとに時間0.5秒減少
-	m_randomSpotRadius = count * 50.0f + 50.0f; // 例: 回転5回ごとに半径50増加
-	m_randomCursorUpdate = true;
-}
-
-
-/** デバフ関連コード */
-void Batter::DebuffDepth() {
-	// ★ 回転回数が0以下ならデバフ無し
-	if (m_guruGuruBatCount <= 4)
-	{
-		m_randomCursorMovePwer = Vector3::Zero;
-		return;
-	}
-
-	// ★ デバフの強さを回転回数で決める
-	//ランダムなベクトルを取得
-	if (m_randomCursorUpdate)
-	{
-		//そのベクトルに向かって移動
-		// 基準点から半径250の円範囲内でランダムに出現位置を決定
-		//ランダムな角度と距離を生成
-		float angle = (rand() % 360) * PI;
-		float radius = SetRandom(0, m_randomSpotRadius);
-
-		// 円の中のランダム位置を生成
-		m_randomCursorTargetPos.x = cosf(angle) * radius;
-		m_randomCursorTargetPos.y = sinf(angle) * radius;
-		m_randomCursorMoveTimer = SetRandom(0, m_randomMoveDuration);
-		m_randomCursorUpdate = false;
-	}
-	Vector3 toTarget = m_randomCursorTargetPos - m_meetPosition;
-
-	// 少しずつ寄せる（ここがデバフの強さ）
-	m_randomCursorMovePwer = toTarget * 0.05f;
-	//一定時間経過後、再度ランダムなベクトルを取得
-	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
-	EffectUpdate();
-	if (m_randomCursorMoveTimer <= ZERO_FLOAT)
-	{
-		m_randomCursorUpdate = true;
-	}
 }
 
 
@@ -466,7 +422,7 @@ void Batter::HitBat()
 	Vector3 ballPos = m_ball->GetPosition();
 
 	// ① Z制限（打撃ゾーン）
-	if (ballPos.z < 6050.0f || ballPos.z > 6070.0f) return;
+	if (ballPos.z < 6060.0f || ballPos.z > 6080.0f) return;
 	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
 	// ② カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
@@ -475,7 +431,7 @@ void Batter::HitBat()
 	// ③ 距離判定
 	float dist = (ballPos - cursor).Length();
 
-	if (dist < 100.0f)
+	if (dist < m_hitRange)
 	{
 		Vector3 hitDir = ballPos - cursor;
 
@@ -583,18 +539,25 @@ void Batter::BatHitBoxPosition()
 
 void Batter::ResetSwing()
 {
-	// ★ スイングアニメーションをリセット
+	// 1. スイングアニメーション・姿勢を初期状態にリセット
 	m_transform.m_rotation = m_initialRotation;
-	m_characterModel->SettRotation(m_initialRotation);
+	if (m_characterModel) {
+		m_characterModel->SettRotation(m_initialRotation);
+	}
 
-	// ★ カーソル位置もリセット
-	m_meetPosition = Vector3::Zero;
+	// 2. 【最重要】プレイヤーがスティックで動かしたカーソル位置の累積を完全にゼロに戻す
+	m_meetPosition = Vector3::Zero;       // ← これが残っていたのが原因！
+	m_cursorOffset = Vector3::Zero;       // デバフ用のオフセットもリセット
+	m_meetCursorWorldPos = Vector3::Zero; // 3D空間の衝突判定用座標もクリア
 
-	// ★ ぐるぐるバット関連もリセット
-	m_isRotation = false;
+	// 3. 各種状態フラグをリセット
+	m_isRotation = false;   // ぐるぐる状態解除
+	m_isCursorMode = false; // カーソル操作モードを一旦オフに
 
-	// ★ カーソルモードもリセット
-	m_isCursorMode = false;
+	// 4. 【追加】即座に UI 側にもリセットされたクリーンな座標（ゼロ）を通知する
+	if (m_inGameUI) {
+		m_inGameUI->SetMeetCursorPosition(Vector3::Zero);
+	}
 }
 
 void Batter::SetCursorMode(bool flag)
@@ -643,6 +606,155 @@ void Batter::HitEffect()
 		enEffect_HitBat,
 		pos,
 		Vector3(20.0f, 20.0f, 20.0f));
+}
+
+/** 計算関連コード */
+
+// スクリーン座標 → レイ方向変換
+Vector3 Batter::ScreenToRay(
+	float mouseX,
+	float mouseY,
+	float screenWidth,
+	float screenHeight,
+	const Matrix& view,
+	const Matrix& proj,
+	const Vector3& cameraPos)
+{
+	//=====================================================
+	// ① スクリーン座標 → NDC座標変換
+	//=====================================================
+
+	float x =
+		(2.0f * mouseX / screenWidth) - 1.0f;
+
+	float y =
+		1.0f - (2.0f * mouseY / screenHeight);
+
+	// Clip空間座標
+	Vector4 rayClip =
+	{
+		x,
+		y,
+		-1.0f,
+		1.0f
+	};
+
+	//=====================================================
+	// ② Clip空間 → View空間
+	//=====================================================
+
+	Matrix invProj = proj;
+	invProj.Inverse();
+
+	Vector4 rayView =
+		InverseProjectionMatrix(
+			rayClip,
+			invProj);
+
+	// 方向ベクトルとして扱う
+	rayView =
+	{
+		rayView.x,
+		rayView.y,
+		-1.0f,
+		0.0f
+	};
+
+	//=====================================================
+	// ③ View空間 → World空間
+	//=====================================================
+
+	Matrix invView = view;
+	invView.Inverse();
+
+	Vector4 rayWorld4 =
+		InverseProjectionMatrix(
+			rayView,
+			invView);
+
+	//=====================================================
+	// ④ 正規化して返す
+	//=====================================================
+
+	Vector3 rayDir =
+	{
+		rayWorld4.x,
+		rayWorld4.y,
+		rayWorld4.z
+	};
+
+	rayDir.Normalize();
+
+	return rayDir;
+}
+
+// 行列逆変換
+Vector4 Batter::InverseProjectionMatrix(
+	const Vector4& v,
+	const Matrix& m)
+{
+	Vector4 result;
+
+	result.x =
+		v.x * m._11 +
+		v.y * m._21 +
+		v.z * m._31 +
+		v.w * m._41;
+
+	result.y =
+		v.x * m._12 +
+		v.y * m._22 +
+		v.z * m._32 +
+		v.w * m._42;
+
+	result.z =
+		v.x * m._13 +
+		v.y * m._23 +
+		v.z * m._33 +
+		v.w * m._43;
+
+	result.w =
+		v.x * m._14 +
+		v.y * m._24 +
+		v.z * m._34 +
+		v.w * m._44;
+
+	return result;
+}
+
+// レイと平面の交点取得
+Vector3 Batter::RayToPlane(
+	const Vector3& rayOrigin,
+	const Vector3& rayDir,
+	const Vector3& planePoint,
+	const Vector3& planeNormal)
+{
+	//=====================================================
+	// レイと平面が平行か判定
+	//=====================================================
+
+	float denom =
+		planeNormal.Dot(rayDir);
+
+	// 平行なら始点返す
+	if (fabs(denom) < 0.0001f)
+	{
+		return rayOrigin;
+	}
+
+	//=====================================================
+	// 交点距離計算
+	//=====================================================
+
+	float t =
+		(planePoint - rayOrigin)
+		.Dot(planeNormal) / denom;
+
+	//=====================================================
+	// 交点座標返却
+	//=====================================================
+
+	return rayOrigin + rayDir * t;
 }
 
 void Batter::Render(RenderContext& rc)

@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "Ball.h"
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
@@ -149,13 +149,14 @@ void Ball::Update()
         }
 
         // ★ ストライク判定（Z が 7000 を超えた瞬間）
-        if (!m_hasStrike && m_position.z >= 7270.0f) {
+        if (!m_hasPlayedSE6 && m_position.z >= 7270.0f) {
             g_soundManager->PlaySE(Sound::enSound_SE6);
+            m_hasPlayedSE6 = true;
         }
 
         // ★ ストライク判定（Z が 7000 を超えた瞬間）
-        if (!m_hasStrike && m_position.z >= 7300.0f) {
-            g_soundManager->PlaySE(Sound::enSound_SE5);
+        if (!m_hasStrike && m_position.z >= 7700.0f) {
+            g_soundManager->PlaySE(Sound::enSound_SE11);
             Game* game = FindGO<Game>("game");
             if (game) {
                 InGameUI* ui = game->GetInGameUI();
@@ -170,6 +171,11 @@ void Ball::Update()
         if (!m_hasHit && m_position.z > 9000.0f) {
             Game* game = FindGO<Game>("game");
             if (game) {
+                InGameUI* ui = game->GetInGameUI();
+                if (ui) {
+                    ui->OnStrike(game->m_shots);   // 今の球にバツを付ける
+                    ui->ResetBatAndMeetOnly();     // ★ 追加：空振りした瞬間にバットとミートをリセット
+                }
                 game->SetKmValue(0);   // 空振りは距離0
                 game->OnBallLanded();  // 次の球へ
             }
@@ -354,24 +360,31 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
             ui->SetStartZ(m_position.z);
+            ui->ResetBatAndMeetOnly(); 
         }
     }
 }
 
 float Ball::PredictLandingDistance()
 {
-    Vector3 pos = m_position;
-    Vector3 vel = m_velocity;
+    Game* game = FindGO<Game>("game");
+    if (!game) return 0.0f;
+
+    int shot = game->m_shots;
+
+    // ★ 打った瞬間の位置と速度を使う
+    Vector3 pos = m_hitStartPos;
+    Vector3 vel = game->m_hitVelocities[shot];
 
     float dt = 1.0f / 60.0f;
 
-    // 地面に落ちるまでシミュレーション
     while (pos.y > 0.0f) {
+
         vel.y -= 13.5f * dt;   // 重力
+
         pos += vel * dt;
     }
 
-    // 着地地点の Z から飛距離を算出
     return m_hitStartPos.z - pos.z;
 }
 
@@ -384,7 +397,15 @@ void Ball::ResetBall()
     m_hasFixed = false;
     m_hasStrike = false;
     m_hasShownPrediction = false;
+    m_hasPlayedSE6 = false;
     SetPosition(m_position);
+    Game* game = FindGO<Game>("game");
+    if (game) {
+        InGameUI* ui = game->GetInGameUI();
+        if (ui) {
+            ui->ResetBatAndMeetOnly();
+        }
+    }
 }
 
 void Ball::Render(RenderContext& rc)
