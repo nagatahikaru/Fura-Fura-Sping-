@@ -61,11 +61,21 @@ void Ball::Update()
 
     float dt = (1.0f / 60.0f) * game->GetTimeScale();
 
-    m_throwTimer += dt;
+    // 🌟【修正】次の球への移行待ち（2秒間）や、録画再生中などはタイマーを進めないように厳格に管理する
+    if (!game->IsBallLanded() && game->IsGameStarted() && !game->m_isPaused && !game->m_isHitStop) {
+        if (!m_isMove) {
+            m_throwTimer += dt;
+        }
+    }
+    else {
+        // 画面切り替え待ちなどの間はタイマーを常に安全にクリアしておく
+        m_throwTimer = 0.0f;
+    }
 
+    // 自動投球処理
     if (m_throwTimer >= 2.2f && !m_isMove)
     {
-        ResetBall(); 
+        ResetBall();
 
         Throw({ 0.0f, -20.0f, 0.0f });
         m_throwTimer = 0.0f;
@@ -174,7 +184,6 @@ void Ball::Update()
                 InGameUI* ui = game->GetInGameUI();
                 if (ui) {
                     ui->OnStrike(game->m_shots);   // 今の球にバツを付ける
-                    ui->ResetBatAndMeetOnly();     // ★ 追加：空振りした瞬間にバットとミートをリセット
                 }
                 game->SetKmValue(0);   // 空振りは距離0
                 game->OnBallLanded();  // 次の球へ
@@ -186,30 +195,44 @@ void Ball::Update()
         if (m_position.y <= 0.0f)
         {
             m_position.y = 0.0f;
-            m_isMove = false;
 
             Game* game = FindGO<Game>("game");
             if (game) {
-                float finalDistance = 0.0f;
-                InGameUI* ui = game->GetInGameUI();
 
+                // 🌟 ゴロ（打撃後）の場合
                 if (m_hasHit) {
-                    // ★ ポイント1：UIが表示されているなら、UIが持っている数値をそのまま採用する
-                    if (m_hasShownPrediction) {
-                        // Ballが計算した「生の数値」をそのまま使う（単位をcmに合わせる）
-                        finalDistance = m_storedPredictedDistance;
-                    }
-                    else {
-                        // 予測が出る前に着地した場合（ボテボテのゴロなど）
-                        float dz = m_position.z - m_hitStartPos.z;
-                        finalDistance = -dz;
-                    }
-                    m_hasHit = false;
-                }
+                    // 地面に当たったら、Y軸（上下）の移動を止め、XとZだけで転がす
+                    m_velocity.y = 0.0f;
 
-                // ★ ポイント2：ここで確実に finalDistance をセットする
-                game->SetKmValue(finalDistance);
-                game->OnBallLanded();
+                    // 摩擦でさらに強く減速させる（0.98f から 0.94f に変更して減速を強化）
+                    m_velocity.x *= 0.94f;
+                    m_velocity.z *= 0.94f;
+
+                    // 🌟【追加】速度が一定以下になったら完全にピタッと止める（ずるずる滑るのを防ぐ）
+                    if (m_velocity.LengthSq() < 10.0f) {
+                        m_velocity = Vector3::Zero;
+                    }
+
+                    // まだGame側が着地処理を開始していなければ、1秒タイマーをスタート
+                    if (!game->IsBallLanded()) {
+                        float finalDistance = 0.0f;
+                        if (m_hasShownPrediction) {
+                            finalDistance = m_storedPredictedDistance;
+                        }
+                        else {
+                            float dz = m_position.z - m_hitStartPos.z;
+                            finalDistance = -dz;
+                        }
+                        game->SetKmValue(finalDistance);
+                        game->OnBallLanded(); // ★ Game側の1秒タイマーを起動（カメラはそのまま）
+                    }
+                }
+                // 🌟 打撃していない場合
+                else {
+                    m_isMove = false;
+                    game->SetKmValue(0.0f);
+                    game->OnBallLanded();
+                }
             }
         }
 
@@ -249,11 +272,19 @@ void Ball::Update()
     m_modelRender.Update();
 }
 
-
 void Ball::Throw(const Vector3& targetPos)
 {
-    
-    Vector3 dir = { 0.0f,-0.1f,3.0f };
+    // 🌟【修正】フライング防止パッチを関数の「先頭」に移動
+    Game* game = FindGO<Game>("game");
+    if (game) {
+        InGameUI* ui = game->GetInGameUI();
+        if (ui && (ui->IsFadingOut() || ui->IsFadingIn())) {
+            OutputDebugStringA("Ball::Throw ignored because UI is fading\n");
+            return; // 完全にここで処理を弾く（フラグ類を汚さない）
+        }
+    }
+
+    Vector3 dir = { 0.0f, -0.1f, 3.0f };
     dir.Normalize();
 
     float speed = 2000.0f + (rand() % 250);
@@ -291,23 +322,13 @@ void Ball::Throw(const Vector3& targetPos)
     {
         m_curveDir = 0;
     }
-    
+
     m_velocity = dir * speed;
+    m_isMove = true;
 
-	m_isMove = true;
-
-    // ★ リプレイ記録開始（投球開始時）
+    // ★ リプレイ記録開始
     m_replayPath.clear();
     m_isRecording = true;
-
-    // ★ 投げた瞬間の Z を UI に送る（必須）
-    Game* game = FindGO<Game>("game");
-    if (game) {
-        InGameUI* ui = game->GetInGameUI();
-        if (ui) {
-            ui->SetStartZ(m_position.z);
-        }
-    }
 }
 
 void Ball::SetPosition(const Vector3& pos)
@@ -398,12 +419,20 @@ void Ball::ResetBall()
     m_hasStrike = false;
     m_hasShownPrediction = false;
     m_hasPlayedSE6 = false;
+
+    // 🌟 【追加】投球タイマーを確実にゼロに戻す
+    m_throwTimer = 0.0f;
+
     SetPosition(m_position);
+
     Game* game = FindGO<Game>("game");
     if (game) {
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
-            ui->ResetBatAndMeetOnly();
+            // 🌟【重要】ボールの初期位置をUIに再通知して予測円を初期状態に戻す
+            ui->SetPredictedBallPos(m_position);
+            ui->SetStartZ(m_position.z);
+            ui->ResetBatAndMeetOnly(); // ミート位置・バット表示のリセット
         }
     }
 }

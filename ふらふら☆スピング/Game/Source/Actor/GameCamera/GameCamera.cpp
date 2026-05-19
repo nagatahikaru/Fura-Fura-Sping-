@@ -131,7 +131,10 @@ void GameCamera::Update() {
     else {
         m_target = m_cameraPos - m_forward * 100.0f;
     }
-
+    float minCameraHeight = 300.0f;
+    if (m_cameraPos.y < minCameraHeight) {
+        m_cameraPos.y = minCameraHeight;
+    }
     // --- カメラ反映 ---
     g_camera3D->SetPosition(m_cameraPos);
     g_camera3D->SetTarget(m_target);
