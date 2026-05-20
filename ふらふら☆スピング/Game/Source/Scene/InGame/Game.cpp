@@ -187,6 +187,7 @@ void Game::Update()
 		m_InGameUI->SetUIVisible(false);
 		m_InGameUI->SetFontVisble(true);
 		m_InGameUI->SetReplayVisible(false);
+		m_InGameUI->SetniceVisible(true);
 	}
 	else if (m_cameraMode == Camera_Replay)
 	{

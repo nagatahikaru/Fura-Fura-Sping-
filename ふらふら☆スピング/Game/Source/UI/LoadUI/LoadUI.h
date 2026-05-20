@@ -20,4 +20,8 @@ private:
 	float m_timer = 0.0f;
 	SpriteRender m_sannkaku;
 	SpriteRender m_gyakusann;
+	float m_scaleRight = 1.0f;
+	float m_scaleLeft = 1.0f;
+	float m_scaleRightTimer = 0.0f;
+	float m_scaleLeftTimer = 0.0f;
 };

@@ -65,9 +65,11 @@ void SoundTestUI::Update() {
     // ▼ 上下で BGM / SE の選択
     if (g_pad[0]->IsTrigger(enButtonUp)) {
         m_select = 0;
+        g_soundManager->PlaySE(enSound_SE12);   // ★ カーソル移動音
     }
     if (g_pad[0]->IsTrigger(enButtonDown)) {
         m_select = 1;
+        g_soundManager->PlaySE(enSound_SE12);   // ★ カーソル移動音
     }
 
     // ▼ 左右でボールを動かす

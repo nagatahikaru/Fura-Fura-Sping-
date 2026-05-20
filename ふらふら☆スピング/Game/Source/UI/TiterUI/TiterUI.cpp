@@ -65,12 +65,14 @@ void TiterUI::Update()
     if (g_pad[0]->IsTrigger(enButtonUp)) {
         m_cursor--;
         if (m_cursor < 0) m_cursor = 2;   // 0 ¨ ã ¨ 2
+        g_soundManager->PlaySE(enSound_SE12);
         m_inputBlockTime = 0.1f;
     }
 
     if (g_pad[0]->IsTrigger(enButtonDown)) {
         m_cursor++;
         if (m_cursor > 2) m_cursor = 0;   // 2 ¨ ‰º ¨ 0
+        g_soundManager->PlaySE(enSound_SE12);
         m_inputBlockTime = 0.1f;
     }
 
