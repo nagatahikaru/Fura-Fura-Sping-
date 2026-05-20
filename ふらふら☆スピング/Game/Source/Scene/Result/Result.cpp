@@ -336,7 +336,7 @@ void Result::Render(RenderContext& rc)
 
 		// --- 下の行：計算式の表示（元の距離 × 〇〇% 形式） ---
 		// 「%%」と2つ重ねて書くことで、画面に1つの「%」が表示されます
-		swprintf_s(buf, L"最終スコア = %.2fm × %ls%%", m_displayKm / 100.0f, percentBuf);
+		swprintf_s(buf, L"最終スコア = %.2fm * %ls%%", m_displayKm / 100.0f, percentBuf);
 		m_fontFormula.SetText(buf);
 		m_fontFormula.SetPosition(-630, 40, 0);
 		m_fontFormula.SetColor(1, 1, 1, 1);

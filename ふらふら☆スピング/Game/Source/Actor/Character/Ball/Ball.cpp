@@ -236,7 +236,13 @@ void Ball::Update()
 
         m_modelRender.SetScale({ scale, scale, scale });
     }
-
+    else
+    {
+        // ★★★【追加】リプレイ中のボール拡大処理 ★★★
+        // 遠くに飛んでも見失わないよう、通常（最大5.0f）より大きいサイズに固定します
+        float replayScale = 12.0f;
+        m_modelRender.SetScale({ replayScale, replayScale, replayScale });
+    }
 
     // ★ UI に毎フレーム位置を送る（必須）
     if (game) {
@@ -410,12 +416,17 @@ void Ball::ResetBall()
 
 void Ball::Render(RenderContext& rc)
 {
+        // ★★★【通常プレイ中】の1.3秒非表示処理 ★★★
+        if (m_throwTimer < 1.2f)
+        {
+            return;
+        }
 
-    // 一定距離で消える
-    if (m_position.z > 7000.0f)
-    {
-        return;
-    }
+        // 一定距離で消す（通常プレイ中のみ）
+        if (m_position.z > 7000.0f)
+        {
+            return;
+        }
 
     //モデルの描画
     m_modelRender.Draw(rc);

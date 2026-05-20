@@ -422,7 +422,9 @@ void Batter::HitBat()
 	Vector3 ballPos = m_ball->GetPosition();
 
 	// ① Z制限（打撃ゾーン）
-	if (ballPos.z < 6060.0f || ballPos.z > 6080.0f) return;
+	float zoneMin = 6060.0f;
+	float zoneMax = 6090.0f;
+	if (ballPos.z < zoneMin || ballPos.z > zoneMax) return;
 	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
 	// ② カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
@@ -460,12 +462,12 @@ void Batter::HitBat()
 
 		// 高いフライほどパワーを弱くする
 		if (angleDeg > 60.0f) {
-			powerScale = 0.35f;   // 高フライ → 40%減衰
+			powerScale = 0.55f;   // 高フライ → 40%減衰
 			// ★ Y軸の上昇力を追加（強いフライにする）
 			hitDir.y += 50.0f;    // ← 好きな値に調整（50〜80が自然）
 		}
 		else if (angleDeg > 30.0f) {
-			powerScale = 0.55f;   // 中フライ → 20%減衰
+			powerScale = 0.75f;   // 中フライ → 20%減衰
 		}
 		// ★ 真ん中（10〜30度）→ パワー増加
 		else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
@@ -475,7 +477,13 @@ void Batter::HitBat()
 		else if (angleDeg < 0.0f) {
 			powerScale = 0.8f;   // ゴロ → 少し弱く
 		}
-
+		float zoneCenter = (zoneMin + zoneMax) * 0.5f;
+		float timingDiff = fabs(ballPos.z - zoneCenter); 
+		float maxDiff = (zoneMax - zoneMin) * 0.5f; // 15.0f
+		float timingRatio = timingDiff / maxDiff;
+		float timingPowerScale = 1.0f - (timingRatio * 0.2f);
+		timingPowerScale = clamp(timingPowerScale, 0.8f, 1.0f);
+		powerScale *= timingPowerScale;
 		// 最終パワー
 		float finalPower = 935.0f * powerScale;
 
