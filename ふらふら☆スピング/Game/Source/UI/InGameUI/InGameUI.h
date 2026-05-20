@@ -25,7 +25,7 @@ public:
 	void SetUIVisible(bool isVisible) { m_isUIVisible = isVisible; }
 	void SetFontVisble(bool isVisible) { m_isFontVisible = isVisible; }
 	void SetReplayVisible(bool isVisible) { m_isReplayVisible = isVisible; }
-	void SetniceVisible(bool isVisible) { m_isPredictionVisible = isVisible; }
+	void SetniceVisible(bool isVisible) { m_baisokuUI = isVisible; }
 	void SetBatterSide(bool isLeft);
 	void SetPause(bool isPaused);
 	void SetPredictedBallPos(const Vector3& pos3D);
@@ -91,6 +91,7 @@ private:
 	bool m_isReplayVisible = true;
 	bool m_isLeftBatter = true;
 	bool m_isPaused = false;
+	bool m_baisokuUI = true;
 	float batScaleX;
 	float m_meetScaleX;
 	Vector3 m_predictedBallPos3D = Vector3::Zero;

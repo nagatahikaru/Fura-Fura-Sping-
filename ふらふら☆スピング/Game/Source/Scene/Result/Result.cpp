@@ -294,14 +294,14 @@ void Result::Render(RenderContext& rc)
 	// --- ① 一番上の「距離」 (最初から表示) ---
 	swprintf_s(buf, L"距離　%.2fm", m_displayKm / 100.0f);
 	m_fontTopKm.SetText(buf);
-	m_fontTopKm.SetPosition(-600, 200, 0); // 位置は適宜調整
+	m_fontTopKm.SetPosition(-630, 200, 0); // 位置は適宜調整
 	m_fontTopKm.SetColor(1, 1, 1, 1);
 	m_fontTopKm.Draw(rc);
 
 	//スコア
 	swprintf_s(buf, L"スコア　%.2f", m_displayFinalScore / 100.0f);
 	m_moto.SetText(buf); // 既存のスコア用フォントを使用
-	m_moto.SetPosition(-600, -50, 0);
+	m_moto.SetPosition(-630, -50, 0);
 	m_moto.SetScale(2.5f); // 最終結果なので大きく
 	m_moto.SetColor(1, 1, 1, 1); // 黄色などで強調
 	m_moto.Draw(rc);
@@ -327,24 +327,18 @@ void Result::Render(RenderContext& rc)
 			percentBuf[--pLen] = L'\0';
 		}
 
-		// --- 上の行：ボーナス表記に変更 ---
-		// 「%%」と2つ書くことで、画面に1つの「%」が表示されます
-		swprintf_s(buf, L"ぐるぐる回数: %d回    ボーナス(+%ls%%)", m_displayGuruguru, percentBuf);
+		// --- 上の行：ボーナス表記 ---
+		swprintf_s(buf, L"ぐるぐる回数: %d回  ボーナス(+%ls%%)", m_displayGuruguru, percentBuf);
 		m_fontGuruguru.SetText(buf);
-		m_fontGuruguru.SetPosition(-600, 120, 0);
+		m_fontGuruguru.SetPosition(-630, 120, 0);
 		m_fontGuruguru.SetColor(1, 1, 1, 1);
 		m_fontGuruguru.Draw(rc);
 
-		// --- 下の行：計算式の表示 ---
-		wchar_t mulBuf[64];
-		swprintf_s(mulBuf, L"%.4f", currentMul);
-		int len = (int)wcslen(mulBuf);
-		while (len > 0 && mulBuf[len - 1] == L'0') { mulBuf[--len] = L'\0'; }
-		if (len > 0 && mulBuf[len - 1] == L'.') { mulBuf[--len] = L'\0'; }
-
-		swprintf_s(buf, L"最終距離 = %.2fm * %ls", m_displayKm / 100.0f, mulBuf);
+		// --- 下の行：計算式の表示（元の距離 × 〇〇% 形式） ---
+		// 「%%」と2つ重ねて書くことで、画面に1つの「%」が表示されます
+		swprintf_s(buf, L"最終スコア = %.2fm * %ls%%", m_displayKm / 100.0f, percentBuf);
 		m_fontFormula.SetText(buf);
-		m_fontFormula.SetPosition(-600, 40, 0);
+		m_fontFormula.SetPosition(-630, 40, 0);
 		m_fontFormula.SetColor(1, 1, 1, 1);
 		m_fontFormula.Draw(rc);
 	}
@@ -367,7 +361,7 @@ void Result::Render(RenderContext& rc)
 			swprintf_s(numBuf, L"%d:", i + 1);
 
 			m_fontThreeShots[i].SetText(numBuf);
-			m_fontThreeShots[i].SetPosition(-600 + i * 350, -200, 0);
+			m_fontThreeShots[i].SetPosition(-630 + i * 350, -200, 0);
 			m_fontThreeShots[i].SetScale(1.3f);
 			m_fontThreeShots[i].SetColor(1, 0, 0, 1);   // ← 赤
 			// ★ 1番だけ黄色、それ以外は赤
@@ -384,7 +378,7 @@ void Result::Render(RenderContext& rc)
 			swprintf_s(meterBuf, L" %.2f m", meter);
 
 			m_fontThreeShotsValue[i].SetText(meterBuf);
-			m_fontThreeShotsValue[i].SetPosition(-600 + i * 350 + 20, -200, 0);
+			m_fontThreeShotsValue[i].SetPosition(-630 + i * 350 + 20, -200, 0);
 			// ↑ 数字の後ろに少し右へずらす
 			m_fontThreeShotsValue[i].SetScale(1.3f);
 			m_fontThreeShotsValue[i].SetColor(1, 1, 1, 1);  // ← 白

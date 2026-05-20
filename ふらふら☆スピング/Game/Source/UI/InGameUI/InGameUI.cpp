@@ -681,13 +681,6 @@ void InGameUI::Render(RenderContext& rc) {
 			m_fontPrediction.Draw(rc);
 		}
 
-
-		if (m_isBaisokuVisible) {
-			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
-			m_baisoku.Update();
-			m_baisoku.Draw(rc);
-		}
-
 		if (m_guruGuruTimer > 0.0) {
 			m_konto.SetPosition(Vector3{ -800.0f, 0.0f, 0.0f });
 			m_konto.Update();
@@ -702,6 +695,14 @@ void InGameUI::Render(RenderContext& rc) {
 			m_mawase.SetPosition(Vector3{ -800.0f, -180.0f, 0.0f }); // 位置はお好みで
 			m_mawase.Update();
 			m_mawase.Draw(rc);
+		}
+	}
+
+	if (m_baisokuUI) {
+		if (m_isBaisokuVisible) {
+			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
+			m_baisoku.Update();
+			m_baisoku.Draw(rc);
 		}
 	}
 

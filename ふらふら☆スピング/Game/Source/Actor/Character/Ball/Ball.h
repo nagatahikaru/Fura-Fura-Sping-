@@ -63,5 +63,7 @@ class Ball :public Character
 	bool m_hasShownPrediction = false;
 	float m_storedPredictedDistance = 0.0f;
 	bool m_hasPlayedSE6 = false;
+	float m_replayTimer = 0.0f;
+	bool m_isMagicBall = false;
 };
 
