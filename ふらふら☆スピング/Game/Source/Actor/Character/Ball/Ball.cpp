@@ -39,7 +39,7 @@ bool Ball::Start()
 
     //タイマー初期化
     m_throwTimer = 0.0f;
-
+    m_isMagicBall = false;
     m_collisionObject = new CollisionObject();
     m_collisionObject->CreateSphere(m_position, Quaternion::Identity, 25.0f);
     m_collisionObject->Update();
@@ -240,7 +240,7 @@ void Ball::Update()
     {
         // ★★★【追加】リプレイ中のボール拡大処理 ★★★
         // 遠くに飛んでも見失わないよう、通常（最大5.0f）より大きいサイズに固定します
-        float replayScale = 12.0f;
+        float replayScale = 13.0f;
         m_modelRender.SetScale({ replayScale, replayScale, replayScale });
     }
 
@@ -263,7 +263,15 @@ void Ball::Throw(const Vector3& targetPos)
     dir.Normalize();
 
     float speed = 2000.0f + (rand() % 250);
-
+ 
+    if (rand() % 1 == 0)
+    {
+      m_isMagicBall = true; // 10%で魔球になる
+    }
+    else
+    {
+        m_isMagicBall = false; // 90%は通常球
+    }
     int type = rand() % 4;
 
     switch (type)
@@ -404,6 +412,7 @@ void Ball::ResetBall()
     m_hasStrike = false;
     m_hasShownPrediction = false;
     m_hasPlayedSE6 = false;
+    m_isMagicBall = false;
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
     if (game) {
@@ -416,12 +425,28 @@ void Ball::ResetBall()
 
 void Ball::Render(RenderContext& rc)
 {
+    if (m_isMagicBall)
+    {
+        // 【魔球（10%）の表示ルール】
+        if (m_throwTimer < 1.2f)
+        {
+            return; // 1.2秒未満は映さない
+        }
+        if (m_throwTimer >= 1.8f && m_throwTimer < 2.4f)
+        {
+            return; // 1.7秒〜2.5秒の間は消す
+        }
+        // ※「1.2〜1.7秒」と「2.5秒以降」は return されずに下の描画へ進む
+    }
+    else
+    {
         // ★★★【通常プレイ中】の1.3秒非表示処理 ★★★
         if (m_throwTimer < 1.2f)
         {
             return;
         }
-
+    }
+      
         // 一定距離で消す（通常プレイ中のみ）
         if (m_position.z > 7000.0f)
         {
