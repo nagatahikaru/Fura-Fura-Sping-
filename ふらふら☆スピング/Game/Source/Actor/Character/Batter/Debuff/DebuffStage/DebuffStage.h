@@ -38,6 +38,10 @@ class DebuffStage
     }
 
     void BuildStage(int level);
+    void SetRotationCount(int count)
+    {
+        m_rotationCount = count;
+	}
 
     // 各デバフ段階
     void DebuffStageOne();
@@ -56,5 +60,8 @@ private:
     std::vector<
         std::unique_ptr<IDebuffPattern>
     > m_patterns;
+
+	// 回転数
+	int m_rotationCount = 0;
 };
 

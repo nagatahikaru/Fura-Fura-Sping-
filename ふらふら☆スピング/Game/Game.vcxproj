@@ -263,7 +263,6 @@
     <ClCompile Include="Source\Source.cpp" />
     <ClCompile Include="Source\UI\InGameUI\InGameUI.cpp" />
     <ClCompile Include="Source\UI\LoadUI\LoadUI.cpp" />
-    <ClCompile Include="Source\UI\LradUI\LradUI.cpp" />
     <ClCompile Include="Source\UI\PauseUI\PauseUI.cpp" />
     <ClCompile Include="Source\UI\RankingUI\RankingUI.cpp" />
     <ClCompile Include="Source\UI\ResultUI\ResultUI.cpp" />
@@ -316,7 +315,6 @@
     <ClInclude Include="Source\Source.h" />
     <ClInclude Include="Source\UI\InGameUI\InGameUI.h" />
     <ClInclude Include="Source\UI\LoadUI\LoadUI.h" />
-    <ClInclude Include="Source\UI\LradUI\LradUI.h" />
     <ClInclude Include="Source\UI\PauseUI\PauseUI.h" />
     <ClInclude Include="Source\UI\RankingUI\RankingUI.h" />
     <ClInclude Include="Source\UI\ResultUI\ResultUI.h" />

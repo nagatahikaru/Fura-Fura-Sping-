@@ -2,6 +2,11 @@
 #include "DebuffAimPattern.h"
 #include "Source/Actor/Character/Batter/Batter.h"
 
+/// DebuffAimPatternクラスの実装
+/// 照準異常系のデバフパターンを実装するクラスです。
+/// 例えば、カーソルが小さくなったり、スイートスポットが小さくなったり、
+/// ヒットアシストが弱くなったり、スイングが重くなったりするデバフを実装します。
+
 void DebuffAimPattern::SetType(AimType type)
 {
 	m_type = type;
@@ -29,12 +34,12 @@ void DebuffAimPattern::Update(Batter* batter)
 	}
 }
 
-//外部から呼び出される関数で、バッターのカーソルを小さくする処理を実装します。
+//外部から呼び出される関数で、バッターのカーソル表示サイズとミート範囲を縮小する処理を実装します。
 //カーソルサイズの変更はSetMeatRange関数を呼び出して行います。
 void DebuffAimPattern::UpdateSmallCursor(Batter* batter)
 {
-	// カーソルを小さくする処理	
-	batter->SetHitRange(m_meatRange); // 当たり判定の範囲を設定
+	// カーソル表示サイズとミート範囲を縮小する処理	
+	batter->SetMeatRange(m_meatRange); // 当たり判定の範囲を設定
 }
 
 void DebuffAimPattern::UpdateTinySweetSpot(Batter* batter)

@@ -13,13 +13,13 @@ void DebuffShakePattern::Update(Batter* batter)
 {
 	switch (m_type)
 	{
-	case Vertical:
+	case Shake_Vertical:
 		VerticalShake(batter);
 		break;
-	case Horizontal:
+	case Shake_Horizontal:
 		HorizontalShake(batter);
 		break;
-	case Heavy:
+	case Shake_Random:
 		RandomShake(batter);
 		break;
 	default:
@@ -34,7 +34,7 @@ void DebuffShakePattern::VerticalShake(Batter* batter)
 	float shakeFrequency = GetSeismicIntensity(); // k‚¦‚Ì•p“x
 	UpdateTime();
 	float offsetY = SinWave(shakeFrequency) * shakeAmount;
-	batter->AddCursorOffset(Vector3(0.0f, offsetY, 0.0f));
+	batter->SetShakeCursorOffset(Vector3(0.0f, offsetY, 0.0f));
 }
 
 void DebuffShakePattern::HorizontalShake(Batter* batter)
@@ -44,7 +44,7 @@ void DebuffShakePattern::HorizontalShake(Batter* batter)
 	float shakeFrequency = GetSeismicIntensity(); // k‚¦‚Ì•p“x
 	UpdateTime();
 	float offsetX = CosWave(shakeFrequency) * shakeAmount;
-	batter->AddCursorOffset(Vector3(offsetX, 0.0f, 0.0f));
+	batter->SetShakeCursorOffset(Vector3(offsetX, 0.0f, 0.0f));
 }
 
 void DebuffShakePattern::RandomShake(Batter* batter)
@@ -55,7 +55,7 @@ void DebuffShakePattern::RandomShake(Batter* batter)
 	UpdateTime();
 	float offsetX = CosWave(shakeFrequency) * shakeAmount;
 	float offsetY = SinWave(shakeFrequency) * shakeAmount;
-	batter->AddCursorOffset(Vector3(offsetX, offsetY, 0.0f));
+	batter->SetShakeCursorOffset(Vector3(offsetX, offsetY, 0.0f));
 }
 
 

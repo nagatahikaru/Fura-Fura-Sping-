@@ -14,23 +14,20 @@
 // ファイル冒頭付近に追加（std::clampが使えない場合のため）
 template <typename T>
 constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
-	return (v < lo) ? lo : (hi < v) ? hi : v;
+    return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
 namespace {
-	float PI = 3.1415f / 180.0f;
-	float ZERO_FLOAT = 0.0f;
-
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
 	std::string FILE_PATH_DDS = (".tka");
 	std::string FILE_PATH_ANIMATION[3] = {
 		"idle",
 		"guruguru",
 		"swing"
-
+		
 	};
 
-	inline std::string GetAnimationFilePath(int number)
+	inline std ::string GetAnimationFilePath(int number)
 	{
 		return FILE_PATH_BATTER + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
 	}
@@ -38,7 +35,7 @@ namespace {
 	void InitAnimation(AnimationClip animation[], int number, bool loop)
 	{
 		animation[number].Load(GetAnimationFilePath(number).c_str());
-		animation[number].SetLoopFlag(loop);
+		animation[number].SetLoopFlag(loop);		
 	}
 
 	void InitCharacterController(CharacterController* characterController, const Vector3& scale, const Vector3& pos)
@@ -57,7 +54,7 @@ Batter::Batter()
 
 Batter::~Batter()
 {
-
+	
 	m_stateMachine->SetBatter(nullptr);
 	m_debuffStageStateMachine->SetBatter(nullptr);
 	if (g_effectManager) {
@@ -77,7 +74,7 @@ bool Batter::Start()
 	{
 		InitAnimation(m_animationClips, j, true);
 	}
-	for (int j = enAnimationClip_Swing; j < enAnimationClip_Num; j++)
+	for(int j = enAnimationClip_Swing; j < enAnimationClip_Num; j++)
 	{
 		InitAnimation(m_animationClips, j, false);
 	}
@@ -86,8 +83,8 @@ bool Batter::Start()
 
 	// ※ animationClip と numClips は環境に合わせて適切な値を渡してください
 	m_characterModel->LoadCharacterModel(
-		nsApp::CharacterModelType::BatterUniformNumber_0,
-		m_animationClips,
+		nsApp::CharacterModelType::BatterUniformNumber_0, 
+		m_animationClips, 
 		enAnimationClip_Num);
 
 	// 2. 武器（バット）の読み込み
@@ -98,14 +95,14 @@ bool Batter::Start()
 	m_characterModel->SetWeaponOffset(Vector3(100.0f, 150.0f, 0.0f));
 
 	m_transform.m_position = BatterBasicSettings::INITIAL_COORDINATE;
-	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
+	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);	
 
 	// 4. 初期位置やスケールの設定
 	m_characterModel->SetPosition(m_transform.m_position);
 	m_characterModel->SetCharacterScale(BatterBasicSettings::INITIAL_SCALE);
 	m_characterModel->SettRotation(m_transform.m_rotation);
 	m_characterModel->SetWeaponScale(BatterBasicSettings::INITIAL_SCALE);
-
+	
 
 	InitCharacterController(&m_characterController,
 		BatterBasicSettings::COLLISION_SCALE,
@@ -125,7 +122,7 @@ bool Batter::Start()
 		Quaternion::Identity,
 		BatBasicSettings::COLLISION_SCALE_BAT);
 
-	m_characterModel->Update();
+	m_characterModel->Update();	
 	m_inGameUI = FindGO<InGameUI>("inGameUI");
 	m_game = FindGO<Game>("game");
 	m_ball = FindGO<Ball>("ball");
@@ -135,8 +132,8 @@ bool Batter::Start()
 
 void Batter::Update()
 {
-	if (m_isPaused)
-	{
+	if(m_isPaused)
+	{		
 		return; // ゲームがポーズ中なら更新処理をスキップ
 	}
 	if (!m_inGameUI)
@@ -166,11 +163,11 @@ void Batter::Update()
 		g_effectManager->AllStopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
-	// ★ 遅延ヒット処理
+	
 	// ★ 遅延ヒット処理
 	m_stateMachine->Update();
 	// ★ フラグが切り替わったら、ぐるぐるバットの処理を行う
-	if (!m_isRotation)
+	if(!m_isRotation)
 	{
 		m_debuffStageStateMachine->Update();
 	}
@@ -189,7 +186,7 @@ void Batter::Rotation()
 {
 	//キーボード操作
 	//コントローラー操作
-	if (ERROR_DEVICE_NOT_CONNECTED != ERROR_SUCCESS)
+	if(ERROR_DEVICE_NOT_CONNECTED != ERROR_SUCCESS)
 	{
 		//xzの移動速度を0.0fにする
 		m_transform.m_moveSpeed.x = BatterBasicSettings::NONE_SPEED;
@@ -311,17 +308,17 @@ void Batter::RotationUpdate()
 	// オフセットを考慮した位置の補正計算
 	Vector3 pivot = m_transform.m_position - pivotOffset;
 	newPosition = pivot + pivotOffset;
-
+	
 	//　フラグが立っているときは回転を適用、そうでないときは初期回転に戻す
 	if (m_isRotation)
-	{
+	{	
 		m_characterModel->SettRotation(m_transform.m_rotation);
 		Quaternion rot;
 		rot.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 230.0f);
 		m_characterModel->SetWeaponRotation(true);
 		m_characterModel->SetWeaponRotation(rot);
 		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y + 250.0f, m_transform.m_position.z));
-
+	
 	}
 	else
 	{
@@ -350,11 +347,12 @@ void Batter::SetCursorPosition()
 	if (m_isCursorMode)
 	{
 		Vector3 move;
-		move.x = lx;
-		move.y = ly;
+		move.x = lx * m_inputScale.x*m_driftInputScale.x;
+		move.y = ly * m_inputScale.y*m_driftInputScale.y;
 		move.z = 0.0f;
 
-		float speed = 500.0f;
+		float speed =
+			500.0f * m_cursorMoveScale;
 
 		// プレイヤー入力だけ
 		m_meetPosition += move * speed * dt;
@@ -367,8 +365,10 @@ void Batter::SetCursorPosition()
 	}
 
 	// デバフ適用後の最終座標
+	Vector3 finalOffset = GetFinalCursorOffset();
+
 	Vector3 finalPos =
-		m_meetPosition + m_cursorOffset;
+		m_meetPosition + finalOffset;
 
 	m_inGameUI->SetMeetCursorPosition(finalPos);
 }
@@ -378,7 +378,11 @@ Vector3 Batter::CalcCursorWorldPos()
 {
 	float screenW = 1920.0f;
 	float screenH = 1080.0f;
-	Vector3 finalPos = m_meetPosition + m_cursorOffset;
+	Vector3 finalOffset = GetFinalCursorOffset();
+
+
+	Vector3 finalPos =
+		m_meetPosition + finalOffset;
 	// UI座標（中心基準なら変換必要）
 	float mouseX =
 		finalPos.x + screenW * 0.5f;
@@ -422,9 +426,7 @@ void Batter::HitBat()
 	Vector3 ballPos = m_ball->GetPosition();
 
 	// ① Z制限（打撃ゾーン）
-	float zoneMin = 6070.0f;
-	float zoneMax = 6090.0f;
-	if (ballPos.z < zoneMin || ballPos.z > zoneMax) return;
+	if (ballPos.z < 6060.0f || ballPos.z > 6080.0f) return;
 	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
 	// ② カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
@@ -433,7 +435,7 @@ void Batter::HitBat()
 	// ③ 距離判定
 	float dist = (ballPos - cursor).Length();
 
-	if (dist < m_hitRange)
+	if (dist < m_meatRange)
 	{
 		Vector3 hitDir = ballPos - cursor;
 
@@ -462,12 +464,12 @@ void Batter::HitBat()
 
 		// 高いフライほどパワーを弱くする
 		if (angleDeg > 60.0f) {
-			powerScale = 0.45f;   // 高フライ → 40%減衰
+			powerScale = 0.35f;   // 高フライ → 40%減衰
 			// ★ Y軸の上昇力を追加（強いフライにする）
 			hitDir.y += 50.0f;    // ← 好きな値に調整（50〜80が自然）
 		}
 		else if (angleDeg > 30.0f) {
-			powerScale = 0.65f;   // 中フライ → 20%減衰
+			powerScale = 0.55f;   // 中フライ → 20%減衰
 		}
 		// ★ 真ん中（10〜30度）→ パワー増加
 		else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
@@ -477,25 +479,19 @@ void Batter::HitBat()
 		else if (angleDeg < 0.0f) {
 			powerScale = 0.8f;   // ゴロ → 少し弱く
 		}
-		float zoneCenter = (zoneMin + zoneMax) * 0.5f;
-		float timingDiff = fabs(ballPos.z - zoneCenter); 
-		float maxDiff = (zoneMax - zoneMin) * 0.5f; // 15.0f
-		float timingRatio = timingDiff / maxDiff;
-		float timingPowerScale = 1.0f - (timingRatio * 0.2f);
-		timingPowerScale = clamp(timingPowerScale, 0.8f, 1.0f);
-		powerScale *= timingPowerScale;
+
 		// 最終パワー
 		float finalPower = 935.0f * powerScale;
 
-		// ★ 通常ヒット（即飛ぶ）
-		m_ball->HitBall(hitDir, +finalPower);
-		// ★ カメラ切り替え
-		if (m_game) {
-			m_game->SetCameraMode(Camera_BackBall);
+			// ★ 通常ヒット（即飛ぶ）
+			m_ball->HitBall(hitDir,+finalPower);
+			// ★ カメラ切り替え
+			if (m_game) {
+				m_game->SetCameraMode(Camera_BackBall);
 
-			GameCamera* cam = m_game->GetGameCamera();
-			if (cam) cam->StartHitMomentCamera();
-		}
+				GameCamera* cam = m_game->GetGameCamera();
+				if (cam) cam->StartHitMomentCamera();
+			}
 
 		// UI・SE・カメラなどは共通でOK
 		if (m_inGameUI) {
@@ -529,7 +525,6 @@ void Batter::UpdateBatAim()
 
 void Batter::BatHitBoxPosition()
 {
-
 	// ★ カーソル位置を使う
 	Vector3 pos = m_meetCursorWorldPos;
 
@@ -547,54 +542,29 @@ void Batter::BatHitBoxPosition()
 
 void Batter::ResetSwing()
 {
-	// 1. スイングアニメーション・姿勢を初期状態にリセット
+	// ★ スイングアニメーションをリセット
 	m_transform.m_rotation = m_initialRotation;
-	if (m_characterModel) {
-		m_characterModel->SettRotation(m_initialRotation);
-	}
+	m_characterModel->SettRotation(m_initialRotation);
 
-	// 2. 【最重要】プレイヤーがスティックで動かしたカーソル位置の累積を完全にゼロに戻す
-	m_meetPosition = Vector3::Zero;       // ← これが残っていたのが原因！
-	m_cursorOffset = Vector3::Zero;       // デバフ用のオフセットもリセット
-	m_meetCursorWorldPos = Vector3::Zero; // 3D空間の衝突判定用座標もクリア
-
-	// 3. 各種状態フラグをリセット
-	m_isRotation = false;   // ぐるぐる状態解除
-	m_isCursorMode = false; // カーソル操作モードを一旦オフに
-
-	// 4. 【追加】即座に UI 側にもリセットされたクリーンな座標（ゼロ）を通知する
-	if (m_inGameUI) {
-		m_inGameUI->SetMeetCursorPosition(Vector3::Zero);
-	}
-}
-
-void Batter::SetCursorMode(bool flag)
-{
-	m_isCursorMode = flag;
-}
-
-void Batter::PlaySwingAnimation()
-{
-	// ★ スイングアニメーションを再生
-	m_characterModel->PlayAnimation(enAnimationClip_Swing, 1.0);
-
-	// ★ スイング開始時にカーソル位置を固定したいならここで処理
-}
-
-void Batter::ResetCursorPosition()
-{
+	// ★ カーソル位置もリセット
 	m_meetPosition = Vector3::Zero;
+
+	// ★ ぐるぐるバット関連もリセット
+	m_isRotation = false;
+
+	// ★ カーソルモードもリセット
+	m_isCursorMode = false;
 }
 
 /** 演出関連コード */
 void Batter::EffectUpdate()
-{
+{	
 	if (m_guruGuruBatCount < 5) return;
 
-	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)) {
+	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)){		
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
-
+	
 	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
 
 	m_inro.m_effectDawnID = g_effectManager->PlayEffect(
@@ -609,7 +579,7 @@ void Batter::HitEffect()
 	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectHitID)) {
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
-
+	
 	m_inro.m_effectHitID = g_effectManager->PlayEffect(
 		enEffect_HitBat,
 		pos,
