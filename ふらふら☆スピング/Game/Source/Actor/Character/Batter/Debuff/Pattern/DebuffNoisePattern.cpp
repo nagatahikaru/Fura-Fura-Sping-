@@ -10,6 +10,7 @@
 
 
 
+
 void DebuffNoisePattern::SetType(NoiseType type)
 {
 	m_type = type;
@@ -20,27 +21,100 @@ void DebuffNoisePattern::Update(Batter* batter)
 {
 	switch (m_type)
 	{
-	case Vertical:
-		Noise(batter);
+	case Noise_Vertical:
+		NoiseVertical(batter);
 		break;
-	case Horizontal:
-		Noise(batter);
+	case Noise_Horizontal:
+		NoiseHorizontal(batter);
 		break;
-	case Heavy:
-		Noise(batter);
+	case Noise_Random:
+		NoiseRandom(batter);
 		break;
 	default:
 		break;
 	}
 }
 
-void DebuffNoisePattern::Noise(Batter* batter)
-{		 
+void DebuffNoisePattern::NoiseVertical(Batter* batter)
+{
+	m_timer -= g_gameTime->GetFrameDeltaTime();
 
+	if (m_timer <= 0.0f)
+	{
+		float power = GetPower();
+
+		m_target.x =
+			0.0f;
+
+		m_target.y =
+			RandomRange(-power, power);
+
+		m_timer = m_noiseDuration;
+	}
+
+	m_current = Lerp(
+		m_current,
+		m_target,
+		0.2f
+	);
+
+	batter->SetNoiseCursorOffset(
+		Vector3(m_current.x, m_current.y, 0.0f)
+	);
 }
 
+void DebuffNoisePattern::NoiseHorizontal(Batter* batter)
+{		 
+	m_timer -= g_gameTime->GetFrameDeltaTime();
 
+	if (m_timer <= 0.0f)
+	{
+		float power = GetPower();
 
+		m_target.x =
+			RandomRange(-power, power);
 
+		m_target.y =
+			0.0f;
 
+		m_timer = m_noiseDuration;
+	}
 
+	m_current = Lerp(
+		m_current,
+		m_target,
+		0.2f
+	);
+
+	batter->SetNoiseCursorOffset(
+		Vector3(m_current.x, m_current.y, 0.0f)
+	);
+}
+
+void DebuffNoisePattern::NoiseRandom(Batter* batter)
+{	
+	m_timer -= g_gameTime->GetFrameDeltaTime();
+	
+	if (m_timer <= 0.0f)
+	{
+		float power = GetPower();
+
+		m_target.x =
+			RandomRange(-power, power);
+
+		m_target.y =
+			RandomRange(-power, power);
+
+		m_timer = m_noiseDuration;
+	}
+
+	m_current = Lerp(
+		m_current,
+		m_target,
+		0.2f
+	);
+
+	batter->SetNoiseCursorOffset(
+		Vector3(m_current.x, m_current.y, 0.0f)
+	);
+}

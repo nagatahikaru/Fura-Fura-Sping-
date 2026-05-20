@@ -2,32 +2,20 @@
 
 #include "IDebuffPattern.h"
 
+// ファイル冒頭付近に追加（std::clampが使えない場合のため）
+template <typename T>
+constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
+    return (v < lo) ? lo : (hi < v) ? hi : v;
+}
+
 class DebuffPatternBase: public IDebuffPattern
 {
 protected:
 
     float m_time = 0.0f;
-    float m_power = 1.0f;
+    float m_power = 10.0f;
 	float m_seismicIntensity = 1.0f;
 
-    void UpdateTime()
-    {
-        m_time += g_gameTime->GetFrameDeltaTime();
-    }
-
-	// サイン波を生成する関数
-	// 例えば、震えの強さを時間と周波数に基づいて変化させるために使用できます。
-    float SinWave(float freq)
-    {
-        return sinf(m_time * freq);
-    }
-
-	// コサイン波を生成する関数
-	// 例えば、震えの強さを時間と周波数に基づいて変化させるために使用できます。
-    float CosWave(float freq)
-    {
-        return cosf(m_time * freq);
-    }
 
 	// ランダムな値を生成する関数
     float RandomRange(float min, float max)
@@ -36,19 +24,30 @@ protected:
             * (rand() / (float)RAND_MAX);
     }
 
+    inline float Lerp(float a, float b, float t) {
+        return a + (b - a) * t;
+    }
+
+    inline Vector3 Lerp(const Vector3& a, const Vector3& b, float t) {
+        return a + (b - a) * t;
+	}
+
 public:
 	//デバフの設定を外部から行うための関数を定義
 
 	// デバフの強さを設定する関数
+	// 例えば、震えの強さを設定するために使用できます。
     void SetPower(float power)
     {
-        m_power = power;
+        m_power = 10*power;
 	}
+
     float GetPower() const
     {
         return m_power;
 	}
 
+	// 震えの強さを設定する関数
     void SetSeismicIntensity(float intensity)
     {
         m_seismicIntensity = intensity;
@@ -59,18 +58,16 @@ public:
         return m_seismicIntensity;
     }
 
-    void ResetTime()
+	// 回転数に応じてデバフの強さを設定する関数
+    float GetRotationRate(float rotation)
     {
-        m_time = 0.0f;
-    }
+        constexpr float kMaxRotation = 40.0f;
+        constexpr float kMaxRate = 6.0f;
 
-    void ResetPower()
-    {
-        m_power = 1.0f;
-    }
+        rotation = clamp(abs(rotation), 0.0f, kMaxRotation);
 
-    void ResetSeismicIntensity()
-    {
-        m_seismicIntensity = 1.0f;
-	}
+        float t = rotation / kMaxRotation;
+
+        return 1.0f + t * (kMaxRate - 1.0f);
+    }
 };

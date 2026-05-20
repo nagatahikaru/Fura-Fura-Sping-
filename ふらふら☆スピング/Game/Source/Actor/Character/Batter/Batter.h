@@ -106,7 +106,11 @@ public:
     }
 
     // スイングアニメーション再生
-    void PlaySwingAnimation();
+    void PlaySwingAnimation()
+    {
+        // ★ スイングアニメーションを再生
+		m_characterModel->PlayAnimation(enAnimationClip_Swing, 1.0f);
+    }
 
     // スイング状態リセット
     void ResetSwing();
@@ -169,10 +173,16 @@ public:
     }
 
     // カーソル位置リセット
-    void ResetCursorPosition();
+    void ResetCursorPosition()
+    {
+		m_meetCursorWorldPos = Vector3::Zero;
+    }
 
     // カーソルモード切り替え
-    void SetCursorMode(bool flag);
+    void SetCursorMode(bool flag)
+    {
+		m_isCursorMode = flag;
+    }
 
     // ワールド座標変換
     Vector3 CalcCursorWorldPos();
@@ -183,21 +193,70 @@ public:
         return m_meetCursorWorldPos;
     }
 
-	//デバフによるカーソル揺れのオフセット追加
-    void AddCursorOffset(const Vector3& offset)
+	// 揺れによるカーソル揺れのオフセット追加
+    void SetShakeCursorOffset(const Vector3& offset)
     {
-        m_cursorOffset += offset;
+        m_shakeCursorOffset = offset;
     }
 
-    void SetHitRange(float range)
+	// ノイズによるカーソル揺れのオフセット追加
+    void SetNoiseCursorOffset(const Vector3& offset)
     {
-        m_hitRange = range;
+        m_noiseCursorOffset = offset;
+	}
+
+	// 援護によるカーソル揺れのオフセット追加
+    void SetAssistCursorOffset(const Vector3& offset)
+    {
+        m_assistCursorOffset = offset;
+	}
+
+	// ドリフトによるカーソル揺れのオフセット追加
+    void SetDriftCursorOffset(const Vector3& offset)
+    {
+        m_driftCursorOffset = offset;
+	}
+
+    void SetMagnetCursorOffset(const Vector3& offset)
+    {
+        m_magnetCursorOffset = offset;
+	}
+
+    // カーソル移動速度倍率
+    void AddCursorMoveScale(float scale)
+    {
+        m_cursorMoveScale *= scale;
+    }
+
+    void SetInputScale(float x,float y)
+    {
+        m_inputScale = Vector2(x, y);
+    }
+
+    void SetInputOffset(float x, float y)
+    {
+        m_driftInputScale = Vector2(x, y);
+	}
+
+    void SetMeatRange(float range)
+    {
+        m_meatRange = range;
 	}
 
     Vector3 GetMeetCursorPosition() const
     {
         return m_meetPosition;
 	}
+
+    Vector3 GetFinalCursorOffset() const
+    {
+        return
+            m_shakeCursorOffset +
+            m_assistCursorOffset +
+            m_noiseCursorOffset+
+            m_driftCursorOffset+
+            m_magnetCursorOffset;
+    }
 
     //=========================================================
     // bat control
@@ -437,6 +496,11 @@ private:
     // カーソルモード
     bool m_isCursorMode = true;
 
+	// カーソル入力スケール
+    Vector2 m_inputScale = Vector2(1.0f, 1.0f);
+
+	Vector2 m_driftInputScale = Vector2(1.0f, 1.0f);
+
     // ミート位置
     Vector3 m_meetPosition;
 
@@ -447,7 +511,27 @@ private:
     Vector3 m_cursorOffset;
 
 	// ヒット範囲
-    float m_hitRange = 100.0f;
+    float m_meatRange = 100.0f;
+
+	// カーソル移動速度倍率
+	float m_cursorMoveScale = 1.0f;
+
+	// 揺れによるカーソルオフセット
+    Vector3 m_shakeCursorOffset = Vector3::Zero;
+
+	// 揺れによるカーソルオフセットの減衰速度
+    Vector3 m_assistCursorOffset = Vector3::Zero;
+
+	// 磁石によるカーソルオフセットの減衰速度
+    Vector3 m_magnetCursorOffset = Vector3::Zero;
+
+	// ノイズによるカーソルオフセットの減衰速度
+	Vector3 m_noiseCursorOffset = Vector3::Zero;
+
+	// ドリフトによるカーソルオフセットの減衰速度
+	Vector3 m_driftCursorOffset = Vector3::Zero;
+
+    std::deque<Vector3> m_inputHistory;
 
     //=========================================================
     // bat
@@ -494,8 +578,7 @@ private:
     float m_reservedHitPower = 0.0f;
 
     // ヒット方向
-    Vector3 m_reservedHitDir =
-        Vector3::Zero;
+    Vector3 m_reservedHitDir = Vector3::Zero;
 
     //=========================================================
     // effect
@@ -513,4 +596,3 @@ private:
     // エフェクト情報
     EffectInfo m_inro;
 };
-

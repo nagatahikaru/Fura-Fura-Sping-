@@ -18,9 +18,6 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
 }
 
 namespace {
-	float PI= 3.1415f / 180.0f;
-	float ZERO_FLOAT = 0.0f;
-
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
 	std::string FILE_PATH_DDS = (".tka");
 	std::string FILE_PATH_ANIMATION[3] = {
@@ -166,7 +163,7 @@ void Batter::Update()
 		g_effectManager->AllStopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
-	// ★ 遅延ヒット処理
+	
 	// ★ 遅延ヒット処理
 	m_stateMachine->Update();
 	// ★ フラグが切り替わったら、ぐるぐるバットの処理を行う
@@ -350,11 +347,12 @@ void Batter::SetCursorPosition()
 	if (m_isCursorMode)
 	{
 		Vector3 move;
-		move.x = lx;
-		move.y = ly;
+		move.x = lx * m_inputScale.x*m_driftInputScale.x;
+		move.y = ly * m_inputScale.y*m_driftInputScale.y;
 		move.z = 0.0f;
 
-		float speed = 500.0f;
+		float speed =
+			500.0f * m_cursorMoveScale;
 
 		// プレイヤー入力だけ
 		m_meetPosition += move * speed * dt;
@@ -367,8 +365,10 @@ void Batter::SetCursorPosition()
 	}
 
 	// デバフ適用後の最終座標
+	Vector3 finalOffset = GetFinalCursorOffset();
+
 	Vector3 finalPos =
-		m_meetPosition + m_cursorOffset;
+		m_meetPosition + finalOffset;
 
 	m_inGameUI->SetMeetCursorPosition(finalPos);
 }
@@ -378,7 +378,11 @@ Vector3 Batter::CalcCursorWorldPos()
 {
 	float screenW = 1920.0f;
 	float screenH = 1080.0f;
-	Vector3 finalPos =m_meetPosition + m_cursorOffset;
+	Vector3 finalOffset = GetFinalCursorOffset();
+
+
+	Vector3 finalPos =
+		m_meetPosition + finalOffset;
 	// UI座標（中心基準なら変換必要）
 	float mouseX =
 		finalPos.x + screenW * 0.5f;
@@ -431,7 +435,7 @@ void Batter::HitBat()
 	// ③ 距離判定
 	float dist = (ballPos - cursor).Length();
 
-	if (dist < m_hitRange)
+	if (dist < m_meatRange)
 	{
 		Vector3 hitDir = ballPos - cursor;
 
@@ -521,7 +525,6 @@ void Batter::UpdateBatAim()
 
 void Batter::BatHitBoxPosition()
 {
-
 	// ★ カーソル位置を使う
 	Vector3 pos = m_meetCursorWorldPos;
 
@@ -551,24 +554,6 @@ void Batter::ResetSwing()
 
 	// ★ カーソルモードもリセット
 	m_isCursorMode = false;
-}
-
-void Batter::SetCursorMode(bool flag)
-{
-	m_isCursorMode = flag;
-}
-
-void Batter::PlaySwingAnimation()
-{
-	// ★ スイングアニメーションを再生
-	m_characterModel->PlayAnimation(enAnimationClip_Swing,1.0);
-
-	// ★ スイング開始時にカーソル位置を固定したいならここで処理
-}
-
-void Batter::ResetCursorPosition()
-{
-	m_meetPosition = Vector3::Zero;
 }
 
 /** 演出関連コード */

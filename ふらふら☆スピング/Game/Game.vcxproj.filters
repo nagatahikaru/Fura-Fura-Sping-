@@ -52,9 +52,6 @@
     <Filter Include="Source\UI\InGameUI">
       <UniqueIdentifier>{f4df807b-c9f2-4793-8243-fb57e6a01940}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\UI\LradUI">
-      <UniqueIdentifier>{91c169f4-1416-4c51-8643-d2414856013a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\UI\ResultUI">
       <UniqueIdentifier>{f02b0b99-e0db-4825-957c-9293dff3af38}</UniqueIdentifier>
     </Filter>
@@ -160,9 +157,6 @@
     </ClCompile>
     <ClCompile Include="Source\UI\ResultUI\ResultUI.cpp">
       <Filter>Source\UI\ResultUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UI\LradUI\LradUI.cpp">
-      <Filter>Source\UI\LradUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\UI\InGameUI\InGameUI.cpp">
       <Filter>Source\UI\InGameUI</Filter>
@@ -304,9 +298,6 @@
     </ClInclude>
     <ClInclude Include="Source\UI\ResultUI\ResultUI.h">
       <Filter>Source\UI\ResultUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UI\LradUI\LradUI.h">
-      <Filter>Source\UI\LradUI</Filter>
     </ClInclude>
     <ClInclude Include="Source\UI\InGameUI\InGameUI.h">
       <Filter>Source\UI\InGameUI</Filter>
