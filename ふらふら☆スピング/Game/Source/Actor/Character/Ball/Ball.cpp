@@ -425,34 +425,34 @@ void Ball::ResetBall()
 
 void Ball::Render(RenderContext& rc)
 {
-    if (m_isMagicBall)
+    if (!m_hasHit)
     {
-        // 【魔球（10%）の表示ルール】
-        if (m_throwTimer < 1.2f)
+        if (m_isMagicBall)
         {
-            return; // 1.2秒未満は映さない
+            if (m_throwTimer < 1.2f)
+            {
+                return; 
+            }
+            if (m_position.z >= 5000.0f && m_position.z < 6000.0f)
+            {
+                return; 
+            }
         }
-        if (m_throwTimer >= 1.8f && m_throwTimer < 2.4f)
+        else
         {
-            return; // 1.7秒〜2.5秒の間は消す
+            if (m_throwTimer < 1.2f)
+            {
+                return;
+            }
         }
-        // ※「1.2〜1.7秒」と「2.5秒以降」は return されずに下の描画へ進む
-    }
-    else
-    {
-        // ★★★【通常プレイ中】の1.3秒非表示処理 ★★★
-        if (m_throwTimer < 1.2f)
-        {
-            return;
-        }
-    }
-      
-        // 一定距離で消す（通常プレイ中のみ）
+
+        // 一定距離で消す（通常プレイ中のバッター手前での消失処理など）
         if (m_position.z > 7000.0f)
         {
             return;
         }
+    }
 
-    //モデルの描画
+    // モデルの描画（打った後は無条件でここに来るため、必ず描画されます）
     m_modelRender.Draw(rc);
 }
