@@ -327,22 +327,16 @@ void Result::Render(RenderContext& rc)
 			percentBuf[--pLen] = L'\0';
 		}
 
-		// --- 上の行：ボーナス表記に変更 ---
-		// 「%%」と2つ書くことで、画面に1つの「%」が表示されます
+		// --- 上の行：ボーナス表記 ---
 		swprintf_s(buf, L"ぐるぐる回数: %d回  ボーナス(+%ls%%)", m_displayGuruguru, percentBuf);
 		m_fontGuruguru.SetText(buf);
 		m_fontGuruguru.SetPosition(-630, 120, 0);
 		m_fontGuruguru.SetColor(1, 1, 1, 1);
 		m_fontGuruguru.Draw(rc);
 
-		// --- 下の行：計算式の表示 ---
-		wchar_t mulBuf[64];
-		swprintf_s(mulBuf, L"%.4f", currentMul);
-		int len = (int)wcslen(mulBuf);
-		while (len > 0 && mulBuf[len - 1] == L'0') { mulBuf[--len] = L'\0'; }
-		if (len > 0 && mulBuf[len - 1] == L'.') { mulBuf[--len] = L'\0'; }
-
-		swprintf_s(buf, L"最終距離 = %.2fm * %ls", m_displayKm / 100.0f, mulBuf);
+		// --- 下の行：計算式の表示（元の距離 × 〇〇% 形式） ---
+		// 「%%」と2つ重ねて書くことで、画面に1つの「%」が表示されます
+		swprintf_s(buf, L"最終スコア = %.2fm × %ls%%", m_displayKm / 100.0f, percentBuf);
 		m_fontFormula.SetText(buf);
 		m_fontFormula.SetPosition(-630, 40, 0);
 		m_fontFormula.SetColor(1, 1, 1, 1);
