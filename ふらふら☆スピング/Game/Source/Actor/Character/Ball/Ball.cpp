@@ -81,7 +81,20 @@ void Ball::Update()
         {
             m_velocity.y -= 13.5f * dt;
 
-            m_position += m_velocity * dt;
+            // ★ 1. 元の m_velocity を破壊しないよう、このフレーム専用の速度変数を作る
+            Vector3 currentFrameVelocity = m_velocity;
+
+            // ★ 2. スローボールかつ打撃前で、バッター手前に来たら一時変数の速度だけを半分にする
+            if (!m_hasHit && m_ballType == SlowBall)
+            {
+                if (m_position.z >= 5420.0f)
+                {
+                    currentFrameVelocity *= 0.4f;
+                }
+            }
+
+            // ★ 3. 安全に計算された currentFrameVelocity を使って座標を移動させる
+            m_position += currentFrameVelocity * dt;
 
             if (!m_hasHit)
             {
@@ -274,25 +287,45 @@ void Ball::Throw(const Vector3& targetPos)
     {
         m_isMagicBall = false; // 90%は通常球
     }
-    int type = rand() % 4;
-
-    switch (type)
+    //デバック用スローボール
+   /* if (rand() % 2 == 0)
     {
-    case 0:
+        m_ballType = SlowBall;
+    }
+    else
+    {
         m_ballType = Straight;
-        break;
+    }*/
 
-    case 1:
-        m_ballType = ShakeHorizontal;
-        break;
+    // 【確率調整】0〜99の乱数を取得
+    int rate = rand() % 100;
 
-    case 2:
-        m_ballType = ShakeVertical;
-        break;
-
-    case 3:
-        m_ballType = Curve;
-        break;
+    if (rate < 30)
+    {
+        // 0〜29（30%の確率）でストレート
+        m_ballType = Straight;
+    }
+    else if (rate < 40)
+    {
+        // 30〜39（10%の確率）でスローボール
+        m_ballType = SlowBall;
+    }
+    else
+    {
+        // 40〜99（残りの60%）を他の3球種に20%ずつ分配
+        int type = rand() % 3;
+        switch (type)
+        {
+        case 0:
+            m_ballType = ShakeHorizontal;
+            break;
+        case 1:
+            m_ballType = ShakeVertical;
+            break;
+        case 2:
+            m_ballType = Curve;
+            break;
+        }
     }
 
     //カーブ

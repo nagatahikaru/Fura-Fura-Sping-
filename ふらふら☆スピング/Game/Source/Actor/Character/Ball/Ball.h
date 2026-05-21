@@ -8,7 +8,8 @@ class Ball :public Character
 		Straight,        //真っ直ぐ
 		Curve,           //カーブ
 		ShakeHorizontal, //横揺れ
-		ShakeVertical    //縦揺れ
+		ShakeVertical ,   //縦揺れ]
+		SlowBall
 	};
 
 	BallType m_ballType = Straight;
