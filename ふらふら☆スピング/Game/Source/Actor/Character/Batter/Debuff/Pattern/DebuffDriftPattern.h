@@ -29,11 +29,34 @@ public:
 
     void Update(Batter* batter) override;
 
+	//角度の増加速度を設定する関数
+	//入力は倍率で、例えば1.0fなら通常の速度、2.0fなら倍速になります。
+    void SetSpeed(float speed)
+    {
+        m_speed *= speed;
+	}
+
+	//勝手に流れていく力を設定する関数
+	//入力は倍率で、例えば1.0fなら通常の力、2.0fなら倍の力になります。
+    void SetForce(float force)
+    {
+        m_force *= force;
+	}
+
 private:
     void UpdateTime()
     {
         m_waveTime += g_gameTime->GetFrameDeltaTime();
-	}
+    }
+
+    void AngleUpdate()
+    {
+        if (m_angle >= 360.0f)
+        {
+            m_angle -= 360.0f;
+        }
+        m_angle += m_waveTime * m_speed;
+    }
 
     // サイン波を生成する関数
     // 例えば、震えの強さを時間と周波数に基づいて変化させるために使用できます。
@@ -48,12 +71,15 @@ private:
     {
         return cosf(m_waveTime * freq);
     }
-    void VerticalDrift(Batter* batter);
-    void HorizontalDrift(Batter* batter);
+
 	void RandomDrift(Batter* batter);
 
 private:	
     DriftType m_type;
-    float m_waveTime = 0.0f;
+	float m_force = 1.0f; // デバフの強さを管理する変数
+	float m_waveTime = 0.0f;// デバフの時間経過を管理する変数
+	float m_speed = 1.0f; // デバフの強さを管理する変数
+	float m_angle = 0.0f; // 入力が流される角度（単位は度）
+	Vector2 m_inputOffset = Vector2::Zero; // 入力が流されるオフセット値
 };
 

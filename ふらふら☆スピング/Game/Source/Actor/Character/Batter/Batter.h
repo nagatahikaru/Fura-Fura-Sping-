@@ -172,12 +172,6 @@ public:
         m_meetCursorWorldPos = CalcCursorWorldPos();
     }
 
-    // カーソル位置リセット
-    void ResetCursorPosition()
-    {
-		m_meetCursorWorldPos = Vector3::Zero;
-    }
-
     // カーソルモード切り替え
     void SetCursorMode(bool flag)
     {
@@ -186,12 +180,6 @@ public:
 
     // ワールド座標変換
     Vector3 CalcCursorWorldPos();
-
-    // カーソル座標取得
-    Vector3 GetCursorWorldPos() const
-    {
-        return m_meetCursorWorldPos;
-    }
 
 	// 揺れによるカーソル揺れのオフセット追加
     void SetShakeCursorOffset(const Vector3& offset)
@@ -203,12 +191,6 @@ public:
     void SetNoiseCursorOffset(const Vector3& offset)
     {
         m_noiseCursorOffset = offset;
-	}
-
-	// 援護によるカーソル揺れのオフセット追加
-    void SetAssistCursorOffset(const Vector3& offset)
-    {
-        m_assistCursorOffset = offset;
 	}
 
 	// ドリフトによるカーソル揺れのオフセット追加
@@ -228,9 +210,10 @@ public:
         m_cursorMoveScale *= scale;
     }
 
-    void SetInputScale(float x,float y)
+    //　反転カーソル入力スケール
+    void SetInversionInputScale(float x,float y)
     {
-        m_inputScale = Vector2(x, y);
+        m_inversioninputScale = Vector2(x, y);
     }
 
     void SetInputOffset(float x, float y)
@@ -241,6 +224,17 @@ public:
     void SetMeatRange(float range)
     {
         m_meatRange = range;
+	}
+
+	// カーソル移動の遅延
+    void SetInputMoveScale(Vector3 scale)
+    {
+        m_inputdelayScale = scale;
+    }
+
+    void SetDelayFrag(bool flag)
+    {
+        m_isDelayFrag = flag;
 	}
 
     Vector3 GetMeetCursorPosition() const
@@ -257,6 +251,11 @@ public:
             m_driftCursorOffset+
             m_magnetCursorOffset;
     }
+
+    Vector2 GetInputScale() const
+    {
+        return m_inputScale;
+	}
 
     //=========================================================
     // bat control
@@ -497,8 +496,12 @@ private:
     bool m_isCursorMode = true;
 
 	// カーソル入力スケール
-    Vector2 m_inputScale = Vector2(1.0f, 1.0f);
+	Vector2 m_inputScale = Vector2(1.0f, 1.0f);
 
+	// 反転カーソル入力スケール
+    Vector2 m_inversioninputScale = Vector2(1.0f, 1.0f);
+
+    // ドリフト入力スケール
 	Vector2 m_driftInputScale = Vector2(1.0f, 1.0f);
 
     // ミート位置
@@ -531,7 +534,9 @@ private:
 	// ドリフトによるカーソルオフセットの減衰速度
 	Vector3 m_driftCursorOffset = Vector3::Zero;
 
-    std::deque<Vector3> m_inputHistory;
+	Vector3 m_inputdelayScale = Vector3(1.0f, 1.0f, 1.0f);
+
+    bool m_isDelayFrag = false;
 
     //=========================================================
     // bat
