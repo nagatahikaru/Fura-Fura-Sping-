@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "Ball.h"
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
@@ -21,9 +21,9 @@ bool Ball::Start()
 {
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-	m_modelRender.SetScale({ 9.0f,9.0f,9.0f });
+	m_modelRender.SetScale({ 8.5f,8.5f,8.5f });
 
-	m_position = { -0.0f, 700.0f, 1000.0f };
+	m_position = { -0.0f, 650.0f, 1000.0f };
 	m_modelRender.SetPosition(m_position);
 
     
@@ -221,7 +221,7 @@ void Ball::Update()
     SetPosition(m_position);
 
     //距離に応じてスケール変更
-    float minZ = 1000.0f;
+    float minZ = 500.0f;
     float maxZ = 9500.0f;
 
     float t = (m_position.z - minZ) / (maxZ - minZ);
@@ -229,7 +229,7 @@ void Ball::Update()
     if (t < 0.0f) t = 0.0f;
     if (t > 1.0f) t = 1.0f;
 
-    float scale = 5.0f * (1.0f - t * 0.8f);
+    float scale = 4.0f * (1.0f - t * 0.8f);
 
     //最小サイズ制限（消え防止）
     if (scale < 3.0f) scale = 2.0f;
