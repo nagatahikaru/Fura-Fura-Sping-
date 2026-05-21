@@ -41,7 +41,7 @@ bool Game::Start()
 	m_ball = FindGO<Ball>("ball");
 	m_catcher = FindGO<Catcher>("catcher");
 	// ★ カウントダウンUIを表示
-	m_start1 =NewGO<Start1>(0, "start1");
+	m_start1 = NewGO<Start1>(0, "start1");
 
 	// ボールをカメラにセット
 	if (m_gameCamera && m_ball) {
@@ -79,7 +79,7 @@ void Game::Update()
 	m_prevGuruGuru = g;
 
 	if (m_InGameUI) {
-		m_InGameUI->SetBallCount(3-m_shots);
+		m_InGameUI->SetBallCount(3 - m_shots);
 	}
 
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止
@@ -181,14 +181,15 @@ void Game::Update()
 		m_InGameUI->SetFontVisble(true);
 		m_InGameUI->SetReplayVisible(false);
 	}
-	else if(m_cameraMode==Camera_Ball||m_cameraMode==Camera_BackBall)
+	else if (m_cameraMode == Camera_Ball || m_cameraMode == Camera_BackBall)
 	{
 		m_cameraType = Camera_Ball;
 		m_InGameUI->SetUIVisible(false);
 		m_InGameUI->SetFontVisble(true);
 		m_InGameUI->SetReplayVisible(false);
+		m_InGameUI->SetniceVisible(true);
 	}
-	else if(m_cameraMode==Camera_Replay)
+	else if (m_cameraMode == Camera_Replay)
 	{
 		m_cameraType = Camera_Replay;
 		m_InGameUI->SetUIVisible(false);
@@ -314,11 +315,11 @@ void Game::Update()
 		// ★★★ リプレイスキップ（Bボタン3秒長押し） ★★★
 		if (g_pad[0]->IsTrigger(enButtonB)) {
 
-				// 即リザルトへ
-				m_isReplayPlaying = false;
-				m_cameraMode = Camera_Catcher;
-				GoToResult();
-				return;
+			// 即リザルトへ
+			m_isReplayPlaying = false;
+			m_cameraMode = Camera_Catcher;
+			GoToResult();
+			return;
 		}
 		return;
 	}
@@ -475,7 +476,7 @@ void Game::OnOver100m()
 
 			// ★ フェードインは 1.1 秒後に実行
 			m_fadeInDelayTimer = 1.0f;
-		};
+			};
 	}
 	m_canFastForward = false;
 	m_hasTriggered100m = true;
@@ -519,7 +520,7 @@ void Game::StartReplay(int index)
 		m_ball->m_isMove = false;           // ← 動作停止
 		m_ball->m_hasHit = false;           // ← ヒットフラグ解除
 	}
-	
+
 
 	if (m_InGameUI) {
 		m_InGameUI->SetReplayVisible(true);
@@ -624,5 +625,5 @@ void Game::OnPitcherThrow()
 
 void Game::Render(RenderContext& rc)
 {
-	
+
 }

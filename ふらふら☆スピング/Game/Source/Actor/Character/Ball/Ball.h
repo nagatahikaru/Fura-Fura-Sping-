@@ -20,7 +20,7 @@ class Ball :public Character
 	virtual bool Start();
 	virtual void Update();
 	virtual void Render(RenderContext& rc);
-
+	bool IsHit() const { return m_hasHit; }
 	//ボールを投げる関数
 	void Throw(const Vector3& targetPos);
 	void SetPosition(const Vector3& pos);
@@ -63,5 +63,7 @@ class Ball :public Character
 	bool m_hasShownPrediction = false;
 	float m_storedPredictedDistance = 0.0f;
 	bool m_hasPlayedSE6 = false;
+	float m_replayTimer = 0.0f;
+	bool m_isMagicBall = false;
 };
 

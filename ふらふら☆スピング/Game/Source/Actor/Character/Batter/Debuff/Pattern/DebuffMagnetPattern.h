@@ -1,17 +1,31 @@
 #pragma once
 #include "DebuffPatternBase.h"
 
+/// DebuffMagnetPatternクラスの実装
+/// 誘導系のデバフの処理を行います。
+/// 誘導系のデバフは、プレイヤーのカーソルを特定の方向に引き寄せることで、
+/// プレイヤーの操作を妨害する効果を持ちます。
 class DebuffMagnetPattern : public DebuffPatternBase
 {
 public:
+
+    
 
     enum MagnetType
     {
         Vertical,
         Horizontal, 
-        Heavy
+        Random
     };
 
+    /// <summary>
+    /// 誘導の大まかな方向を設定する関数です。
+    /// </summary>
+    /// <param name="type">誘導の種類を指定します。
+    /// <para>Vertical はカーソルを上下に引き寄せるデバフ。</para>
+    /// <para>Horizontal はカーソルを左右に引き寄せるデバフ。</para>
+    /// <para>Heavy はランダムな方向にカーソルを引き寄せるデバフです。</para>
+    /// </param>
     void SetType(MagnetType type);
     void SetRandomSpotRadius(float radius)
     {

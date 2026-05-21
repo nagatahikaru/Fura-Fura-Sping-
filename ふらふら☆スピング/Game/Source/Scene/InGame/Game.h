@@ -76,6 +76,7 @@ public:
 	bool m_hasTriggered100m = false;
 	void OnOver100m();
 	void StartEndFade();
+	bool IsBallLanded() const { return m_isBallLanded; }
 	struct ReplayFrame {
 		Vector3 ballPos;
 		Vector3 ballVel;
@@ -152,7 +153,7 @@ private:
 	int   m_bestShotIndex = -1;
 	std::vector<Vector3> m_currentReplay; // 再生中の軌道
 	bool m_shouldStartReplay = false;
-	float m_replayDuration = 5.0f;   // リプレイは5秒で打ち切り
+	float m_replayDuration = 4.5f;   // リプレイは5秒で打ち切り
 	Vector3 m_initialVelocities[3];   // 1球目〜3球目の投球直後の速度
 	int m_replayStartFrame = 0;
 	int m_replayPitchFrame = 0;

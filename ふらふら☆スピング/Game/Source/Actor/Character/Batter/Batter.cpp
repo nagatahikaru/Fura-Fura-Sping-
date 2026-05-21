@@ -18,9 +18,6 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
 }
 
 namespace {
-	float PI= 3.1415f / 180.0f;
-	float ZERO_FLOAT = 0.0f;
-
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
 	std::string FILE_PATH_DDS = (".tka");
 	std::string FILE_PATH_ANIMATION[3] = {
@@ -166,7 +163,7 @@ void Batter::Update()
 		g_effectManager->AllStopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
-	// ★ 遅延ヒット処理
+	
 	// ★ 遅延ヒット処理
 	m_stateMachine->Update();
 	// ★ フラグが切り替わったら、ぐるぐるバットの処理を行う
@@ -350,11 +347,12 @@ void Batter::SetCursorPosition()
 	if (m_isCursorMode)
 	{
 		Vector3 move;
-		move.x = lx;
-		move.y = ly;
+		move.x = lx * m_inputScale.x*m_driftInputScale.x;
+		move.y = ly * m_inputScale.y*m_driftInputScale.y;
 		move.z = 0.0f;
 
-		float speed = 500.0f;
+		float speed =
+			500.0f * m_cursorMoveScale;
 
 		// プレイヤー入力だけ
 		m_meetPosition += move * speed * dt;
@@ -367,8 +365,10 @@ void Batter::SetCursorPosition()
 	}
 
 	// デバフ適用後の最終座標
+	Vector3 finalOffset = GetFinalCursorOffset();
+
 	Vector3 finalPos =
-		m_meetPosition + m_cursorOffset;
+		m_meetPosition + finalOffset;
 
 	m_inGameUI->SetMeetCursorPosition(finalPos);
 }
@@ -378,7 +378,11 @@ Vector3 Batter::CalcCursorWorldPos()
 {
 	float screenW = 1920.0f;
 	float screenH = 1080.0f;
-	Vector3 finalPos =m_meetPosition + m_cursorOffset;
+	Vector3 finalOffset = GetFinalCursorOffset();
+
+
+	Vector3 finalPos =
+		m_meetPosition + finalOffset;
 	// UI座標（中心基準なら変換必要）
 	float mouseX =
 		finalPos.x + screenW * 0.5f;
@@ -431,7 +435,7 @@ void Batter::HitBat()
 	// ③ 距離判定
 	float dist = (ballPos - cursor).Length();
 
-	if (dist < m_hitRange)
+	if (dist < m_meatRange)
 	{
 		Vector3 hitDir = ballPos - cursor;
 
@@ -521,7 +525,6 @@ void Batter::UpdateBatAim()
 
 void Batter::BatHitBoxPosition()
 {
-
 	// ★ カーソル位置を使う
 	Vector3 pos = m_meetCursorWorldPos;
 
@@ -539,43 +542,18 @@ void Batter::BatHitBoxPosition()
 
 void Batter::ResetSwing()
 {
-	// 1. スイングアニメーション・姿勢を初期状態にリセット
+	// ★ スイングアニメーションをリセット
 	m_transform.m_rotation = m_initialRotation;
-	if (m_characterModel) {
-		m_characterModel->SettRotation(m_initialRotation);
-	}
+	m_characterModel->SettRotation(m_initialRotation);
 
-	// 2. 【最重要】プレイヤーがスティックで動かしたカーソル位置の累積を完全にゼロに戻す
-	m_meetPosition = Vector3::Zero;       // ← これが残っていたのが原因！
-	m_cursorOffset = Vector3::Zero;       // デバフ用のオフセットもリセット
-	m_meetCursorWorldPos = Vector3::Zero; // 3D空間の衝突判定用座標もクリア
-
-	// 3. 各種状態フラグをリセット
-	m_isRotation = false;   // ぐるぐる状態解除
-	m_isCursorMode = false; // カーソル操作モードを一旦オフに
-
-	// 4. 【追加】即座に UI 側にもリセットされたクリーンな座標（ゼロ）を通知する
-	if (m_inGameUI) {
-		m_inGameUI->SetMeetCursorPosition(Vector3::Zero);
-	}
-}
-
-void Batter::SetCursorMode(bool flag)
-{
-	m_isCursorMode = flag;
-}
-
-void Batter::PlaySwingAnimation()
-{
-	// ★ スイングアニメーションを再生
-	m_characterModel->PlayAnimation(enAnimationClip_Swing,1.0);
-
-	// ★ スイング開始時にカーソル位置を固定したいならここで処理
-}
-
-void Batter::ResetCursorPosition()
-{
+	// ★ カーソル位置もリセット
 	m_meetPosition = Vector3::Zero;
+
+	// ★ ぐるぐるバット関連もリセット
+	m_isRotation = false;
+
+	// ★ カーソルモードもリセット
+	m_isCursorMode = false;
 }
 
 /** 演出関連コード */

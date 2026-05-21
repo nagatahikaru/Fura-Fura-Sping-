@@ -31,7 +31,7 @@ void DebuffMagnetPattern::Update(Batter* batter)
 	case Horizontal:
 		ApplyHorizontalMagnet(batter);
 		break;
-	case Heavy:
+	case Random:
 		ApplyRandomMagnet(batter);
 		break;
 	default:
@@ -63,7 +63,7 @@ void DebuffMagnetPattern::ApplyRandomMagnet(Batter* batter)
 
 	// 少しずつ寄せる（ここがデバフの強さ）
 	m_randomCursorMovePwer = toTarget * 0.05f;
-	batter->AddCursorOffset(m_randomCursorMovePwer);
+	batter->SetMagnetCursorOffset(m_randomCursorMovePwer);
 	//一定時間経過後、再度ランダムなベクトルを取得
 	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
 	if (m_randomCursorMoveTimer <= MyNamespace::ZERO_FLOAT || distance <= 0.0f)
@@ -95,7 +95,7 @@ void DebuffMagnetPattern::ApplyHorizontalMagnet(Batter* batter)
 
 	// 少しずつ寄せる（ここがデバフの強さ）
 	m_randomCursorMovePwer = toTarget * 0.05f;
-	batter->AddCursorOffset(m_randomCursorMovePwer);
+	batter->SetMagnetCursorOffset(m_randomCursorMovePwer);
 	//一定時間経過後、再度ランダムなベクトルを取得
 	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
 	if (m_randomCursorMoveTimer <= MyNamespace::ZERO_FLOAT || distance <= 0.0f)
@@ -127,7 +127,7 @@ void DebuffMagnetPattern::ApplyVerticalMagnet(Batter* batter)
 
 	// 少しずつ寄せる（ここがデバフの強さ）
 	m_randomCursorMovePwer = toTarget * 0.05f;
-	batter->AddCursorOffset(m_randomCursorMovePwer);
+	batter->SetMagnetCursorOffset(m_randomCursorMovePwer);
 	//一定時間経過後、再度ランダムなベクトルを取得
 	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
 	if (m_randomCursorMoveTimer <= MyNamespace::ZERO_FLOAT || distance <= 0.0f)

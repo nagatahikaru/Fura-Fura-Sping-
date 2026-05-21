@@ -159,7 +159,7 @@ void Pitcher::Update()
 
 	if (m_isThrowing)
 	{
-		if (m_timer > 1.0f) 
+		if (m_timer > 1.0f)
 		{
 			m_isThrowing = false;
 		}

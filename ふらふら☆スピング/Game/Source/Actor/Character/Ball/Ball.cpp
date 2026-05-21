@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "Ball.h"
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
@@ -19,6 +19,7 @@ Ball::~Ball()
 
 bool Ball::Start()
 {
+
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
 	m_modelRender.SetScale({ 8.5f,8.5f,8.5f });
@@ -26,7 +27,7 @@ bool Ball::Start()
 	m_position = { -0.0f, 650.0f, 1000.0f };
 	m_modelRender.SetPosition(m_position);
 
-    
+
     // ★ UI に初期位置を送る（これが重要）
     Game* game = FindGO<Game>("game");
     if (game) {
@@ -37,14 +38,14 @@ bool Ball::Start()
         }
     }
 
-	//タイマー初期化
-	m_throwTimer = 0.0f;
+    //タイマー初期化
+    m_throwTimer = 0.0f;
+    m_isMagicBall = false;
+    m_collisionObject = new CollisionObject();
+    m_collisionObject->CreateSphere(m_position, Quaternion::Identity, 25.0f);
+    m_collisionObject->Update();
 
-	m_collisionObject = new CollisionObject();
-	m_collisionObject->CreateSphere(m_position, Quaternion::Identity, 25.0f);
-	m_collisionObject->Update();
-
-	return true;
+    return true;
 }
 
 void Ball::Update()
@@ -52,191 +53,198 @@ void Ball::Update()
     Game* game = FindGO<Game>("game");
     if (!game) return;  // ← 最重要
     bool isReplay = (game && game->m_isReplayPlaying);
-    if(!isReplay){
+    if (!isReplay) {
 
-    if (m_isPaused) return;
-    if (!game->IsGameStarted()) return;
-    if (game->m_isHitStop) return;
-    if (game->m_isPaused) return;
+        if (m_isPaused) return;
+        if (!game->IsGameStarted()) return;
+        if (game->m_isHitStop) return;
+        if (game->m_isPaused) return;
 
-    float dt = (1.0f / 60.0f) * game->GetTimeScale();
+        float dt = (1.0f / 60.0f) * game->GetTimeScale();
 
-    m_throwTimer += dt;
+        m_throwTimer += dt;
 
-    if (m_throwTimer >= 2.2f && !m_isMove)
-    {
-        ResetBall(); 
+        if (m_throwTimer >= 2.2f && !m_isMove)
+        {
+            ResetBall();
 
-        Throw({ 0.0f, -20.0f, 0.0f });
-        m_throwTimer = 0.0f;
-    }
-
-    if (!m_hasHit)
-    {
-        m_velocity.x += m_curveDir * 2.0f * dt;
-    }
-
-   if (m_isMove)
-{
-    m_velocity.y -= 13.5f * dt;
-
-        m_position += m_velocity * dt;
+            Throw({ 0.0f, -20.0f, 0.0f });
+            m_throwTimer = 0.0f;
+        }
 
         if (!m_hasHit)
         {
-            switch (m_ballType)
-            {
-            case ShakeHorizontal:
-                m_position.x += sinf(m_position.z * 0.01f) * 3.0f;
-                break;
-
-            case ShakeVertical:
-                m_position.y += sinf(m_position.z * 0.01f) * 3.0f;
-                break;
-
-            case Straight:
-                break;
-
-            case  Curve:
-            default:
-                break;
-            }
+            m_velocity.x += m_curveDir * 2.0f * dt;
         }
 
+        if (m_isMove)
+        {
+            m_velocity.y -= 13.5f * dt;
 
-        // ★ リアルタイム飛距離更新
-       // 着地時の最終距離
-      // ★ リアルタイム飛距離更新（HitBall してから着地まで）
-        if (m_hasHit) {
+            m_position += m_velocity * dt;
 
-            float distance = m_hitStartPos.z - m_position.z;
-            if (distance < 0) distance = 0;
+            if (!m_hasHit)
+            {
+                switch (m_ballType)
+                {
+                case ShakeHorizontal:
+                    m_position.x += sinf(m_position.z * 0.01f) * 3.0f;
+                    break;
 
-            if (game) {
-                game->SetKmValue(distance);
+                case ShakeVertical:
+                    m_position.y += sinf(m_position.z * 0.01f) * 3.0f;
+                    break;
 
-                if (!m_hasShownPrediction && distance >= 10500.0f) {
+                case Straight:
+                    break;
 
-                    float predicted = PredictLandingDistance();
-                    m_storedPredictedDistance = predicted;
+                case  Curve:
+                default:
+                    break;
+                }
+            }
+
+
+            // ★ リアルタイム飛距離更新
+           // 着地時の最終距離
+          // ★ リアルタイム飛距離更新（HitBall してから着地まで）
+            if (m_hasHit) {
+
+                float distance = m_hitStartPos.z - m_position.z;
+                if (distance < 0) distance = 0;
+
+                if (game) {
+                    game->SetKmValue(distance);
+
+                    if (!m_hasShownPrediction && distance >= 10500.0f) {
+
+                        float predicted = PredictLandingDistance();
+                        m_storedPredictedDistance = predicted;
+                        InGameUI* ui = game->GetInGameUI();
+                        if (ui) {
+                            ui->ShowPrediction(predicted);
+                        }
+
+                        m_hasShownPrediction = true;
+                    }
+
+                    // ★ 空中で100m超えた瞬間にイベント発火
+                    if (!game->m_hasTriggered100m && distance >= 10800.0f) {
+                        game->OnOver100m();
+                        game->m_hasTriggered100m = true;
+                    }
+                }
+            }
+
+
+
+            // Z>=5500 の固定処理
+            if (!m_hasFixed && m_position.z >= 6000.0f) {
+                if (game) {
                     InGameUI* ui = game->GetInGameUI();
                     if (ui) {
-                        ui->ShowPrediction(predicted);
+                        ui->FixBallUI(m_position);
+                    }
+                }
+                m_hasFixed = true;
+            }
+
+            // ★ ストライク判定（Z が 7000 を超えた瞬間）
+            if (!m_hasPlayedSE6 && m_position.z >= 7270.0f) {
+                g_soundManager->PlaySE(Sound::enSound_SE6);
+                m_hasPlayedSE6 = true;
+            }
+
+            // ★ ストライク判定（Z が 7000 を超えた瞬間）
+            if (!m_hasStrike && m_position.z >= 7700.0f) {
+                g_soundManager->PlaySE(Sound::enSound_SE11);
+                Game* game = FindGO<Game>("game");
+                if (game) {
+                    InGameUI* ui = game->GetInGameUI();
+                    if (ui) {
+                        ui->StartStrikeAnim();   // ← UI にアニメ開始を指示
+                    }
+                }
+                m_hasStrike = true;  // 二重発火防止
+            }
+
+            // ★ 空振り判定（打撃ゾーンを通過したら次へ）
+            if (!m_hasHit && m_position.z > 9000.0f) {
+                Game* game = FindGO<Game>("game");
+                if (game) {
+                    InGameUI* ui = game->GetInGameUI();
+                    if (ui) {
+                        ui->OnStrike(game->m_shots);   // 今の球にバツを付ける
+                        ui->ResetBatAndMeetOnly();     // ★ 追加：空振りした瞬間にバットとミートをリセット
+                    }
+                    game->SetKmValue(0);   // 空振りは距離0
+                    game->OnBallLanded();  // 次の球へ
+                }
+                m_isMove = false;
+                return;
+            }
+
+            if (m_position.y <= 0.0f)
+            {
+                m_position.y = 0.0f;
+                m_isMove = false;
+
+                Game* game = FindGO<Game>("game");
+                if (game) {
+                    float finalDistance = 0.0f;
+                    InGameUI* ui = game->GetInGameUI();
+
+                    if (m_hasHit) {
+                        // ★ ポイント1：UIが表示されているなら、UIが持っている数値をそのまま採用する
+                        if (m_hasShownPrediction) {
+                            // Ballが計算した「生の数値」をそのまま使う（単位をcmに合わせる）
+                            finalDistance = m_storedPredictedDistance;
+                        }
+                        else {
+                            // 予測が出る前に着地した場合（ボテボテのゴロなど）
+                            float dz = m_position.z - m_hitStartPos.z;
+                            finalDistance = -dz;
+                        }
+                        m_hasHit = false;
                     }
 
-                    m_hasShownPrediction = true;
-                }
-
-                // ★ 空中で100m超えた瞬間にイベント発火
-                if (!game->m_hasTriggered100m && distance >= 10800.0f) {
-                    game->OnOver100m();
-                    game->m_hasTriggered100m = true;
+                    // ★ ポイント2：ここで確実に finalDistance をセットする
+                    game->SetKmValue(finalDistance);
+                    game->OnBallLanded();
                 }
             }
-        }
 
-
-
-        // Z>=5500 の固定処理
-        if (!m_hasFixed && m_position.z >= 6000.0f) {
-            if (game) {
-                InGameUI* ui = game->GetInGameUI();
-                if (ui) {
-                    ui->FixBallUI(m_position);
-                }
+            if (m_isRecording) {
+                m_replayPath.push_back(m_position);
             }
-            m_hasFixed = true;
-        }
-
-        // ★ ストライク判定（Z が 7000 を超えた瞬間）
-        if (!m_hasPlayedSE6 && m_position.z >= 7270.0f) {
-            g_soundManager->PlaySE(Sound::enSound_SE6);
-            m_hasPlayedSE6 = true;
-        }
-
-        // ★ ストライク判定（Z が 7000 を超えた瞬間）
-        if (!m_hasStrike && m_position.z >= 7700.0f) {
-            g_soundManager->PlaySE(Sound::enSound_SE11);
-            Game* game = FindGO<Game>("game");
-            if (game) {
-                InGameUI* ui = game->GetInGameUI();
-                if (ui) {
-                    ui->StartStrikeAnim();   // ← UI にアニメ開始を指示
-                }
-            }
-            m_hasStrike = true;  // 二重発火防止
-        }
-
-        // ★ 空振り判定（打撃ゾーンを通過したら次へ）
-        if (!m_hasHit && m_position.z > 9000.0f) {
-            Game* game = FindGO<Game>("game");
-            if (game) {
-                InGameUI* ui = game->GetInGameUI();
-                if (ui) {
-                    ui->OnStrike(game->m_shots);   // 今の球にバツを付ける
-                    ui->ResetBatAndMeetOnly();     // ★ 追加：空振りした瞬間にバットとミートをリセット
-                }
-                game->SetKmValue(0);   // 空振りは距離0
-                game->OnBallLanded();  // 次の球へ
-            }
-            m_isMove = false;
-            return;
         }
       
-        if (m_position.y <= 0.0f)
-        {
-            m_position.y = 0.0f;
-            m_isMove = false;
-
-            Game* game = FindGO<Game>("game");
-            if (game) {
-                float finalDistance = 0.0f;
-                InGameUI* ui = game->GetInGameUI();
-
-                if (m_hasHit) {
-                    // ★ ポイント1：UIが表示されているなら、UIが持っている数値をそのまま採用する
-                    if (m_hasShownPrediction) {
-                        // Ballが計算した「生の数値」をそのまま使う（単位をcmに合わせる）
-                        finalDistance = m_storedPredictedDistance;
-                    }
-                    else {
-                        // 予測が出る前に着地した場合（ボテボテのゴロなど）
-                        float dz = m_position.z - m_hitStartPos.z;
-                        finalDistance = -dz;
-                    }
-                    m_hasHit = false;
-                }
-
-                // ★ ポイント2：ここで確実に finalDistance をセットする
-                game->SetKmValue(finalDistance);
-                game->OnBallLanded();
-            }
-        }
-
-        if (m_isRecording) {
-            m_replayPath.push_back(m_position);
-        }
-    }
-
-    SetPosition(m_position);
+　　SetPosition(m_position);
 
     //距離に応じてスケール変更
     float minZ = 500.0f;
     float maxZ = 9500.0f;
 
-    float t = (m_position.z - minZ) / (maxZ - minZ);
+        float t = (m_position.z - minZ) / (maxZ - minZ);
+      
+     　 if (t < 0.0f) t = 0.0f;
+        if (t > 1.0f) t = 1.0f;
 
-    if (t < 0.0f) t = 0.0f;
-    if (t > 1.0f) t = 1.0f;
 
     float scale = 4.0f * (1.0f - t * 0.8f);
 
-    //最小サイズ制限（消え防止）
-    if (scale < 3.0f) scale = 2.0f;
+        //最小サイズ制限（消え防止）
+        if (scale < 3.0f) scale = 2.0f;
 
-    m_modelRender.SetScale({ scale, scale, scale });
-}
-
+        m_modelRender.SetScale({ scale, scale, scale });
+    }
+    else
+    {
+        // ★★★【追加】リプレイ中のボール拡大処理 ★★★
+        // 遠くに飛んでも見失わないよう、通常（最大5.0f）より大きいサイズに固定します
+        float replayScale = 13.0f;
+        m_modelRender.SetScale({ replayScale, replayScale, replayScale });
+    }
 
     // ★ UI に毎フレーム位置を送る（必須）
     if (game) {
@@ -252,12 +260,20 @@ void Ball::Update()
 
 void Ball::Throw(const Vector3& targetPos)
 {
-    
+
     Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
 
     float speed = 2000.0f + (rand() % 250);
-
+ 
+    if (rand() % 10 == 0)
+    {
+      m_isMagicBall = true; // 10%で魔球になる
+    }
+    else
+    {
+        m_isMagicBall = false; // 90%は通常球
+    }
     int type = rand() % 4;
 
     switch (type)
@@ -291,10 +307,10 @@ void Ball::Throw(const Vector3& targetPos)
     {
         m_curveDir = 0;
     }
-    
+
     m_velocity = dir * speed;
 
-	m_isMove = true;
+    m_isMove = true;
 
     // ★ リプレイ記録開始（投球開始時）
     m_replayPath.clear();
@@ -312,16 +328,16 @@ void Ball::Throw(const Vector3& targetPos)
 
 void Ball::SetPosition(const Vector3& pos)
 {
-	m_position = pos;
-	m_modelRender.SetPosition(m_position);
+    m_position = pos;
+    m_modelRender.SetPosition(m_position);
 
-	m_collisionObject->SetPosition(m_position);
+    m_collisionObject->SetPosition(m_position);
     m_collisionObject->Update();
 }
 
 bool Ball::IsMoving() const
 {
-	return m_isMove;
+    return m_isMove;
 }
 
 // ボールと指定した位置・半径の球との衝突判定
@@ -331,8 +347,8 @@ bool Ball::IsMoving() const
 // つまり、ボールの中心が指定した位置から15未満の距離にある場合に衝突とみなす
 bool Ball::CheckCollision(const Vector3& pos, float radius)
 {
-	float dist = (m_position - pos).Length();
-	return dist < (m_radius + radius);
+    float dist = (m_position - pos).Length();
+    return dist < (m_radius + radius);
 }
 
 void Ball::HitBall(const Vector3& hitDirection, float hitPower)
@@ -360,7 +376,7 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
             ui->SetStartZ(m_position.z);
-            ui->ResetBatAndMeetOnly(); 
+            ui->ResetBatAndMeetOnly();
         }
     }
 }
@@ -398,6 +414,7 @@ void Ball::ResetBall()
     m_hasStrike = false;
     m_hasShownPrediction = false;
     m_hasPlayedSE6 = false;
+    m_isMagicBall = false;
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
     if (game) {
@@ -410,13 +427,34 @@ void Ball::ResetBall()
 
 void Ball::Render(RenderContext& rc)
 {
-
-    // 一定距離で消える
-    if (m_position.z > 7000.0f)
+    if (!m_hasHit)
     {
-        return;
+        if (m_isMagicBall)
+        {
+            if (m_throwTimer < 1.2f)
+            {
+                return; 
+            }
+            if (m_position.z >= 5000.0f && m_position.z < 6000.0f)
+            {
+                return; 
+            }
+        }
+        else
+        {
+            if (m_throwTimer < 1.2f)
+            {
+                return;
+            }
+        }
+
+        // 一定距離で消す（通常プレイ中のバッター手前での消失処理など）
+        if (m_position.z > 7000.0f)
+        {
+            return;
+        }
     }
 
-	//モデルの描画
-		m_modelRender.Draw(rc);	
+    // モデルの描画（打った後は無条件でここに来るため、必ず描画されます）
+    m_modelRender.Draw(rc);
 }

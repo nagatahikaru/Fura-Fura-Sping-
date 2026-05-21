@@ -69,14 +69,18 @@ void DebuffStageState::Update()
 
 	int level = batter->GetGuruGuruBatCount() / 3;
 
+	// デバフステージの段階は、ぐるぐるバットの回数に応じて変化します。
+	// 例えば、3回振ったら段階1、6回振ったら段階2、といった具合です。
 	level = min(level, 10);
 
+	// ぐるぐるバットの回数に応じて、デバフステージの段階を更新します。
 	if (level != m_stageLevel)
 	{
 		m_stageLevel = level;
-
+		
 		debuffStage->ClearPatterns();
-		debuffStage->BuildStage(m_stageLevel);
+		debuffStage->SetRotationCount(batter->GetGuruGuruBatCount());
+		debuffStage->BuildStage(m_stageLevel);		
 	}
 
 	debuffStage->Update(batter);

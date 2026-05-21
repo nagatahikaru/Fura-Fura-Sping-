@@ -83,7 +83,7 @@ void GameCamera::Update() {
         return;   // ← 追尾も回転も一切しない
     }
 
-      // --- 回転（Yaw + Pitch） ---
+    // --- 回転（Yaw + Pitch） ---
     m_rotYaw.SetRotationDeg(Vector3::AxisY, m_yaw);
 
     m_rotPitch.SetRotationDeg(Vector3::AxisX, m_pitch);
@@ -131,6 +131,10 @@ void GameCamera::Update() {
     else {
         m_target = m_cameraPos - m_forward * 100.0f;
     }
+    float minCameraHeight = 300.0f;
+    if (m_cameraPos.y < minCameraHeight) {
+        m_cameraPos.y = minCameraHeight;
+    }
 
     // --- カメラ反映 ---
     g_camera3D->SetPosition(m_cameraPos);
@@ -161,5 +165,5 @@ void GameCamera::UnfreezeCamera()
 }
 
 void GameCamera::Render(RenderContext& rc) {
-  
+
 }

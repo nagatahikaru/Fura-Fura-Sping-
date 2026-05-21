@@ -77,10 +77,12 @@ void PauseUI::Update()
     // ▼ カーソル移動（上下）
     if (g_pad[0]->IsTrigger(enButtonUp)) {
         m_cursor--;
+        g_soundManager->PlaySE(enSound_SE12);
         if (m_cursor < 0) m_cursor = 3;   // ← 3項目なので 0〜2
     }
     if (g_pad[0]->IsTrigger(enButtonDown)) {
         m_cursor++;
+        g_soundManager->PlaySE(enSound_SE12);
         if (m_cursor > 3) m_cursor = 0;   // ← 3項目なので 0〜2
     }
 

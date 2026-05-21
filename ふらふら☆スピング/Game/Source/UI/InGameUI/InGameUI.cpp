@@ -35,7 +35,7 @@ InGameUI::InGameUI() {
 	m_ballIcon[0].SetPosition(Vector3{ -600, 430, 0 });
 	m_ballIcon[1].SetPosition(Vector3{ -530, 430, 0 });
 	m_ballIcon[2].SetPosition(Vector3{ -460, 430, 0 });
-	m_spritekuro.Init("Assets/sprite/kuro.DDS",1920.0f, 1080.0f);
+	m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
 	m_bbb.Init("Assets/sprite/bbb.dds", 200.0f, 200.0f);
 	m_bsuki.Init("Assets/sprite/bsuki.DDS", 550.0f, 500.0f);
 	m_strikeSprite.Init("Assets/sprite/strike.DDS", 600.0f, 500.0f);
@@ -53,7 +53,7 @@ InGameUI::~InGameUI() {
 }
 
 bool InGameUI::Start() {
-	m_batPositionRight = Vector3{-50.0f, -100.0f, 0.0f };  // ← 初期位置
+	m_batPositionRight = Vector3{ -50.0f, -100.0f, 0.0f };  // ← 初期位置
 	m_batPositionLeft = Vector3{ 50.0f,-100.0f,0.0f };
 	m_meetPositionRight = Vector3{ 39.0f, 5.0f, 0.0f };
 	m_meetPositionLeft = Vector3{ -46.0f,7.0f,0.0f };
@@ -107,7 +107,7 @@ void InGameUI::Update() {
 		if (m_fadeAlpha <= 0.0f) {
 			m_fadeAlpha = 0.0f;
 			m_isFadeIn = false;
-		
+
 			// ★ フェードイン完了通知
 			if (m_onFadeInFinished) {
 				m_onFadeInFinished();
@@ -225,7 +225,7 @@ void InGameUI::FixBallUI(const Vector3& pos3D)
 
 void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
 {
-	
+
 	m_batPos = m_isLeftBatter ? m_batPositionLeft : m_batPositionRight;
 	Vector3 meetOffset = m_isLeftBatter ? m_meetPositionLeft : m_meetPositionRight;
 
@@ -236,13 +236,13 @@ void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
 }
 
 void InGameUI::SetStartZ(float z) {
-    m_startZ = z;
-    m_isError = false;   // 打つたびにリセット
+	m_startZ = z;
+	m_isError = false;   // 打つたびにリセット
 
-    // ★ ここを追加：ボール予測UIの状態もリセット
-    m_isBallUIFixed    = false;
-    m_hasPredictedBall = false;
-    m_ballAlpha        = 0.0f;
+	// ★ ここを追加：ボール予測UIの状態もリセット
+	m_isBallUIFixed = false;
+	m_hasPredictedBall = false;
+	m_ballAlpha = 0.0f;
 	ResetPrediction();
 }
 
@@ -319,7 +319,7 @@ void InGameUI::ShowPrediction(float predicted)
 	m_predictionHoldTime = 1.5f;
 	m_predictionScale = 0.3f;
 	m_predictionAlpha = 0.0f;
-	m_predictedDistance =floorf( predicted+0.01f)  / 100.0f;
+	m_predictedDistance = floorf(predicted + 0.01f) / 100.0f;
 	m_isPredictionVisible = true;
 }
 
@@ -403,7 +403,7 @@ void InGameUI::Render(RenderContext& rc) {
 			Vector3 uiPos;
 
 			if (m_isBallUIFixed) {
-				  uiPos = m_fixedBallUIPos;   // ← 変換しない
+				uiPos = m_fixedBallUIPos;   // ← 変換しない
 			}
 			else {
 				uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
@@ -681,18 +681,11 @@ void InGameUI::Render(RenderContext& rc) {
 			m_fontPrediction.Draw(rc);
 		}
 
-
-		if (m_isBaisokuVisible) {
-			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
-			m_baisoku.Update();
-			m_baisoku.Draw(rc);
-		}
-
 		if (m_guruGuruTimer > 0.0) {
 			m_konto.SetPosition(Vector3{ -800.0f, 0.0f, 0.0f });
 			m_konto.Update();
 			m_konto.Draw(rc);
-			
+
 			// ★ 矢印の回転描画
 			m_yazirusi.SetPosition(Vector3{ -840.0f, -5.0f, 0.0f }); // 位置はお好みで
 			m_yazirusi.SetRotation(m_yazirusiRotation);               // ← Quaternion を渡す
@@ -702,6 +695,14 @@ void InGameUI::Render(RenderContext& rc) {
 			m_mawase.SetPosition(Vector3{ -800.0f, -180.0f, 0.0f }); // 位置はお好みで
 			m_mawase.Update();
 			m_mawase.Draw(rc);
+		}
+	}
+
+	if (m_baisokuUI) {
+		if (m_isBaisokuVisible) {
+			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
+			m_baisoku.Update();
+			m_baisoku.Draw(rc);
 		}
 	}
 
