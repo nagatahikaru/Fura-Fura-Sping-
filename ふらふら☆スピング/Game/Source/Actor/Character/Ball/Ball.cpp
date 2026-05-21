@@ -19,12 +19,13 @@ Ball::~Ball()
 
 bool Ball::Start()
 {
-    //モデルの読み込み
-    m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-    m_modelRender.SetScale({ 9.0f,9.0f,9.0f });
 
-    m_position = { -0.0f, 700.0f, 1000.0f };
-    m_modelRender.SetPosition(m_position);
+	//モデルの読み込み
+	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
+	m_modelRender.SetScale({ 8.5f,8.5f,8.5f });
+
+	m_position = { -0.0f, 650.0f, 1000.0f };
+	m_modelRender.SetPosition(m_position);
 
 
     // ★ UI に初期位置を送る（これが重要）
@@ -217,19 +218,20 @@ void Ball::Update()
                 m_replayPath.push_back(m_position);
             }
         }
+      
+　　SetPosition(m_position);
 
-        SetPosition(m_position);
-
-        //距離に応じてスケール変更
-        float minZ = 1000.0f;
-        float maxZ = 9500.0f;
+    //距離に応じてスケール変更
+    float minZ = 500.0f;
+    float maxZ = 9500.0f;
 
         float t = (m_position.z - minZ) / (maxZ - minZ);
-
-        if (t < 0.0f) t = 0.0f;
+      
+     　 if (t < 0.0f) t = 0.0f;
         if (t > 1.0f) t = 1.0f;
 
-        float scale = 5.0f * (1.0f - t * 0.8f);
+
+    float scale = 4.0f * (1.0f - t * 0.8f);
 
         //最小サイズ制限（消え防止）
         if (scale < 3.0f) scale = 2.0f;
