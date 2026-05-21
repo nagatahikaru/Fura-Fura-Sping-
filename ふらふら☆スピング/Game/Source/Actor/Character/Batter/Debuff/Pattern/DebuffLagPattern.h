@@ -10,19 +10,26 @@ public:
 
     enum LagType
     {
-        Vertical,
-        Horizontal,
-        Random
+		Delay,      // 入力に対してカーソルが遅れて追従するデバフ
     };
 
+    /// <summary>
+    /// デバフの詳細な効果を設定する関数です。
+    /// </summary>
+    /// <param name="type"> デバフの種類を指定します。
+    /// <para>Delay は入力に対してカーソルが遅れて追従するデバフ。</para>
+    /// </param>
     void SetType(LagType type);
 
     void Update(Batter* batter) override;
 
 private:
+	void LagCursor(Batter* batter);
+
 
 private:	
     LagType m_type;
-    Vector3 m_lagCursorPos;
+    // カーソル入力履歴
+    std::deque<Vector2> m_inputHistory;
 };
 

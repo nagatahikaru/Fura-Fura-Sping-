@@ -9,6 +9,7 @@
 #include "Source/Actor/GameCamera/GameCamera.h"
 #include "Debuff/DebuffStage/DebuffStage.h"
 #include <algorithm> // 追加
+#include <deque>
 
 
 // ファイル冒頭付近に追加（std::clampが使えない場合のため）
@@ -338,8 +339,8 @@ void Batter::SetCursorPosition()
 {
 	float dt = 1.0f / 60.0f;
 
-	float lx = g_pad[0]->GetLStickXF();
-	float ly = g_pad[0]->GetLStickYF();
+	m_inputScale.x = g_pad[0]->GetLStickXF();
+	m_inputScale.y = g_pad[0]->GetLStickYF();
 
 	// 毎フレームリセット
 	m_cursorOffset = Vector3::Zero;
@@ -347,9 +348,18 @@ void Batter::SetCursorPosition()
 	if (m_isCursorMode)
 	{
 		Vector3 move;
-		move.x = lx * m_inputScale.x*m_driftInputScale.x;
-		move.y = ly * m_inputScale.y*m_driftInputScale.y;
-		move.z = 0.0f;
+		if (m_isDelayFrag)
+		{
+			move.x = m_inputdelayScale.x * m_inversioninputScale.x * m_driftInputScale.x;
+			move.y = m_inputdelayScale.y * m_inversioninputScale.y * m_driftInputScale.y;
+			move.z = 0.0f;
+		}
+		else
+		{
+			move.x = m_inputScale.x * m_inversioninputScale.x * m_driftInputScale.x;
+			move.y = m_inputScale.y * m_inversioninputScale.y * m_driftInputScale.y;
+			move.z = 0.0f;
+		}
 
 		float speed =
 			500.0f * m_cursorMoveScale;

@@ -23,9 +23,6 @@ void DebuffAimPattern::Update(Batter* batter)
 	case TinySweetSpot:
 		UpdateTinySweetSpot(batter);
 		break;
-	case WeakHitAssist:
-		UpdateWeakHitAssist(batter);
-		break;
 	case HeavySwing:
 		UpdateHeavySwing(batter);
 		break;
@@ -45,12 +42,6 @@ void DebuffAimPattern::UpdateSmallCursor(Batter* batter)
 void DebuffAimPattern::UpdateTinySweetSpot(Batter* batter)
 {
 	// スイートスポットを小さくする処理
-	
-}
-
-void DebuffAimPattern::UpdateWeakHitAssist(Batter* batter)
-{
-	// ヒットアシストを弱くする処理
 	
 }
 

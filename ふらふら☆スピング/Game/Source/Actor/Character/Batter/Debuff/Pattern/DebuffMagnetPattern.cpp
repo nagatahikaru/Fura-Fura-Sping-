@@ -12,7 +12,6 @@ namespace MyNamespace
 {
 	float PI = 3.1415f / 180.0f;
 	float ZERO_FLOAT = 0.0f;
-
 }
 
 void DebuffMagnetPattern::SetType(MagnetType type)

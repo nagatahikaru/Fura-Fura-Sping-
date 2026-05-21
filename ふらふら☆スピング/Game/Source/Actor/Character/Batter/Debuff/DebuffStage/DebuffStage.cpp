@@ -77,6 +77,7 @@ void DebuffStage::BuildStage(int level)
 //回転数：3～5回転
 void DebuffStage::DebuffStageOne()
 {
+	//揺れデバフ
 	auto shake =AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Vertical);
 	shake->SetPower(shake->GetRotationRate(m_rotationCount));
@@ -86,6 +87,7 @@ void DebuffStage::DebuffStageOne()
 //回転数：6～8回転
 void DebuffStage::DebuffStageTwo()
 {
+	//揺れデバフ
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->SetPower(shake->GetRotationRate(m_rotationCount));
@@ -96,19 +98,23 @@ void DebuffStage::DebuffStageTwo()
 //回転数：9～11回転
 void DebuffStage::DebuffStageThree()
 {
+	//揺れデバフ
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->SetPower(shake->GetRotationRate(m_rotationCount));
 	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount));
+
+	//ノイズデバフ
 	auto noise = AddPattern<DebuffNoisePattern>();
 	noise->SetType(DebuffNoisePattern::Noise_Vertical);
 	noise->SetPower(noise->GetRotationRate(m_rotationCount));
-	noise->SetSeismicIntensity(noise->GetRotationRate(m_rotationCount));
+	noise->SetNoiseTimer(0.05f);
 }
 
 //回転数：12～14回転
 void DebuffStage::DebuffStageFour()
 {
+	//誘導デバフ
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
 	magnet->SetRandomSpotRadius(magnet->GetRotationRate(m_rotationCount));
@@ -119,10 +125,13 @@ void DebuffStage::DebuffStageFour()
 //回転数：15～17回転
 void DebuffStage::DebuffStageFive()
 {
+	//誘導デバフ
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
 	magnet->SetRandomSpotRadius(magnet->GetRotationRate(m_rotationCount));
 	magnet->SetRandomMoveDuration(magnet->GetRotationRate(m_rotationCount));
+
+	//判定デバフ
 	auto aim = AddPattern<DebuffAimPattern>();
 	aim->SetType(DebuffAimPattern::HeavySwing);
 	aim->SetMeatRange(aim->GetRotationRate(m_rotationCount));
@@ -131,37 +140,47 @@ void DebuffStage::DebuffStageFive()
 //回転数：18～20回転
 void DebuffStage::DebuffStageSix()
 {
+	//流されデバフ
 	auto drift = AddPattern<DebuffDriftPattern>();
 	drift->SetType(DebuffDriftPattern::Random);
+	drift->SetSpeed(drift->GetRotationRate(m_rotationCount));
+	drift->SetForce(drift->GetRotationRate(m_rotationCount));
 
+	//ノイズデバフ
 	auto noise = AddPattern<DebuffNoisePattern>();
 	noise->SetType(DebuffNoisePattern::Noise_Random);
-
+	noise->SetPower(noise->GetRotationRate(m_rotationCount));
+	noise->SetNoiseTimer(0.05f);
 }
 
 //回転数：21～23回転
 void DebuffStage::DebuffStageSeven()
 {
+	//誘導デバフ
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
 	magnet->SetRandomSpotRadius(magnet->GetRotationRate(m_rotationCount));
 	magnet->SetRandomMoveDuration(magnet->GetRotationRate(m_rotationCount));
 
+	//ノイズデバフ
 	auto noise = AddPattern<DebuffNoisePattern>();
 	noise->SetType(DebuffNoisePattern::Noise_Random);
-
+	noise->SetPower(noise->GetRotationRate(m_rotationCount));
+	noise->SetNoiseTimer(0.05f);
 }
 
 //回転数：24～26回転
 void DebuffStage::DebuffStageEight()
 {
+	//遅れデバフ
 	auto lag = AddPattern<DebuffLagPattern>();
-	lag->SetType(DebuffLagPattern::Random);
+	lag->SetType(DebuffLagPattern::Delay);
 }
 
 //回転数：27～29回転
 void DebuffStage::DebuffStageNine()
 {
+	//反転デバフ
 	auto reverse = AddPattern<DebuffReversePattern>();
 	reverse->SetType(DebuffReversePattern::Reverse_All);
 }
@@ -169,12 +188,19 @@ void DebuffStage::DebuffStageNine()
 //	回転数：30回転以上
 void DebuffStage::DebuffStageTen()
 {
+	//ノイズデバフ
 	auto noise = AddPattern<DebuffNoisePattern>();
 	noise->SetType(DebuffNoisePattern::Noise_Random);
+	noise->SetPower(noise->GetRotationRate(m_rotationCount));
+	noise->SetNoiseTimer(0.05f);
+
+	//誘導デバフ
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
 	magnet->SetRandomSpotRadius(magnet->GetRotationRate(m_rotationCount));
 	magnet->SetRandomMoveDuration(magnet->GetRotationRate(m_rotationCount));
+
+	//揺れデバフ
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->SetPower(shake->GetRotationRate(m_rotationCount));

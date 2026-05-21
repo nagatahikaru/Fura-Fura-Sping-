@@ -14,7 +14,6 @@ public:
     {
 		SmallCursor,    // カーソル表示サイズとミート範囲を縮小
 		TinySweetSpot,  // スイートスポットが小さくなるデバフ
-		WeakHitAssist,  // ヒットアシストが弱くなるデバフ
 		HeavySwing,     // スイングが重くなるデバフ
     };
 
@@ -24,7 +23,6 @@ public:
 	/// <param name="type"> デバフの種類を指定します。
     /// <para>SmallCursor はカーソル表示サイズとミート範囲を縮小するデバフ。</para>
     /// <para>TinySweetSpot はスイートスポットが小さくなるデバフ。</para>
-    /// <para>WeakHitAssist はヒットアシストが弱くなるデバフ。</para>
     /// <para>HeavySwing はスイングが重くなるデバフです。</para>
     /// </param>
     void SetType(AimType type);
@@ -39,7 +37,6 @@ private:
 
     void UpdateSmallCursor(Batter* batter);
     void UpdateTinySweetSpot(Batter* batter);
-	void UpdateWeakHitAssist(Batter* batter);
 	void UpdateHeavySwing(Batter* batter);
 
 private:	
