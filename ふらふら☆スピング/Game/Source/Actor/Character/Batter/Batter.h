@@ -204,6 +204,11 @@ public:
         m_magnetCursorOffset = offset;
 	}
 
+    Vector3 GetMagnetCursorOffset() const
+    {
+        return m_magnetCursorOffset;
+    }
+
     // カーソル移動速度倍率
     void AddCursorMoveScale(float scale)
     {
@@ -215,11 +220,6 @@ public:
     {
         m_inversioninputScale = Vector2(x, y);
     }
-
-    void SetInputOffset(float x, float y)
-    {
-        m_driftInputScale = Vector2(x, y);
-	}
 
     void SetMeatRange(float range)
     {
@@ -247,10 +247,17 @@ public:
         return
             m_shakeCursorOffset +
             m_assistCursorOffset +
-            m_noiseCursorOffset+
-            m_driftCursorOffset+
+            m_noiseCursorOffset+            
             m_magnetCursorOffset;
     }
+
+    Vector3 GetFinalCursorPosition() const
+    {
+        return
+            m_meetPosition
+            + GetFinalCursorOffset();
+    }
+
 
     Vector2 GetInputScale() const
     {
@@ -500,9 +507,6 @@ private:
 
 	// 反転カーソル入力スケール
     Vector2 m_inversioninputScale = Vector2(1.0f, 1.0f);
-
-    // ドリフト入力スケール
-	Vector2 m_driftInputScale = Vector2(1.0f, 1.0f);
 
     // ミート位置
     Vector3 m_meetPosition;

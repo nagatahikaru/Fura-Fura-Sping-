@@ -36,8 +36,6 @@ public:
 private:
 
     void UpdateSmallCursor(Batter* batter);
-    void UpdateTinySweetSpot(Batter* batter);
-	void UpdateHeavySwing(Batter* batter);
 
 private:	
     AimType m_type;

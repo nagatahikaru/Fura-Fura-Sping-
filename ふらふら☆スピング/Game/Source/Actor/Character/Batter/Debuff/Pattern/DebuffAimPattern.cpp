@@ -20,13 +20,8 @@ void DebuffAimPattern::Update(Batter* batter)
 	case SmallCursor:
 		UpdateSmallCursor(batter);
 		break;
-	case TinySweetSpot:
-		UpdateTinySweetSpot(batter);
-		break;
-	case HeavySwing:
-		UpdateHeavySwing(batter);
-		break;
 	default:
+		UpdateSmallCursor(batter);
 		break;
 	}
 }
@@ -37,16 +32,4 @@ void DebuffAimPattern::UpdateSmallCursor(Batter* batter)
 {
 	// カーソル表示サイズとミート範囲を縮小する処理	
 	batter->SetMeatRange(m_meatRange); // 当たり判定の範囲を設定
-}
-
-void DebuffAimPattern::UpdateTinySweetSpot(Batter* batter)
-{
-	// スイートスポットを小さくする処理
-	
-}
-
-void DebuffAimPattern::UpdateHeavySwing(Batter* batter)
-{
-	// スイングを重くする処理
-	
 }

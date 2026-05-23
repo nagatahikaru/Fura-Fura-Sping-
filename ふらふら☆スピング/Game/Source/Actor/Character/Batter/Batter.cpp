@@ -350,22 +350,24 @@ void Batter::SetCursorPosition()
 		Vector3 move;
 		if (m_isDelayFrag)
 		{
-			move.x = m_inputdelayScale.x * m_inversioninputScale.x * m_driftInputScale.x;
-			move.y = m_inputdelayScale.y * m_inversioninputScale.y * m_driftInputScale.y;
+			move.x = m_inputdelayScale.x * m_inversioninputScale.x;
+			move.y = m_inputdelayScale.y * m_inversioninputScale.y;
 			move.z = 0.0f;
 		}
 		else
 		{
-			move.x = m_inputScale.x * m_inversioninputScale.x * m_driftInputScale.x;
-			move.y = m_inputScale.y * m_inversioninputScale.y * m_driftInputScale.y;
+			move.x = m_inputScale.x * m_inversioninputScale.x;
+			move.y = m_inputScale.y * m_inversioninputScale.y;
 			move.z = 0.0f;
 		}
 
 		float speed =
 			500.0f * m_cursorMoveScale;
 
+		Vector3 driftmove = move + m_driftCursorOffset;
+
 		// プレイヤー入力だけ
-		m_meetPosition += move * speed * dt;
+		m_meetPosition += driftmove * speed * dt;
 
 		m_meetPosition.x =
 			clamp(m_meetPosition.x, -300.0f, 300.0f);
@@ -375,10 +377,8 @@ void Batter::SetCursorPosition()
 	}
 
 	// デバフ適用後の最終座標
-	Vector3 finalOffset = GetFinalCursorOffset();
-
-	Vector3 finalPos =
-		m_meetPosition + finalOffset;
+	Vector3 finalPos = GetFinalCursorPosition();
+		
 
 	m_inGameUI->SetMeetCursorPosition(finalPos);
 }
@@ -388,11 +388,8 @@ Vector3 Batter::CalcCursorWorldPos()
 {
 	float screenW = 1920.0f;
 	float screenH = 1080.0f;
-	Vector3 finalOffset = GetFinalCursorOffset();
+	Vector3 finalPos = GetFinalCursorPosition();
 
-
-	Vector3 finalPos =
-		m_meetPosition + finalOffset;
 	// UI座標（中心基準なら変換必要）
 	float mouseX =
 		finalPos.x + screenW * 0.5f;

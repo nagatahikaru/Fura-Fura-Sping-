@@ -41,96 +41,248 @@ void DebuffMagnetPattern::Update(Batter* batter)
 //
 void DebuffMagnetPattern::ApplyRandomMagnet(Batter* batter)
 {
-	//ランダムなベクトルを取得
+
 	if (m_randomCursorUpdate)
 	{
-		//そのベクトルに向かって移動
-		// 基準点から半径250の円範囲内でランダムに出現位置を決定
-		//ランダムな角度と距離を生成
-		float angle = (rand() % 360) * MyNamespace::PI;
-		float radius = RandomRange(0, m_randomSpotRadius);
+		float angle =
+			RandomRange(0.0f, 360.0f)
+			* (MyNamespace::PI / 180.0f);
 
-		// 円の中のランダム位置を生成
+		float radius =
+			RandomRange(0.0f, m_randomSpotRadius);
 
-		m_randomCursorTargetPos.x = cosf(angle) * radius;
-		m_randomCursorTargetPos.y = sinf(angle) * radius;
-		m_randomCursorMoveTimer = RandomRange(0, m_randomMoveDuration);
+		m_randomCursorTargetPos.x =
+			cosf(angle) * radius;
+
+		m_randomCursorTargetPos.y =
+			sinf(angle) * radius;
+
+		m_randomCursorTargetPos.z = 0.0f;
+
+		m_randomCursorMoveTimer =
+			RandomRange(0.5f, m_randomMoveDuration);
+
 		m_randomCursorUpdate = false;
 	}
-	Vector3 toTarget = m_randomCursorTargetPos - batter->GetMeetCursorPosition();
+
+	Vector3 finalPos =
+		batter->GetFinalCursorPosition();
+
+	Vector3 toTarget =
+		m_randomCursorTargetPos - finalPos;
+
 	float distance = toTarget.Length();
 
-	// 少しずつ寄せる（ここがデバフの強さ）
-	m_randomCursorMovePwer = toTarget * 0.05f;
-	batter->SetMagnetCursorOffset(m_randomCursorMovePwer);
-	//一定時間経過後、再度ランダムなベクトルを取得
-	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
-	if (m_randomCursorMoveTimer <= MyNamespace::ZERO_FLOAT || distance <= 0.0f)
+	//-----------------------------------
+	// 旧コード寄りの蓄積型
+	//-----------------------------------
+
+	Vector3 current =
+		batter->GetMagnetCursorOffset();
+
+	float magnetPower = 0.015f;
+
+	current += toTarget * magnetPower;
+
+	//-----------------------------------
+	// 暴走防止
+	//-----------------------------------
+
+	float maxOffset = 250.0f;
+
+	if (current.Length() > maxOffset)
+	{
+		current.Normalize();
+		current *= maxOffset;
+	}
+
+	//-----------------------------------
+	// 減衰
+	//-----------------------------------
+
+	current *= 0.92f;
+
+	batter->SetMagnetCursorOffset(current);
+
+	//-----------------------------------
+
+	m_randomCursorMoveTimer -=
+		g_gameTime->GetFrameDeltaTime();
+
+	if (m_randomCursorMoveTimer <= 0.0f
+		|| distance <= 10.0f)
 	{
 		m_randomCursorUpdate = true;
 	}
+
+
+	//auto pos = batter->GetFinalCursorPosition();
+	//auto offset = m_randomCursorTargetPos;
+
+	//char buf[256];
+
+	//sprintf_s(
+	//	buf,
+	//	"meet:(%.2f %.2f) offset:(%.2f %.2f)\n",
+	//	pos.x,
+	//	pos.y,
+	//	offset.x,
+	//	offset.y
+	//);
+
+	//OutputDebugStringA(buf);
 }
 
 void DebuffMagnetPattern::ApplyHorizontalMagnet(Batter* batter)
 {
-	//ランダムなベクトルを取得
 	if (m_randomCursorUpdate)
 	{
-		//そのベクトルに向かって移動
-		// 基準点から半径250の円範囲内でランダムに出現位置を決定
-		//ランダムな角度と距離を生成
-		float angle = (rand() % 360) * MyNamespace::PI;
-		float radius = RandomRange(0, m_randomSpotRadius);
+		float angle =
+			RandomRange(0.0f, 360.0f)
+			* (MyNamespace::PI / 180.0f);
 
-		// 円の中のランダム位置を生成
+		float radius =
+			RandomRange(0.0f, m_randomSpotRadius);
 
-		m_randomCursorTargetPos.x = cosf(angle) * radius;
-		m_randomCursorTargetPos.y = 0.0f;
-		m_randomCursorMoveTimer = RandomRange(0, m_randomMoveDuration);
+		m_randomCursorTargetPos.x =
+			0.0f;
+
+		m_randomCursorTargetPos.y =
+			sinf(angle) * radius;
+
+		m_randomCursorTargetPos.z = 0.0f;
+
+		m_randomCursorMoveTimer =
+			RandomRange(0.5f, m_randomMoveDuration);
+
 		m_randomCursorUpdate = false;
 	}
-	Vector3 toTarget = m_randomCursorTargetPos - batter->GetMeetCursorPosition();
+
+	Vector3 finalPos =
+		batter->GetFinalCursorPosition();
+
+	Vector3 toTarget =
+		m_randomCursorTargetPos - finalPos;
+
 	float distance = toTarget.Length();
 
-	// 少しずつ寄せる（ここがデバフの強さ）
-	m_randomCursorMovePwer = toTarget * 0.05f;
-	batter->SetMagnetCursorOffset(m_randomCursorMovePwer);
-	//一定時間経過後、再度ランダムなベクトルを取得
-	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
-	if (m_randomCursorMoveTimer <= MyNamespace::ZERO_FLOAT || distance <= 0.0f)
+	//-----------------------------------
+	// 旧コード寄りの蓄積型
+	//-----------------------------------
+
+	Vector3 current =
+		batter->GetMagnetCursorOffset();
+
+	float magnetPower = 0.015f;
+
+	current += toTarget * magnetPower;
+
+	//-----------------------------------
+	// 暴走防止
+	//-----------------------------------
+
+	float maxOffset = 250.0f;
+
+	if (current.Length() > maxOffset)
+	{
+		current.Normalize();
+		current *= maxOffset;
+	}
+
+	//-----------------------------------
+	// 減衰
+	//-----------------------------------
+
+	current *= 0.92f;
+
+	batter->SetMagnetCursorOffset(current);
+
+	//-----------------------------------
+
+	m_randomCursorMoveTimer -=
+		g_gameTime->GetFrameDeltaTime();
+
+	if (m_randomCursorMoveTimer <= 0.0f
+		|| distance <= 10.0f)
 	{
 		m_randomCursorUpdate = true;
 	}
+
 }
 
 void DebuffMagnetPattern::ApplyVerticalMagnet(Batter* batter)
 {
-	//ランダムなベクトルを取得
 	if (m_randomCursorUpdate)
 	{
-		//そのベクトルに向かって移動
-		// 基準点から半径250の円範囲内でランダムに出現位置を決定
-		//ランダムな角度と距離を生成
-		float angle = (rand() % 360) * MyNamespace::PI;
-		float radius = RandomRange(0, m_randomSpotRadius);
+		float angle =
+			RandomRange(0.0f, 360.0f)
+			* (MyNamespace::PI / 180.0f);
 
-		// 円の中のランダム位置を生成
+		float radius =
+			RandomRange(0.0f, m_randomSpotRadius);
 
-		m_randomCursorTargetPos.x = 0.0f;
-		m_randomCursorTargetPos.y = sinf(angle) * radius;
-		m_randomCursorMoveTimer = RandomRange(0, m_randomMoveDuration);
+		m_randomCursorTargetPos.x =
+			cosf(angle) * radius;
+
+		m_randomCursorTargetPos.y =
+			0.0f;
+
+		m_randomCursorTargetPos.z = 0.0f;
+
+		m_randomCursorMoveTimer =
+			RandomRange(0.5f, m_randomMoveDuration);
+
 		m_randomCursorUpdate = false;
 	}
-	Vector3 toTarget = m_randomCursorTargetPos - batter->GetMeetCursorPosition();
+
+	Vector3 finalPos =
+		batter->GetFinalCursorPosition();
+
+	Vector3 toTarget =
+		m_randomCursorTargetPos - finalPos;
+
 	float distance = toTarget.Length();
 
-	// 少しずつ寄せる（ここがデバフの強さ）
-	m_randomCursorMovePwer = toTarget * 0.05f;
-	batter->SetMagnetCursorOffset(m_randomCursorMovePwer);
-	//一定時間経過後、再度ランダムなベクトルを取得
-	m_randomCursorMoveTimer -= g_gameTime->GetFrameDeltaTime();
-	if (m_randomCursorMoveTimer <= MyNamespace::ZERO_FLOAT || distance <= 0.0f)
+	//-----------------------------------
+	// 旧コード寄りの蓄積型
+	//-----------------------------------
+
+	Vector3 current =
+		batter->GetMagnetCursorOffset();
+
+	float magnetPower = 0.015f;
+
+	current += toTarget * magnetPower;
+
+	//-----------------------------------
+	// 暴走防止
+	//-----------------------------------
+
+	float maxOffset = 250.0f;
+
+	if (current.Length() > maxOffset)
+	{
+		current.Normalize();
+		current *= maxOffset;
+	}
+
+	//-----------------------------------
+	// 減衰
+	//-----------------------------------
+
+	current *= 0.92f;
+
+	batter->SetMagnetCursorOffset(current);
+
+	//-----------------------------------
+
+	m_randomCursorMoveTimer -=
+		g_gameTime->GetFrameDeltaTime();
+
+	if (m_randomCursorMoveTimer <= 0.0f
+		|| distance <= 10.0f)
 	{
 		m_randomCursorUpdate = true;
 	}
+
 }

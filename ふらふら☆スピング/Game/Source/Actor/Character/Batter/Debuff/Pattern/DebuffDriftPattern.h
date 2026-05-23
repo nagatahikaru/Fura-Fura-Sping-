@@ -33,14 +33,19 @@ public:
 	//入力は倍率で、例えば1.0fなら通常の速度、2.0fなら倍速になります。
     void SetSpeed(float speed)
     {
-        m_speed *= speed;
+        m_speed *= speed*0.5f;
 	}
+
+    void SetWaveSpeed(float speed)
+    {
+        m_waveSpeed *= speed*0.8f;
+    }
 
 	//勝手に流れていく力を設定する関数
 	//入力は倍率で、例えば1.0fなら通常の力、2.0fなら倍の力になります。
     void SetForce(float force)
     {
-        m_force *= force;
+        m_force *= force*0.4f;
 	}
 
 private:
@@ -58,20 +63,6 @@ private:
         m_angle += m_waveTime * m_speed;
     }
 
-    // サイン波を生成する関数
-    // 例えば、震えの強さを時間と周波数に基づいて変化させるために使用できます。
-    float SinWave(float freq)
-    {
-        return sinf(m_waveTime * freq);
-    }
-
-    // コサイン波を生成する関数
-    // 例えば、震えの強さを時間と周波数に基づいて変化させるために使用できます。
-    float CosWave(float freq)
-    {
-        return cosf(m_waveTime * freq);
-    }
-
 	void RandomDrift(Batter* batter);
 
 private:	
@@ -80,6 +71,7 @@ private:
 	float m_waveTime = 0.0f;// デバフの時間経過を管理する変数
 	float m_speed = 1.0f; // デバフの強さを管理する変数
 	float m_angle = 0.0f; // 入力が流される角度（単位は度）
+	float m_waveSpeed = 1.0f; // デバフの時間経過を管理する変数
 	Vector2 m_inputOffset = Vector2::Zero; // 入力が流されるオフセット値
 };
 
