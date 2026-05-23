@@ -117,8 +117,8 @@ void DebuffStage::DebuffStageFour()
 	//誘導デバフ
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
-	magnet->SetRandomSpotRadius(magnet->GetRotationRate(m_rotationCount));
-	magnet->SetRandomMoveDuration(magnet->GetRotationRate(m_rotationCount));
+	magnet->SetRandomSpotRadius(m_rotationCount);
+	magnet->SetRandomMoveDuration(m_rotationCount);
 	
 }
 
@@ -128,8 +128,8 @@ void DebuffStage::DebuffStageFive()
 	//誘導デバフ
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
-	magnet->SetRandomSpotRadius(magnet->GetRotationRate(m_rotationCount));
-	magnet->SetRandomMoveDuration(magnet->GetRotationRate(m_rotationCount));
+	magnet->SetRandomSpotRadius(m_rotationCount);
+	magnet->SetRandomMoveDuration(m_rotationCount);
 
 	//判定デバフ
 	auto aim = AddPattern<DebuffAimPattern>();
@@ -145,12 +145,13 @@ void DebuffStage::DebuffStageSix()
 	drift->SetType(DebuffDriftPattern::Random);
 	drift->SetSpeed(drift->GetRotationRate(m_rotationCount));
 	drift->SetForce(drift->GetRotationRate(m_rotationCount));
+	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount));
 
-	//ノイズデバフ
-	auto noise = AddPattern<DebuffNoisePattern>();
-	noise->SetType(DebuffNoisePattern::Noise_Random);
-	noise->SetPower(noise->GetRotationRate(m_rotationCount));
-	noise->SetNoiseTimer(0.05f);
+	//誘導デバフ
+	auto magnet = AddPattern<DebuffMagnetPattern>();
+	magnet->SetType(DebuffMagnetPattern::Random);
+	magnet->SetRandomSpotRadius(m_rotationCount);
+	magnet->SetRandomMoveDuration(m_rotationCount);
 }
 
 //回転数：21～23回転
@@ -159,8 +160,8 @@ void DebuffStage::DebuffStageSeven()
 	//誘導デバフ
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
-	magnet->SetRandomSpotRadius(magnet->GetRotationRate(m_rotationCount));
-	magnet->SetRandomMoveDuration(magnet->GetRotationRate(m_rotationCount));
+	magnet->SetRandomSpotRadius(m_rotationCount);
+	magnet->SetRandomMoveDuration(m_rotationCount);
 
 	//ノイズデバフ
 	auto noise = AddPattern<DebuffNoisePattern>();
@@ -197,8 +198,8 @@ void DebuffStage::DebuffStageTen()
 	//誘導デバフ
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
-	magnet->SetRandomSpotRadius(magnet->GetRotationRate(m_rotationCount));
-	magnet->SetRandomMoveDuration(magnet->GetRotationRate(m_rotationCount));
+	magnet->SetRandomSpotRadius(m_rotationCount);
+	magnet->SetRandomMoveDuration(m_rotationCount);
 
 	//揺れデバフ
 	auto shake = AddPattern<DebuffShakePattern>();

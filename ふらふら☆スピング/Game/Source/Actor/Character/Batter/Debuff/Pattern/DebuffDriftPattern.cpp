@@ -20,15 +20,11 @@ void DebuffDriftPattern::Update(Batter* batter)
 		break;
 	}
 }
+
 void DebuffDriftPattern::RandomDrift(Batter* batter)
 {
-	Vector2 v;
-	v.x = batter->GetInputScale().x * m_force;
-	v.y = batter->GetInputScale().y * m_force;
 	UpdateTime();
 	AngleUpdate();
-
-	Vector2 vSrc = v;
 
 	float rad = Math::DegToRad(m_angle);
 
@@ -37,8 +33,12 @@ void DebuffDriftPattern::RandomDrift(Batter* batter)
 
 	Vector2 out;
 
-	out.x = vSrc.x * c - vSrc.y * s;
-	out.y = vSrc.x * s + vSrc.y * c;
+	float dynamicForce =
+		m_force *
+		(0.7f + sinf(m_waveTime * m_waveSpeed) * 0.3f);
 
-	batter->SetInputOffset(out.x, out.y);
+	out.x = c * dynamicForce;
+	out.y = s * dynamicForce;
+
+	batter->SetDriftCursorOffset(Vector3(out.x, out.y, 0.0f));
 }
