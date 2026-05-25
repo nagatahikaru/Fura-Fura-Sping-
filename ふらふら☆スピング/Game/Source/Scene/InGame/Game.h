@@ -101,6 +101,8 @@ public:
 			m_swingFrame[shotIndex] = frame;
 		}
 	}
+	void SetHasSwung(int shotIndex, bool swung) { m_hasSwung[shotIndex] = swung; }
+	bool GetHasSwung(int shotIndex) const { return m_hasSwung[shotIndex]; }
 	int GetReplayFrameCount() const;
 	void StartReplayRecording();
 	int GetShots() const { return m_shots; }
@@ -169,5 +171,6 @@ private:
 	bool m_hasAppliedHitMoment = false;
 	bool m_startFadeSE2 = false;
 	int m_prevGuruGuru = 0;
+	bool m_hasSwung[3] = { false, false, false };
 };
 

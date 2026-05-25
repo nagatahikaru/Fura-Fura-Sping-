@@ -274,13 +274,16 @@ void Game::Update()
 
 			// ★ スイングだけは遅延中でも再生する
 			float swingSec = (m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex]) / 60.0f;
-			if (m_replaySwingTimer >= swingSec && !m_hasPlayedReplaySwing) {
+
+			// 【修正】m_hasSwung[m_bestShotIndex] が true（実際に振っていた）場合のみ再生
+			if (m_hasSwung[m_bestShotIndex] && m_replaySwingTimer >= swingSec && !m_hasPlayedReplaySwing) {
 				m_batter->PlaySwingAnimation();
 				m_hasPlayedReplaySwing = true;
 			}
 
 			return; // ← ボールはまだ動かさない
 		}
+
 		// ★★★ 遅延が終わった瞬間にボールを打った瞬間の位置へ戻す ★★★
 		if (!m_hasAppliedHitMoment) {
 			m_ball->SetPosition(m_hitStartPos[m_bestShotIndex]);
@@ -297,7 +300,8 @@ void Game::Update()
 
 		int swingTiming = m_bestSwingFrame - m_bestPitchFrame;
 
-		if (index == swingTiming) {
+		// 【修正】ここも実際に振っていた場合のみアニメーションを再生する
+		if (m_hasSwung[m_bestShotIndex] && index == swingTiming) {
 			m_batter->PlaySwingAnimation();
 			// ★★★ リプレイ時もスイング速度を通常と同じにする ★★★
 			m_batter->GetCharacterModel()
@@ -372,6 +376,10 @@ void Game::ResetForNextShot()
 
 	if (m_batter) {
 		m_batter->SetCursorMode(true);
+	}
+
+	if (m_shots < 3) {
+		m_hasSwung[m_shots] = false;
 	}
 }
 
@@ -586,7 +594,6 @@ void Game::GoToResult()
 	DeleteGO(this);
 }
 
-// Game.cpp に実装を追加
 void Game::StartEndFade()
 {
 	if (!m_InGameUI) {
