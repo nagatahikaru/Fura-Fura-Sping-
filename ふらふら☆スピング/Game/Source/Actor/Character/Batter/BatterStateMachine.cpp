@@ -181,12 +181,14 @@ void BatterSwingState::Enter()
 	batter->RotationUpdate();
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
 
-	// ★★★ ここに追加！スイングした瞬間をリプレイ用に記録 ★★★
+	// ★★★ ここを修正・追記 ★★★
 	Game* game = FindGO<Game>("game");
 	if (game) {
 		int shot = game->GetCurrentShotIndex();
 		int frame = game->GetCurrentReplayRecordFrame();
-		game->SetSwingFrame(shot, frame);   // ← これが正しい
+
+		game->SetSwingFrame(shot, frame); // 既存のフレーム記録
+		game->SetHasSwung(shot, true);    // ★実際に振ったフラグを true に！
 	}
 }
 
