@@ -122,6 +122,7 @@ public:
 	float m_hitStartZ = 0.0f;
 	bool m_hasStartedDistance = false;
 	bool m_isHomeRun = false;
+	float m_replayDelayTimer = 0.0f;    // リプレイ開始までの遅延タイマー
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。
@@ -161,7 +162,6 @@ private:
 	int m_replayPitchFrame = 0;
 	bool m_isRecording = false;
 	int m_replayDelayFrames = 0;
-	float m_replayDelayTimer = 0.0f;    // リプレイ開始までの遅延タイマー
 	float m_replayAccumulator = 0.0f;   // 再生速度制御用のアキュムレータ
 	float m_replaySwingTimer = 0.0f;
 	bool m_hasPlayedReplaySwing = false;  // ★ リプレイ中にスイングを1回だけ再生するためのフラグ

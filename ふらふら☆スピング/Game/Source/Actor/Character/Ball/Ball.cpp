@@ -464,22 +464,51 @@ void Ball::ResetBall()
 
 void Ball::Render(RenderContext& rc)
 {
+    Game* game = FindGO<Game>("game");
+
+    // 【追加】リプレイ中の特殊な非表示・表示ルール
+    if (game && game->m_isReplayPlaying)
+    {
+        // 打った後は無条件で必ず描画する
+        if (m_hasHit)
+        {
+            m_modelRender.Draw(rc);
+            return;
+        }
+
+        if (game->m_replayDelayTimer > 0.0f)
+        {
+            return;
+        }
+
+        // 2. 打撃ゾーン（Z=7000）に到達するまでは消す（消える魔球演出の再現など）
+        if (m_position.z > 6500.0f)
+        {
+            return;
+        }
+        // --- ここまで ---
+
+        // 上記の非表示条件を抜けたら描画する（打つ直前の僅かな瞬間など）
+        m_modelRender.Draw(rc);
+        return;
+    }
+
     if (!m_hasHit)
     {
         if (m_isMagicBall)
         {
-            if (m_throwTimer < 1.2f)
+            if (m_throwTimer < 0.9f)
             {
-                return; 
+                return;
             }
             if (m_position.z >= 5000.0f && m_position.z < 6000.0f)
             {
-                return; 
+                return;
             }
         }
         else
         {
-            if (m_throwTimer < 1.2f)
+            if (m_throwTimer < 0.9f)
             {
                 return;
             }
@@ -492,6 +521,6 @@ void Ball::Render(RenderContext& rc)
         }
     }
 
-    // モデルの描画（打った後は無条件でここに来るため、必ず描画されます）
+    // モデルの描画（通常プレイで打った後は無条件でここに来る）
     m_modelRender.Draw(rc);
 }
