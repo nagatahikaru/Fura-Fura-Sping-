@@ -67,6 +67,16 @@ public:
 
     void Update(Batter* batter) override;
 
+    void Reset()
+    {
+        m_randomCursorUpdate = true;
+        m_randomSpotRadius = 50.0f;
+		m_randomMoveDuration = 6.5f;
+		m_randomCursorMoveTimer = 0.0f;
+		m_randomCursorMovePwer = Vector3::Zero;
+		m_randomCursorTargetPos = Vector3::Zero;
+	}
+
 private:
 
     void ApplyRandomMagnet(Batter* batter);

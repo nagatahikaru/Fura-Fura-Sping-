@@ -23,6 +23,14 @@ public:
 
     void Update(Batter* batter) override;
 
+    void Reset()
+    {
+        if (m_inputHistory.size() > 0)
+        {
+			m_inputHistory.clear();
+        }        
+	}
+
 private:
 	void LagCursor(Batter* batter);
 

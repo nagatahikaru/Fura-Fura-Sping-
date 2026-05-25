@@ -44,12 +44,13 @@ void DebuffStageStateMachine::Update()
 void DebuffStageState::Enter()
 {
 	auto debuffStage = GetDebuffStage();
+	auto batter = GetBatter();
 
 	_ASSERT(debuffStage != nullptr);
 
 	if (!debuffStage)
 		return;
-
+	batter->ResetCursorOffset();
 	debuffStage->ClearPatterns();
 	debuffStage->BuildStage(m_stageLevel);
 }
@@ -67,7 +68,7 @@ void DebuffStageState::Update()
 	if (!batter || !debuffStage)
 		return;
 
-	int level = batter->GetGuruGuruBatCount() / 3;
+	int level = batter->GetGuruGuru() / 3;
 
 	// デバフステージの段階は、ぐるぐるバットの回数に応じて変化します。
 	// 例えば、3回振ったら段階1、6回振ったら段階2、といった具合です。
@@ -79,7 +80,7 @@ void DebuffStageState::Update()
 		m_stageLevel = level;
 		
 		debuffStage->ClearPatterns();
-		debuffStage->SetRotationCount(batter->GetGuruGuruBatCount());
+		debuffStage->SetRotationCount(batter->GetGuruGuru());
 		debuffStage->BuildStage(m_stageLevel);		
 	}
 

@@ -356,8 +356,8 @@ void Batter::SetCursorPosition()
 		}
 		else
 		{
-			move.x = m_inputScale.x * m_inversioninputScale.x;
-			move.y = m_inputScale.y * m_inversioninputScale.y;
+			move.x = m_inputScale.x;
+			move.y = m_inputScale.y;
 			move.z = 0.0f;
 		}
 
