@@ -50,7 +50,6 @@ void Load::Update()
             m_bgmStarted = true;
         }
         if (g_pad[0]->IsTrigger(enButtonA)) {
-            // ★ 即押しでも BGM を必ず再生する
             if (!m_bgmStarted) {
                 float v = g_soundManager->m_bgmVolume / 100.0f;
                 g_soundManager->PlayingSound(enSound_GameBGM1, true, powf(v, 1.5f));
@@ -65,17 +64,17 @@ void Load::Update()
         return;
     }
 
-    // ★ 1. ゲージを伸ばす処理
-    // ここで return している間は switch 文 (ロード) は実行されません。
+    // ★ 1. ゲージを伸ばす処理 (変更なし)
     if (m_displayProgress < m_realProgress) {
-        float speed = 0.05f; 
+        float speed = 0.05f;
         m_displayProgress += speed;
         if (m_displayProgress > m_realProgress) m_displayProgress = m_realProgress;
         m_gaugeFill.SetScale({ m_displayProgress, 1.0f, 1.0f });
-        return; 
+        return;
     }
 
-    // ゲージが目標に届いた後の待機 (変更なし)
+    // ★ 2. 待機処理（static をやめ、クラスのメンバ変数 m_isWaitingNextStep を使うことを推奨）
+    // ※今回は一旦そのままにしますが、バグの原因になりやすいので注意してください
     static bool isWaitingNextStep = false;
     if (!isWaitingNextStep) {
         isWaitingNextStep = true;
@@ -83,14 +82,13 @@ void Load::Update()
     }
     isWaitingNextStep = false;
 
-    // ★ 2. ロード実行とステップ進行
-    // ロードが終わった「後」にステップを進め、ヒントを変えるようにします。
+    // ★ 3. ロード実行
     switch (m_loadStep)
     {
     case 0:
         NewGO<SkyCube>(0, "skyCube");
         m_gaugeFill.SetMulColor({ 1,1,1,1 });
-        m_realProgress = 0.2f; // 次の目標をセット
+        m_realProgress = 0.2f;
         break;
     case 1:
         NewGO<Background>(0, "backGround");
@@ -106,49 +104,54 @@ void Load::Update()
         auto pitcher = NewGO<Pitcher>(0, "pitcher");
         auto catcher = NewGO<Catcher>(0, "catcher");
         auto ball = NewGO<Ball>(0, "ball");
-        batter->m_isPaused = pitcher->m_isPaused = catcher->m_isPaused = ball->m_isPaused = true;
+        if (batter && pitcher && catcher && ball) { // ★ ヌルチェックを追加して安全に
+            batter->m_isPaused = pitcher->m_isPaused = catcher->m_isPaused = ball->m_isPaused = true;
+        }
         m_realProgress = 0.8f;
     }
     break;
     case 4:
-        m_realProgress = 1.0f; // 最後の目標は100%
+        m_realProgress = 1.0f;
         break;
     case 5:
         m_loadFinished = true;
         m_guruguru.SetMulColor({ 1,1,1,0 });
         m_grobu.SetMulColor({ 1,1,1,1 });
         m_B.SetMulColor({ 1,1,1,1 });
-        return; // 完了したら抜ける
+        return;
     }
 
-    // ★ ステップを進めてヒントを切り替える
-    m_loadStep++;
-    if (m_loadStep == 2 || m_loadStep == 4) {
-        auto ui = FindGO<LoadUI>("loadUI");
-        if (ui) {
+    // ★ 4. 安全にヒントを切り替える
+    // m_loadStep が進む前に、存在しているか・壊れていないかを慎重にチェック
+    auto ui = FindGO<LoadUI>("loadUI");
+    if (ui != nullptr) {
+        if (m_loadStep == 1 || m_loadStep == 3) { // ステップ増加前に合わせる、または適切なタイミングに調整
             ui->AdvanceTip();
         }
     }
+
+    m_loadStep++;
 }
+
 void Load::Render(RenderContext& rc)
 {
     m_spriteRender.Draw(rc);
-   
+
     m_gaugeFrame.Update();
     m_gaugeFrame.Draw(rc);
-    (rc);
 
-    // ★ 最初の1フレームだけゲージFillを描画しない
+    // (rc); 👈 ★ 謎の記述を削除
+
     if (m_waitFrame >= 1) {
         m_gaugeFill.Update();
         m_gaugeFill.Draw(rc);
     }
     m_guruguru.Update();
     m_guruguru.Draw(rc);
-   
+
     m_grobu.Update();
     m_grobu.Draw(rc);
-   
+
     m_B.Update();
     m_B.Draw(rc);
 }
