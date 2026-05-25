@@ -251,6 +251,19 @@ public:
             m_magnetCursorOffset;
     }
 
+	// カーソルオフセットリセット
+    void ResetCursorOffset()
+    {
+		m_shakeCursorOffset = Vector3::Zero;
+		m_assistCursorOffset = Vector3::Zero;
+		m_noiseCursorOffset = Vector3::Zero;
+		m_driftCursorOffset = Vector3::Zero;
+		m_magnetCursorOffset = Vector3::Zero;
+        m_inversioninputScale = Vector2(1.0f, 1.0f);
+        m_cursorMoveScale = 1.0f;
+        m_isDelayFrag = false;
+    }
+
     Vector3 GetFinalCursorPosition() const
     {
         return
@@ -293,16 +306,15 @@ public:
     // グルグルバット更新
     void RoundAndRoundBat();
 
+    void SetGuruGuruCount(int count)
+    {
+		m_guruGuruBatCount = 3*count;
+    }
+
     // 回転回数カウント
     void GuruGuruCountUP(float currentAngle);
 
     // 回転回数取得
-    int GetGuruGuruBatCount() const
-    {
-        return m_guruGuruBatCount;
-    }
-
-    // グルグル回数取得
     int GetGuruGuru() const
     {
         return m_guruGuruBatCount;

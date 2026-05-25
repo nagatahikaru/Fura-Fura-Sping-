@@ -29,23 +29,32 @@ public:
 
     void Update(Batter* batter) override;
 
-	//角度の増加速度を設定する関数
-	//入力は倍率で、例えば1.0fなら通常の速度、2.0fなら倍速になります。
+	//角度の増加速度を設定する関数	
     void SetSpeed(float speed)
     {
         m_speed *= speed*0.5f;
 	}
 
+	//速度の揺れの時間を設定する関数
     void SetWaveSpeed(float speed)
     {
         m_waveSpeed *= speed*0.8f;
     }
 
-	//勝手に流れていく力を設定する関数
-	//入力は倍率で、例えば1.0fなら通常の力、2.0fなら倍の力になります。
+	//勝手に流れていく力を設定する関数	
     void SetForce(float force)
     {
         m_force *= force*0.4f;
+	}
+
+    void Reset()
+    {
+        m_force = 1.0f;
+        m_waveTime = 0.0f;
+        m_speed = 1.0f;
+        m_angle = 0.0f;
+        m_waveSpeed = 1.0f;
+        m_inputOffset = Vector2::Zero;
 	}
 
 private:

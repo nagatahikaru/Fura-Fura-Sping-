@@ -33,6 +33,11 @@ public:
 		m_meatRange = range;
     }
 
+    void Reset()
+    {
+		m_meatRange = 0.0f;
+    }
+
 private:
 
     void UpdateSmallCursor(Batter* batter);
