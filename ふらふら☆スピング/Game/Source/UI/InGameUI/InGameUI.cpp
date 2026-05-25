@@ -698,12 +698,10 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 	}
 
-	if (m_baisokuUI) {
-		if (m_isBaisokuVisible) {
-			m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
-			m_baisoku.Update();
-			m_baisoku.Draw(rc);
-		}
+	if (m_isBaisokuVisible) {
+		m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
+		m_baisoku.Update();
+		m_baisoku.Draw(rc);
 	}
 
 	if (m_isReplayVisible) {
