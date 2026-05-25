@@ -501,7 +501,7 @@ void Ball::Render(RenderContext& rc)
             {
                 return;
             }
-            if (m_position.z >= 5000.0f && m_position.z < 6000.0f)
+            if (m_position.z >= 5200.0f && m_position.z < 6000.0f)
             {
                 return;
             }
