@@ -17,14 +17,18 @@
 Game::~Game()
 {
 
-	DeleteGO(m_gameCamera);
-	DeleteGO(m_background);
-	DeleteGO(m_batter);
-	DeleteGO(m_pitcher);
-	DeleteGO(m_catcher);
-	DeleteGO(m_ball);
-	DeleteGO(m_skyCube);
-	DeleteGO(m_InGameUI);
+	if (m_gameCamera) DeleteGO(m_gameCamera);
+	if (m_background) DeleteGO(m_background);
+	if (m_batter)     DeleteGO(m_batter);
+	if (m_pitcher)    DeleteGO(m_pitcher);
+	if (m_catcher)    DeleteGO(m_catcher);
+	if (m_ball)       DeleteGO(m_ball);
+	if (m_skyCube)    DeleteGO(m_skyCube);
+	if (m_InGameUI)   DeleteGO(m_InGameUI);
+
+	// ★ Game内でNewGOしたカウントダウンUIもここで確実に道連れにする
+	auto start1 = FindGO<Start1>("start1");
+	if (start1) DeleteGO(start1);
 }
 
 
@@ -32,7 +36,7 @@ bool Game::Start()
 {
 
 	// ★ Load で作ったオブジェクトを取得するだけ
-	m_skyCube = FindGO<SkyCube>("skycube");
+	m_skyCube = FindGO<SkyCube>("skyCube");
 	m_background = FindGO<Background>("backGround");
 	m_gameCamera = FindGO<GameCamera>("gameCamera");
 	m_InGameUI = FindGO<InGameUI>("inGameUI");
@@ -569,6 +573,13 @@ void Game::GoToResult()
 	if (hasScore && g_soundManager->m_seVolume > 0) {
 		g_soundManager->PlaySE(enSound_SE2);
 	}
+
+	auto start1 = FindGO<Start1>("start1");
+	if (start1) DeleteGO(start1);
+
+	auto pause = FindGO<PauseUI>("pause");
+	if (pause) DeleteGO(pause);
+
 	int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
 	Result* result = NewGO<Result>(0);
 	result->SetResultValues(m_guruguru, best, m_scores);
