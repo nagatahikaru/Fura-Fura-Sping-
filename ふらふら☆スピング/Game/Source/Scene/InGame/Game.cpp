@@ -180,6 +180,7 @@ void Game::Update()
 		m_InGameUI->SetUIVisible(true);
 		m_InGameUI->SetFontVisble(true);
 		m_InGameUI->SetReplayVisible(false);
+		m_InGameUI->SetBaisokuVisible(false);
 	}
 	else if (m_cameraMode == Camera_Ball || m_cameraMode == Camera_BackBall)
 	{
@@ -187,7 +188,7 @@ void Game::Update()
 		m_InGameUI->SetUIVisible(false);
 		m_InGameUI->SetFontVisble(true);
 		m_InGameUI->SetReplayVisible(false);
-		m_InGameUI->SetniceVisible(true);
+		m_InGameUI->SetBaisokuVisible(true);
 	}
 	else if (m_cameraMode == Camera_Replay)
 	{
@@ -195,6 +196,7 @@ void Game::Update()
 		m_InGameUI->SetUIVisible(false);
 		m_InGameUI->SetFontVisble(false);
 		m_InGameUI->SetReplayVisible(true);
+		m_InGameUI->SetBaisokuVisible(false);
 
 	}
 	else if (m_batter->GetRotationSeen())

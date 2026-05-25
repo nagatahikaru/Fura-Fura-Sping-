@@ -25,7 +25,7 @@ public:
 	void SetUIVisible(bool isVisible) { m_isUIVisible = isVisible; }
 	void SetFontVisble(bool isVisible) { m_isFontVisible = isVisible; }
 	void SetReplayVisible(bool isVisible) { m_isReplayVisible = isVisible; }
-	void SetniceVisible(bool isVisible) { m_baisokuUI = isVisible; }
+	void SetBaisokuVisible(bool isVisible);
 	void SetBatterSide(bool isLeft);
 	void SetPause(bool isPaused);
 	void SetPredictedBallPos(const Vector3& pos3D);
@@ -42,7 +42,6 @@ public:
 	bool GetIsError() const { return m_isError; }
 	void DisableErrorCheck() { m_isErrorCheckEnabled = false; }
 	void SetGuruGuruTimer(float time);
-	void SetBaisokuVisible(bool isVisible);
 	float m_shuchusenTimer = 0.0f;
 	void OnButtonPressed();
 	void SetBallCount(int count);
