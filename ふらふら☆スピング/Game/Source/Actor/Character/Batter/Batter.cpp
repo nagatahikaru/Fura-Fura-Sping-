@@ -555,6 +555,10 @@ void Batter::EffectUpdate()
 	
 	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
 	EffectType type = static_cast<EffectType>(m_guruGuruBatCount/3);
+	if (type >= 10)
+	{
+		type = enEffect_DownArrow10; // 上限を10に設定
+	}
 
 	m_inro.m_effectDawnID = g_effectManager->PlayEffect(
 		type,
