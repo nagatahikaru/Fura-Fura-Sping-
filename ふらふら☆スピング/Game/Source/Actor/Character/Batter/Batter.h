@@ -227,7 +227,7 @@ public:
 	}
 
 	// カーソル移動の遅延
-    void SetInputMoveScale(Vector3 scale)
+    void SetInputMoveScale(Vector2 scale)
     {
         m_inputdelayScale = scale;
     }
@@ -550,7 +550,7 @@ private:
 	// ドリフトによるカーソルオフセットの減衰速度
 	Vector3 m_driftCursorOffset = Vector3::Zero;
 
-	Vector3 m_inputdelayScale = Vector3(1.0f, 1.0f, 1.0f);
+	Vector2 m_inputdelayScale = Vector2(1.0f, 1.0f);
 
     bool m_isDelayFrag = false;
 

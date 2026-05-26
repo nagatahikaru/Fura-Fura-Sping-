@@ -6,7 +6,16 @@
 //エフェクトの種類。
 //エフェクトの種類を追加する場合は、enEffect_Numの前に追加してください。
 enum EffectType {
-	enEffect_DownArrow,
+	enEffect_DownArrow1,
+	enEffect_DownArrow2,
+	enEffect_DownArrow3,
+	enEffect_DownArrow4,
+	enEffect_DownArrow5,
+	enEffect_DownArrow6,
+	enEffect_DownArrow7,
+	enEffect_DownArrow8,
+	enEffect_DownArrow9,
+	enEffect_DownArrow10,
 	enEffect_HitBat,
 	enEffect_Num
 };
@@ -31,7 +40,7 @@ public:
 	/// <param name="rot">エフェクトの回転。</param>
 	/// <returns></returns>
 	uint32_t PlayEffect(
-		EffectType type=enEffect_DownArrow,
+		EffectType type= enEffect_DownArrow1,
 		const Vector3& pos=Vector3::Zero,
 		const Vector3& scale=Vector3::One,
 		const Quaternion& rot=Quaternion::Identity);
@@ -122,7 +131,16 @@ private:
 	//エフェクトのファイル名。エフェクトの種類と同じ順番で追加してください。
 	//例）enEffect_DownArrowのファイル名はm_files[enEffect_DownArrow]に格納されている。
 	const char16_t* m_files[enEffect_Num] = {
-		u"DownArrow",
+		u"DownArrow1",
+		u"DownArrow2",
+		u"DownArrow3",
+		u"DownArrow4",
+		u"DownArrow5",
+		u"DownArrow6",
+		u"DownArrow7",
+		u"DownArrow8",
+		u"DownArrow9",
+		u"DownArrow10",
 		u"HitBat"
 	};
 

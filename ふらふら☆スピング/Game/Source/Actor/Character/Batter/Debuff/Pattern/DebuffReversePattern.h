@@ -39,18 +39,15 @@ public:
 private:
 
     void SetReverseY(Batter* batter)
-    {
-        batter->SetDelayFrag(true);
-        batter->SetInversionInputScale(m_reversePower,0.0f);
+    {        
+        batter->SetInversionInputScale(m_reversePower,1.0f);
     }
     void SetReverseX(Batter* batter)
-    {
-        batter->SetDelayFrag(true);
-        batter->SetInversionInputScale(0.0f, m_reversePower);
+    {        
+        batter->SetInversionInputScale(1.0f, m_reversePower);
     }
     void SetReverseAll(Batter* batter)
-    {
-		batter->SetDelayFrag(true);
+    {		
         batter->SetInversionInputScale(m_reversePower, m_reversePower);
     }
     

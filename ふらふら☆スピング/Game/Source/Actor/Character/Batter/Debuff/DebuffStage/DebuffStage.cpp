@@ -79,7 +79,8 @@ void DebuffStage::DebuffStageOne()
 {
 	//—h‚êƒfƒoƒt
 	auto shake =AddPattern<DebuffShakePattern>();
-	shake->SetType(DebuffShakePattern::Shake_Vertical);
+	DebuffShakePattern::ShakeType type = static_cast<DebuffShakePattern::ShakeType>(rand() % 2);
+	shake->SetType(type);
 	shake->Reset();
 	shake->SetPower(shake->GetRotationRate(m_rotationCount));
 	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount));

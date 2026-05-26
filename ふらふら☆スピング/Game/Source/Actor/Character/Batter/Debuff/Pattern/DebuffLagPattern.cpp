@@ -33,7 +33,7 @@ void DebuffLagPattern::LagCursor(Batter* batter)
 
 		m_inputHistory.pop_front();
 		batter->SetDelayFrag(true);
-		batter->SetInputMoveScale(Vector3(delayedInput.x, delayedInput.y, 0.0f));
+		batter->SetInputMoveScale(Vector2(delayedInput.x, delayedInput.y));
 	}
 
 }
