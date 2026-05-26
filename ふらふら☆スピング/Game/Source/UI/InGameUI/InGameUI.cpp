@@ -304,7 +304,7 @@ void InGameUI::ShowPrediction(float predicted)
 		m_predictionType = Prediction_Great;
 		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
 	}
-	else if (predicted < 51000.0f) {
+	else if (predicted < 53000.0f) {
 		m_predictionType = Prediction_Excellent;
 		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
 	}
@@ -723,43 +723,5 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spritekuro.Update();
 		m_spritekuro.Draw(rc);
 	}
-	//wchar_t dbg[256];
-
-	//swprintf_s(dbg, 256, L"Ball Z = %.1f", m_predictedBallPos3D.z);
-	//m_fontDebug1.SetText(dbg);
-	//m_fontDebug1.SetPosition(300.0f, 500.0f, 0.0f);
-	//m_fontDebug1.SetColor(0, 0, 0, 1);
-	//m_fontDebug1.Draw(rc);
-
-	//Vector3 uiPos = m_isBallUIFixed
-	//	? m_fixedBallUIPos
-	//	: ConvertBall3DToUI(m_predictedBallPos3D);
-	//uiPos.y -= 0.0f;   // ★ これを追加
-	//swprintf_s(dbg, 256, L"UI Pos = (%.1f, %.1f)", uiPos.x, uiPos.y);
-	//m_fontDebug2.SetText(dbg);
-	//m_fontDebug2.SetPosition(300.0f, 460.0f, 0.0f);
-	//m_fontDebug2.SetColor(0, 0, 0, 1);
-	//m_fontDebug2.Draw(rc);
-
-	//if (m_isBallUIFixed) {
-	//	swprintf_s(dbg, 256, L"Fixed UI Pos = (%.1f, %.1f)",
-	//		m_fixedBallUIPos.x, m_fixedBallUIPos.y);
-	//	m_fontDebug3.SetText(dbg);
-	//	m_fontDebug3.SetPosition(300.0f, 420.0f, 0.0f);
-	//	m_fontDebug3.SetColor(1, 0, 0, 1);
-	//	m_fontDebug3.Draw(rc);
-	//}
-
-	//swprintf_s(dbg, 256, L"Ball X = %.2f", m_predictedBallPos3D.x);
-	//m_fontDebug4.SetText(dbg);
-	//m_fontDebug4.SetPosition(300.0f, 380.0f, 0.0f);
-	//m_fontDebug4.SetColor(0, 0, 0, 1);
-	//m_fontDebug4.Draw(rc);
-
-	//swprintf_s(dbg, 256, L"UI X = %.2f", uiPos.x);
-	//m_fontDebug5.SetText(dbg);
-	//m_fontDebug5.SetPosition(300.0f, 340.0f, 0.0f);
-	//m_fontDebug5.SetColor(0, 0, 0, 1);
-	//m_fontDebug5.Draw(rc);
-
+	
 }
