@@ -44,6 +44,7 @@ bool Result::Start()
 			break;
 		}
 	}
+	m_se2Timer = 0.0f;   // ★ SE2 の経過時間
 
 	// ★ SE 音量が 0 の場合は SE2 を即削除
 	if (g_soundManager->m_seVolume <= 0.0f||!m_hasScore) {
@@ -63,12 +64,26 @@ void Result::Update()
 	float dt = g_gameTime->GetFrameDeltaTime();
 	if (m_isFadingSE2) {
 
+		// ★ 経過時間を進める
 		m_se2Timer += dt;
 
-		if (m_se2Timer >= 3.5f) {
-			m_se2Volume -= 0.05f;
+		// ★ 4.5秒までは音量そのまま
+		if (m_se2Timer < 4.5f) {
+			// 何もしない（音量固定）
+		}
+		else {
+			// ★ 4.5秒経過後 → 2秒かけてフェードアウト
+			float fadeTime = m_se2Timer - 4.5f;  // 0〜2秒
+
+			// 2.5 → 0 を 2秒で
+			float t = fadeTime / 2.0f;
+			if (t > 1.0f) t = 1.0f;
+
+			m_se2Volume = 2.5f * (1.0f - t);
+
 			if (m_se2Volume <= 0.0f) {
-				m_se2Volume = 0.0f; m_isFadingSE2 = false;
+				m_se2Volume = 0.0f;
+				m_isFadingSE2 = false;
 			}
 		}
 
@@ -80,28 +95,36 @@ void Result::Update()
 	}
 
 	if (g_pad[0]->IsTrigger(enButtonA)) {
+
 		if (m_phase != enPhase_WaitKey) {
-			// 【スキップ】即座に全数値を最大にする
+
+			// ★ スキップ：表示だけ最終値にする
 			m_displayGuruguru = m_guruguru;
-			m_displayKm = (float)m_originalKm; // 距離は元の最大飛距離
-			m_displayFinalScore = (float)m_km;         // スコアは倍率がかかった最終スコア
+			m_displayKm = (float)m_originalKm;
+			m_displayFinalScore = (float)m_km;
+
 			m_phase = enPhase_WaitKey;
+
+			// ★ ここでは m_isScoreFixed を触らない！
 			m_isSkipped = true;
+
+			// ★ SE2 フェードアウトは止める
+			m_isFadingSE2 = false;
 		}
 		else {
 			StartFadeOut(1.0f, [this]() {
 
-				// ★ BGM フェードアウト
+				// BGM は即消しでOK
 				if (g_bgm) g_bgm->SetVolume(0.0f);
 
-				// ★ SE2 もフェードアウト
-				auto se2 = g_soundManager->GetSE2();
-				if (se2) se2->SetVolume(0.0f);
+				// ★ SE2 が残っていたら 1秒フェードアウト
+				if (g_soundManager && g_soundManager->GetSE2()) {
+					g_soundManager->FadeOutSE2(0.5f);
+				}
 
-				// ★ フェード完了後にタイトルへ
 				NewGO<Titer>(0);
 				DeleteGO(this);
-			});
+				});
 		}
 	}
 
@@ -153,10 +176,6 @@ void Result::Update()
 	if (m_phase == enPhase_WaitKey && !m_isScoreFixed) {
 		m_isScoreFixed = true;
 		m_isSkipped = true;
-
-		// (ランキング保存やNewRecord判定など、元々あった「if(!m_isScoreFixed)」の中身をここに)
-		auto se2 = g_soundManager->GetSE2();
-		if (se2) { se2->Stop(); DeleteGO(se2); g_soundManager->ClearSE2(); }
 
 		Ranking* ranking = NewGO<Ranking>(0, "ranking");
 		ranking->Load();

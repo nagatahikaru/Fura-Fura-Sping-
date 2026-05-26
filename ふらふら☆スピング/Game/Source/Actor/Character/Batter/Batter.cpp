@@ -490,7 +490,8 @@ void Batter::HitBat()
 		}
 		if (!m_game->m_isPaused && g_soundManager) {
 			g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
-			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 100.0f);
+			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 300.0f);
+			if (se2) se2->SetVolume(3.0f);
 			se2->SetName("SE2");
 		}
 	}

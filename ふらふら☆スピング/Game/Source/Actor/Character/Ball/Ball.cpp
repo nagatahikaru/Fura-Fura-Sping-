@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
 #include"Source/UI/InGameUI/InGameUI.h"
+#include "Source/Effect/EffectManager.h"
 #include"Source/Sound/SoundManager.h"
 
 Ball::Ball()
@@ -452,6 +453,8 @@ void Ball::ResetBall()
     m_hasShownPrediction = false;
     m_hasPlayedSE6 = false;
     m_isMagicBall = false;
+    m_hasPlayedDisappearEffect = false;
+    m_hasPlayedReappearEffect = false;
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
     if (game) {
@@ -492,6 +495,43 @@ void Ball::Render(RenderContext& rc)
         m_modelRender.Draw(rc);
         return;
     }
+
+    // ★ 魔球の消える瞬間（Update側で1回だけ）
+    if (m_isMagicBall && !m_hasHit)
+    {
+        if (!m_hasPlayedDisappearEffect &&
+            m_position.z >= 5200.0f)
+        {
+            g_effectManager->PlayEffect(
+                enEffect_kemuri,
+                m_position,
+                Vector3(20.0f, 20.0f, 20.0f)
+            );
+            g_soundManager->PlaySE(enSound_SE14);
+
+            m_hasPlayedDisappearEffect = true;
+        }
+    }
+
+    // ★ 魔球が再出現した瞬間のエフェクト
+    //if (m_isMagicBall && !m_hasHit)
+    //{
+    //    // 消えていた区間を抜けた瞬間（Z >= 6000）
+    //    if (m_hasPlayedDisappearEffect && !m_hasPlayedReappearEffect)
+    //    {
+    //        if (m_position.z >= 6000.0f)
+    //        {
+    //            g_effectManager->PlayEffect(
+    //                enEffect_kemuri,
+    //                m_position,
+    //                Vector3(10.0f, 10.0f, 10.0f)
+    //            );
+    //            g_soundManager->PlaySE(enSound_SE14);
+    //            m_hasPlayedReappearEffect = true; // 二重発火防止
+    //        }
+    //    }
+    //}
+
 
     if (!m_hasHit)
     {
