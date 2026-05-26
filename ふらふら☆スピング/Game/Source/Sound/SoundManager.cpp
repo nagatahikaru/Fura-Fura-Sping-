@@ -189,6 +189,16 @@ void SoundManager::UnmuteSE2()
 	}
 }
 
+void SoundManager::StopBGM()
+{
+	if (g_bgm) {
+		g_bgm->Stop();
+		DeleteGO(g_bgm);
+		g_bgm = nullptr;
+		m_nowPlayingBGM = enSound_Num; // ★ 何も再生していない状態に
+	}
+}
+
 void SoundManager::FadeOutSE2(float durationSec)
 {
 	if (!m_se2) return;

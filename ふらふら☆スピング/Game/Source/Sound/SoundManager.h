@@ -52,6 +52,7 @@ public:
 	void ClearSE2() { m_se2 = nullptr; }
 	void SetBGMVolume(float vol);
 	void SetSEVolume(float vol);
+	void StopBGM();
 	float m_bgmVolume = 100.0f;   // 0〜100
 	float m_seVolume = 100.0f;   // 0〜100
 	float m_se2Volume = 100.0f;   // SE2 専用音量
