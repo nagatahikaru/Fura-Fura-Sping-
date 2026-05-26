@@ -112,6 +112,7 @@ void Load::Update()
     break;
     case 4:
         m_realProgress = 1.0f;
+        g_soundManager->StopBGM();
         break;
     case 5:
         m_loadFinished = true;
@@ -139,8 +140,6 @@ void Load::Render(RenderContext& rc)
 
     m_gaugeFrame.Update();
     m_gaugeFrame.Draw(rc);
-
-    // (rc); 👈 ★ 謎の記述を削除
 
     if (m_waitFrame >= 1) {
         m_gaugeFill.Update();
