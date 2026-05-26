@@ -336,8 +336,8 @@ void Batter::SetCursorPosition()
 		}
 		else
 		{
-			move.x = m_inputScale.x;
-			move.y = m_inputScale.y;
+			move.x = m_inputScale.x * m_inversioninputScale.x;
+			move.y = m_inputScale.y * m_inversioninputScale.y;
 			move.z = 0.0f;
 		}
 
@@ -546,16 +546,17 @@ void Batter::ResetSwing()
 /** 演出関連コード */
 void Batter::EffectUpdate()
 {	
-	if (m_guruGuruBatCount < 5) return;
+	if (m_guruGuruBatCount < 3) return;
 
 	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)){		
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
 	
 	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
+	EffectType type = static_cast<EffectType>(m_guruGuruBatCount/3);
 
 	m_inro.m_effectDawnID = g_effectManager->PlayEffect(
-		enEffect_DownArrow,
+		type,
 		pos,
 		Vector3(15.0f, 40.0f, 15.0f));
 }
