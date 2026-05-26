@@ -28,6 +28,7 @@ enum Sound{
 	enSound_SE11,
 	enSound_SE12,
 	enSound_SE13,
+	enSound_SE14,
 	enSound_Num //このステータスは、サウンドの総数を表しているため、この下には追加しないでください。
 };
 class SoundManager :public IGameObject
@@ -35,6 +36,7 @@ class SoundManager :public IGameObject
 public:
 	SoundManager();
 	~SoundManager() {};
+	void Update();
 	/// <summary>
 	/// 指定したサウンドを再生し、再生中のサウンドソースを返します。
 	/// </summary>
@@ -59,7 +61,11 @@ public:
 	float m_se2BaseVolume = 1.0f;
 	void MuteSE2();
 	void UnmuteSE2();
-	void FadeOutSE2(float delta);
+	void FadeOutSE2(float durationSec);
+	bool m_isFadingSE2 = false;
+	float m_se2FadeDuration = 0.0f;
+	float m_se2FadeTimer = 0.0f;
+	float m_se2StartVolume = 0.0f;
 };
 
 extern SoundManager* g_soundManager;

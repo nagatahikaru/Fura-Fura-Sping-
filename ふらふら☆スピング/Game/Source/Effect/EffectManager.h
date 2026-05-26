@@ -8,6 +8,7 @@
 enum EffectType {
 	enEffect_DownArrow,
 	enEffect_HitBat,
+	enEffect_kemuri,
 	enEffect_Num
 };
 
@@ -123,7 +124,8 @@ private:
 	//例）enEffect_DownArrowのファイル名はm_files[enEffect_DownArrow]に格納されている。
 	const char16_t* m_files[enEffect_Num] = {
 		u"DownArrow",
-		u"HitBat"
+		u"HitBat",
+		u"kemuri"
 	};
 
 	std::unordered_map<uint32_t, EffectEmitter*> m_effects;					//effectへの参照。

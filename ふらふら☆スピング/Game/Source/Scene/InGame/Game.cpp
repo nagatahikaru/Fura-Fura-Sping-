@@ -71,7 +71,7 @@ void Game::Update()
 	int g = GetGuruguru();
 
 	// 5 の倍数になった瞬間だけ鳴らす
-	if (g > 0 && g % 5 == 0 && g != m_prevGuruGuru) {
+	if (g > 0 && g % 3 == 0 && g != m_prevGuruGuru) {
 
 		// ★ サウンドテストで SE 音量が 0 のときは鳴らさない
 		if (g_soundManager->m_seVolume > 0) {
@@ -145,6 +145,10 @@ void Game::Update()
 		// ★ フェードアウト開始した瞬間だけ実行
 		if (!m_startFadeSE2) {
 			m_startFadeSE2 = true;
+
+			if (g_soundManager) {
+				g_soundManager->FadeOutSE2(2.5f);   // ← 0.7秒フェードアウト
+			}
 		}
 		m_timeScale = 1.0f;
 	}
@@ -334,11 +338,6 @@ void Game::Update()
 		return;
 	}
 
-	// ★ SE2 フェードアウト（フェード演出中だけ）
-	if (m_startFadeSE2 && g_soundManager) {
-		g_soundManager->FadeOutSE2(0.003f);
-	}
-
 	// ★ 録画中は毎フレームカウンタを進める
 	if (m_isRecording) {
 		m_replayFrameCounter++;
@@ -347,6 +346,7 @@ void Game::Update()
 
 void Game::ResetForNextShot()
 {
+	m_startFadeSE2 = false;
 	m_isBallLanded = false;
 	m_afterLandingTimer = 0.0f;
 	m_zeroDistanceTimer = 0.0f;
@@ -602,6 +602,11 @@ void Game::StartEndFade()
 	}
 
 	m_InGameUI->StartFadeOut(0.5f);
+
+	// ★★★ 3球目リプレイ用：SE2 をここでもフェードアウト開始 ★★★
+	if (g_soundManager) {
+		g_soundManager->FadeOutSE2(2.0f);   // ← あなたの好きな秒数
+	}
 
 	m_InGameUI->m_onFadeOutFinished = [this]() {
 
