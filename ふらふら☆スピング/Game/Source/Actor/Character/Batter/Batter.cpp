@@ -115,6 +115,9 @@ bool Batter::Start()
 	m_characterController.SetPosition(m_transform.m_position);
 	m_initialRotation = m_transform.m_rotation;
 
+	m_bodyCenter = BatterBasicSettings::INITIAL_COORDINATE;
+	m_orbitAngle = 0.0f;
+
 	m_guruGuruBatTimer = 5.0f;
 
 	m_collisionObject = new CollisionObject;
@@ -184,62 +187,37 @@ void Batter::Update()
 
 /** 回転計算処理関数 */
 void Batter::Rotation()
-{
-	//キーボード操作
+{	
 	//コントローラー操作
-	if(ERROR_DEVICE_NOT_CONNECTED != ERROR_SUCCESS)
+	//左スティックの入力量を取得
+	Vector3 stickL = Vector3::Zero;
+	stickL.x = g_pad[0]->GetLStickXF();
+	stickL.y = g_pad[0]->GetLStickYF();
+
+	float inputAngle = atan2f(stickL.y, stickL.x); // 入力角度を計算
+
+	float radius = 230.0f; // 回転半径
+	// 入力角度に基づいてバッターの位置を更新
+	m_modelPos.x = m_bodyCenter.x + radius * cosf(inputAngle);
+	m_modelPos.y = m_bodyCenter.y;
+	m_modelPos.z = m_bodyCenter.z + radius * sinf(inputAngle);
+
+	// バッターの位置を更新
+	Vector3 toCenter = m_bodyCenter - m_modelPos;
+	toCenter.y = 0.0f; // 水平方向のみに制限
+	toCenter.Normalize();
+
+	//回転処理
+	const float kEps = 0.001f;
+
+	if (toCenter.Length() > kEps)
 	{
-		//xzの移動速度を0.0fにする
-		m_transform.m_moveSpeed.x = BatterBasicSettings::NONE_SPEED;
-		m_transform.m_moveSpeed.z = BatterBasicSettings::NONE_SPEED;
+		toCenter.Normalize();
 
-		//左スティックの入力量を取得
-		Vector3 stickL = Vector3::Zero;
-		stickL.x = g_pad[0]->GetLStickXF();
-		stickL.y = g_pad[0]->GetLStickYF();
-
-		//カメラの前方向と右方向のベクトルを持って来る。
-		Vector3 forward = g_camera3D->GetForward();
-		Vector3 right = g_camera3D->GetRight();
-		//ｙ方向には移動させない
-		forward.y = BatterBasicSettings::NONE_SPEED;
-		right.y = BatterBasicSettings::NONE_SPEED;
-
-		//左スティックの入力量と200.0fを乗算
-		right *= stickL.x * BatterBasicSettings::BASICS_SPEED;
-		forward *= stickL.y * BatterBasicSettings::BASICS_SPEED;
-
-		//移動速度にスティックの入力量を加算する。
-		m_transform.m_moveSpeed += right + forward;
-
-
-		//回転処理
-		Vector3 ford = m_transform.m_moveSpeed;
-		ford.y = 0.0f;
-
-		const float kEps = 0.001f;
-		if (ford.Length() > kEps) {
-			// 移動があるときだけ向きを更新する
-			ford.Normalize();
-			m_facingDir = ford; // last non-zero direction を保持
-		}
+		// 向きは「中心を見る」
+		m_facingDir = toCenter;
 	}
-	else
-	{
-		float lx = g_pad[0]->GetLStickXF();
-		float ly = g_pad[0]->GetLStickYF();
 
-		Vector3 dir;
-		dir.x = lx;
-		dir.z = ly;
-		dir.y = 0.0f;
-
-		if (dir.Length() > 0.1f)
-		{
-			dir.Normalize();
-			m_facingDir = dir;
-		}
-	}
 	float currentAngle = atan2f(m_facingDir.x, m_facingDir.z) * 180.0f / 3.14159265f;
 	GuruGuruCountUP(currentAngle);
 }
@@ -303,31 +281,33 @@ void Batter::GuruGuruCountUP(float currentAngle)
 /** モデルの回転処理 */
 void Batter::RotationUpdate()
 {
-	//回転処理の更新
-	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir); // m_rotationAngle はメンバ変数などから取得
-
-	// オフセットを考慮した位置の補正計算
-	Vector3 pivot = m_transform.m_position - pivotOffset;
-	newPosition = pivot + pivotOffset;
-	
 	//　フラグが立っているときは回転を適用、そうでないときは初期回転に戻す
 	if (m_isRotation)
 	{	
-		m_characterModel->SettRotation(m_transform.m_rotation);
+		float yaw = atan2f(m_facingDir.x, m_facingDir.z);
+
+		// 90度補正
+		yaw += Math::DegToRad(90.0f);
+
 		Quaternion rot;
-		rot.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 230.0f);
+		rot.SetRotationY(yaw);
+		m_characterModel->SetPosition(m_modelPos);
+		m_characterModel->SettRotation(rot);
+
+		Quaternion weaponrot;
+		weaponrot.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 230.0f);
 		m_characterModel->SetWeaponRotation(true);
-		m_characterModel->SetWeaponRotation(rot);
-		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y + 250.0f, m_transform.m_position.z));
+		m_characterModel->SetWeaponRotation(weaponrot);
+		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y + 200.0f, m_transform.m_position.z));
 	
 	}
 	else
 	{
 		m_characterModel->SettRotation(m_initialRotation);
+		m_characterModel->SetPosition(m_transform.m_position);
 		m_characterModel->SetWeaponRotation(false);
 	}
-
-	m_characterModel->SetPosition(newPosition);
+	
 	m_characterModel->Update();
 }
 
