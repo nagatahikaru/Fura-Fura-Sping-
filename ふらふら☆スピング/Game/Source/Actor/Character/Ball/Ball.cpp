@@ -280,7 +280,7 @@ void Ball::Throw(const Vector3& targetPos)
 
     float speed = 2000.0f + (rand() % 250);
  
-    if (rand() % 10 == 0)
+    if (rand() % 1 == 0)
     {
       m_isMagicBall = true; // 10%で魔球になる
     }
