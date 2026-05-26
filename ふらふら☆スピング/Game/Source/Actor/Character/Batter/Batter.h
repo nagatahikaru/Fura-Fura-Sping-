@@ -566,8 +566,13 @@ private:
     {
         0.0f,
         0.0f,
-        10.0f
+        100.0f
     };
+
+    Vector3 m_bodyCenter;      // 本体中心
+    Vector3 m_modelPos;     // モデルの半径
+    float   m_orbitAngle;      // 公転角度
+
 
     // 前回角度
     float m_prevAngle = 0.0f;

@@ -25,10 +25,10 @@ public:
 	/// エフェクトの再生。
 	/// エフェクトの種類と座標、スケール、回転を指定してエフェクトを再生します。
 	/// </summary>
-	/// <param name="type"></param>
-	/// <param name="pos"></param>
-	/// <param name="scale"></param>
-	/// <param name="rot"></param>
+	/// <param name="type">再生したいエフェクトの種類。</param>
+	/// <param name="pos">エフェクトの位置。</param>
+	/// <param name="scale">エフェクトのスケール。</param>
+	/// <param name="rot">エフェクトの回転。</param>
 	/// <returns></returns>
 	uint32_t PlayEffect(
 		EffectType type=enEffect_DownArrow,
@@ -42,10 +42,10 @@ public:
 	/// エフェクトの移動。
 	/// エフェクトのIDと座標、スケール、回転を指定してエフェクトを移動します。
 	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="pos"></param>
-	/// <param name="scale"></param>
-	/// <param name="rot"></param>
+	/// <param name="id">移動させたいエフェクトのID。</param>
+	/// <param name="pos">エフェクトの新しい位置。</param>
+	/// <param name="scale">エフェクトの新しいスケール。</param>
+	/// <param name="rot">エフェクトの新しい回転。</param>
 	/// <returns></returns>
 	bool MoveEffect(
 		uint32_t id=0,
@@ -55,11 +55,11 @@ public:
 
 	/// <summary>
 	/// エフェクトの移動。
-	/// エフェクトのIDと座標、スケール、回転を指定してエフェクトを移動します。
+	/// エフェクトのタイプと座標、スケール、回転を指定してエフェクトを移動します。
 	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="targetTransform"></param>
-	/// <param name="offset"></param>
+	/// <param name="type">移動させたいエフェクトのタイプ。</param>
+	/// <param name="targetTransform">追従させたいターゲットのTransform。</param>
+	/// <param name="offset">ターゲットからのオフセット。</param>
 	/// <returns></returns>
 	uint32_t PlayFollowEffect(
 		EffectType type,
