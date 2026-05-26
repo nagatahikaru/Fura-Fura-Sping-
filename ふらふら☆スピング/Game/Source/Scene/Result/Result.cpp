@@ -95,33 +95,32 @@ void Result::Update()
 	}
 
 	if (g_pad[0]->IsTrigger(enButtonA)) {
+
 		if (m_phase != enPhase_WaitKey) {
-			// 【スキップ】即座に全数値を最大にする
+
+			// ★ スキップ：表示だけ最終値にする
 			m_displayGuruguru = m_guruguru;
-			m_displayKm = (float)m_originalKm; // 距離は元の最大飛距離
-			m_displayFinalScore = (float)m_km;         // スコアは倍率がかかった最終スコア
+			m_displayKm = (float)m_originalKm;
+			m_displayFinalScore = (float)m_km;
+
 			m_phase = enPhase_WaitKey;
+
+			// ★ ここでは m_isScoreFixed を触らない！
 			m_isSkipped = true;
+
+			// ★ SE2 フェードアウトは止める
 			m_isFadingSE2 = false;
 		}
 		else {
-
-			// ★ SE がまだ残っている場合だけ 0.5秒フェードアウト開始
-			if (m_se2Volume > 0.0f) {
-				m_isFadingSE2 = true;
-
-				// 0.5秒フェードアウトに入るための開始位置
-				// 0.5秒 = フェード区間の 1/4（2秒 → 0.5秒）
-				// つまり 4.5 + 1.5 = 6.0秒地点から開始すると 0.5秒で終わる
-				m_se2Timer = 6.0f;
-			}
-
 			StartFadeOut(1.0f, [this]() {
 
+				// BGM は即消しでOK
 				if (g_bgm) g_bgm->SetVolume(0.0f);
 
-				auto se2 = g_soundManager->GetSE2();
-				if (se2) se2->SetVolume(0.0f);
+				// ★ SE2 が残っていたら 1秒フェードアウト
+				if (g_soundManager && g_soundManager->GetSE2()) {
+					g_soundManager->FadeOutSE2(0.5f);
+				}
 
 				NewGO<Titer>(0);
 				DeleteGO(this);
