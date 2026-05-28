@@ -47,6 +47,8 @@ InGameUI::InGameUI() {
 	m_batu[1].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
 	m_batu[2].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
 	m_guruguruSprite.Init("Assets/sprite/kiken.dds", 900.0f,700.0f);
+	m_ballMapIcon.Init("Assets/sprite/ball.dds", 30.0f, 30.0f); 
+	m_gurahu.Init("Assets/sprite/gurahu.dds", 300.0f, 270.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -399,6 +401,33 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spriteRenderMeet.Update();
 		m_spriteRenderMeet.Draw(rc);
 
+		m_gurahu.SetPosition(Vector3{ 800.0f,-20.0f,0.0f });
+		m_gurahu.Update();
+		m_gurahu.Draw(rc);
+
+		double t = (double)m_guruGuruCount / 40.0;
+		t = clamp(t, 0.0, 1.0);
+
+		double currentMultiplier = 1.0 + 29.0 * pow(t, 2.5);
+
+		float progressRatioY = (float)((currentMultiplier - 1.0) / 29.0);
+		progressRatioY = clamp(progressRatioY, 0.0f, 1.0f);
+
+		float progressRatioX = (float)t;
+
+		Vector3 graphBasePos = Vector3{ 670.0f, -120.0f, 0.0f };
+
+		Vector3 ballMapPos;
+		ballMapPos.x = graphBasePos.x + (progressRatioX * m_miniMapHeightX);
+		ballMapPos.y = graphBasePos.y + (progressRatioY * m_miniMapHeightY);
+		ballMapPos.z = 0.0f;
+
+		m_ballMapIcon.SetPosition(ballMapPos);
+		m_ballMapIcon.Update();
+		m_ballMapIcon.Draw(rc);
+
+	
+
 		if (m_hasPredictedBall) {
 
 			Vector3 uiPos;
@@ -481,7 +510,7 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 
 		// ★ 3回以上でスプライト表示
-		if (m_guruGuruCount >= 3) {
+		if (m_guruGuruTimer <= 0.0f && m_guruGuruCount >= 3) {
 
 			m_guruguruSprite.SetMulColor({ 1,1,1,1 }); // 表示
 			m_guruguruSprite.SetPosition(Vector3{ 0.0f,465.0f, 0.0f });
@@ -496,18 +525,20 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 
 		// --- ぐるぐる段階（10段階） ---
-		int stage = clamp(m_guruGuruCount / 3, 0, 9);
+		int stage = clamp((m_guruGuruCount - 3) / 3, 0, 9);
 
 		// ★ 3回未満は何も表示しない
-		if (m_guruGuruCount >= 3)
+		if (m_guruGuruTimer <= 0.0f && m_guruGuruCount >= 3)
 		{
 			const wchar_t* stageText = m_stageTextList[stage];
 
 			m_fontStage[stage].SetText(stageText);
 			m_fontStage[stage].SetPosition(-230.0f, 500.0f, 0.0f);
+			m_fontStage[stage].SetScale(0.8f);
 			m_fontStage[stage].SetColor(0, 0, 0, 1);
 			m_fontStage[stage].Draw(rc);
 		}
+		
 	}
 
 	if (m_isFontVisible) {

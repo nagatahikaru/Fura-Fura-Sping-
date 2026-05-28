@@ -161,16 +161,21 @@ private:
 	SpriteRender m_guruguruSprite; // 例：5段階
 	FontRender    m_fontStage[10];
 	const wchar_t* m_stageTextList[10] = {
-	L"こんにちは",   // 0段階
-	L"ハロー",       // 1段階
-	L"やあ",         // 2段階
-	L"おっす",       // 3段階
-	L"よっ",         // 4段階
-	L"どうも",       // 5段階
-	L"Hi!",          // 6段階
-	L"Welcome!",     // 7段階
-	L"Go!",          // 8段階
-	L"ファイナル!"   // 9段階
+	L"揺れ(弱)",   // 0段階
+	L"360度揺れ(弱)",       // 1段階
+	L"ランダム揺れ(弱)",         // 2段階
+	L"ランダム誘導(弱)",       // 3段階
+	L"ミートゾーンの縮小(弱)",         // 4段階
+	L"流され誘導(強)",       // 5段階
+	L"誘導ノイズ(強)",          // 6段階
+	L"ディレイ",     // 7段階
+	L"操作反転",          // 8段階
+	L"ランダム誘導ノイズ(強)"   // 9段階
 	};
+	Vector3 m_miniMapBasePos;
+	float   m_miniMapHeightY = 240.0f;
+	float   m_miniMapHeightX = 274.0f;    // メーター全体の高さ（ピクセル単位）
+	SpriteRender m_ballMapIcon;            
+	SpriteRender m_gurahu;
 };
 
