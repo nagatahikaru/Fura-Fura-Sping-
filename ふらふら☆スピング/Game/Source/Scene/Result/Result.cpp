@@ -134,7 +134,6 @@ void Result::Update()
 		switch (m_phase) {
 		case enPhase_ScoreStep1: // 【2.0秒】 飛距離 ＆ スコア（暫定）カウントアップ
 			m_displayKm += m_originalKmAddPerFrame * dt;
-			// ★スコアも飛距離と同じ速度で増やす
 			m_displayFinalScore = m_displayKm;
 
 			if (m_phaseTimer >= 1.5f) {
@@ -149,15 +148,12 @@ void Result::Update()
 			m_guruguruAccumulator += m_countSpeed * dt;
 			m_displayGuruguru = (int)m_guruguruAccumulator;
 
-			// ★ここでは m_displayFinalScore は m_originalKm のまま維持
-
 			if (m_phaseTimer >= 1.5f) {
 				m_displayGuruguru = m_guruguru;
 				m_guruguruAccumulator = 0.0f;
 				m_phase = enPhase_ScoreStep2;
 				m_phaseTimer = 0.0f;
 
-				// ★最終スコアまでの差分を 0.5秒で埋める計算
 				// (m_km - 現在のスコア) を 0.5秒で割る
 				m_kmAddPerFrame = (m_km - m_displayFinalScore) / 2.0f;
 			}
@@ -238,22 +234,16 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 		m_threeShots[i] = scores[i];
 	}
 
-	// ★ 基本倍率
-	double multiplier = pow(1.01, (double)guruguru);
+	// ★ 0回＝1倍、40回＝40倍 の反比例カーブ
+	double t = (double)guruguru / 40.0;
+	if (t < 0.0) t = 0.0;
+	if (t > 1.0) t = 1.0;
 
-	// ★ 追加倍率
-	int step = guruguru / 3;
-	double extra = step * 0.003;
+	// カーブの急さ（2.0〜3.0で調整可能）
+	double p = 2.5;
 
-	multiplier *= (1.0 + extra);
-
-	// ★ 小数点第4位で切り捨て
-	multiplier = floor(multiplier * 10000.0) / 10000.0;
-
-	// ★★★ 30回MAXボーナス（強制1.4倍） ★★★
-	if (guruguru >= 40) {
-		multiplier = 1.5;
-	}
+	// 1 + 39 * t^p
+	double multiplier = 1.0 + 29.0 * pow(t, p);
 
 	// --- (倍率計算のロジックは変更なし) ---
 	m_km = (int)(bestKm * multiplier);
@@ -328,34 +318,21 @@ void Result::Render(RenderContext& rc)
 	// ★★★ ぐるぐる倍率の表示 ★★★
 	if (m_phase >= enPhase_Guruguru) {
 		// ① 動的な係数計算
-		double currentMul = 1.0 + (m_multiplier - 1.0) * ((double)m_displayGuruguru / (m_guruguru > 0 ? m_guruguru : 1));
+		double currentMul = 1.0 + (m_multiplier - 1.0) *((double)m_displayGuruguru / (m_guruguru > 0 ? m_guruguru : 1));
 
-		// ② パーセント表記用の計算 (例: 1.1402 -> 0.1402 -> 14.02)
-		double bonusPercent = (currentMul - 1.0) * 100.0;
+		// 小数2桁に整形
+		wchar_t mulBuf[64];
+		swprintf_s(mulBuf, L"%.4f", currentMul);
 
-		// ③ パーセント文字列の作成
-		wchar_t percentBuf[64];
-		swprintf_s(percentBuf, L"%.2f", bonusPercent);
-
-		// ④ 末尾の無駄な 0 を削る (14.00 -> 14 / 14.50 -> 14.5)
-		int pLen = (int)wcslen(percentBuf);
-		while (pLen > 0 && percentBuf[pLen - 1] == L'0') {
-			percentBuf[--pLen] = L'\0';
-		}
-		if (pLen > 0 && percentBuf[pLen - 1] == L'.') {
-			percentBuf[--pLen] = L'\0';
-		}
-
-		// --- 上の行：ボーナス表記 ---
-		swprintf_s(buf, L"ぐるぐる回数: %d回  ボーナス(+%ls%%)", m_displayGuruguru, percentBuf);
+		// --- 上の行：ぐるぐる回数と倍率 ---
+		swprintf_s(buf, L"ぐるぐる回数: %d回  倍率(%ls倍)", m_displayGuruguru, mulBuf);
 		m_fontGuruguru.SetText(buf);
 		m_fontGuruguru.SetPosition(-630, 120, 0);
 		m_fontGuruguru.SetColor(1, 1, 1, 1);
 		m_fontGuruguru.Draw(rc);
 
-		// --- 下の行：計算式の表示（元の距離 × 〇〇% 形式） ---
-		// 「%%」と2つ重ねて書くことで、画面に1つの「%」が表示されます
-		swprintf_s(buf, L"最終スコア = %.2fm * %ls%%", m_displayKm / 100.0f, percentBuf);
+		// --- 下の行：計算式（距離 × 倍率） ---
+		swprintf_s(buf, L"最終スコア = %.2fm * %ls倍", m_displayKm / 100.0f, mulBuf);
 		m_fontFormula.SetText(buf);
 		m_fontFormula.SetPosition(-630, 40, 0);
 		m_fontFormula.SetColor(1, 1, 1, 1);

@@ -164,6 +164,11 @@ namespace nsK2Engine {
 		{
 			m_font.SetShadowParam(isDrawShadow, shadowOffset, shadowColor);
 		}
+
+		float GetTextWidth() const {
+			return m_font.GetTextWidth(m_text, m_scale);
+		}
+
 	private:
 		/// <summary>
 		/// 2D•`‰æƒpƒX‚©‚çŒÄ‚Î‚ê‚éˆ—B

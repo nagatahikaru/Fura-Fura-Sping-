@@ -113,11 +113,14 @@ void Ranking::Render(RenderContext& rc) {
     if (count > 5) count = 5;
     // スコア部門
     for (int i = 0; i < 5; i++) {
-        swprintf_s(buf, L"位:%.2f", m_scoresScore[i] / 100.0); // スコアのみ表示
+        float baseX = -500;
+        float baseY = 165 - i * 90;
+
+        swprintf_s(buf, L"位:%.2f", m_scoresScore[i] / 100.0);
         m_fontsScore[i].SetText(buf);
-        m_fontsScore[i].SetPosition(-500, 165 - i * 90, 0);
-        m_fontsScore[i].SetColor(1, 1, 1, 1);  // ← 白
+        m_fontsScore[i].SetPosition(baseX, baseY, 0);
         m_fontsScore[i].SetScale(1.3f);
+        m_fontsScore[i].SetColor(1, 1, 1, 1);
         m_fontsScore[i].Draw(rc);
         // ★ このスコアが何回ぐるぐるしたか
         int c = m_scoresGuruguru[i];
@@ -143,11 +146,20 @@ void Ranking::Render(RenderContext& rc) {
         else {
             r2 = 1.0f; g2 = 0.0f; b2 = 0.0f;
         }
-        // ★ このスコアが何回ぐるぐるしたか
+
+        // --- スコアの描画幅を取得 ---
+        float scoreWidth = m_fontsScore[i].GetTextWidth();  // ← これが必要
+
+        // ★ ぐるぐる回数（右側）
+        float offset = 350.0f;  // スコア右端からの距離
+
         wchar_t bufG[64];
         swprintf_s(bufG, L"(%d回)", m_scoresGuruguru[i]);
         m_fontsGuruguru[i].SetText(bufG);
-        m_fontsGuruguru[i].SetPosition(-220, 165 - i * 90, 0);
+
+        // スコアの右端 + offset に配置
+        m_fontsGuruguru[i].SetPosition(baseX + scoreWidth + offset, baseY, 0);
+
         m_fontsGuruguru[i].SetScale(1.2f);
         m_fontsGuruguru[i].SetColor(r2, g2, b2, 1.0f);
         m_fontsGuruguru[i].Draw(rc);
