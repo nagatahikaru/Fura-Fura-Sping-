@@ -158,5 +158,19 @@ private:
 	float m_predictedDistance = 0.0f; // 予測された飛距離(m)
 	SpriteRender m_batu[3];
 	bool m_isMiss[3] = { false, false, false }; // 空振りフラグ
+	SpriteRender m_guruguruSprite; // 例：5段階
+	FontRender    m_fontStage[10];
+	const wchar_t* m_stageTextList[10] = {
+	L"こんにちは",   // 0段階
+	L"ハロー",       // 1段階
+	L"やあ",         // 2段階
+	L"おっす",       // 3段階
+	L"よっ",         // 4段階
+	L"どうも",       // 5段階
+	L"Hi!",          // 6段階
+	L"Welcome!",     // 7段階
+	L"Go!",          // 8段階
+	L"ファイナル!"   // 9段階
+	};
 };
 

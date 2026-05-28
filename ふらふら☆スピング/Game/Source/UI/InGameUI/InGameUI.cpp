@@ -46,6 +46,7 @@ InGameUI::InGameUI() {
 	m_batu[0].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
 	m_batu[1].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
 	m_batu[2].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
+	m_guruguruSprite.Init("Assets/sprite/kiken.dds", 900.0f,700.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -477,6 +478,35 @@ void InGameUI::Render(RenderContext& rc) {
 			// ★ 描画
 			m_strikeSprite.Update();
 			m_strikeSprite.Draw(rc);
+		}
+
+		// ★ 3回以上でスプライト表示
+		if (m_guruGuruCount >= 3) {
+
+			m_guruguruSprite.SetMulColor({ 1,1,1,1 }); // 表示
+			m_guruguruSprite.SetPosition(Vector3{ 0.0f,465.0f, 0.0f });
+			m_guruguruSprite.Update();
+			m_guruguruSprite.Draw(rc);
+
+		}
+		else {
+
+			// 3回未満は非表示
+			m_guruguruSprite.SetMulColor({ 1,1,1,0 });
+		}
+
+		// --- ぐるぐる段階（10段階） ---
+		int stage = clamp(m_guruGuruCount / 3, 0, 9);
+
+		// ★ 3回未満は何も表示しない
+		if (m_guruGuruCount >= 3)
+		{
+			const wchar_t* stageText = m_stageTextList[stage];
+
+			m_fontStage[stage].SetText(stageText);
+			m_fontStage[stage].SetPosition(-230.0f, 500.0f, 0.0f);
+			m_fontStage[stage].SetColor(0, 0, 0, 1);
+			m_fontStage[stage].Draw(rc);
 		}
 	}
 
