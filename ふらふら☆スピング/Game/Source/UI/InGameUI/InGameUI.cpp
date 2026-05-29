@@ -409,7 +409,6 @@ void InGameUI::Render(RenderContext& rc) {
 		m_kuro.Draw(rc);
 
 		m_gurahu.SetPosition(Vector3{ 800.0f,-20.0f,0.0f });
-		m_gurahu.SetMulColor({ 1,0,-1,1 });
 		m_gurahu.Update();
 		m_gurahu.Draw(rc);
 
@@ -427,7 +426,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 		float progressRatioX = (float)t;
 
-		Vector3 graphBasePos = Vector3{ 670.0f, -120.0f, 0.0f };
+		Vector3 graphBasePos = Vector3{ 670.0f, -140.0f, 0.0f };
 
 		Vector3 ballMapPos;
 		ballMapPos.x = graphBasePos.x + (progressRatioX * m_miniMapHeightX);

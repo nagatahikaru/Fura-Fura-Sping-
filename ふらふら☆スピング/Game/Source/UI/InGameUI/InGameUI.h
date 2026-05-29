@@ -173,8 +173,8 @@ private:
 	L"ランダム誘導ノイズ(強)"   // 9段階
 	};
 	Vector3 m_miniMapBasePos;
-	float   m_miniMapHeightY = 240.0f;
-	float   m_miniMapHeightX = 274.0f;    // メーター全体の高さ（ピクセル単位）
+	float   m_miniMapHeightY = 250.0f;
+	float   m_miniMapHeightX = 271.0f;    // メーター全体の高さ（ピクセル単位）
 	SpriteRender m_ballMapIcon;            
 	SpriteRender m_gurahu;
 	SpriteRender m_kuro;
