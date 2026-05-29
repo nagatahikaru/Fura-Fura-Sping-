@@ -82,10 +82,10 @@ void Ball::Update()
         {
             m_velocity.y -= 13.5f * dt;
 
-            // ★ 1. 元の m_velocity を破壊しないよう、このフレーム専用の速度変数を作る
+            //  1. 元の m_velocity を破壊しないよう、このフレーム専用の速度変数を作る
             Vector3 currentFrameVelocity = m_velocity;
 
-            // ★ 2. スローボールかつ打撃前で、バッター手前に来たら一時変数の速度だけを半分にする
+            // 2. スローボールかつ打撃前で、バッター手前に来たら一時変数の速度だけを半分にする
             if (!m_hasHit && m_ballType == SlowBall)
             {
                 if (m_position.z >= 5450.0f && m_position.z < 6500.0f)
@@ -94,7 +94,7 @@ void Ball::Update()
                 }
             }
 
-            // ★ 3. 安全に計算された currentFrameVelocity を使って座標を移動させる
+            // 3. 安全に計算された currentFrameVelocity を使って座標を移動させる
             m_position += currentFrameVelocity * dt;
 
             if (!m_hasHit)

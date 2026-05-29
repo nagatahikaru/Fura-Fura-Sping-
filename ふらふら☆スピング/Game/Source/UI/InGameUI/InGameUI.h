@@ -177,5 +177,7 @@ private:
 	float   m_miniMapHeightX = 274.0f;    // メーター全体の高さ（ピクセル単位）
 	SpriteRender m_ballMapIcon;            
 	SpriteRender m_gurahu;
+	SpriteRender m_kuro;
+	SpriteRender m_keisuu;
 };
 

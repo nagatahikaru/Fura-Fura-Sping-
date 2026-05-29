@@ -49,6 +49,8 @@ InGameUI::InGameUI() {
 	m_guruguruSprite.Init("Assets/sprite/kiken.dds", 900.0f,700.0f);
 	m_ballMapIcon.Init("Assets/sprite/ball.dds", 30.0f, 30.0f); 
 	m_gurahu.Init("Assets/sprite/gurahu.dds", 300.0f, 270.0f);
+	m_kuro.Init("Assets/sprite/kuro.DDS", 300.0f, 270.0f);
+	m_keisuu.Init("Assets/sprite/gurugurukeisuu.DDS", 400.0f, 300.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -401,9 +403,19 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spriteRenderMeet.Update();
 		m_spriteRenderMeet.Draw(rc);
 
+		m_kuro.SetPosition(Vector3{ 800.0f,-20.0f,0.0f });
+		m_kuro.SetMulColor({ 0,0,0,0.5 });
+		m_kuro.Update();
+		m_kuro.Draw(rc);
+
 		m_gurahu.SetPosition(Vector3{ 800.0f,-20.0f,0.0f });
+		m_gurahu.SetMulColor({ 1,0,-1,1 });
 		m_gurahu.Update();
 		m_gurahu.Draw(rc);
+
+		m_keisuu.SetPosition(Vector3{ 800.0f,170.0f,0.0f });
+		m_keisuu.Update();
+		m_keisuu.Draw(rc);
 
 		double t = (double)m_guruGuruCount / 40.0;
 		t = clamp(t, 0.0, 1.0);
