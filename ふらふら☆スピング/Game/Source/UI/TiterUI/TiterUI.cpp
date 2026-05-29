@@ -31,7 +31,7 @@ bool TiterUI::Start()
     m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
 
     // š ƒ^ƒCƒgƒ‹‚É“ü‚Á‚Ä‚©‚ç 0.2•b‚Í A –³Œø
-    m_inputBlockTime = 0.5f;
+    m_inputBlockTime = 0.0f;
 
     return true;
 }

@@ -53,6 +53,14 @@ namespace nsK2EngineLow {
 			m_shadowOffset = shadowOffset;
 			m_shadowColor = shadowColor;
 		}
+
+		float GetTextWidth(const wchar_t* text, float scale = 1.0f) const {
+			if (!m_spriteFont) return 0.0f;
+
+			DirectX::XMVECTOR size = m_spriteFont->MeasureString(text);
+			return DirectX::XMVectorGetX(size) * scale;
+		}
+
 	private:
 		DirectX::SpriteBatch* m_spriteBatch = nullptr;		//　スプライトバッチ。
 		DirectX::SpriteFont* m_spriteFont = nullptr;		//　スプライトフォント。
