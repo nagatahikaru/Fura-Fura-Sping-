@@ -52,7 +52,7 @@ public:
     /// 目的地の変更頻度を設定する関数です。
     /// </summary>
     /// <param name="duration">この関数には直接回転回数を渡すことを想定しています。
-    /// <para>0.0f は範囲が最小、40.0f は範囲が最大です。</para>
+    /// <para>0.0f は更新頻度が最長、40.0f は更新頻度が最短です。</para>
     /// </param>
     void SetRandomMoveDuration(float duration)
     {
