@@ -139,10 +139,17 @@ void DebuffStage::DebuffStageFive()
 	magnet->SetRandomMoveDuration(m_rotationCount);
 
 	//判定デバフ
-	auto aim = AddPattern<DebuffAimPattern>();
-	aim->SetType(DebuffAimPattern::HeavySwing);
+	/*auto aim = AddPattern<DebuffAimPattern>();
 	aim->Reset();
-	aim->SetMeatRange(aim->GetRotationRate(m_rotationCount));
+	aim->SetType(DebuffAimPattern::HeavySwing);
+	aim->SetMeatRange(aim->GetRotationRate(m_rotationCount));*/
+
+	// 【追加】揺れデバフ：ガタガタとした物理的な揺れを追加
+	auto shake = AddPattern<DebuffShakePattern>();
+	shake->SetType(DebuffShakePattern::Shake_Random);
+	shake->Reset();
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.2f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.2f);
 }
 
 //回転数：18～20回転
@@ -162,6 +169,13 @@ void DebuffStage::DebuffStageSix()
 	magnet->Reset();
 	magnet->SetRandomSpotRadius(m_rotationCount);
 	magnet->SetRandomMoveDuration(m_rotationCount);
+
+	//シェイクデバフ（追加）
+	auto shake = AddPattern<DebuffShakePattern>();
+	shake->SetType(DebuffShakePattern::Shake_Random);
+	shake->Reset();
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.3f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.3f);
 }
 
 //回転数：21～23回転
@@ -180,6 +194,13 @@ void DebuffStage::DebuffStageSeven()
 	noise->Reset();
 	noise->SetPower(noise->GetRotationRate(m_rotationCount));
 	noise->SetNoiseTimer(0.05f);
+
+	//シェイクデバフ（追加）
+	auto shake = AddPattern<DebuffShakePattern>();
+	shake->SetType(DebuffShakePattern::Shake_Random);
+	shake->Reset();
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.1f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.1f);
 }
 
 //回転数：24～26回転
@@ -223,4 +244,9 @@ void DebuffStage::DebuffStageTen()
 	shake->SetPower(shake->GetRotationRate(m_rotationCount));
 	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount));
 
+	//シェイクデバフ（追加）
+	shake->SetType(DebuffShakePattern::Shake_Random);
+	shake->Reset();
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.2f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.2f);
 }
