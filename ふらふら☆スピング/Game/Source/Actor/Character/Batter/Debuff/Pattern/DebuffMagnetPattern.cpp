@@ -100,7 +100,7 @@ void DebuffMagnetPattern::ApplyRandomMagnet(Batter* batter)
 	// Œ¸Š
 	//-----------------------------------
 
-	current *= 0.92f;
+//	current *= 0.92f;
 
 	batter->SetMagnetCursorOffset(current);
 
@@ -110,27 +110,30 @@ void DebuffMagnetPattern::ApplyRandomMagnet(Batter* batter)
 		g_gameTime->GetFrameDeltaTime();
 
 	if (m_randomCursorMoveTimer <= 0.0f
-		|| distance <= 10.0f)
+		|| distance <= 0.1f)
 	{
 		m_randomCursorUpdate = true;
 	}
 
 
-	//auto pos = batter->GetFinalCursorPosition();
-	//auto offset = m_randomCursorTargetPos;
+	auto pos = toTarget;
+	auto offset = m_randomCursorTargetPos;
+	auto currentOffset = current;
 
-	//char buf[256];
+	char buf[256];
 
-	//sprintf_s(
-	//	buf,
-	//	"meet:(%.2f %.2f) offset:(%.2f %.2f)\n",
-	//	pos.x,
-	//	pos.y,
-	//	offset.x,
-	//	offset.y
-	//);
+	sprintf_s(
+		buf,
+		"meet:(%.2f %.2f) offset:(%.2f %.2f) current:(%.2f %.2f)\n",
+		pos.x,
+		pos.y,
+		offset.x,
+		offset.y,
+		currentOffset.x,
+		currentOffset.y
+	);
 
-	//OutputDebugStringA(buf);
+	OutputDebugStringA(buf);
 }
 
 void DebuffMagnetPattern::ApplyHorizontalMagnet(Batter* batter)
