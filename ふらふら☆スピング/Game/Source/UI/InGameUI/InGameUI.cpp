@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "InGameUI.h"
 #include"Source/Sound/SoundManager.h"
+#include"Source/Scene/InGame/Game.h"
 
 
 template <typename T>
@@ -51,6 +52,7 @@ InGameUI::InGameUI() {
 	m_gurahu.Init("Assets/sprite/gurahu.dds", 300.0f, 270.0f);
 	m_kuro.Init("Assets/sprite/kuro.DDS", 300.0f, 270.0f);
 	m_keisuu.Init("Assets/sprite/gurugurukeisuu.DDS", 400.0f, 300.0f);
+	m_kakunin.Init("Assets/sprite/kakunin.DDS", 400.0f, 300.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -143,6 +145,23 @@ void InGameUI::Update() {
 				m_isPredictionAnim = false;
 				m_isPredictionVisible = false;  // 完全終了
 			}
+		}
+	}
+
+	// ★ 確認UI：パッと拡大 → 元に戻る の瞬間アニメ
+	if (m_isKakuninFlash) {
+
+		m_kakuninFlashTimer += g_gameTime->GetFrameDeltaTime();
+
+		float t = fmodf(m_kakuninFlashTimer, 1.0f); // 0.4秒周期
+
+		if (t < 0.5f) {
+			// 最初の0.1秒だけ拡大
+			m_kakuninScale = 1.5f;
+		}
+		else {
+			// それ以外は通常サイズ
+			m_kakuninScale = 1.0f;
 		}
 	}
 }
@@ -294,7 +313,6 @@ void InGameUI::StartStrikeAnim()
 	m_strikeTimer = 0.0f;
 	m_strikeHoldTime = 1.5f;   // ★ 1秒残す
 	m_isStrikeAnim = true;
-
 	m_strikeSprite.SetScale({ 0.3f, 0.3f,1.0f });
 	m_strikeSprite.SetMulColor({ 1,1,1,0 }); // 透明
 }
@@ -370,6 +388,11 @@ void InGameUI::Render(RenderContext& rc) {
 		return; // ← ポーズ中は UI を一切描画しない
 	}
 
+	Game* game = FindGO <Game>("game");
+	bool isReadyPhase = false;
+	if (game) {
+		isReadyPhase = game->m_isReadyPhase; // Game.h で宣言した変数名
+	}
 	if (m_shuchusenTimer > 0.0f) {
 		m_shuchusen.Update();
 		m_shuchusen.Draw(rc);
@@ -462,7 +485,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 
 		// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
-		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed)
+		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed && !isReadyPhase)
 		{
 			m_taimingu.SetPosition(Vector3{ -800.0f, 100.0f, 0.0f });
 			m_taimingu.Update();
@@ -521,7 +544,7 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 
 		// ★ 3回以上でスプライト表示
-		if (m_guruGuruTimer <= 0.0f && m_guruGuruCount >= 3) {
+		if (isReadyPhase || m_guruGuruTimer <= 0.0f && m_guruGuruCount >= 3) {
 
 			m_guruguruSprite.SetMulColor({ 1,1,1,1 }); // 表示
 			m_guruguruSprite.SetPosition(Vector3{ 0.0f,465.0f, 0.0f });
@@ -539,7 +562,7 @@ void InGameUI::Render(RenderContext& rc) {
 		int stage = clamp((m_guruGuruCount - 3) / 3, 0, 9);
 
 		// ★ 3回未満は何も表示しない
-		if (m_guruGuruTimer <= 0.0f && m_guruGuruCount >= 3)
+		if (isReadyPhase || m_guruGuruTimer <= 0.0f && m_guruGuruCount >= 3)
 		{
 			const wchar_t* stageText = m_stageTextList[stage];
 
@@ -650,26 +673,46 @@ void InGameUI::Render(RenderContext& rc) {
 		// 小数1桁で表示（例：4.8）
 	// 小数1桁で表示（例：4.8）
 		float displayTime = max(0.0f, m_guruGuruTimer);
-		swprintf_s(timerText, 256, L"タイム: %.1f", displayTime);
-		m_Count.SetText(timerText);
-		m_Count.SetPosition(-930.0f, 450.0f, 0.0f);
-
-		// ★ タイムが0なら透明にする
-		if (displayTime <= 0.0f) {
-			m_Count.SetColor(0.0f, 0.0f, 0.0f, 0.0f);  // 完全透明
-		}
-		else if (displayTime > 3.0f) {
-			m_Count.SetColor(0.0f, 0.0f, 0.0f, 1.0f);  // 黒固定
+		if (isReadyPhase) {
+			swprintf_s(timerText, 256, L"スタート:%.1f", displayTime);
+			m_Count.SetScale(0.9);
 		}
 		else {
-			// ★ 点滅処理（0.2秒周期）
-			float blink = fabsf(sinf(displayTime * 10.0f));  // 0〜1 の点滅
-			float alpha = blink;  // 0〜1 の範囲
-
-			// 赤で点滅
-			m_Count.SetColor(1.0f, 0.0f, 0.0f, alpha);
+			// ② 通常時（バットを回している最中など）
+			swprintf_s(timerText, 256, L"タイム: %.1f", displayTime);
+		}
+		m_Count.SetText(timerText);
+		m_Count.SetPosition(-930.0f, 450.0f, 0.0f);
+		// 🌟【重要：文字色の制御】
+		if (isReadyPhase) {
+			// 操作確認フェーズ中は点滅させず、黒色でハッキリ5秒間カウントダウンさせる
+			m_Count.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
+		}
+		else if (displayTime <= 0.0f) {
+			m_Count.SetColor(0.0f, 0.0f, 0.0f, 0.0f);
+		}
+		else if (displayTime > 3.0f) {
+			m_Count.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
+		}
+		else {
+			// 残り3秒未満の時は赤点滅
+			float blink = fabsf(sinf(displayTime * 10.0f));
+			m_Count.SetColor(1.0f, 0.0f, 0.0f, blink);
 		}
 		m_Count.Draw(rc);
+
+		if (isReadyPhase) {
+			m_kakunin.SetPosition(Vector3{ -800.0f, 180.0f, 0.0f });
+			m_kakunin.SetScale(Vector3{ m_kakuninScale, m_kakuninScale, 1.0f }); // ← 追加
+			m_kakunin.Update();
+			m_kakunin.Draw(rc);
+			m_bbb.SetPosition(Vector3{ -800.0f, 70.0f, 0.0f });
+			m_bbb.Update();
+			m_bbb.Draw(rc);
+			m_bsuki.SetPosition(Vector3{ -800.0f, -30.0f, 0.0f });
+			m_bsuki.Update();
+			m_bsuki.Draw(rc);
+		}
 
 		wchar_t boll[256];
 		if (m_isError) {
@@ -753,7 +796,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_fontPrediction.Draw(rc);
 		}
 
-		if (m_guruGuruTimer > 0.0) {
+		if (m_guruGuruTimer > 0.0 && !isReadyPhase) {
 			m_konto.SetPosition(Vector3{ -800.0f, 0.0f, 0.0f });
 			m_konto.Update();
 			m_konto.Draw(rc);

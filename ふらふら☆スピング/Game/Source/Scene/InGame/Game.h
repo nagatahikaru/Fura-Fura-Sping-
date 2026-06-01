@@ -123,6 +123,8 @@ public:
 	bool m_hasStartedDistance = false;
 	bool m_isHomeRun = false;
 	float m_replayDelayTimer = 0.0f;    // リプレイ開始までの遅延タイマー
+	float m_readyTimer = 5.0f;
+	bool m_isReadyPhase = false;
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。

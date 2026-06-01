@@ -179,5 +179,9 @@ private:
 	SpriteRender m_gurahu;
 	SpriteRender m_kuro;
 	SpriteRender m_keisuu;
+	SpriteRender m_kakunin;
+	float m_kakuninFlashTimer = 0.0f;
+	float m_kakuninScale = 1.0f;
+	bool  m_isKakuninFlash = true;   // ループON
 };
 

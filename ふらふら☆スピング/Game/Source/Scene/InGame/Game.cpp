@@ -102,6 +102,48 @@ void Game::Update()
 		return; // ← START ボタンも完全に無効
 	}
 
+	if (m_isReadyPhase) {
+
+		if (g_pad[0]->IsTrigger(enButtonB)) {
+			m_isReadyPhase = false;
+			m_readyTimer = 0.0f;
+
+			if (m_InGameUI) {
+				m_InGameUI->SetGuruGuruTimer(0.0f);
+			}
+			SetGameStarted(true);
+
+			Pitcher* pitcher = FindGO<Pitcher>("pitcher");
+			if (pitcher) {
+				pitcher->ResetThrow(); // 既存の初期化関数を呼んで Idle ＆ タイマー0に戻す
+			}
+
+			return; // スキップしたフレームはここで処理を抜ける
+		}
+
+		m_readyTimer -= g_gameTime->GetFrameDeltaTime();
+
+		if (m_InGameUI) {
+			m_InGameUI->SetGuruGuruTimer(m_readyTimer);
+		}
+
+		// 操作確認中もバッターのカーソル移動やアニメーションは動かす
+		if (m_batter) m_batter->Update(); // スティック操作などの更新を通す
+		if (m_pitcher) m_pitcher->m_modelRender[m_pitcher->m_UniformNumber].Update();
+		if (m_catcher) m_catcher->m_modelRender.Update(); // キャッチャーも動かす場合
+
+		// 5秒経過したら、本格的に1球目を開始する
+		if (m_readyTimer <= 0.0f) {
+			m_isReadyPhase = false; // フェードアウト
+			SetGameStarted(true);   // ここで初めてピッチャーの投球タイマーを動かす許可を出す
+
+			if (m_batter) {
+				m_batter->SetCursorMode(true); // カーソル操作モードを確定
+			}
+		}
+		return; // ⭕ 5秒間はここでUpdateを抜けることで、後続の「投球開始処理」へ進ませない
+	}
+
 	// ★ START ボタン処理（ここに1回だけ）
 	if (g_pad[0]->IsTrigger(enButtonStart)) {
 
