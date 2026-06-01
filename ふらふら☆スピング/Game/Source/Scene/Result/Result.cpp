@@ -243,7 +243,7 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 	double p = 2.5;
 
 	// 1 + 39 * t^p
-	double multiplier = 1.0 + 29.0 * pow(t, p);
+	double multiplier = 1.0 + 39.0 * pow(t, p);
 
 	// --- (倍率計算のロジックは変更なし) ---
 	m_km = (int)(bestKm * multiplier);

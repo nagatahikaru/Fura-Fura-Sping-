@@ -188,6 +188,32 @@ void Batter::Update()
 /** 回転計算処理関数 */
 void Batter::Rotation()
 {	
+//	if (g_pad[0]->IsTrigger(enButtonA))
+//	{
+//		m_guruGuruBatCount++; // 連打でカウントを増やす
+//
+//		// 各種マネージャーやUIに即座に通知
+//		m_game->SetGuruGuru(m_guruGuruBatCount);
+//		if (m_inGameUI) {
+//			m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
+//		}
+//	}
+//
+//	// 棒立ちを防ぐために、見た目だけ自動で回転させる処理
+//	static float dummyAngle = 0.0f;
+//	dummyAngle += 720.0f * g_gameTime->GetFrameDeltaTime(); // 毎秒2回転
+//	if (dummyAngle >= 360.0f) dummyAngle -= 360.0f;
+//
+//	float rad = dummyAngle * 3.14159265f / 180.0f;
+//	m_facingDir.x = cosf(rad);
+//	m_facingDir.z = sinf(rad);
+//	m_facingDir.y = 0.0f;
+//	m_facingDir.Normalize();
+//
+//	m_modelPos = m_bodyCenter; // 位置は中心固定
+
+
+
 	//コントローラー操作
 	//左スティックの入力量を取得
 	Vector3 stickL = Vector3::Zero;
@@ -240,7 +266,9 @@ void Batter::RoundAndRoundBat()
 		m_guruGuruBatTimer = 0.0f;
 		SetRotationSeen(false);
 		m_game->SetRotationSeen(false);
-		m_game->SetGameStarted(true);
+		//m_game->SetGameStarted(true);
+		m_game->m_isReadyPhase = true;
+		m_game->m_readyTimer = 5.0f; // 5秒にセット
 		m_characterModel->Update();
 	}
 }

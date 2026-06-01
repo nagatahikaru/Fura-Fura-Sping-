@@ -179,5 +179,6 @@ private:
 	SpriteRender m_gurahu;
 	SpriteRender m_kuro;
 	SpriteRender m_keisuu;
+	SpriteRender m_kakunin;
 };
 
