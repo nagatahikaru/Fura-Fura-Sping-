@@ -147,6 +147,23 @@ void InGameUI::Update() {
 			}
 		}
 	}
+
+	// ★ 確認UI：パッと拡大 → 元に戻る の瞬間アニメ
+	if (m_isKakuninFlash) {
+
+		m_kakuninFlashTimer += g_gameTime->GetFrameDeltaTime();
+
+		float t = fmodf(m_kakuninFlashTimer, 1.0f); // 0.4秒周期
+
+		if (t < 0.5f) {
+			// 最初の0.1秒だけ拡大
+			m_kakuninScale = 1.5f;
+		}
+		else {
+			// それ以外は通常サイズ
+			m_kakuninScale = 1.0f;
+		}
+	}
 }
 
 //バットの位置を設定
@@ -686,6 +703,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 		if (isReadyPhase) {
 			m_kakunin.SetPosition(Vector3{ -800.0f, 180.0f, 0.0f });
+			m_kakunin.SetScale(Vector3{ m_kakuninScale, m_kakuninScale, 1.0f }); // ← 追加
 			m_kakunin.Update();
 			m_kakunin.Draw(rc);
 			m_bbb.SetPosition(Vector3{ -800.0f, 70.0f, 0.0f });
