@@ -102,6 +102,29 @@ void Game::Update()
 		return; // ← START ボタンも完全に無効
 	}
 
+	// ★ START ボタン処理（ここに1回だけ）
+	if (g_pad[0]->IsTrigger(enButtonStart)) {
+
+		if (FindGO<PauseUI>("pause") != nullptr) return;
+		if (FindGO<SoundTestUI>("soundtest") != nullptr) return;
+		// ★ ここでポーズ突入SE
+		if (g_soundManager && g_soundManager->m_seVolume > 0) {
+			g_soundManager->PlaySE(enSound_SE);   // 好きなSEに
+		}
+		m_isPaused = true;
+
+		if (m_InGameUI) {
+			m_InGameUI->SetPause(true);
+		}
+
+		NewGO<PauseUI>(0, "pause");
+	}
+
+	// ★ ポーズ中はゲーム停止
+	if (m_isPaused) {
+		return;
+	}
+
 	if (m_isReadyPhase) {
 
 		if (g_pad[0]->IsTrigger(enButtonB)) {
@@ -142,29 +165,6 @@ void Game::Update()
 			}
 		}
 		return; // ⭕ 5秒間はここでUpdateを抜けることで、後続の「投球開始処理」へ進ませない
-	}
-
-	// ★ START ボタン処理（ここに1回だけ）
-	if (g_pad[0]->IsTrigger(enButtonStart)) {
-
-		if (FindGO<PauseUI>("pause") != nullptr) return;
-		if (FindGO<SoundTestUI>("soundtest") != nullptr) return;
-		// ★ ここでポーズ突入SE
-		if (g_soundManager && g_soundManager->m_seVolume > 0) {
-			g_soundManager->PlaySE(enSound_SE);   // 好きなSEに
-		}
-		m_isPaused = true;
-
-		if (m_InGameUI) {
-			m_InGameUI->SetPause(true);
-		}
-
-		NewGO<PauseUI>(0, "pause");
-	}
-
-	// ★ ポーズ中はゲーム停止
-	if (m_isPaused) {
-		return;
 	}
 
 	// ★ ヒットストップ処理（ゲーム全体を一瞬停止）
