@@ -63,7 +63,7 @@ public:
 	bool m_shotDone[3] = { false,false,false }; // 打ったかどうか
 	void SetCursorScale(float distance)
 	{
-		m_meetCursorScale *= distance;
+		m_meetCursorScale = distance;
 	};
 	float m_perfectAnimTimer = 0.0f;
 	bool  m_isPerfectAnimActive = false;

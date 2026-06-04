@@ -78,18 +78,18 @@ void DebuffStage::BuildStage(int level)
 void DebuffStage::DebuffStageOne()
 {
 	//揺れデバフ
-	//auto shake =AddPattern<DebuffShakePattern>();
-	//DebuffShakePattern::ShakeType type = static_cast<DebuffShakePattern::ShakeType>(rand() % 2);
-	//shake->SetType(type);
-	//shake->Reset();
-	//shake->SetPower(shake->GetRotationRate(m_rotationCount));
-	//shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount));
+	auto shake =AddPattern<DebuffShakePattern>();
+	DebuffShakePattern::ShakeType type = static_cast<DebuffShakePattern::ShakeType>(rand() % 2);
+	shake->SetType(type);
+	shake->Reset();
+	shake->SetPower(shake->GetRotationRate(m_rotationCount));
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount));
 
 		//判定デバフ
 	auto aim = AddPattern<DebuffAimPattern>();
 	aim->Reset();
 	aim->SetType(DebuffAimPattern::SmallCursor);
-	aim->SetMeatRange(aim->GetRotationRate(3));
+	aim->SetMeatRange(m_rotationCount);
 }
 
 //回転数：6～8回転
