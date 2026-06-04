@@ -6,8 +6,6 @@ class Source:public IGameObject
 	Source() {}
 	virtual ~Source() {}
 
-
-
 	/// <summary>
 	/// float用のデバック関数です。
 	/// </summary>

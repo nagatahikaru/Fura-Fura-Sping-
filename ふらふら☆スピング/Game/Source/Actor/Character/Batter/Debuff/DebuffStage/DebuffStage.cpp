@@ -84,12 +84,6 @@ void DebuffStage::DebuffStageOne()
 	shake->Reset();
 	shake->SetPower(shake->GetRotationRate(m_rotationCount));
 	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount));
-
-		//”»’èƒfƒoƒt
-	auto aim = AddPattern<DebuffAimPattern>();
-	aim->Reset();
-	aim->SetType(DebuffAimPattern::SmallCursor);
-	aim->SetMeatRange(m_rotationCount);
 }
 
 //‰ñ“]”F6`8‰ñ“]
@@ -148,7 +142,7 @@ void DebuffStage::DebuffStageFive()
 	auto aim = AddPattern<DebuffAimPattern>();
 	aim->Reset();
 	aim->SetType(DebuffAimPattern::SmallCursor);
-	aim->SetMeatRange(aim->GetRotationRate(m_rotationCount));
+	aim->SetMeatRange(m_rotationCount);
 
 	// y’Ç‰Áz—h‚êƒfƒoƒtFƒKƒ^ƒKƒ^‚Æ‚µ‚½•¨—“I‚È—h‚ê‚ğ’Ç‰Á
 	auto shake = AddPattern<DebuffShakePattern>();
