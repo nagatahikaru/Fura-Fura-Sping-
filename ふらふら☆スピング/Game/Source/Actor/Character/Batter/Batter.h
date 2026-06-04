@@ -224,7 +224,7 @@ public:
 
     void SetMeatRange(float range)
     {
-        m_meatRange = range;
+        m_meatRange *= range;
 	}
 
 	// ƒJ[ƒ\ƒ‹ˆÚ“®‚Ì’x‰„
