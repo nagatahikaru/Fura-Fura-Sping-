@@ -13,12 +13,6 @@ void DebuffAimPattern::SetType(AimType type)
 	m_type = type;
 }
 
-bool DebuffAimPattern::Start()
-{
-	m_InGameUI = FindGO<InGameUI>("inGameUI");
-	return true;
-}
-
 // Update関数は、デバフの種類に応じて、バッターのカーソルを上下や左右に震わせる処理を実装します。
 void DebuffAimPattern::Update(Batter* batter)
 {
@@ -37,6 +31,14 @@ void DebuffAimPattern::Update(Batter* batter)
 //カーソルサイズの変更はSetMeatRange関数を呼び出して行います。
 void DebuffAimPattern::UpdateSmallCursor(Batter* batter)
 {
+	if(m_InGameUI==nullptr)
+	{
+		m_InGameUI = FindGO<InGameUI>("inGameUI");
+		if(m_InGameUI==nullptr)
+		{
+			return; // UIが見つからない場合は処理をスキップ
+		}
+	}
 	m_InGameUI->SetCursorScale(m_meatRange);
 	// カーソル表示サイズとミート範囲を縮小する処理
 	batter->SetMeatRange(m_meatRange); // 当たり判定の範囲を設定

@@ -10,8 +10,6 @@
 class DebuffAimPattern : public DebuffPatternBase
 {
 public:
-	bool Start();
-
     enum AimType
     {
 		SmallCursor,    // カーソル表示サイズとミート範囲を縮小

@@ -510,7 +510,7 @@ void InGameUI::Render(RenderContext& rc) {
 		m_meetScaleX = m_isLeftBatter ? -1.0f : 1.0f;
 		m_spriteRenderMeet.SetPosition(m_meetPos);
 		m_spriteRenderMeet.SetRotation(m_batRotation);
-		m_spriteRenderMeet.SetScale(Vector3{ m_meetScaleX, 1.0f, 1.0f });
+		m_spriteRenderMeet.SetScale({m_meetScaleX * m_meetCursorScale,m_meetCursorScale,1.0f});
 		m_spriteRenderMeet.Update();
 		m_spriteRenderMeet.Draw(rc);
 
