@@ -441,7 +441,7 @@ void Batter::HitBat()
 	Vector3 ballPos = m_ball->GetPosition();
 
 	// ① Z制限（打撃ゾーン）
-	if (ballPos.z < 6060.0f || ballPos.z > 6080.0f) return;
+	if (ballPos.z < 6060.0f || ballPos.z > 6090.0f) return;
 	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
 	// ② カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
@@ -517,7 +517,17 @@ void Batter::HitBat()
 			m_game->m_canFastForward = true;
 		}
 		if (!m_game->m_isPaused && g_soundManager) {
-			g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
+			// ★ 確定演出（パーフェクト）かどうかで鳴らすSEを切り替える
+			if (m_game && m_game->m_isKakutei) {
+				// 確定演出の時だけSE15を再生
+				g_soundManager->PlaySE(Sound::enSound_SE15, 100.0f);
+			}
+			else {
+				// 通常ヒット時は今までのSEを再生
+				g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
+			}
+
+			// パキーンという強い打撃音（SE2）は共通、あるいはここもお好みで調整してください
 			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 300.0f);
 			if (se2) se2->SetVolume(3.0f);
 			se2->SetName("SE2");

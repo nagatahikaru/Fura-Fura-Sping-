@@ -29,6 +29,7 @@ enum Sound{
 	enSound_SE12,
 	enSound_SE13,
 	enSound_SE14,
+	enSound_SE15,
 	enSound_Num //このステータスは、サウンドの総数を表しているため、この下には追加しないでください。
 };
 class SoundManager :public IGameObject
