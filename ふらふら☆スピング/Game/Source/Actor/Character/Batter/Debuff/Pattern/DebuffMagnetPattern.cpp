@@ -38,7 +38,7 @@ void DebuffMagnetPattern::Update(Batter* batter)
 	}
 }
 
-//
+// Horizontalは左右にカーソルを引き寄せる処理を実装します。
 void DebuffMagnetPattern::ApplyRandomMagnet(Batter* batter)
 {
 
@@ -46,7 +46,7 @@ void DebuffMagnetPattern::ApplyRandomMagnet(Batter* batter)
 	{
 		float angle =
 			RandomRange(0.0f, 360.0f)
-			* (MyNamespace::PI / 180.0f);
+			* MyNamespace::PI;
 
 		float radius =
 			RandomRange(0.0f, m_randomSpotRadius);
@@ -65,46 +65,11 @@ void DebuffMagnetPattern::ApplyRandomMagnet(Batter* batter)
 		m_randomCursorUpdate = false;
 	}
 
-	Vector3 finalPos =
-		batter->GetFinalCursorPosition();
+	Vector3 finalPos = batter->GetFinalCursorPosition();
 
-	Vector3 toTarget =
-		m_randomCursorTargetPos - finalPos;
+	Vector3 toTarget =	m_randomCursorTargetPos	- finalPos;	
 
 	float distance = toTarget.Length();
-
-	//-----------------------------------
-	// 旧コード寄りの蓄積型
-	//-----------------------------------
-
-	Vector3 current =
-		batter->GetMagnetCursorOffset();
-
-	float magnetPower = 0.015f;
-
-	current += toTarget * magnetPower;
-
-	//-----------------------------------
-	// 暴走防止
-	//-----------------------------------
-
-	float maxOffset = 250.0f;
-
-	if (current.Length() > maxOffset)
-	{
-		current.Normalize();
-		current *= maxOffset;
-	}
-
-	//-----------------------------------
-	// 減衰
-	//-----------------------------------
-
-//	current *= 0.92f;
-
-	batter->SetMagnetCursorOffset(current);
-
-	//-----------------------------------
 
 	m_randomCursorMoveTimer -=
 		g_gameTime->GetFrameDeltaTime();
@@ -113,113 +78,21 @@ void DebuffMagnetPattern::ApplyRandomMagnet(Batter* batter)
 		|| distance <= 0.1f)
 	{
 		m_randomCursorUpdate = true;
+		batter->SetMagnetCursorOffset(Vector3::Zero);
 	}
 
-
-	auto pos = toTarget;
-	auto offset = m_randomCursorTargetPos;
-	auto currentOffset = current;
-
-	char buf[256];
-
-	sprintf_s(
-		buf,
-		"meet:(%.2f %.2f) offset:(%.2f %.2f) current:(%.2f %.2f)\n",
-		pos.x,
-		pos.y,
-		offset.x,
-		offset.y,
-		currentOffset.x,
-		currentOffset.y
-	);
-
-	OutputDebugStringA(buf);
+	batter->SetMagnetCursorOffset(toTarget * 0.005f);
 }
 
+// ApplyHorizontalMagnet関数は、バッターのカーソルを左右に引き寄せる処理を実装します。
 void DebuffMagnetPattern::ApplyHorizontalMagnet(Batter* batter)
 {
+
 	if (m_randomCursorUpdate)
 	{
 		float angle =
 			RandomRange(0.0f, 360.0f)
-			* (MyNamespace::PI / 180.0f);
-
-		float radius =
-			RandomRange(0.0f, m_randomSpotRadius);
-
-		m_randomCursorTargetPos.x =
-			0.0f;
-
-		m_randomCursorTargetPos.y =
-			sinf(angle) * radius;
-
-		m_randomCursorTargetPos.z = 0.0f;
-
-		m_randomCursorMoveTimer =
-			RandomRange(0.5f, m_randomMoveDuration);
-
-		m_randomCursorUpdate = false;
-	}
-
-	Vector3 finalPos =
-		batter->GetFinalCursorPosition();
-
-	Vector3 toTarget =
-		m_randomCursorTargetPos - finalPos;
-
-	float distance = toTarget.Length();
-
-	//-----------------------------------
-	// 旧コード寄りの蓄積型
-	//-----------------------------------
-
-	Vector3 current =
-		batter->GetMagnetCursorOffset();
-
-	float magnetPower = 0.015f;
-
-	current += toTarget * magnetPower;
-
-	//-----------------------------------
-	// 暴走防止
-	//-----------------------------------
-
-	float maxOffset = 250.0f;
-
-	if (current.Length() > maxOffset)
-	{
-		current.Normalize();
-		current *= maxOffset;
-	}
-
-	//-----------------------------------
-	// 減衰
-	//-----------------------------------
-
-	current *= 0.92f;
-
-	batter->SetMagnetCursorOffset(current);
-
-	//-----------------------------------
-
-	m_randomCursorMoveTimer -=
-		g_gameTime->GetFrameDeltaTime();
-
-	if (m_randomCursorMoveTimer <= 0.0f
-		|| distance <= 10.0f)
-	{
-		m_randomCursorUpdate = true;
-	}
-
-}
-
-void DebuffMagnetPattern::ApplyVerticalMagnet(Batter* batter)
-{
-	if (m_randomCursorUpdate)
-	{
-		float angle =
-			RandomRange(0.0f, 360.0f)
-			* (MyNamespace::PI / 180.0f);
+			* MyNamespace::PI;
 
 		float radius =
 			RandomRange(0.0f, m_randomSpotRadius);
@@ -238,54 +111,67 @@ void DebuffMagnetPattern::ApplyVerticalMagnet(Batter* batter)
 		m_randomCursorUpdate = false;
 	}
 
-	Vector3 finalPos =
-		batter->GetFinalCursorPosition();
+	Vector3 finalPos = batter->GetFinalCursorPosition();
 
-	Vector3 toTarget =
-		m_randomCursorTargetPos - finalPos;
+	Vector3 toTarget = m_randomCursorTargetPos - finalPos;
 
 	float distance = toTarget.Length();
-
-	//-----------------------------------
-	// 旧コード寄りの蓄積型
-	//-----------------------------------
-
-	Vector3 current =
-		batter->GetMagnetCursorOffset();
-
-	float magnetPower = 0.015f;
-
-	current += toTarget * magnetPower;
-
-	//-----------------------------------
-	// 暴走防止
-	//-----------------------------------
-
-	float maxOffset = 250.0f;
-
-	if (current.Length() > maxOffset)
-	{
-		current.Normalize();
-		current *= maxOffset;
-	}
-
-	//-----------------------------------
-	// 減衰
-	//-----------------------------------
-
-	current *= 0.92f;
-
-	batter->SetMagnetCursorOffset(current);
-
-	//-----------------------------------
 
 	m_randomCursorMoveTimer -=
 		g_gameTime->GetFrameDeltaTime();
 
 	if (m_randomCursorMoveTimer <= 0.0f
-		|| distance <= 10.0f)
+		|| distance <= 0.1f)
 	{
 		m_randomCursorUpdate = true;
+		batter->SetMagnetCursorOffset(Vector3::Zero);
 	}
 
+	batter->SetMagnetCursorOffset(toTarget * 0.005f);
+}
+
+// ApplyVerticalMagnet関数は、バッターのカーソルを上下に引き寄せる処理を実装します。
+void DebuffMagnetPattern::ApplyVerticalMagnet(Batter* batter)
+{
+
+	if (m_randomCursorUpdate)
+	{
+		float angle =
+			RandomRange(0.0f, 360.0f)
+			* MyNamespace::PI;
+
+		float radius =
+			RandomRange(0.0f, m_randomSpotRadius);
+
+		m_randomCursorTargetPos.x =
+			0.0f;
+
+		m_randomCursorTargetPos.y =
+			sinf(angle) * radius;
+
+		m_randomCursorTargetPos.z = 0.0f;
+
+		m_randomCursorMoveTimer =
+			RandomRange(0.5f, m_randomMoveDuration);
+
+		m_randomCursorUpdate = false;
+	}
+
+	Vector3 finalPos = batter->GetFinalCursorPosition();
+
+	Vector3 toTarget = m_randomCursorTargetPos - finalPos;
+
+	float distance = toTarget.Length();
+
+	m_randomCursorMoveTimer -=
+		g_gameTime->GetFrameDeltaTime();
+
+	if (m_randomCursorMoveTimer <= 0.0f
+		|| distance <= 0.1f)
+	{
+		m_randomCursorUpdate = true;
+		batter->SetMagnetCursorOffset(Vector3::Zero);
+	}
+
+	batter->SetMagnetCursorOffset(toTarget * 0.005f);
 }

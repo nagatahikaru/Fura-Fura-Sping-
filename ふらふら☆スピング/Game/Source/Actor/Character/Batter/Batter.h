@@ -199,9 +199,10 @@ public:
         m_driftCursorOffset = offset;
 	}
 
+	//引き寄せによるカーソル揺れのオフセット追加
     void SetMagnetCursorOffset(const Vector3& offset)
     {
-        m_magnetCursorOffset = offset;
+        m_magnetCursorOffset += offset;
 	}
 
     Vector3 GetMagnetCursorOffset() const

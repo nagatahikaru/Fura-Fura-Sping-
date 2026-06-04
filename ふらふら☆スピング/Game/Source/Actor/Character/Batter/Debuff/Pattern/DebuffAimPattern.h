@@ -1,5 +1,6 @@
 #pragma once
 #include "DebuffPatternBase.h"
+#include "Source/UI/InGameUI/InGameUI.h"
 
 
 /// DebuffAimPatternƒNƒ‰ƒX‚ÌÀ‘•
@@ -9,6 +10,7 @@
 class DebuffAimPattern : public DebuffPatternBase
 {
 public:
+	bool Start();
 
     enum AimType
     {
@@ -30,12 +32,12 @@ public:
     void Update(Batter* batter) override;
     void SetMeatRange(float range)
     {
-		m_meatRange = range;
+		m_meatRange = powf(0.2, range / 40.0f); // 0.2‚ğŠî€‚É‚µ‚ÄArange‚ª‘å‚«‚­‚È‚é‚Ù‚Çm_meatRange‚ª¬‚³‚­‚È‚é‚æ‚¤‚É’²®
     }
 
     void Reset()
     {
-		m_meatRange = 0.0f;
+		m_meatRange = 1.0f;
     }
 
 private:
@@ -43,7 +45,8 @@ private:
     void UpdateSmallCursor(Batter* batter);
 
 private:	
+	InGameUI* m_InGameUI;
     AimType m_type;
-	float m_meatRange = 0.0f; // “–‚½‚è”»’è‚Ì”ÍˆÍ‚ğ’Ç‰Á
+	float m_meatRange = 1.0f; // “–‚½‚è”»’è‚Ì”ÍˆÍ‚ğ’Ç‰Á
 };
 
