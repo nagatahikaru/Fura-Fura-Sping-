@@ -63,6 +63,7 @@ public:
 	bool m_shotDone[3] = { false,false,false }; // 打ったかどうか
 	float m_perfectAnimTimer = 0.0f;
 	bool  m_isPerfectAnimActive = false;
+
 private:
 
 	FontRender m_fontRender;

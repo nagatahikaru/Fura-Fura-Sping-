@@ -423,7 +423,7 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     if (game) {
 
         // ★ パーフェクト閾値（あなたのUIと合わせる）
-        bool isPerfect = (predicted >= 50000.0f);
+        bool isPerfect = (predicted >= 51500.0f);
 
         if (isPerfect) {
 
@@ -482,6 +482,8 @@ void Ball::ResetBall()
     m_isMagicBall = false;
     m_hasPlayedDisappearEffect = false;
     m_hasPlayedReappearEffect = false;
+    m_ballType = Straight;
+    m_curveDir = 0;
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
     if (game) {
