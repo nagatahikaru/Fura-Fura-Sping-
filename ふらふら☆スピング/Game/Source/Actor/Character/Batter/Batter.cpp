@@ -449,7 +449,7 @@ void Batter::HitBat()
 
 	// ③ 距離判定
 	float dist = (ballPos - cursor).Length();
-
+	DebugLogFloat("Hit判定距離", m_meatRange);
 	if (dist < m_meatRange)
 	{
 		Vector3 hitDir = ballPos - cursor;

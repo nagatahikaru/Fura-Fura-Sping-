@@ -41,5 +41,7 @@ void DebuffAimPattern::UpdateSmallCursor(Batter* batter)
 	}
 	m_InGameUI->SetCursorScale(m_meatRange);
 	// カーソル表示サイズとミート範囲を縮小する処理
-	batter->SetMeatRange(m_meatRange); // 当たり判定の範囲を設定
+	float hitdir = m_meatRange * 100.0f; // 例えば、当たり判定の範囲を縮小する場合
+	batter->SetMeatRange(hitdir); // 当たり判定の範囲を設定
+	DebugLogFloat("判定デバフ倍率", hitdir);
 }
