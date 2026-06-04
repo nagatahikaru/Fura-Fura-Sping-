@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DebuffAimPattern.h"
 #include "Source/Actor/Character/Batter/Batter.h"
+#include "Source/UI/InGameUI/InGameUI.h"
 
 /// DebuffAimPatternクラスの実装
 /// 照準異常系のデバフパターンを実装するクラスです。
@@ -10,6 +11,12 @@
 void DebuffAimPattern::SetType(AimType type)
 {
 	m_type = type;
+}
+
+bool DebuffAimPattern::Start()
+{
+	m_InGameUI = FindGO<InGameUI>("inGameUI");
+	return true;
 }
 
 // Update関数は、デバフの種類に応じて、バッターのカーソルを上下や左右に震わせる処理を実装します。
@@ -30,6 +37,7 @@ void DebuffAimPattern::Update(Batter* batter)
 //カーソルサイズの変更はSetMeatRange関数を呼び出して行います。
 void DebuffAimPattern::UpdateSmallCursor(Batter* batter)
 {
-	// カーソル表示サイズとミート範囲を縮小する処理	
+	m_InGameUI->SetCursorScale(m_meatRange);
+	// カーソル表示サイズとミート範囲を縮小する処理
 	batter->SetMeatRange(m_meatRange); // 当たり判定の範囲を設定
 }
