@@ -235,7 +235,7 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 	}
 
 	// ★ 0回＝1倍、40回＝40倍 の反比例カーブ
-	double t = (double)guruguru / 40.0;
+	double t = (double)guruguru / 45.0;
 	if (t < 0.0) t = 0.0;
 	if (t > 1.0) t = 1.0;
 
@@ -243,7 +243,7 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 	double p = 2.5;
 
 	// 1 + 39 * t^p
-	double multiplier = 1.0 + 39.0 * pow(t, p);
+	double multiplier = 1.0 + 44.0 * pow(t, p);
 
 	// --- (倍率計算のロジックは変更なし) ---
 	m_km = (int)(bestKm * multiplier);

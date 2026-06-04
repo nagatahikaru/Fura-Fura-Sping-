@@ -5,6 +5,7 @@
 #include"Source/UI/InGameUI/InGameUI.h"
 #include "Source/Effect/EffectManager.h"
 #include"Source/Sound/SoundManager.h"
+#include "Source/Actor/GameCamera/GameCamera.h"  
 
 Ball::Ball()
 {
@@ -415,6 +416,32 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
         if (ui) {
             ui->SetStartZ(m_position.z);
             ui->ResetBatAndMeetOnly();
+        }
+    }
+    // ★ 打った瞬間の予測距離を計算
+    float predicted = PredictLandingDistance();
+    if (game) {
+
+        // ★ パーフェクト閾値（あなたのUIと合わせる）
+        bool isPerfect = (predicted >= 50000.0f);
+
+        if (isPerfect) {
+
+            // ★ 確定演出フラグON
+            game->m_isKakutei = true;
+            game->m_kakuteiTimer = 1.0f;
+
+            GameCamera* cam = game->GetGameCamera();
+            if (cam) {
+                cam->SetkakuteiCamera();
+                cam->FreezeCamera();
+            }
+
+            // ★ 集中線を出し続ける
+            InGameUI* ui = game->GetInGameUI();
+            if (ui) {
+                ui->m_shuchusenTimer = 9999.0f;
+            }
         }
     }
 }

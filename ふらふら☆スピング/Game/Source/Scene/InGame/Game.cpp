@@ -183,6 +183,45 @@ void Game::Update()
 		m_isHitStop = false;  // ← 終わったら解除
 	}
 
+	// ★★★ パーフェクト確定演出中（2秒間） ★★★
+	if (m_isKakutei) {
+	
+		if (m_InGameUI) {
+			m_InGameUI->SetUIVisible(false);
+			m_InGameUI->SetFontVisble(false);
+			m_InGameUI->SetReplayVisible(false);
+			m_InGameUI->SetBaisokuVisible(false);
+			if (!m_InGameUI->m_isPerfectAnimActive) {
+				m_InGameUI->m_isPerfectAnimActive = true;
+				m_InGameUI->m_perfectAnimTimer = 0.0f; // タイマーを最初からリセット
+			}
+		}
+		m_kakuteiTimer -= g_gameTime->GetFrameDeltaTime();
+
+		if (m_kakuteiTimer <= 0.0f) {
+
+			m_isKakutei = false;
+			// 🌟【ここを追加】演出終了時にUI側のパーフェクトフラグも落とす
+			if (m_InGameUI) {
+				m_InGameUI->m_isPerfectAnimActive = false;
+			}
+			// カメラ凍結解除
+			if (m_gameCamera) {
+				m_gameCamera->UnfreezeCamera();
+			}
+
+			// 通常の打球追尾カメラへ戻す
+			m_cameraMode = Camera_BackBall;
+
+			// 集中線を消す
+			if (m_InGameUI) {
+				m_InGameUI->m_shuchusenTimer2 = 0.0f;
+			}
+		}
+
+		return;  // ← 2秒間はゲームロジック停止
+	}
+
 	if (m_InGameUI && m_InGameUI->IsFadingOut()) {
 		// ★ フェードアウト開始した瞬間だけ実行
 		if (!m_startFadeSE2) {
@@ -248,6 +287,12 @@ void Game::Update()
 		m_InGameUI->SetReplayVisible(true);
 		m_InGameUI->SetBaisokuVisible(false);
 
+	}
+	else if (m_cameraMode == Camera_Kakutei) {
+		m_InGameUI->SetUIVisible(false);
+		m_InGameUI->SetFontVisble(false);
+		m_InGameUI->SetReplayVisible(false);
+		m_InGameUI->SetBaisokuVisible(false);
 	}
 	else if (m_batter->GetRotationSeen())
 	{

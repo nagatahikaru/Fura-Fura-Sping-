@@ -213,7 +213,7 @@ void Batter::Rotation()
 //	m_modelPos = m_bodyCenter; // 位置は中心固定
 
 
-
+	//////////////////////////
 	//コントローラー操作
 	//左スティックの入力量を取得
 	Vector3 stickL = Vector3::Zero;
