@@ -61,6 +61,10 @@ public:
 	std::function<void()> m_onFadeInFinished;
 	int m_threeShots[3] = { 0,0,0 };      // cm 単位で保存
 	bool m_shotDone[3] = { false,false,false }; // 打ったかどうか
+	void SetCursorScale(float distance)
+	{
+		m_meetCursorScale *= distance;
+	};
 	float m_perfectAnimTimer = 0.0f;
 	bool  m_isPerfectAnimActive = false;
 private:
@@ -142,6 +146,7 @@ private:
 	FontRender m_fontDebug4;
 	FontRender m_fontDebug5;
 	SpriteRender m_strikeSprite;
+	float m_meetCursorScale = 1.0; // ミートカーソルの基本スケール
 	// --- ストライク演出用 ---
 	float m_strikeTimer = 0.0f;
 	bool  m_isStrikeAnim = false;
