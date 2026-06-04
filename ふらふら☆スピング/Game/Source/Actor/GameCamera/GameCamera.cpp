@@ -39,6 +39,18 @@ void GameCamera::SetCatcherCamera() {
     m_followMode = Follow_None;   // ★ 追加
 }
 
+void GameCamera::SetkakuteiCamera() {
+    m_cameraPos = { 6.5f, 250.0f, 6600.0f };
+    m_target = { 0.0f, 1200.0f, 0.0f };
+
+    m_yaw = 0.0f;
+    m_pitch = 0.0f;
+
+    g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
+    m_followMode = Follow_None;   // ★ 追加
+}
+
+
 void GameCamera::SetReplayCamera() {
     m_cameraPos = { 1080.0f, 630.0f, 0.0f };  // 斜め上から
     m_target = { 0.0f, 300.0f, 0.0f };        // 固定ターゲット（例）
@@ -132,10 +144,9 @@ void GameCamera::Update() {
         m_target = m_cameraPos - m_forward * 100.0f;
     }
     float minCameraHeight = 300.0f;
-    if (m_cameraPos.y < minCameraHeight) {
+    if (m_followMode != Follow_None && m_cameraPos.y < minCameraHeight) {
         m_cameraPos.y = minCameraHeight;
     }
-
     // --- カメラ反映 ---
     g_camera3D->SetPosition(m_cameraPos);
     g_camera3D->SetTarget(m_target);

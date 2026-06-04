@@ -16,6 +16,7 @@ public:
 	void SetReplayCamera();
 	void SetFollowBallCamera();
 	void SetFollowBallBackCamera();
+	void SetkakuteiCamera();
 	// ★ ボールをセットする関数
 	void SetBall(Ball* ball) { m_ball = ball; }
 	void StartHitMomentCamera();

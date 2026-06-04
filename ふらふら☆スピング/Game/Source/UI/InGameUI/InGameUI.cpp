@@ -22,7 +22,10 @@ InGameUI::InGameUI() {
 	m_baisoku.Init("Assets/sprite/baisoku.DDS", 150.0f, 150.0f);
 	m_shuchusen.Init("Assets/sprite/shuchusen.DDS", 1920.0f, 1080.0f);
 	m_shuchusen.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
-	m_shuchusen.SetMulColor({ 1,1,1,0 }); // 最初は透明
+	m_shuchusen.SetMulColor({ 1,1,1,0 });
+	m_imagesen.Init("Assets/sprite/imagesen.DDS", 1920.0f, 1080.0f);
+	m_imagesen.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
+	m_imagesen.SetMulColor({ 1,1,1,0 });
 	m_konto.Init("Assets/sprite/konto.DDS", 300.0f, 300.0f);
 	m_yazirusi.Init("Assets/sprite/yazirusi.DDS", 130.0f, 100.0f);
 	m_mawase.Init("Assets/sprite/mawase.DDS", 550.0f, 500.0f);
@@ -53,6 +56,7 @@ InGameUI::InGameUI() {
 	m_kuro.Init("Assets/sprite/kuro.DDS", 300.0f, 270.0f);
 	m_keisuu.Init("Assets/sprite/gurugurukeisuu.DDS", 400.0f, 300.0f);
 	m_kakunin.Init("Assets/sprite/kakunin.DDS", 400.0f, 300.0f);
+	m_kakin.Init("Assets/sprite/kakin.DDS", 500.0f, 500.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -162,6 +166,66 @@ void InGameUI::Update() {
 		else {
 			// それ以外は通常サイズ
 			m_kakuninScale = 1.0f;
+		}
+	}
+	Game* game = FindGO<Game>("game");
+	bool isKakutei = (game && game->m_isKakutei);
+
+	// ★ 集中線用のアニメーションタイマーを進める
+	m_animeTimer += g_gameTime->GetFrameDeltaTime();
+
+	if (!isKakutei) {
+		if (m_shuchusenTimer > 0.0f) {
+			m_shuchusenTimer -= g_gameTime->GetFrameDeltaTime();
+
+			float alpha = m_shuchusenTimer / 0.2f; // 0.2秒で消える
+			m_shuchusen.SetMulColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+			m_imagesen.SetMulColor({ 1.0f, 1.0f, 1.0f, alpha }); // ★ 白も連動
+		}
+		else {
+			m_shuchusen.SetMulColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+			m_imagesen.SetMulColor({ 1.0f, 1.0f, 1.0f, 0.0f }); // ★ オフの時は完全透明
+		}
+	}
+	else {
+		// ★ 確定演出中は常に最大表示
+		m_shuchusen.SetMulColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+		m_imagesen.SetMulColor({ 1.0f, 1.0f, 1.0f, 1.0f }); // ★ 白も全開
+	}
+
+	// ★★★ 動画編集風：超高速シャカシャカ動かす計算 ★★★
+	if (m_shuchusenTimer > 0.0f || isKakutei) {
+
+		// 白（m_imagesen）は、黒とタイミング・大きさをあえて「ズラす」ことでチカチカ感を出す
+		float whiteScale = 1.0f + fabsf(cosf(m_animeTimer * 140.0f)) * 0.20f;
+		float whiteRot = cosf(m_animeTimer * 100.0f) * 0.05f; // 黒とは逆のブレを作る
+		Quaternion qWhite;
+		qWhite.SetRotation(Vector3::AxisZ, whiteRot);
+
+		m_imagesen.SetScale(Vector3{ whiteScale, whiteScale, 1.0f });
+		m_imagesen.SetRotation(qWhite);
+	}
+
+	// ★★★ パーフェクト（kakin）専用のスケール・透明度計算 ★★★
+	if (m_isPerfectAnimActive) {
+		m_perfectAnimTimer += g_gameTime->GetFrameDeltaTime();
+
+		// 【前半 0.5秒】：奥から手前へグワッとズームイン
+		if (m_perfectAnimTimer <= 0.3f) {
+			float t = m_perfectAnimTimer / 0.3f; // 0.5秒で規格化
+
+			// スケールを奥（0.1倍）から手前（1.5倍）へLerp
+			m_predictionScale = Lerp(0.1f, 1.5f, t);
+			m_predictionAlpha = Lerp(0.0f, 1.0f, t);
+		}
+		// 【後半 0.5秒】：最大サイズのままピタッと静止
+		else if (m_perfectAnimTimer <= 1.0f) {
+			m_predictionScale = 1.5f;
+			m_predictionAlpha = 1.0f;
+		}
+		else {
+			// 1秒経ったらアニメーション終了（必要に応じてフラグを倒す、または消去フェードへ）
+			// m_isPerfectAnimActive = false; 
 		}
 	}
 }
@@ -327,7 +391,7 @@ void InGameUI::ShowPrediction(float predicted)
 		m_predictionType = Prediction_Great;
 		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
 	}
-	else if (predicted < 53000.0f) {
+	else if (predicted < 51000.0f) {
 		m_predictionType = Prediction_Excellent;
 		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
 	}
@@ -391,11 +455,35 @@ void InGameUI::Render(RenderContext& rc) {
 	Game* game = FindGO <Game>("game");
 	bool isReadyPhase = false;
 	if (game) {
-		isReadyPhase = game->m_isReadyPhase; // Game.h で宣言した変数名
+		isReadyPhase = game->m_isReadyPhase; 
 	}
-	if (m_shuchusenTimer > 0.0f) {
-		m_shuchusen.Update();
-		m_shuchusen.Draw(rc);
+
+	bool isKakuteiMode = (game && game->GetCameraMode() == Camera_Kakutei);
+	bool showShuchusen = (game && game->m_isKakutei) || isKakuteiMode || (m_shuchusenTimer > 0.0f);
+	if (showShuchusen) {
+
+		// 2. 上に白い集中線（m_imagesen）を重ねて描画
+		m_imagesen.Update();
+		m_imagesen.Draw(rc);
+
+		// ★ カキーン演出のスケールと透明度を適用
+		m_kakin.SetPosition(Vector3{ 0.0f, 100.0f, 0.0f });
+		if (m_isPerfectAnimActive) {
+			m_kakin.SetScale(Vector3{ m_predictionScale, m_predictionScale, 1.0f });
+			m_kakin.SetMulColor({ 1.0f, 1.0f, 1.0f, m_predictionAlpha });
+		}
+		else {
+			// アニメーション中でない場合のデフォルト表示（非表示にする場合はアルファを0に）
+			m_kakin.SetScale(Vector3{ 1.0f, 1.0f, 1.0f });
+			m_kakin.SetMulColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+		}
+
+		m_kakin.Update();
+		m_kakin.Draw(rc);
+	}
+
+	if (isKakuteiMode) {
+		return; // ← ここでリターンしてUI全部消す
 	}
 
 	if (m_isUIVisible) {

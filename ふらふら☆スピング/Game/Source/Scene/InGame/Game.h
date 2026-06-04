@@ -16,7 +16,8 @@ enum CameraMode
 	Camera_Catcher,
 	Camera_Replay,
 	Camera_Ball,
-	Camera_BackBall
+	Camera_BackBall,
+	Camera_Kakutei
 };
 
 class Game : public Source
@@ -35,7 +36,8 @@ public:
 	void GoToResult();
 	void OnBallLanded();
 	bool m_isPaused = false;
-
+	GameCamera* GetGameCamera() const { return m_gameCamera; }
+	CameraMode GetCameraMode() const { return m_cameraMode; }
 	int GetGuruguru()const{
 		return  m_guruguru;
 	}
@@ -68,7 +70,6 @@ public:
 		return m_cameraType;
 	}
 	float GetTimeScale() const { return m_timeScale; }
-	GameCamera* GetGameCamera() const { return m_gameCamera; }
 	void ResetForNextShot();
 	bool m_canFastForward = false;
 	float m_hitStopTimer = 0.0f;
@@ -125,6 +126,8 @@ public:
 	float m_replayDelayTimer = 0.0f;    // リプレイ開始までの遅延タイマー
 	float m_readyTimer = 5.0f;
 	bool m_isReadyPhase = false;
+	bool m_isKakutei = false;
+	float m_kakuteiTimer = 0.0f;
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。
@@ -174,5 +177,6 @@ private:
 	bool m_startFadeSE2 = false;
 	int m_prevGuruGuru = 0;
 	bool m_hasSwung[3] = { false, false, false };
+	
 };
 

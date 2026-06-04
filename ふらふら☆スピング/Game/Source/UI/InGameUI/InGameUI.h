@@ -9,7 +9,7 @@ public:
 		Prediction_Nice,
 		Prediction_Great,
 		Prediction_Excellent,
-		Prediction_Perfect   
+		Prediction_Perfect
 	};
 	PredictionType m_predictionType = Prediction_None;
 	inline float Lerp(float a, float b, float t) {
@@ -43,6 +43,7 @@ public:
 	void DisableErrorCheck() { m_isErrorCheckEnabled = false; }
 	void SetGuruGuruTimer(float time);
 	float m_shuchusenTimer = 0.0f;
+	float m_shuchusenTimer2 = 0.0f;
 	void OnButtonPressed();
 	void SetBallCount(int count);
 	int GetGuruGuruCount() const;
@@ -60,6 +61,8 @@ public:
 	std::function<void()> m_onFadeInFinished;
 	int m_threeShots[3] = { 0,0,0 };      // cm 単位で保存
 	bool m_shotDone[3] = { false,false,false }; // 打ったかどうか
+	float m_perfectAnimTimer = 0.0f;
+	bool  m_isPerfectAnimActive = false;
 private:
 
 	FontRender m_fontRender;
@@ -175,7 +178,7 @@ private:
 	Vector3 m_miniMapBasePos;
 	float   m_miniMapHeightY = 250.0f;
 	float   m_miniMapHeightX = 271.0f;    // メーター全体の高さ（ピクセル単位）
-	SpriteRender m_ballMapIcon;            
+	SpriteRender m_ballMapIcon;
 	SpriteRender m_gurahu;
 	SpriteRender m_kuro;
 	SpriteRender m_keisuu;
@@ -183,5 +186,8 @@ private:
 	float m_kakuninFlashTimer = 0.0f;
 	float m_kakuninScale = 1.0f;
 	bool  m_isKakuninFlash = true;   // ループON
+	SpriteRender m_imagesen;
+	float        m_animeTimer = 0.0f;
+	SpriteRender m_kakin;
 };
 
