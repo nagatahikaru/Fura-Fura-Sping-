@@ -242,7 +242,7 @@ void Ball::Update()
 
         float t = (m_position.z - minZ) / (maxZ - minZ);
       
-      if (t < 0.0f) t = 0.0f;
+        if (t < 0.0f) t = 0.0f;
         if (t > 1.0f) t = 1.0f;
 
 
