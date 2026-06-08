@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "Ball.h"
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
@@ -219,7 +219,7 @@ void Ball::Update()
             }
         }
       
-　　SetPosition(m_position);
+     SetPosition(m_position);
 
     //距離に応じてスケール変更
     float minZ = 500.0f;
@@ -227,7 +227,7 @@ void Ball::Update()
 
         float t = (m_position.z - minZ) / (maxZ - minZ);
       
-     　 if (t < 0.0f) t = 0.0f;
+        if (t < 0.0f) t = 0.0f;
         if (t > 1.0f) t = 1.0f;
 
 
