@@ -35,6 +35,14 @@ public:
 		m_noiseDuration = timer;
 	}
 
+    void Reset()
+    {
+        m_timer = 0.0f;
+		m_noiseDuration = 0.05f;
+        m_target = Vector3::Zero;
+        m_current = Vector3::Zero;
+	}
+
 private:
 
     void NoiseVertical(Batter* batter);

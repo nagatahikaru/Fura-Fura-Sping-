@@ -8,7 +8,8 @@ class Ball :public Character
 		Straight,        //真っ直ぐ
 		Curve,           //カーブ
 		ShakeHorizontal, //横揺れ
-		ShakeVertical    //縦揺れ
+		ShakeVertical ,   //縦揺れ]
+		SlowBall
 	};
 
 	BallType m_ballType = Straight;
@@ -65,5 +66,7 @@ class Ball :public Character
 	bool m_hasPlayedSE6 = false;
 	float m_replayTimer = 0.0f;
 	bool m_isMagicBall = false;
+	bool m_hasPlayedDisappearEffect = false;  // 魔球が消える瞬間のエフェクト再生済みフラグ
+	bool m_hasPlayedReappearEffect = false;   // 魔球が再出現した瞬間のエフェクト再生済みフラグ
 };
 

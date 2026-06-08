@@ -38,7 +38,9 @@ namespace {
 		"SE10",
 		"SE11",
 		"SE12",
-		"SE13"
+		"SE13",
+		"SE14",
+		"SE15"
 	};	
 }
 
@@ -54,6 +56,25 @@ SoundManager::SoundManager()
 		const char* filepath = file.c_str();
 		//g_soundEngineへ登録。
 		g_soundEngine->ResistWaveFileBank(i, filepath);
+	}
+}
+
+void SoundManager::Update()
+{
+	if (m_isFadingSE2 && m_se2) {
+
+		m_se2FadeTimer += g_gameTime->GetFrameDeltaTime();
+
+		float t = m_se2FadeTimer / m_se2FadeDuration;
+		if (t > 1.0f) t = 1.0f;
+
+		float newVolume = m_se2StartVolume * (1.0f - t);
+		m_se2->SetVolume(newVolume);
+
+		if (t >= 1.0f) {
+			m_se2->Stop();
+			m_isFadingSE2 = false;
+		}
 	}
 }
 
@@ -109,6 +130,17 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 		return m_se2;
 	}
 
+	// ★ SE14 だけは音量カーブを使わず、そのままの音量で再生
+	if (number == enSound_SE14) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+
+		float raw = (m_seVolume / 100.0f) * 3.0f;  // 1.5倍
+		se->SetVolume(raw);
+
+		se->Play(false);
+		return se;
+	}
 
 	// ★ 通常 SE は今まで通り
 	SoundSource* se = NewGO<SoundSource>(0);
@@ -158,18 +190,24 @@ void SoundManager::UnmuteSE2()
 	}
 }
 
-void SoundManager::FadeOutSE2(float delta)
+void SoundManager::StopBGM()
+{
+	if (g_bgm) {
+		g_bgm->Stop();
+		DeleteGO(g_bgm);
+		g_bgm = nullptr;
+		m_nowPlayingBGM = enSound_Num; // ★ 何も再生していない状態に
+	}
+}
+
+void SoundManager::FadeOutSE2(float durationSec)
 {
 	if (!m_se2) return;
 
-	float v = m_se2->GetVolume();
-	v -= delta;
+	m_isFadingSE2 = true;
+	m_se2FadeDuration = durationSec;
+	m_se2FadeTimer = 0.0f;
 
-	if (v <= 0.0f) {
-		v = 0.0f;
-		m_se2->Stop();
-	}
-
-	m_se2->SetVolume(v);
+	m_se2StartVolume = m_se2->GetVolume();
 }
 

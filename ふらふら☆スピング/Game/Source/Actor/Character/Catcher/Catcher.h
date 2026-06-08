@@ -51,12 +51,13 @@ public:
 	virtual void Render(RenderContext& rc);
 
 	bool m_isPaused = false; // アニメーションの一時停止フラグ
+	ModelRender m_modelRender;
 private:
 	enum EnAnimationClip {
 		enAnimationClip_Idle,
 		enAnimationClip_Num
 	};
-	ModelRender m_modelRender;
+
 	Ball* m_ball = nullptr;
 	Game* m_game = nullptr;
 	AnimationClip m_animationClips[enAnimationClip_Num];

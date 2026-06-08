@@ -72,8 +72,9 @@ void Start1::Update()
         m_1.SetScale({ m_scale1, m_scale1, 1.0f });
         m_Start.SetMulColor({ 1,1,1,0 });
     }
-    // 3〜4秒 → START!!
+    // 3〜4秒 → START!!（奥から手前に“現れる” → 最後0.2秒停止）
     else if (m_timer < 4.0f) {
+
         // ★ START!! に入った瞬間だけ SE 再生
         if (!m_playedStartSE) {
             if (g_soundManager) {
@@ -81,15 +82,38 @@ void Start1::Update()
             }
             m_playedStartSE = true;
         }
-        float t = (m_timer - 3.0f) / 1.0f;
-        m_alpha = 1.0 - t;
-        m_scaleStart = 0.5f + (1.5f - 0.5f) * t;  // 0.5 → 1.5
+
+        float t = (m_timer - 3.0f);   // 0.0 → 1.0
+
+        // -----------------------------
+        // フェーズ1：0.0〜0.8秒（80%）
+        // -----------------------------
+        if (t < 0.75f) {
+            float nt = t / 0.75f;  // 0 → 1 に正規化
+
+            // アルファ 0 → 1
+            m_alpha = nt;
+
+            // スケール 0.5 → 1.5
+            m_scaleStart = 0.5f + (1.5f - 0.5f) * nt;
+        }
+        // -----------------------------
+        // フェーズ2：0.8〜1.0秒（20%）
+        // -----------------------------
+        else {
+            // ピタッと停止
+            m_alpha = 1.0f;
+            m_scaleStart = 1.5f;
+        }
+
         m_3.SetMulColor({ 1,1,1,0 });
         m_2.SetMulColor({ 1,1,1,0 });
         m_1.SetMulColor({ 1,1,1,0 });
+
         m_Start.SetMulColor({ 1,1,1,m_alpha });
         m_Start.SetScale({ m_scaleStart, m_scaleStart, 1.0f });
     }
+
     // 4秒後 → 自動削除
     else {
         // ★ カウントダウン終了 → キャラ動作開始

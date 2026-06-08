@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DebuffAimPattern.h"
 #include "Source/Actor/Character/Batter/Batter.h"
+#include "Source/UI/InGameUI/InGameUI.h"
 
 /// DebuffAimPatternクラスの実装
 /// 照準異常系のデバフパターンを実装するクラスです。
@@ -20,16 +21,8 @@ void DebuffAimPattern::Update(Batter* batter)
 	case SmallCursor:
 		UpdateSmallCursor(batter);
 		break;
-	case TinySweetSpot:
-		UpdateTinySweetSpot(batter);
-		break;
-	case WeakHitAssist:
-		UpdateWeakHitAssist(batter);
-		break;
-	case HeavySwing:
-		UpdateHeavySwing(batter);
-		break;
 	default:
+		UpdateSmallCursor(batter);
 		break;
 	}
 }
@@ -38,24 +31,17 @@ void DebuffAimPattern::Update(Batter* batter)
 //カーソルサイズの変更はSetMeatRange関数を呼び出して行います。
 void DebuffAimPattern::UpdateSmallCursor(Batter* batter)
 {
-	// カーソル表示サイズとミート範囲を縮小する処理	
-	batter->SetMeatRange(m_meatRange); // 当たり判定の範囲を設定
-}
-
-void DebuffAimPattern::UpdateTinySweetSpot(Batter* batter)
-{
-	// スイートスポットを小さくする処理
-	
-}
-
-void DebuffAimPattern::UpdateWeakHitAssist(Batter* batter)
-{
-	// ヒットアシストを弱くする処理
-	
-}
-
-void DebuffAimPattern::UpdateHeavySwing(Batter* batter)
-{
-	// スイングを重くする処理
-	
+	if(m_InGameUI==nullptr)
+	{
+		m_InGameUI = FindGO<InGameUI>("inGameUI");
+		if(m_InGameUI==nullptr)
+		{
+			return; // UIが見つからない場合は処理をスキップ
+		}
+	}
+	m_InGameUI->SetCursorScale(m_meatRange);
+	// カーソル表示サイズとミート範囲を縮小する処理
+	float hitdir = m_meatRange * 100.0f; // 例えば、当たり判定の範囲を縮小する場合
+	batter->SetMeatRange(hitdir); // 当たり判定の範囲を設定
+	DebugLogFloat("判定デバフ倍率", hitdir);
 }

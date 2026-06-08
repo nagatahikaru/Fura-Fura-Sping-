@@ -30,19 +30,25 @@ public:
 
     void Update(Batter* batter) override;
 
+    void Reset(Batter* batter)
+    {
+        batter->SetDelayFrag(false);
+        batter->SetInversionInputScale(1.0f, 1.0f);
+	}
+
 private:
 
     void SetReverseY(Batter* batter)
-    {
-        batter->SetInputScale(m_reversePower,0.0f);
+    {        
+        batter->SetInversionInputScale(m_reversePower,1.0f);
     }
     void SetReverseX(Batter* batter)
-    {
-        batter->SetInputScale(0.0f, m_reversePower);
+    {        
+        batter->SetInversionInputScale(1.0f, m_reversePower);
     }
     void SetReverseAll(Batter* batter)
-    {
-        batter->SetInputScale(m_reversePower, m_reversePower);
+    {		
+        batter->SetInversionInputScale(m_reversePower, m_reversePower);
     }
     
 private:	

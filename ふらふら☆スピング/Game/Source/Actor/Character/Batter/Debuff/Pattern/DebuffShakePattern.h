@@ -28,6 +28,11 @@ public:
 
     void Update(Batter* batter) override;
 
+    void Reset()
+    {
+		m_waveTime = 0.0f;        
+	}
+
 private:
     void UpdateTime()
     {

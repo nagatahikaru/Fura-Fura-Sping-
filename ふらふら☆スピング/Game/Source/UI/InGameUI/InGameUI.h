@@ -9,7 +9,7 @@ public:
 		Prediction_Nice,
 		Prediction_Great,
 		Prediction_Excellent,
-		Prediction_Perfect   
+		Prediction_Perfect
 	};
 	PredictionType m_predictionType = Prediction_None;
 	inline float Lerp(float a, float b, float t) {
@@ -25,7 +25,7 @@ public:
 	void SetUIVisible(bool isVisible) { m_isUIVisible = isVisible; }
 	void SetFontVisble(bool isVisible) { m_isFontVisible = isVisible; }
 	void SetReplayVisible(bool isVisible) { m_isReplayVisible = isVisible; }
-	void SetniceVisible(bool isVisible) { m_baisokuUI = isVisible; }
+	void SetBaisokuVisible(bool isVisible);
 	void SetBatterSide(bool isLeft);
 	void SetPause(bool isPaused);
 	void SetPredictedBallPos(const Vector3& pos3D);
@@ -42,8 +42,8 @@ public:
 	bool GetIsError() const { return m_isError; }
 	void DisableErrorCheck() { m_isErrorCheckEnabled = false; }
 	void SetGuruGuruTimer(float time);
-	void SetBaisokuVisible(bool isVisible);
 	float m_shuchusenTimer = 0.0f;
+	float m_shuchusenTimer2 = 0.0f;
 	void OnButtonPressed();
 	void SetBallCount(int count);
 	int GetGuruGuruCount() const;
@@ -61,6 +61,13 @@ public:
 	std::function<void()> m_onFadeInFinished;
 	int m_threeShots[3] = { 0,0,0 };      // cm 単位で保存
 	bool m_shotDone[3] = { false,false,false }; // 打ったかどうか
+	void SetCursorScale(float distance)
+	{
+		m_meetCursorScale = distance;
+	};
+	float m_perfectAnimTimer = 0.0f;
+	bool  m_isPerfectAnimActive = false;
+
 private:
 
 	FontRender m_fontRender;
@@ -140,6 +147,7 @@ private:
 	FontRender m_fontDebug4;
 	FontRender m_fontDebug5;
 	SpriteRender m_strikeSprite;
+	float m_meetCursorScale = 1.0; // ミートカーソルの基本スケール
 	// --- ストライク演出用 ---
 	float m_strikeTimer = 0.0f;
 	bool  m_isStrikeAnim = false;
@@ -159,5 +167,33 @@ private:
 	float m_predictedDistance = 0.0f; // 予測された飛距離(m)
 	SpriteRender m_batu[3];
 	bool m_isMiss[3] = { false, false, false }; // 空振りフラグ
+	SpriteRender m_guruguruSprite; // 例：5段階
+	FontRender    m_fontStage[10];
+	const wchar_t* m_stageTextList[10] = {
+	L"揺れ(弱)",   // 0段階
+	L"360度揺れ(弱)",       // 1段階
+	L"ランダム揺れ(弱)",         // 2段階
+	L"ランダム誘導(弱)",       // 3段階
+	L"流され誘導(弱)",         // 4段階
+	L"流され誘導(強)",       // 5段階
+	L"誘導ノイズ(強)",          // 6段階
+	L"ディレイ",     // 7段階
+	L"操作反転",          // 8段階
+	L"ランダム誘導ノイズ(強)"   // 9段階
+	};
+	Vector3 m_miniMapBasePos;
+	float   m_miniMapHeightY = 250.0f;
+	float   m_miniMapHeightX = 271.0f;    // メーター全体の高さ（ピクセル単位）
+	SpriteRender m_ballMapIcon;
+	SpriteRender m_gurahu;
+	SpriteRender m_kuro;
+	SpriteRender m_keisuu;
+	SpriteRender m_kakunin;
+	float m_kakuninFlashTimer = 0.0f;
+	float m_kakuninScale = 1.0f;
+	bool  m_isKakuninFlash = true;   // ループON
+	SpriteRender m_imagesen;
+	float        m_animeTimer = 0.0f;
+	SpriteRender m_kakin;
 };
 

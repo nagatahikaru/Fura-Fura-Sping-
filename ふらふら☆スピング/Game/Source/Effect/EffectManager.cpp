@@ -88,8 +88,8 @@ void EffectManager::Update()
 /// </summary>
 /// <param name="type">再生したいエフェクトの種類。</param>
 /// <param name="pos">エフェクトの位置。</param>
-/// <param name="rot">エフェクトの回転。</param>
 /// <param name="scale">エフェクトのスケール。</param>
+/// <param name="rot">エフェクトの回転。</param>
 uint32_t EffectManager::PlayEffect(
 	EffectType type,
 	const Vector3& pos,
@@ -137,13 +137,13 @@ bool EffectManager::MoveEffect(
 
 /// <summary>
 /// エフェクトの追従再生。
-/// エフェクトのIDと座標、スケール、回転を指定してエフェクトを追従再生します。
+/// エフェクトのタイプと座標、スケール、回転を指定してエフェクトを追従再生します。
 /// </summary>
-/// <param name="type"></param>
-/// <param name="targetTransform"></param>
-/// <param name="offset"></param>
-/// <param name="scale"></param>
-/// <param name="rot"></param>
+/// <param name="type">追従させたいエフェクトのタイプ。</param>
+/// <param name="targetTransform">追従させたいターゲットのTransform。</param>
+/// <param name="offset">ターゲットからのオフセット。</param>
+/// <param name="scale">エフェクトのスケール。</param>
+/// <param name="rot">エフェクトの回転。</param>
 /// <returns></returns>
 uint32_t EffectManager::PlayFollowEffect(
 	EffectType type,

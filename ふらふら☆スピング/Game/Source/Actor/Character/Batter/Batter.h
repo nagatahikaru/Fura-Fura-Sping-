@@ -172,12 +172,6 @@ public:
         m_meetCursorWorldPos = CalcCursorWorldPos();
     }
 
-    // カーソル位置リセット
-    void ResetCursorPosition()
-    {
-		m_meetCursorWorldPos = Vector3::Zero;
-    }
-
     // カーソルモード切り替え
     void SetCursorMode(bool flag)
     {
@@ -186,12 +180,6 @@ public:
 
     // ワールド座標変換
     Vector3 CalcCursorWorldPos();
-
-    // カーソル座標取得
-    Vector3 GetCursorWorldPos() const
-    {
-        return m_meetCursorWorldPos;
-    }
 
 	// 揺れによるカーソル揺れのオフセット追加
     void SetShakeCursorOffset(const Vector3& offset)
@@ -205,22 +193,22 @@ public:
         m_noiseCursorOffset = offset;
 	}
 
-	// 援護によるカーソル揺れのオフセット追加
-    void SetAssistCursorOffset(const Vector3& offset)
-    {
-        m_assistCursorOffset = offset;
-	}
-
 	// ドリフトによるカーソル揺れのオフセット追加
     void SetDriftCursorOffset(const Vector3& offset)
     {
         m_driftCursorOffset = offset;
 	}
 
+	//引き寄せによるカーソル揺れのオフセット追加
     void SetMagnetCursorOffset(const Vector3& offset)
     {
-        m_magnetCursorOffset = offset;
+        m_magnetCursorOffset += offset;
 	}
+
+    Vector3 GetMagnetCursorOffset() const
+    {
+        return m_magnetCursorOffset;
+    }
 
     // カーソル移動速度倍率
     void AddCursorMoveScale(float scale)
@@ -228,19 +216,28 @@ public:
         m_cursorMoveScale *= scale;
     }
 
-    void SetInputScale(float x,float y)
+    //　反転カーソル入力スケール
+    void SetInversionInputScale(float x,float y)
     {
-        m_inputScale = Vector2(x, y);
+        m_inversioninputScale = Vector2(x, y);
     }
-
-    void SetInputOffset(float x, float y)
-    {
-        m_driftInputScale = Vector2(x, y);
-	}
 
     void SetMeatRange(float range)
     {
         m_meatRange = range;
+        DebugLogFloat("range", range);
+		DebugLogFloat("m_meatRange", m_meatRange);
+	}
+
+	// カーソル移動の遅延
+    void SetInputMoveScale(Vector2 scale)
+    {
+        m_inputdelayScale = scale;
+    }
+
+    void SetDelayFrag(bool flag)
+    {
+        m_isDelayFrag = flag;
 	}
 
     Vector3 GetMeetCursorPosition() const
@@ -253,10 +250,35 @@ public:
         return
             m_shakeCursorOffset +
             m_assistCursorOffset +
-            m_noiseCursorOffset+
-            m_driftCursorOffset+
+            m_noiseCursorOffset+            
             m_magnetCursorOffset;
     }
+
+	// カーソルオフセットリセット
+    void ResetCursorOffset()
+    {
+		m_shakeCursorOffset = Vector3::Zero;
+		m_assistCursorOffset = Vector3::Zero;
+		m_noiseCursorOffset = Vector3::Zero;
+		m_driftCursorOffset = Vector3::Zero;
+		m_magnetCursorOffset = Vector3::Zero;
+        m_inversioninputScale = Vector2(1.0f, 1.0f);
+        m_cursorMoveScale = 1.0f;
+        m_isDelayFrag = false;
+    }
+
+    Vector3 GetFinalCursorPosition() const
+    {
+        return
+            m_meetPosition
+            + GetFinalCursorOffset();
+    }
+
+
+    Vector2 GetInputScale() const
+    {
+        return m_inputScale;
+	}
 
     //=========================================================
     // bat control
@@ -287,16 +309,15 @@ public:
     // グルグルバット更新
     void RoundAndRoundBat();
 
+    void SetGuruGuruCount(int count)
+    {
+		m_guruGuruBatCount = 3*count;
+    }
+
     // 回転回数カウント
     void GuruGuruCountUP(float currentAngle);
 
     // 回転回数取得
-    int GetGuruGuruBatCount() const
-    {
-        return m_guruGuruBatCount;
-    }
-
-    // グルグル回数取得
     int GetGuruGuru() const
     {
         return m_guruGuruBatCount;
@@ -497,9 +518,10 @@ private:
     bool m_isCursorMode = true;
 
 	// カーソル入力スケール
-    Vector2 m_inputScale = Vector2(1.0f, 1.0f);
+	Vector2 m_inputScale = Vector2(1.0f, 1.0f);
 
-	Vector2 m_driftInputScale = Vector2(1.0f, 1.0f);
+	// 反転カーソル入力スケール
+    Vector2 m_inversioninputScale = Vector2(1.0f, 1.0f);
 
     // ミート位置
     Vector3 m_meetPosition;
@@ -531,7 +553,9 @@ private:
 	// ドリフトによるカーソルオフセットの減衰速度
 	Vector3 m_driftCursorOffset = Vector3::Zero;
 
-    std::deque<Vector3> m_inputHistory;
+	Vector2 m_inputdelayScale = Vector2(1.0f, 1.0f);
+
+    bool m_isDelayFrag = false;
 
     //=========================================================
     // bat
@@ -545,8 +569,13 @@ private:
     {
         0.0f,
         0.0f,
-        10.0f
+        100.0f
     };
+
+    Vector3 m_bodyCenter;      // 本体中心
+    Vector3 m_modelPos;     // モデルの半径
+    float   m_orbitAngle;      // 公転角度
+
 
     // 前回角度
     float m_prevAngle = 0.0f;

@@ -12,31 +12,33 @@ void DebuffDriftPattern::Update(Batter* batter)
 {
 	switch (m_type)
 	{
-	case Vertical:
-		VerticalDrift(batter);
-		break;
-	case Horizontal:
-		HorizontalDrift(batter);
-		break;
 	case Random:
 		RandomDrift(batter);
 		break;
 	default:
+		RandomDrift(batter);
 		break;
 	}
 }
 
-void DebuffDriftPattern::VerticalDrift(Batter* batter)
-{
-
-}
-
-void DebuffDriftPattern::HorizontalDrift(Batter* batter)
-{
-
-}
-
 void DebuffDriftPattern::RandomDrift(Batter* batter)
 {
+	UpdateTime();
+	AngleUpdate();
 
+	float rad = Math::DegToRad(m_angle);
+
+	float c = cosf(rad);
+	float s = sinf(rad);
+
+	Vector2 out;
+
+	float dynamicForce =
+		m_force *
+		(0.7f + sinf(m_waveTime * m_waveSpeed) * 0.3f);
+
+	out.x = c * dynamicForce;
+	out.y = s * dynamicForce;
+
+	batter->SetDriftCursorOffset(Vector3(out.x, out.y, 0.0f));
 }

@@ -17,14 +17,18 @@
 Game::~Game()
 {
 
-	DeleteGO(m_gameCamera);
-	DeleteGO(m_background);
-	DeleteGO(m_batter);
-	DeleteGO(m_pitcher);
-	DeleteGO(m_catcher);
-	DeleteGO(m_ball);
-	DeleteGO(m_skyCube);
-	DeleteGO(m_InGameUI);
+	if (m_gameCamera) DeleteGO(m_gameCamera);
+	if (m_background) DeleteGO(m_background);
+	if (m_batter)     DeleteGO(m_batter);
+	if (m_pitcher)    DeleteGO(m_pitcher);
+	if (m_catcher)    DeleteGO(m_catcher);
+	if (m_ball)       DeleteGO(m_ball);
+	if (m_skyCube)    DeleteGO(m_skyCube);
+	if (m_InGameUI)   DeleteGO(m_InGameUI);
+
+	// ★ Game内でNewGOしたカウントダウンUIもここで確実に道連れにする
+	auto start1 = FindGO<Start1>("start1");
+	if (start1) DeleteGO(start1);
 }
 
 
@@ -32,7 +36,7 @@ bool Game::Start()
 {
 
 	// ★ Load で作ったオブジェクトを取得するだけ
-	m_skyCube = FindGO<SkyCube>("skycube");
+	m_skyCube = FindGO<SkyCube>("skyCube");
 	m_background = FindGO<Background>("backGround");
 	m_gameCamera = FindGO<GameCamera>("gameCamera");
 	m_InGameUI = FindGO<InGameUI>("inGameUI");
@@ -67,7 +71,7 @@ void Game::Update()
 	int g = GetGuruguru();
 
 	// 5 の倍数になった瞬間だけ鳴らす
-	if (g > 0 && g % 5 == 0 && g != m_prevGuruGuru) {
+	if (g > 0 && g % 3 == 0 && g != m_prevGuruGuru) {
 
 		// ★ サウンドテストで SE 音量が 0 のときは鳴らさない
 		if (g_soundManager->m_seVolume > 0) {
@@ -121,6 +125,48 @@ void Game::Update()
 		return;
 	}
 
+	if (m_isReadyPhase) {
+
+		if (g_pad[0]->IsTrigger(enButtonB)) {
+			m_isReadyPhase = false;
+			m_readyTimer = 0.0f;
+
+			if (m_InGameUI) {
+				m_InGameUI->SetGuruGuruTimer(0.0f);
+			}
+			SetGameStarted(true);
+
+			Pitcher* pitcher = FindGO<Pitcher>("pitcher");
+			if (pitcher) {
+				pitcher->ResetThrow(); // 既存の初期化関数を呼んで Idle ＆ タイマー0に戻す
+			}
+
+			return; // スキップしたフレームはここで処理を抜ける
+		}
+
+		m_readyTimer -= g_gameTime->GetFrameDeltaTime();
+
+		if (m_InGameUI) {
+			m_InGameUI->SetGuruGuruTimer(m_readyTimer);
+		}
+
+		// 操作確認中もバッターのカーソル移動やアニメーションは動かす
+		if (m_batter) m_batter->Update(); // スティック操作などの更新を通す
+		if (m_pitcher) m_pitcher->m_modelRender[m_pitcher->m_UniformNumber].Update();
+		if (m_catcher) m_catcher->m_modelRender.Update(); // キャッチャーも動かす場合
+
+		// 5秒経過したら、本格的に1球目を開始する
+		if (m_readyTimer <= 0.0f) {
+			m_isReadyPhase = false; // フェードアウト
+			SetGameStarted(true);   // ここで初めてピッチャーの投球タイマーを動かす許可を出す
+
+			if (m_batter) {
+				m_batter->SetCursorMode(true); // カーソル操作モードを確定
+			}
+		}
+		return; // ⭕ 5秒間はここでUpdateを抜けることで、後続の「投球開始処理」へ進ませない
+	}
+
 	// ★ ヒットストップ処理（ゲーム全体を一瞬停止）
 	if (m_hitStopTimer > 0.0f) {
 		m_isHitStop = true;   // ← これが絶対必要！
@@ -137,10 +183,53 @@ void Game::Update()
 		m_isHitStop = false;  // ← 終わったら解除
 	}
 
+	// ★★★ パーフェクト確定演出中（2秒間） ★★★
+	if (m_isKakutei) {
+	
+		if (m_InGameUI) {
+			m_InGameUI->SetUIVisible(false);
+			m_InGameUI->SetFontVisble(false);
+			m_InGameUI->SetReplayVisible(false);
+			m_InGameUI->SetBaisokuVisible(false);
+			if (!m_InGameUI->m_isPerfectAnimActive) {
+				m_InGameUI->m_isPerfectAnimActive = true;
+				m_InGameUI->m_perfectAnimTimer = 0.0f; // タイマーを最初からリセット
+			}
+		}
+		m_kakuteiTimer -= g_gameTime->GetFrameDeltaTime();
+
+		if (m_kakuteiTimer <= 0.0f) {
+
+			m_isKakutei = false;
+			// 🌟【ここを追加】演出終了時にUI側のパーフェクトフラグも落とす
+			if (m_InGameUI) {
+				m_InGameUI->m_isPerfectAnimActive = false;
+			}
+			// カメラ凍結解除
+			if (m_gameCamera) {
+				m_gameCamera->UnfreezeCamera();
+			}
+
+			// 通常の打球追尾カメラへ戻す
+			m_cameraMode = Camera_BackBall;
+
+			// 集中線を消す
+			if (m_InGameUI) {
+				m_InGameUI->m_shuchusenTimer2 = 0.0f;
+			}
+		}
+
+		return;  // ← 2秒間はゲームロジック停止
+	}
+
 	if (m_InGameUI && m_InGameUI->IsFadingOut()) {
 		// ★ フェードアウト開始した瞬間だけ実行
 		if (!m_startFadeSE2) {
 			m_startFadeSE2 = true;
+
+			if (g_soundManager) {
+				g_soundManager->FadeOutSE2(2.5f);   // ← 0.7秒フェードアウト
+			}
 		}
 		m_timeScale = 1.0f;
 	}
@@ -180,6 +269,7 @@ void Game::Update()
 		m_InGameUI->SetUIVisible(true);
 		m_InGameUI->SetFontVisble(true);
 		m_InGameUI->SetReplayVisible(false);
+		m_InGameUI->SetBaisokuVisible(false);
 	}
 	else if (m_cameraMode == Camera_Ball || m_cameraMode == Camera_BackBall)
 	{
@@ -187,7 +277,7 @@ void Game::Update()
 		m_InGameUI->SetUIVisible(false);
 		m_InGameUI->SetFontVisble(true);
 		m_InGameUI->SetReplayVisible(false);
-		m_InGameUI->SetniceVisible(true);
+		m_InGameUI->SetBaisokuVisible(true);
 	}
 	else if (m_cameraMode == Camera_Replay)
 	{
@@ -195,7 +285,14 @@ void Game::Update()
 		m_InGameUI->SetUIVisible(false);
 		m_InGameUI->SetFontVisble(false);
 		m_InGameUI->SetReplayVisible(true);
+		m_InGameUI->SetBaisokuVisible(false);
 
+	}
+	else if (m_cameraMode == Camera_Kakutei) {
+		m_InGameUI->SetUIVisible(false);
+		m_InGameUI->SetFontVisble(false);
+		m_InGameUI->SetReplayVisible(false);
+		m_InGameUI->SetBaisokuVisible(false);
 	}
 	else if (m_batter->GetRotationSeen())
 	{
@@ -268,13 +365,16 @@ void Game::Update()
 
 			// ★ スイングだけは遅延中でも再生する
 			float swingSec = (m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex]) / 60.0f;
-			if (m_replaySwingTimer >= swingSec && !m_hasPlayedReplaySwing) {
+
+			// 【修正】m_hasSwung[m_bestShotIndex] が true（実際に振っていた）場合のみ再生
+			if (m_hasSwung[m_bestShotIndex] && m_replaySwingTimer >= swingSec && !m_hasPlayedReplaySwing) {
 				m_batter->PlaySwingAnimation();
 				m_hasPlayedReplaySwing = true;
 			}
 
 			return; // ← ボールはまだ動かさない
 		}
+
 		// ★★★ 遅延が終わった瞬間にボールを打った瞬間の位置へ戻す ★★★
 		if (!m_hasAppliedHitMoment) {
 			m_ball->SetPosition(m_hitStartPos[m_bestShotIndex]);
@@ -291,7 +391,8 @@ void Game::Update()
 
 		int swingTiming = m_bestSwingFrame - m_bestPitchFrame;
 
-		if (index == swingTiming) {
+		// 【修正】ここも実際に振っていた場合のみアニメーションを再生する
+		if (m_hasSwung[m_bestShotIndex] && index == swingTiming) {
 			m_batter->PlaySwingAnimation();
 			// ★★★ リプレイ時もスイング速度を通常と同じにする ★★★
 			m_batter->GetCharacterModel()
@@ -324,11 +425,6 @@ void Game::Update()
 		return;
 	}
 
-	// ★ SE2 フェードアウト（フェード演出中だけ）
-	if (m_startFadeSE2 && g_soundManager) {
-		g_soundManager->FadeOutSE2(0.003f);
-	}
-
 	// ★ 録画中は毎フレームカウンタを進める
 	if (m_isRecording) {
 		m_replayFrameCounter++;
@@ -337,6 +433,7 @@ void Game::Update()
 
 void Game::ResetForNextShot()
 {
+	m_startFadeSE2 = false;
 	m_isBallLanded = false;
 	m_afterLandingTimer = 0.0f;
 	m_zeroDistanceTimer = 0.0f;
@@ -366,6 +463,10 @@ void Game::ResetForNextShot()
 
 	if (m_batter) {
 		m_batter->SetCursorMode(true);
+	}
+
+	if (m_shots < 3) {
+		m_hasSwung[m_shots] = false;
 	}
 }
 
@@ -567,13 +668,19 @@ void Game::GoToResult()
 	if (hasScore && g_soundManager->m_seVolume > 0) {
 		g_soundManager->PlaySE(enSound_SE2);
 	}
+
+	auto start1 = FindGO<Start1>("start1");
+	if (start1) DeleteGO(start1);
+
+	auto pause = FindGO<PauseUI>("pause");
+	if (pause) DeleteGO(pause);
+
 	int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
 	Result* result = NewGO<Result>(0);
 	result->SetResultValues(m_guruguru, best, m_scores);
 	DeleteGO(this);
 }
 
-// Game.cpp に実装を追加
 void Game::StartEndFade()
 {
 	if (!m_InGameUI) {
@@ -582,6 +689,11 @@ void Game::StartEndFade()
 	}
 
 	m_InGameUI->StartFadeOut(0.5f);
+
+	// ★★★ 3球目リプレイ用：SE2 をここでもフェードアウト開始 ★★★
+	if (g_soundManager) {
+		g_soundManager->FadeOutSE2(2.0f);   // ← あなたの好きな秒数
+	}
 
 	m_InGameUI->m_onFadeOutFinished = [this]() {
 

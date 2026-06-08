@@ -10,6 +10,7 @@ bool LoadUI::Start()
        "Assets/sprite/tip03.dds",
        "Assets/sprite/tip04.dds",
        "Assets/sprite/tip05.dds",
+       "Assets/sprite/tip06.dds",
     };
 
     for (auto& file : tipFiles) {
@@ -103,11 +104,12 @@ void LoadUI::Update()
     case 1:
     case 2:
     case 3:
+    case 4:
         m_sannkaku.SetMulColor({ 1,1,1,1 });
         m_gyakusann.SetMulColor({ 1,1,1,1 }); // óºï˚
         break;
 
-    case 4:
+    case 5:
         m_gyakusann.SetMulColor({ 1,1,1,1 }); // ç∂ÇæÇØ
         break;
     }

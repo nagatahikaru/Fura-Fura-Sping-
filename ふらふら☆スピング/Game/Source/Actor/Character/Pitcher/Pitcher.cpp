@@ -132,6 +132,19 @@ void Pitcher::Update()
 		return;   // ← これで投球アニメが途中で停止する
 	}
 
+	// 🌟【ここを追加】5秒間の操作確認フェーズ中は、ピッチャーの処理を完全にストップさせる
+	if (game && game->m_isReadyPhase) {
+		// アニメーションの更新（Idle）だけは行い、タイマー更新や投球判定には進ませない
+		m_modelRender[m_UniformNumber].Update();
+		return;
+	}
+
+	// 🌟【ここも注意】ゲームがまだ始まっていない（ぐるぐる中など）もタイマーを進めない
+	if (game && !game->IsGameStarted()) {
+		m_modelRender[m_UniformNumber].Update();
+		return;
+	}
+
 	Batter* batter = FindGO<Batter>("batter");
 	if (batter && batter->GetRotationSeen()) {
 		SetPlayAnimation(enAnimationClip_Idle);

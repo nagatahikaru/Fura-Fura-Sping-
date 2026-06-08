@@ -16,7 +16,8 @@ enum CameraMode
 	Camera_Catcher,
 	Camera_Replay,
 	Camera_Ball,
-	Camera_BackBall
+	Camera_BackBall,
+	Camera_Kakutei
 };
 
 class Game : public Source
@@ -35,7 +36,8 @@ public:
 	void GoToResult();
 	void OnBallLanded();
 	bool m_isPaused = false;
-
+	GameCamera* GetGameCamera() const { return m_gameCamera; }
+	CameraMode GetCameraMode() const { return m_cameraMode; }
 	int GetGuruguru()const{
 		return  m_guruguru;
 	}
@@ -68,7 +70,6 @@ public:
 		return m_cameraType;
 	}
 	float GetTimeScale() const { return m_timeScale; }
-	GameCamera* GetGameCamera() const { return m_gameCamera; }
 	void ResetForNextShot();
 	bool m_canFastForward = false;
 	float m_hitStopTimer = 0.0f;
@@ -101,6 +102,8 @@ public:
 			m_swingFrame[shotIndex] = frame;
 		}
 	}
+	void SetHasSwung(int shotIndex, bool swung) { m_hasSwung[shotIndex] = swung; }
+	bool GetHasSwung(int shotIndex) const { return m_hasSwung[shotIndex]; }
 	int GetReplayFrameCount() const;
 	void StartReplayRecording();
 	int GetShots() const { return m_shots; }
@@ -120,6 +123,11 @@ public:
 	float m_hitStartZ = 0.0f;
 	bool m_hasStartedDistance = false;
 	bool m_isHomeRun = false;
+	float m_replayDelayTimer = 0.0f;    // リプレイ開始までの遅延タイマー
+	float m_readyTimer = 5.0f;
+	bool m_isReadyPhase = false;
+	bool m_isKakutei = false;
+	float m_kakuteiTimer = 0.0f;
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。
@@ -159,7 +167,6 @@ private:
 	int m_replayPitchFrame = 0;
 	bool m_isRecording = false;
 	int m_replayDelayFrames = 0;
-	float m_replayDelayTimer = 0.0f;    // リプレイ開始までの遅延タイマー
 	float m_replayAccumulator = 0.0f;   // 再生速度制御用のアキュムレータ
 	float m_replaySwingTimer = 0.0f;
 	bool m_hasPlayedReplaySwing = false;  // ★ リプレイ中にスイングを1回だけ再生するためのフラグ
@@ -169,5 +176,7 @@ private:
 	bool m_hasAppliedHitMoment = false;
 	bool m_startFadeSE2 = false;
 	int m_prevGuruGuru = 0;
+	bool m_hasSwung[3] = { false, false, false };
+	
 };
 

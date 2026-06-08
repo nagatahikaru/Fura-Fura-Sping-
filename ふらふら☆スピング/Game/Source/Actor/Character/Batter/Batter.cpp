@@ -9,6 +9,7 @@
 #include "Source/Actor/GameCamera/GameCamera.h"
 #include "Debuff/DebuffStage/DebuffStage.h"
 #include <algorithm> // 追加
+#include <deque>
 
 
 // ファイル冒頭付近に追加（std::clampが使えない場合のため）
@@ -114,6 +115,9 @@ bool Batter::Start()
 	m_characterController.SetPosition(m_transform.m_position);
 	m_initialRotation = m_transform.m_rotation;
 
+	m_bodyCenter = BatterBasicSettings::INITIAL_COORDINATE;
+	m_orbitAngle = 0.0f;
+
 	m_guruGuruBatTimer = 5.0f;
 
 	m_collisionObject = new CollisionObject;
@@ -183,62 +187,63 @@ void Batter::Update()
 
 /** 回転計算処理関数 */
 void Batter::Rotation()
-{
-	//キーボード操作
+{	
+//	if (g_pad[0]->IsTrigger(enButtonA))
+//	{
+//		m_guruGuruBatCount++; // 連打でカウントを増やす
+//
+//		// 各種マネージャーやUIに即座に通知
+//		m_game->SetGuruGuru(m_guruGuruBatCount);
+//		if (m_inGameUI) {
+//			m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
+//		}
+//	}
+//
+//	// 棒立ちを防ぐために、見た目だけ自動で回転させる処理
+//	static float dummyAngle = 0.0f;
+//	dummyAngle += 720.0f * g_gameTime->GetFrameDeltaTime(); // 毎秒2回転
+//	if (dummyAngle >= 360.0f) dummyAngle -= 360.0f;
+//
+//	float rad = dummyAngle * 3.14159265f / 180.0f;
+//	m_facingDir.x = cosf(rad);
+//	m_facingDir.z = sinf(rad);
+//	m_facingDir.y = 0.0f;
+//	m_facingDir.Normalize();
+//
+//	m_modelPos = m_bodyCenter; // 位置は中心固定
+
+
+	//////////////////////////
 	//コントローラー操作
-	if(ERROR_DEVICE_NOT_CONNECTED != ERROR_SUCCESS)
+	//左スティックの入力量を取得
+	Vector3 stickL = Vector3::Zero;
+	stickL.x = g_pad[0]->GetLStickXF();
+	stickL.y = g_pad[0]->GetLStickYF();
+
+	float inputAngle = atan2f(stickL.y, stickL.x); // 入力角度を計算
+
+	float radius = 230.0f; // 回転半径
+	// 入力角度に基づいてバッターの位置を更新
+	m_modelPos.x = m_bodyCenter.x + radius * cosf(inputAngle);
+	m_modelPos.y = m_bodyCenter.y;
+	m_modelPos.z = m_bodyCenter.z + radius * sinf(inputAngle);
+
+	// バッターの位置を更新
+	Vector3 toCenter = m_bodyCenter - m_modelPos;
+	toCenter.y = 0.0f; // 水平方向のみに制限
+	toCenter.Normalize();
+
+	//回転処理
+	const float kEps = 0.001f;
+
+	if (toCenter.Length() > kEps)
 	{
-		//xzの移動速度を0.0fにする
-		m_transform.m_moveSpeed.x = BatterBasicSettings::NONE_SPEED;
-		m_transform.m_moveSpeed.z = BatterBasicSettings::NONE_SPEED;
+		toCenter.Normalize();
 
-		//左スティックの入力量を取得
-		Vector3 stickL = Vector3::Zero;
-		stickL.x = g_pad[0]->GetLStickXF();
-		stickL.y = g_pad[0]->GetLStickYF();
-
-		//カメラの前方向と右方向のベクトルを持って来る。
-		Vector3 forward = g_camera3D->GetForward();
-		Vector3 right = g_camera3D->GetRight();
-		//ｙ方向には移動させない
-		forward.y = BatterBasicSettings::NONE_SPEED;
-		right.y = BatterBasicSettings::NONE_SPEED;
-
-		//左スティックの入力量と200.0fを乗算
-		right *= stickL.x * BatterBasicSettings::BASICS_SPEED;
-		forward *= stickL.y * BatterBasicSettings::BASICS_SPEED;
-
-		//移動速度にスティックの入力量を加算する。
-		m_transform.m_moveSpeed += right + forward;
-
-
-		//回転処理
-		Vector3 ford = m_transform.m_moveSpeed;
-		ford.y = 0.0f;
-
-		const float kEps = 0.001f;
-		if (ford.Length() > kEps) {
-			// 移動があるときだけ向きを更新する
-			ford.Normalize();
-			m_facingDir = ford; // last non-zero direction を保持
-		}
+		// 向きは「中心を見る」
+		m_facingDir = toCenter;
 	}
-	else
-	{
-		float lx = g_pad[0]->GetLStickXF();
-		float ly = g_pad[0]->GetLStickYF();
 
-		Vector3 dir;
-		dir.x = lx;
-		dir.z = ly;
-		dir.y = 0.0f;
-
-		if (dir.Length() > 0.1f)
-		{
-			dir.Normalize();
-			m_facingDir = dir;
-		}
-	}
 	float currentAngle = atan2f(m_facingDir.x, m_facingDir.z) * 180.0f / 3.14159265f;
 	GuruGuruCountUP(currentAngle);
 }
@@ -261,7 +266,9 @@ void Batter::RoundAndRoundBat()
 		m_guruGuruBatTimer = 0.0f;
 		SetRotationSeen(false);
 		m_game->SetRotationSeen(false);
-		m_game->SetGameStarted(true);
+		//m_game->SetGameStarted(true);
+		m_game->m_isReadyPhase = true;
+		m_game->m_readyTimer = 5.0f; // 5秒にセット
 		m_characterModel->Update();
 	}
 }
@@ -302,31 +309,33 @@ void Batter::GuruGuruCountUP(float currentAngle)
 /** モデルの回転処理 */
 void Batter::RotationUpdate()
 {
-	//回転処理の更新
-	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir); // m_rotationAngle はメンバ変数などから取得
-
-	// オフセットを考慮した位置の補正計算
-	Vector3 pivot = m_transform.m_position - pivotOffset;
-	newPosition = pivot + pivotOffset;
-	
 	//　フラグが立っているときは回転を適用、そうでないときは初期回転に戻す
 	if (m_isRotation)
 	{	
-		m_characterModel->SettRotation(m_transform.m_rotation);
+		float yaw = atan2f(m_facingDir.x, m_facingDir.z);
+
+		// 90度補正
+		yaw += Math::DegToRad(90.0f);
+
 		Quaternion rot;
-		rot.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 230.0f);
+		rot.SetRotationY(yaw);
+		m_characterModel->SetPosition(m_modelPos);
+		m_characterModel->SettRotation(rot);
+
+		Quaternion weaponrot;
+		weaponrot.SetRotationDeg(Vector3(0.0f, 0.0f, 1.0f), 230.0f);
 		m_characterModel->SetWeaponRotation(true);
-		m_characterModel->SetWeaponRotation(rot);
-		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y + 250.0f, m_transform.m_position.z));
+		m_characterModel->SetWeaponRotation(weaponrot);
+		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y + 200.0f, m_transform.m_position.z));
 	
 	}
 	else
 	{
 		m_characterModel->SettRotation(m_initialRotation);
+		m_characterModel->SetPosition(m_transform.m_position);
 		m_characterModel->SetWeaponRotation(false);
 	}
-
-	m_characterModel->SetPosition(newPosition);
+	
 	m_characterModel->Update();
 }
 
@@ -338,8 +347,8 @@ void Batter::SetCursorPosition()
 {
 	float dt = 1.0f / 60.0f;
 
-	float lx = g_pad[0]->GetLStickXF();
-	float ly = g_pad[0]->GetLStickYF();
+	m_inputScale.x = g_pad[0]->GetLStickXF();
+	m_inputScale.y = g_pad[0]->GetLStickYF();
 
 	// 毎フレームリセット
 	m_cursorOffset = Vector3::Zero;
@@ -347,15 +356,26 @@ void Batter::SetCursorPosition()
 	if (m_isCursorMode)
 	{
 		Vector3 move;
-		move.x = lx * m_inputScale.x*m_driftInputScale.x;
-		move.y = ly * m_inputScale.y*m_driftInputScale.y;
-		move.z = 0.0f;
+		if (m_isDelayFrag)
+		{
+			move.x = m_inputdelayScale.x * m_inversioninputScale.x;
+			move.y = m_inputdelayScale.y * m_inversioninputScale.y;
+			move.z = 0.0f;
+		}
+		else
+		{
+			move.x = m_inputScale.x * m_inversioninputScale.x;
+			move.y = m_inputScale.y * m_inversioninputScale.y;
+			move.z = 0.0f;
+		}
 
 		float speed =
 			500.0f * m_cursorMoveScale;
 
+		Vector3 driftmove = move + m_driftCursorOffset;
+
 		// プレイヤー入力だけ
-		m_meetPosition += move * speed * dt;
+		m_meetPosition += driftmove * speed * dt;
 
 		m_meetPosition.x =
 			clamp(m_meetPosition.x, -300.0f, 300.0f);
@@ -365,10 +385,8 @@ void Batter::SetCursorPosition()
 	}
 
 	// デバフ適用後の最終座標
-	Vector3 finalOffset = GetFinalCursorOffset();
-
-	Vector3 finalPos =
-		m_meetPosition + finalOffset;
+	Vector3 finalPos = GetFinalCursorPosition();
+		
 
 	m_inGameUI->SetMeetCursorPosition(finalPos);
 }
@@ -378,11 +396,8 @@ Vector3 Batter::CalcCursorWorldPos()
 {
 	float screenW = 1920.0f;
 	float screenH = 1080.0f;
-	Vector3 finalOffset = GetFinalCursorOffset();
+	Vector3 finalPos = GetFinalCursorPosition();
 
-
-	Vector3 finalPos =
-		m_meetPosition + finalOffset;
 	// UI座標（中心基準なら変換必要）
 	float mouseX =
 		finalPos.x + screenW * 0.5f;
@@ -426,7 +441,7 @@ void Batter::HitBat()
 	Vector3 ballPos = m_ball->GetPosition();
 
 	// ① Z制限（打撃ゾーン）
-	if (ballPos.z < 6060.0f || ballPos.z > 6080.0f) return;
+	if (ballPos.z < 6060.0f || ballPos.z > 6090.0f) return;
 	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
 	// ② カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
@@ -434,7 +449,7 @@ void Batter::HitBat()
 
 	// ③ 距離判定
 	float dist = (ballPos - cursor).Length();
-
+	DebugLogFloat("Hit判定距離", m_meatRange);
 	if (dist < m_meatRange)
 	{
 		Vector3 hitDir = ballPos - cursor;
@@ -502,8 +517,19 @@ void Batter::HitBat()
 			m_game->m_canFastForward = true;
 		}
 		if (!m_game->m_isPaused && g_soundManager) {
-			g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
-			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 100.0f);
+			// ★ 確定演出（パーフェクト）かどうかで鳴らすSEを切り替える
+			if (m_game && m_game->m_isKakutei) {
+				// 確定演出の時だけSE15を再生
+				g_soundManager->PlaySE(Sound::enSound_SE15, 100.0f);
+			}
+			else {
+				// 通常ヒット時は今までのSEを再生
+				g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
+			}
+
+			// パキーンという強い打撃音（SE2）は共通、あるいはここもお好みで調整してください
+			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 300.0f);
+			if (se2) se2->SetVolume(3.0f);
 			se2->SetName("SE2");
 		}
 	}
@@ -559,16 +585,21 @@ void Batter::ResetSwing()
 /** 演出関連コード */
 void Batter::EffectUpdate()
 {	
-	if (m_guruGuruBatCount < 5) return;
+	if (m_guruGuruBatCount < 3) return;
 
 	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)){		
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
 	
 	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
+	EffectType type = static_cast<EffectType>(m_guruGuruBatCount/3);
+	if (type >= 10)
+	{
+		type = enEffect_DownArrow10; // 上限を10に設定
+	}
 
 	m_inro.m_effectDawnID = g_effectManager->PlayEffect(
-		enEffect_DownArrow,
+		type,
 		pos,
 		Vector3(15.0f, 40.0f, 15.0f));
 }

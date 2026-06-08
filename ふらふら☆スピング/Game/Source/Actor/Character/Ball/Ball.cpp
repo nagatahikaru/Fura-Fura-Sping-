@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include"Source/Scene/InGame/Game.h"
 #include"Source/UI/InGameUI/InGameUI.h"
+#include "Source/Effect/EffectManager.h"
 #include"Source/Sound/SoundManager.h"
+#include "Source/Actor/GameCamera/GameCamera.h"  
 
 Ball::Ball()
 {
@@ -81,7 +83,20 @@ void Ball::Update()
         {
             m_velocity.y -= 13.5f * dt;
 
-            m_position += m_velocity * dt;
+            //  1. 元の m_velocity を破壊しないよう、このフレーム専用の速度変数を作る
+            Vector3 currentFrameVelocity = m_velocity;
+
+            // 2. スローボールかつ打撃前で、バッター手前に来たら一時変数の速度だけを半分にする
+            if (!m_hasHit && m_ballType == SlowBall)
+            {
+                if (m_position.z >= 5450.0f && m_position.z < 6500.0f)
+                {
+                    currentFrameVelocity *= 0.4f;
+                }
+            }
+
+            // 3. 安全に計算された currentFrameVelocity を使って座標を移動させる
+            m_position += currentFrameVelocity * dt;
 
             if (!m_hasHit)
             {
@@ -274,25 +289,49 @@ void Ball::Throw(const Vector3& targetPos)
     {
         m_isMagicBall = false; // 90%は通常球
     }
-    int type = rand() % 4;
-
-    switch (type)
+    //デバック用スローボール
+  /*  if (rand() % 2 == 0)
     {
-    case 0:
+        m_ballType = SlowBall;
+    }
+    else
+    {
         m_ballType = Straight;
-        break;
+    }*/
 
-    case 1:
+    // 【確率調整】0〜99の乱数を取得
+    int rate = rand() % 100;
+
+    if (rate < 24)
+    {
+        // 0〜23（24%の確率）でストレート
+        m_ballType = Straight;
+    }
+    else if (rate < 46)
+    {
+        // 24〜45（22%の確率）で左右に揺れる
         m_ballType = ShakeHorizontal;
-        break;
-
-    case 2:
+    }
+    else if (rate < 56)
+    {
+        // 46〜55（10%の確率）でスローボール
+        m_ballType = SlowBall;
+    }
+    else if (rate < 78)
+    {
+        // 56〜77（22%の確率）で上下に揺れる
         m_ballType = ShakeVertical;
-        break;
-
-    case 3:
+    }
+    else
+    {
+        // 78〜99（22%の確率）でカーブ
         m_ballType = Curve;
-        break;
+    }
+
+    //スローボールに魔球を追加しない
+    if (m_ballType == SlowBall)
+    {
+        m_isMagicBall = false;
     }
 
     //カーブ
@@ -379,6 +418,32 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
             ui->ResetBatAndMeetOnly();
         }
     }
+    // ★ 打った瞬間の予測距離を計算
+    float predicted = PredictLandingDistance();
+    if (game) {
+
+        // ★ パーフェクト閾値（あなたのUIと合わせる）
+        bool isPerfect = (predicted >= 51500.0f);
+
+        if (isPerfect) {
+
+            // ★ 確定演出フラグON
+            game->m_isKakutei = true;
+            game->m_kakuteiTimer = 1.0f;
+
+            GameCamera* cam = game->GetGameCamera();
+            if (cam) {
+                cam->SetkakuteiCamera();
+                cam->FreezeCamera();
+            }
+
+            // ★ 集中線を出し続ける
+            InGameUI* ui = game->GetInGameUI();
+            if (ui) {
+                ui->m_shuchusenTimer = 9999.0f;
+            }
+        }
+    }
 }
 
 float Ball::PredictLandingDistance()
@@ -415,6 +480,10 @@ void Ball::ResetBall()
     m_hasShownPrediction = false;
     m_hasPlayedSE6 = false;
     m_isMagicBall = false;
+    m_hasPlayedDisappearEffect = false;
+    m_hasPlayedReappearEffect = false;
+    m_ballType = Straight;
+    m_curveDir = 0;
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
     if (game) {
@@ -427,22 +496,88 @@ void Ball::ResetBall()
 
 void Ball::Render(RenderContext& rc)
 {
+    Game* game = FindGO<Game>("game");
+
+    // 【追加】リプレイ中の特殊な非表示・表示ルール
+    if (game && game->m_isReplayPlaying)
+    {
+        // 打った後は無条件で必ず描画する
+        if (m_hasHit)
+        {
+            m_modelRender.Draw(rc);
+            return;
+        }
+
+        if (game->m_replayDelayTimer > 0.0f)
+        {
+            return;
+        }
+
+        // 2. 打撃ゾーン（Z=7000）に到達するまでは消す（消える魔球演出の再現など）
+        if (m_position.z > 6500.0f)
+        {
+            return;
+        }
+        // --- ここまで ---
+
+        // 上記の非表示条件を抜けたら描画する（打つ直前の僅かな瞬間など）
+        m_modelRender.Draw(rc);
+        return;
+    }
+
+    // ★ 魔球の消える瞬間（Update側で1回だけ）
+    if (m_isMagicBall && !m_hasHit)
+    {
+        if (!m_hasPlayedDisappearEffect &&
+            m_position.z >= 5200.0f)
+        {
+            g_effectManager->PlayEffect(
+                enEffect_kemuri,
+                m_position,
+                Vector3(20.0f, 20.0f, 20.0f)
+            );
+            g_soundManager->PlaySE(enSound_SE14);
+
+            m_hasPlayedDisappearEffect = true;
+        }
+    }
+
+    // ★ 魔球が再出現した瞬間のエフェクト
+    //if (m_isMagicBall && !m_hasHit)
+    //{
+    //    // 消えていた区間を抜けた瞬間（Z >= 6000）
+    //    if (m_hasPlayedDisappearEffect && !m_hasPlayedReappearEffect)
+    //    {
+    //        if (m_position.z >= 6000.0f)
+    //        {
+    //            g_effectManager->PlayEffect(
+    //                enEffect_kemuri,
+    //                m_position,
+    //                Vector3(10.0f, 10.0f, 10.0f)
+    //            );
+    //            g_soundManager->PlaySE(enSound_SE14);
+    //            m_hasPlayedReappearEffect = true; // 二重発火防止
+    //        }
+    //    }
+    //}
+
+
     if (!m_hasHit)
     {
         if (m_isMagicBall)
         {
-            if (m_throwTimer < 1.2f)
+            if (m_throwTimer < 0.9f)
             {
-                return; 
+                return;
             }
-            if (m_position.z >= 5000.0f && m_position.z < 6000.0f)
+            if (m_position.z >= 5200.0f && m_position.z < 6000.0f)
             {
-                return; 
+                return;
             }
         }
         else
         {
-            if (m_throwTimer < 1.2f)
+            if (m_throwTimer < 0.9f)
             {
                 return;
             }
@@ -455,6 +590,6 @@ void Ball::Render(RenderContext& rc)
         }
     }
 
-    // モデルの描画（打った後は無条件でここに来るため、必ず描画されます）
+    // モデルの描画（通常プレイで打った後は無条件でここに来る）
     m_modelRender.Draw(rc);
 }
