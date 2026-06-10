@@ -631,8 +631,17 @@ void InGameUI::Render(RenderContext& rc) {
 			m_strikeSprite.Draw(rc);
 		}
 
+		bool shouldShowStageUI = false;
+		if (game) {
+			bool isReadyPhase = game->m_isReadyPhase; // 操作確認フラグを取得
+			bool isCatcherAndNotGuruGuru = (game->GetCameraMode() == Camera_Catcher && m_guruGuruTimer <= 0.0f);
+
+			if (isReadyPhase || isCatcherAndNotGuruGuru) {
+				shouldShowStageUI = true;
+			}
+		}
 		// ★ 3回以上でスプライト表示
-		if (isReadyPhase || m_guruGuruTimer <= 0.0f && m_guruGuruCount >= 3) {
+		if (shouldShowStageUI && m_guruGuruCount >= 3) {
 
 			m_guruguruSprite.SetMulColor({ 1,1,1,1 }); // 表示
 			m_guruguruSprite.SetPosition(Vector3{ 0.0f,465.0f, 0.0f });
@@ -650,7 +659,7 @@ void InGameUI::Render(RenderContext& rc) {
 		int stage = clamp((m_guruGuruCount - 3) / 3, 0, 9);
 
 		// ★ 3回未満は何も表示しない
-		if (isReadyPhase || m_guruGuruTimer <= 0.0f && m_guruGuruCount >= 3)
+		if (shouldShowStageUI && m_guruGuruCount >= 3)
 		{
 			const wchar_t* stageText = m_stageTextList[stage];
 
