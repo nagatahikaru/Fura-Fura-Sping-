@@ -169,14 +169,13 @@ void Game::Update()
 
 	// ★ ヒットストップ処理（ゲーム全体を一瞬停止）
 	if (m_hitStopTimer > 0.0f) {
-		m_isHitStop = true;   // ← これが絶対必要！
 		m_hitStopTimer -= g_gameTime->GetFrameDeltaTime();
-
-		// 画面が止まっている間も、キャラクターの見た目（骨組み）だけは毎フレーム更新しておく
-		if (m_batter) m_batter->GetCharacterModel()->Update();
-		if (m_pitcher) m_pitcher->AnimationUpdate();
-
-		return; // ★ これでゲーム全体が停止する
+		if (m_hitStopTimer <= 0.0f) {
+			m_isHitStop = false;
+			m_hitStopTimer = 0.0f;
+		}
+		// ★ ここにあった return; を消去！
+		// return をしないことで、この後にある m_ball->SetPosition(path[index]) まで処理が到達します。
 	}
 	else {
 		m_isHitStop = false;  // ← 終わったら解除
@@ -218,7 +217,9 @@ void Game::Update()
 			}
 		}
 
-		return;  // ← 2秒間はゲームロジック停止
+		if (!m_isReplayPlaying) {
+			return;  // 通常プレイ時は従来どおりゲームロジックを完全停止する
+		}
 	}
 
 	if (m_InGameUI && m_InGameUI->IsFadingOut()) {
@@ -235,10 +236,10 @@ void Game::Update()
 	else if (!m_hasTriggered100m) {
 		// ★ 100m演出前だけ倍速を許可
 		if (m_canFastForward && g_pad[0]->IsPress(enButtonB)) {
-			m_timeScale = 10.0f;
+			m_timeScale = 15.0f;
 		}
 		else if (m_canFastForward) {
-			m_timeScale = 5.0f;
+			m_timeScale = 7.5f;
 		}
 		else {
 			m_timeScale = 1.0f;
@@ -587,7 +588,7 @@ void Game::StartReplay(int index)
 	m_replayTimer = 0.0f;
 	m_hasAppliedHitMoment = false;
 	// ▼ 追加：タイマーとアキュムレータの初期化
-	m_replayDelayTimer = 1.56f;  // 1.5秒待機
+	m_replayDelayTimer = 1.3f;  // 1.5秒待機
 	m_replayAccumulator = 0.0f; // アキュムレータ初期化
 	m_cameraMode = Camera_Replay;
 	m_currentReplay = m_replayPaths[index];

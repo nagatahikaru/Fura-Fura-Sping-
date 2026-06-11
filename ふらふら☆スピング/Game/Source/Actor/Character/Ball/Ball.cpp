@@ -107,17 +107,17 @@ void Ball::Update()
             Vector3 currentFrameVelocity = m_velocity;
 
             // 2. スローボールかつ打撃前で、バッター手前に来たら一時変数の速度だけを半分にする
-            if (!m_hasHit && m_ballType == SlowBall&& !isReplay)
+          // スローボールかつ打撃前で、バッター手前に来たときの処理
+            if (!m_hasHit && m_ballType == SlowBall)
             {
                 if (m_position.z >= 5450.0f && m_position.z < 6500.0f)
                 {
-                    currentFrameVelocity *= 0.4f;
-                }
-            }
-            else if (isReplay) {
-                if (m_position.z >= 5450.0f && m_position.z < 6500.0f)
-                {
-                    currentFrameVelocity *= 1.0f;
+                    if (!isReplay) {
+                        currentFrameVelocity *= 0.4f; // 通常プレイ時は減速
+                    }
+                    else {
+                        currentFrameVelocity *= 1.0f; // リプレイ時は等速
+                    }
                 }
             }
             // 3. 安全に計算された currentFrameVelocity を使って座標を移動させる
@@ -169,7 +169,7 @@ void Ball::Update()
                     }
 
                     // ★ 空中で100m超えた瞬間にイベント発火
-                    if (!game->m_hasTriggered100m && distance >= 10800.0f) {
+                    if (!game->m_hasTriggered100m && distance >= 11500.0f) {
                         game->OnOver100m();
                         game->m_hasTriggered100m = true;
                     }
@@ -272,7 +272,7 @@ void Ball::Update()
      t = fmaxf(0.0f, fminf(t, 1.0f));
 
      // --- スケール計算 ---
-     float startScale = 6.0f; // ピッチャーリリース時の視認用サイズ（大きい）
+     float startScale = 5.5f; // ピッチャーリリース時の視認用サイズ（大きい）
      float finalScale = 2.5f;  // バッター手前での本来のサイズ（小さい）
 
      // t=0.0(ピッチャー) のときは startScale、t=1.0(バッター) のときは finalScale になる線形補間
@@ -283,20 +283,27 @@ void Ball::Update()
     }
    else {
 
-       // 1. ヒットストップ中なら、ボールの「骨組み（アニメーション等）」の更新だけで移動計算は一切しない
-      /* if (game->m_isHitStop) {
-           m_modelRender.Update();
-           return;
-       }*/
-       // ★ リプレイ中だけ高さを下げる
-       //Vector3 loweredPos = m_position;
-       //loweredPos.x -= 100.0f;   // ← 左に寄せる（右に寄せたいなら + にする）
-       //loweredPos.y -= 280.0f;   // ← 好きな値に調整
-       //m_modelRender.SetPosition(loweredPos);
+       // ★ リプレイ中の位置・高さ調整
+       Vector3 loweredPos = m_position;
+
+       // ピッチャーマウンド(1000)からバッターボックス(6200)までの進捗率(0.0 〜 1.0)を計算
+       float minZ = 1000.0f;
+       float maxZ = 6200.0f;
+       float t = (m_position.z - minZ) / (maxZ - minZ);
+       t = fmaxf(0.0f, fminf(t, 1.0f)); // 0.0〜1.0にクランプ
+
+       // いつでも左に寄せる処理（必要なければ 0.0f にしてください）
+       loweredPos.x -= 100.0f;
+
+       // ★ バッターに近づくほど、徐々に指定の高さ（-280.0f）へ沈み込ませる
+       // t=0(投げた瞬間) はそのままの高さ、t=1(打たれる場所) でジャスト -280.0f 下がります
+       loweredPos.y -= 290.0f * t;
+
+       m_modelRender.SetPosition(loweredPos);
+
        // 2. リプレイ中のボール拡大処理
        float replayScale = 13.0f;
        m_modelRender.SetScale({ replayScale, replayScale, replayScale });
-
     }
 
     // ★ UI に毎フレーム位置を送る（必須）
@@ -396,6 +403,7 @@ void Ball::Throw(const Vector3& targetPos)
     // ★ 投げた瞬間の Z を UI に送る（必須）
     Game* game = FindGO<Game>("game");
     if (game) {
+        game->m_isKakutei = false;
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
             ui->SetStartZ(m_position.z);
@@ -459,16 +467,16 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     // ★ 打った瞬間の予測距離を計算
     float predicted = PredictLandingDistance();
     if (game) {
-
+        bool isReplay = game->m_isReplayPlaying;
         // ★ パーフェクト閾値（あなたのUIと合わせる）
         bool isPerfect = (predicted >= 51500.0f);
 
-        if (isPerfect) {
+        if (isPerfect&& !isReplay) {
 
             // ★ 確定演出フラグON
             game->m_isKakutei = true;
             game->m_kakuteiTimer = 1.0f;
-
+            game->m_timeScale = 7.0f;
             GameCamera* cam = game->GetGameCamera();
             if (cam) {
                 cam->SetkakuteiCamera();
