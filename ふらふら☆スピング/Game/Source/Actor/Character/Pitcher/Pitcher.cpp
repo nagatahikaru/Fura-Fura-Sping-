@@ -106,6 +106,8 @@ bool Pitcher::Start()
 	m_timer = 0.0f;
 	m_isThrowing = false;
 
+	m_modelRender->SetPosition(Vector3{ 0.0f,150.0f,1100.0f });
+
 	return true;
 }
 
@@ -168,7 +170,6 @@ void Pitcher::Update()
 			m_isThrowing = false;
 		}
 	}
-	//m_modelRender->SetPosition(Vector3{ 0.0f,150.0f,1100.0f });
 	m_modelRender[m_UniformNumber].Update();
 }
 
