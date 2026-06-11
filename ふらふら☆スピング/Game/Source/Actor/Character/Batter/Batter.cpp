@@ -441,8 +441,23 @@ void Batter::HitBat()
 	Vector3 ballPos = m_ball->GetPosition();
 
 	// ① Z制限（打撃ゾーン）
-	if (ballPos.z < 6060.0f || ballPos.z > 6090.0f) return;
-	//if (ballPos.z < 500.0f || ballPos.z>5600.0f)return;
+	if (ballPos.z < 6070.0f || ballPos.z > 6090.0f) return;
+
+	const float JUST_Z = 6080.0f;       // ちょうど真ん中（ジャスト）
+	const float MAX_DIST = 10.0f;        // 真ん中から端までの最大距離 (6080 - 6075)
+
+	// 真ん中からどれだけ離れているか（0.0 〜 5.0）
+	float timingDiff = fabs(ballPos.z - JUST_Z);
+
+	// 離れ具合を 0.0（真ん中）〜 1.0（一番端）に正規化
+	float timingRatio = timingDiff / MAX_DIST;
+
+	// ※ 0.25 のときは「端で0.75（一番最悪）」、0.05 のときは「端で0.95（一番最高）」
+	float luckScale = 0.20f + (static_cast<float>(rand()) / RAND_MAX) * 0.15f;
+
+	// 真ん中に行くにつれて timingRatio が 0 になるため、luckScale がいくつであっても必ず 1.0 に近づきます
+	float timingPowerScale = 1.0f - (timingRatio * luckScale);
+	
 	// ② カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
 	cursor.z = ballPos.z;
@@ -464,8 +479,14 @@ void Batter::HitBat()
 			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
 		}
 
-		if (m_game && !m_game->m_isHitStop) {
-			m_game->m_hitStopTimer = 0.08f;
+		if (m_game) {
+			// 1. まだヒットストップがかかっていない場合だけ、しっかり 0.08秒 止める
+			if (!m_game->m_isHitStop) {
+				m_game->m_hitStopTimer = 0.06f;
+			}
+
+			// 2. 早送り（Bボタン倍速など）の許可フラグだけを立てる（タイマーは弄らない）
+			m_game->m_canFastForward = true;
 		}
 
 		hitDir.y += 21.0f;
@@ -512,10 +533,7 @@ void Batter::HitBat()
 		if (m_inGameUI) {
 			m_inGameUI->m_shuchusenTimer = 0.5f;
 		}
-		if (m_game) {
-			m_game->m_hitStopTimer = 0.02f;
-			m_game->m_canFastForward = true;
-		}
+	
 		if (!m_game->m_isPaused && g_soundManager) {
 			// ★ 確定演出（パーフェクト）かどうかで鳴らすSEを切り替える
 			if (m_game && m_game->m_isKakutei) {

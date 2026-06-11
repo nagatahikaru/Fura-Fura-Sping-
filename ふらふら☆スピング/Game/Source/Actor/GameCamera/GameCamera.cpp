@@ -50,7 +50,6 @@ void GameCamera::SetkakuteiCamera() {
     m_followMode = Follow_None;   // ★ 追加
 }
 
-
 void GameCamera::SetReplayCamera() {
     m_cameraPos = { 1080.0f, 630.0f, 0.0f };  // 斜め上から
     m_target = { 0.0f, 300.0f, 0.0f };        // 固定ターゲット（例）
@@ -58,6 +57,17 @@ void GameCamera::SetReplayCamera() {
     m_pitch = 3.0f;
     m_followMode = Follow_None;   // ★ 追加
 }
+
+//void GameCamera::SetReplayCamera() {
+//    m_cameraPos = { 6.5f, 300.0f, 6500.0f };
+//    m_target = { 0.0f, 2000.0f, 0.0f };
+//
+//    m_yaw = 0.0f;
+//    m_pitch = 0.0f;
+//
+//    g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
+//    m_followMode = Follow_None;   // ★ 追加
+//}
 
 void GameCamera::SetFollowBallCamera() {
     m_cameraPos = { -3650.0f, 2580.0, 6050.0f }; // ボール後方

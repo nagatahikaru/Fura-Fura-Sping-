@@ -289,7 +289,7 @@ Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
 {
 	// Z の進み具合（0 = 手前、1 = 奥）
 	float minZ = 1000.0f;
-	float maxZ = 6000.0f;
+	float maxZ = 6050.0f;
 	float t = (ballPos3D.z - minZ) / (maxZ - minZ);
 	t = clamp(t, 0.0f, 1.0f);
 
