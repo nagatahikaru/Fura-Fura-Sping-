@@ -272,7 +272,7 @@ void Ball::Update()
      t = fmaxf(0.0f, fminf(t, 1.0f));
 
      // --- スケール計算 ---
-     float startScale = 6.0f; // ピッチャーリリース時の視認用サイズ（大きい）
+     float startScale = 5.5f; // ピッチャーリリース時の視認用サイズ（大きい）
      float finalScale = 2.5f;  // バッター手前での本来のサイズ（小さい）
 
      // t=0.0(ピッチャー) のときは startScale、t=1.0(バッター) のときは finalScale になる線形補間
