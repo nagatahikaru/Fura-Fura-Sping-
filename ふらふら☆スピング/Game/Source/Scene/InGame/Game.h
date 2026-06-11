@@ -128,6 +128,7 @@ public:
 	bool m_isReadyPhase = false;
 	bool m_isKakutei = false;
 	float m_kakuteiTimer = 0.0f;
+	float m_timeScale = 1.0f;
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。
@@ -148,7 +149,7 @@ private:
 	bool m_isRotationSeen = true;
 	bool m_isGameStarted=false;
 	int m_cameraType = 0;
-	float m_timeScale = 1.0f;
+	
 	int m_scores[3] = { 0,0,0 }; // 各回のスコア保存
 	// Game.h など
 	bool  m_isMissWait = false;
