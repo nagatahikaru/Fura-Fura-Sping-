@@ -172,10 +172,9 @@ void Game::Update()
 		m_isHitStop = true;   // ← これが絶対必要！
 		m_hitStopTimer -= g_gameTime->GetFrameDeltaTime();
 
-		// アニメーションだけは進めたい場合はここに AnimationUpdate() を書く
-		/*if (m_batter)  m_batter->AnimationUpdate();
-		if (m_pitcher) m_pitcher->AnimationUpdate();*/
-		//if (m_catcher) m_catcher->AnimationUpdate();
+		// 画面が止まっている間も、キャラクターの見た目（骨組み）だけは毎フレーム更新しておく
+		if (m_batter) m_batter->GetCharacterModel()->Update();
+		if (m_pitcher) m_pitcher->AnimationUpdate();
 
 		return; // ★ これでゲーム全体が停止する
 	}
@@ -356,67 +355,58 @@ void Game::Update()
 	}
 
 	if (m_isReplayPlaying) {
-		// ▼ スイングタイマーは常に進める（遅延の影響を受けない）
 		m_replaySwingTimer += g_gameTime->GetFrameDeltaTime();
 
-		// ▼ ボール再生は遅延が終わるまで止める
+		// 振りかぶりなどの遅延処理
 		if (m_replayDelayTimer > 0.0f) {
 			m_replayDelayTimer -= g_gameTime->GetFrameDeltaTime();
-
-			// ★ スイングだけは遅延中でも再生する
 			float swingSec = (m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex]) / 60.0f;
 
-			// 【修正】m_hasSwung[m_bestShotIndex] が true（実際に振っていた）場合のみ再生
 			if (m_hasSwung[m_bestShotIndex] && m_replaySwingTimer >= swingSec && !m_hasPlayedReplaySwing) {
 				m_batter->PlaySwingAnimation();
 				m_hasPlayedReplaySwing = true;
 			}
-
-			return; // ← ボールはまだ動かさない
+			return;
 		}
 
-		// ★★★ 遅延が終わった瞬間にボールを打った瞬間の位置へ戻す ★★★
-		if (!m_hasAppliedHitMoment) {
-			m_ball->SetPosition(m_hitStartPos[m_bestShotIndex]);
-			m_ball->SetVelocity(m_hitVelocities[m_bestShotIndex]);
-			m_hasAppliedHitMoment = true;
+		// ★ インパクト時のヒットストップ中ならリプレイのコマ（フレーム）を進めない
+		if (m_hitStopTimer > 0.0f) {
+			return;
 		}
-		// ▼ 遅延が終わったのでボール再生開始
+
 		auto& path = m_currentReplay;
 		int index = m_replayStartFrame;
 
+		// ★ 安全に座標を流し込む
 		if (index < path.size()) {
 			m_ball->SetPosition(path[index]);
 		}
 
+		// スイング（インパクト）の同期タイミング
 		int swingTiming = m_bestSwingFrame - m_bestPitchFrame;
 
-		// 【修正】ここも実際に振っていた場合のみアニメーションを再生する
 		if (m_hasSwung[m_bestShotIndex] && index == swingTiming) {
 			m_batter->PlaySwingAnimation();
-			// ★★★ リプレイ時もスイング速度を通常と同じにする ★★★
-			m_batter->GetCharacterModel()
-				->GetModelRender()
-				->SetAnimationSpeed(4.0f);
-			// ★ 打った瞬間の速度を適用
-			m_ball->SetPosition(m_hitStartPos[m_bestShotIndex]);
-			m_ball->SetVelocity(m_hitVelocities[m_bestShotIndex]);
-			m_ball->m_isMove = true;
+			m_batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
+
+			// インパクトの瞬間だけ全体の時間を一瞬止める（ヒットストップ）
+			m_hitStopTimer = 0.05f; // 約5フレーム分ホールド
+			m_isHitStop = true;
 			m_ball->m_hasHit = true;
 		}
 
+		// ★ リプレイのインデックスを毎フレーム1ずつ確実に進める
 		m_replayStartFrame++;
 		m_replayTimer += g_gameTime->GetFrameDeltaTime();
-		if (m_replayTimer >= m_replayDuration) {
+
+		if (m_replayTimer >= m_replayDuration || m_replayStartFrame >= path.size()) {
 			m_isReplayPlaying = false;
 			m_cameraMode = Camera_Catcher;
 			GoToResult();
 			return;
 		}
-		// ★★★ リプレイスキップ（Bボタン3秒長押し） ★★★
-		if (g_pad[0]->IsTrigger(enButtonB)) {
 
-			// 即リザルトへ
+		if (g_pad[0]->IsTrigger(enButtonB)) {
 			m_isReplayPlaying = false;
 			m_cameraMode = Camera_Catcher;
 			GoToResult();
@@ -597,7 +587,7 @@ void Game::StartReplay(int index)
 	m_replayTimer = 0.0f;
 	m_hasAppliedHitMoment = false;
 	// ▼ 追加：タイマーとアキュムレータの初期化
-	m_replayDelayTimer = 1.2f;  // 1.5秒待機
+	m_replayDelayTimer = 1.56f;  // 1.5秒待機
 	m_replayAccumulator = 0.0f; // アキュムレータ初期化
 	m_cameraMode = Camera_Replay;
 	m_currentReplay = m_replayPaths[index];

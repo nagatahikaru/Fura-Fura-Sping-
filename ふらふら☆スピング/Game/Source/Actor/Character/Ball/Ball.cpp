@@ -81,20 +81,45 @@ void Ball::Update()
 
         if (m_isMove)
         {
-            m_velocity.y -= 13.5f * dt;
+            if (!m_hasHit)
+            {
+                float accelerationZ = 100.0f;
+                m_velocity.z += accelerationZ * dt;
+            }
+            float baseGravity = 15.5f; // 元々のベース重力
+
+            if (!m_hasHit && m_initialSpeedZ > 0.0f)
+            {
+                // 「今のZ速度 ÷ 加速前のZ速度」で、どれだけスピードアップしたかの倍率を出す
+                float speedMultiplier = m_velocity.z / m_initialSpeedZ;
+
+                // 前に進む勢いが強まった分だけ、下への重力もその2乗に比例して強める
+                // これにより、速度が上がっても不自然に浮き上がらなくなります
+                m_velocity.y -= baseGravity * (speedMultiplier * speedMultiplier) * dt;
+            }
+            else
+            {
+                // 打撃後や加速前は通常の重力処理
+                m_velocity.y -= baseGravity * dt;
+            }
 
             //  1. 元の m_velocity を破壊しないよう、このフレーム専用の速度変数を作る
             Vector3 currentFrameVelocity = m_velocity;
 
             // 2. スローボールかつ打撃前で、バッター手前に来たら一時変数の速度だけを半分にする
-            if (!m_hasHit && m_ballType == SlowBall)
+            if (!m_hasHit && m_ballType == SlowBall&& !isReplay)
             {
                 if (m_position.z >= 5450.0f && m_position.z < 6500.0f)
                 {
                     currentFrameVelocity *= 0.4f;
                 }
             }
-
+            else if (isReplay) {
+                if (m_position.z >= 5450.0f && m_position.z < 6500.0f)
+                {
+                    currentFrameVelocity *= 1.0f;
+                }
+            }
             // 3. 安全に計算された currentFrameVelocity を使って座標を移動させる
             m_position += currentFrameVelocity * dt;
 
@@ -236,29 +261,42 @@ void Ball::Update()
       
      SetPosition(m_position);
 
-    //距離に応じてスケール変更
-    float minZ = 500.0f;
-    float maxZ = 9500.0f;
+     //距離に応じてスケール変更
+     float minZ = 1000.0f;  // ピッチャーマウンド（スタート）
+     float maxZ = 6200.0f;  // キャッチャー・バッター付近（最小になる位置）
 
-        float t = (m_position.z - minZ) / (maxZ - minZ);
-      
-        if (t < 0.0f) t = 0.0f;
-        if (t > 1.0f) t = 1.0f;
+     // Z座標から 0.0 〜 1.0 の割合(t)を計算
+     float t = (m_position.z - minZ) / (maxZ - minZ);
 
+     // 範囲外を安全にクランプ（0.0未満なら0.0、1.0より大きければ1.0に固定）
+     t = fmaxf(0.0f, fminf(t, 1.0f));
 
-    float scale = 4.0f * (1.0f - t * 0.8f);
+     // --- スケール計算 ---
+     float startScale = 6.0f; // ピッチャーリリース時の視認用サイズ（大きい）
+     float finalScale = 2.5f;  // バッター手前での本来のサイズ（小さい）
 
-        //最小サイズ制限（消え防止）
-        if (scale < 3.0f) scale = 2.0f;
+     // t=0.0(ピッチャー) のときは startScale、t=1.0(バッター) のときは finalScale になる線形補間
+     float scale = startScale + (finalScale - startScale) * t;
 
-        m_modelRender.SetScale({ scale, scale, scale });
+     // 計算したスケールを適用
+     m_modelRender.SetScale({ scale, scale, scale });
     }
-    else
-    {
-        // ★★★【追加】リプレイ中のボール拡大処理 ★★★
-        // 遠くに飛んでも見失わないよう、通常（最大5.0f）より大きいサイズに固定します
-        float replayScale = 13.0f;
-        m_modelRender.SetScale({ replayScale, replayScale, replayScale });
+   else {
+
+       // 1. ヒットストップ中なら、ボールの「骨組み（アニメーション等）」の更新だけで移動計算は一切しない
+      /* if (game->m_isHitStop) {
+           m_modelRender.Update();
+           return;
+       }*/
+       // ★ リプレイ中だけ高さを下げる
+       //Vector3 loweredPos = m_position;
+       //loweredPos.x -= 100.0f;   // ← 左に寄せる（右に寄せたいなら + にする）
+       //loweredPos.y -= 280.0f;   // ← 好きな値に調整
+       //m_modelRender.SetPosition(loweredPos);
+       // 2. リプレイ中のボール拡大処理
+       float replayScale = 13.0f;
+       m_modelRender.SetScale({ replayScale, replayScale, replayScale });
+
     }
 
     // ★ UI に毎フレーム位置を送る（必須）
@@ -348,7 +386,7 @@ void Ball::Throw(const Vector3& targetPos)
     }
 
     m_velocity = dir * speed;
-
+    m_initialSpeedZ = m_velocity.z;
     m_isMove = true;
 
     // ★ リプレイ記録開始（投球開始時）
