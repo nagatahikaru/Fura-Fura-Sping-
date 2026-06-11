@@ -14,27 +14,11 @@ namespace nsApp
 		/* バッターモデルを定義。*/
 		BatterUniformNumber_0,
 		BatterUniformNumber_1,
-		BatterUniformNumber_2,
-		BatterUniformNumber_3,
-		BatterUniformNumber_4,
-		BatterUniformNumber_5,
-		BatterUniformNumber_6,
-		BatterUniformNumber_7,
-		BatterUniformNumber_8,
-		BatterUniformNumber_9,
 
 
 		/* ピッチャーモデルを定義。*/		
 		PicherUniformNumber_0,
 		PicherUniformNumber_1,
-		PicherUniformNumber_2,
-		PicherUniformNumber_3,
-		PicherUniformNumber_4,
-		PicherUniformNumber_5,
-		PicherUniformNumber_6,
-		PicherUniformNumber_7,
-		PicherUniformNumber_8,
-		PicherUniformNumber_9,
 
 		/*キャッチャーモデルを定義。*/
 		CatcherUniformNumber_0,
