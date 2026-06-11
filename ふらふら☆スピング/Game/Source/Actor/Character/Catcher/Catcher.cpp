@@ -7,17 +7,8 @@ namespace {
 	std::string FILE_PATH_CATCHER_UNIFORMNUMBER = ("Assets/modelData/Catcher/UniformNumber/");
 	std::string FILE_PATH_TKM = (".tkm");
 	std::string FILE_PATH_DDS = (".tka");
-	std::string FILE_PATH_NUMBER[10] = {
-		"0",
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6",
-		"7",
-		"8",
-		"9"
+	std::string FILE_PATH_NUMBER[1] = {
+		"0"
 	};
 	std::string FILE_PATH_ANIMATION[1] = {
 		"idle"

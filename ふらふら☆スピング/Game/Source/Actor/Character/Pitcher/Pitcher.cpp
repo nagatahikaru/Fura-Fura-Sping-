@@ -8,17 +8,8 @@ namespace {
 	std::string FILE_PATH_BATTER_UNIFORMNUMBER = ("Assets/modelData/Pitcher/UniformNumber/");
 	std::string FILE_PATH_TKM = (".tkm");
 	std::string FILE_PATH_DDS = (".tka");
-	std::string FILE_PATH_NUMBER[10] = {
-		"0",
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6",
-		"7",
-		"8",
-		"9"
+	std::string FILE_PATH_NUMBER[1] = {
+		"0"
 	};
 
 	std::string FILE_PATH_ANIMATION[2] = {
@@ -28,7 +19,7 @@ namespace {
 
 	inline std::string GetBatterUniformNumberFilePath(int number)
 	{
-		return FILE_PATH_BATTER_UNIFORMNUMBER + FILE_PATH_NUMBER[number + 1] + FILE_PATH_TKM;
+		return FILE_PATH_BATTER_UNIFORMNUMBER + FILE_PATH_NUMBER[number] + FILE_PATH_TKM;
 	}
 
 	inline std::string GetAnimationFilePath(int number)
