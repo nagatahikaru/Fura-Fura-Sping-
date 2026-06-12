@@ -152,5 +152,5 @@ void Catcher::Render(RenderContext& rc)
 		return;
 	}
 	//ƒ‚ƒfƒ‹‚Ì•`‰æ
-	//m_modelRender.Draw(rc);
+	m_modelRender.Draw(rc);
 }
