@@ -9,73 +9,47 @@
 #include "Debuff/DebuffStage/DebuffStage.h"
 
 
-namespace {
-    std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
-    std::string FILE_PATH_DDS = (".tka");
-    std::string FILE_PATH_ANIMATION[3] = {
-        "idle",
-        "guruguru",
-        "swing"
-
-    };
-
-    inline std::string GetAnimationFilePath(int number)
-    {
-        return FILE_PATH_BATTER + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
-    }
-
-    void InitAnimation(AnimationClip animation[], int number, bool loop)
-    {
-        animation[number].Load(GetAnimationFilePath(number).c_str());
-        animation[number].SetLoopFlag(loop);
-    }
-
-    void InitCharacterController(CharacterController* characterController, const Vector3& scale, const Vector3& pos)
-    {
-        characterController->Init(scale.x, scale.y, pos);
-        characterController->SetCollisionActive(true);
-        characterController->IsOnGround();
-    }
-
-    namespace BATTER
-    {
-        const Vector3 INITIAL_COORDINATE = Vector3(-420.0f, -50.0f, 5500.0f);//初期座標
-        const Vector3 INITIAL_SCALE = Vector3(10.0f, 10.0f, 10.0f); //初期スケール
-        const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
-    }
+namespace BATTER{
+   extern std::string FILE_PATH_BATTER;
+   extern std::string FILE_PATH_DDS;
+   extern std::string FILE_PATH_ANIMATION[3];
 
     namespace BAT
     {
         const Vector3 OFFSET_BAT = Vector3(100.0f, 150.0f, 0.0f); //バットのオフセット
         const Vector3 COLLISION_SCALE_BAT = Vector3(114.285714286f, 80.0f, 40.0f);
         const Vector3 ROTATION_ANGLE = Vector3(0.0f, 0.0f, 1.0f); //バットの回転角度と回転速度
-		const float SPIN_TIME_LIMIT = 5.0f;             //回転の時間制限
+		constexpr float SPIN_TIME_LIMIT = 5.0f;             //回転の時間制限
 		constexpr float HALF_ROTATION_ANGLE = 180.0f;   //回転の半分の角度
 		constexpr float FULL_ROTATION_ANGLE = 360.0f;   //回転の全体の角度		
-		const float HEIGHT_OFFSET = 200.0f; //バットの高さオフセット
+        constexpr float HEIGHT_OFFSET = 200.0f; //バットの高さオフセット
     }
 
-    const float CURSOR_MIN_X = -300.0f;
-    const float CURSOR_MAX_X = 300.0f;
-    const float CURSOR_MIN_Y = -300.0f;
-    const float CURSOR_MAX_Y = 300.0f;
-    const float SCREEN_WIDTH = 1920.0f;				// 画面幅（ピクセル）
-    const float	SCREEN_HEIGHT = 1080.0f;			// 画面高さ（ピクセル）
-    const float HIT_ZONE_UPPER_LIMIT = 6090.0f;		// ヒットゾーンの上限（バッターの位置からの相対距離）
-    const float HIT_ZONE_LOWER_LIMIT = 6070.0f;		// ヒットゾーンの下限（バッターの位置からの相対距離）
-    const float HIT_ZONE_CENTER = 6080.0f;			// ヒットゾーンの中心（バッターの位置からの相対距離）
-    const float HIT_ZONE_RADIUS = 10.0f;			// 真ん中から端までの最大距離 (6080 - 6075)
-    const float RAD_TO_DEG = 180.0f / 3.14159265f;	//ラジアンを度に変換するための定数
-    const float CURSOR_MOVE_SPEED = 500.0f;			// カーソルの移動速度（ピクセル/秒）
-	const float ROTATION_RADIUS = 230.0f;			// 回転の半径
-	const float LENGTH_EPSILON = 0.001f;            // 長さの比較に使用する小さな値
-	const float READY_TIME = 5.0f;					// 準備時間
+    const Vector3 INITIAL_COORDINATE = Vector3(-420.0f, -50.0f, 5500.0f);//初期座標
+    const Vector3 INITIAL_SCALE = Vector3(10.0f, 10.0f, 10.0f); //初期スケール
+    const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
+
+    constexpr float CURSOR_MIN_X = -300.0f;
+    constexpr float CURSOR_MAX_X = 300.0f;
+    constexpr float CURSOR_MIN_Y = -300.0f;
+    constexpr float CURSOR_MAX_Y = 300.0f;
+    constexpr float SCREEN_WIDTH = 1920.0f;				// 画面幅（ピクセル）
+    constexpr float	SCREEN_HEIGHT = 1080.0f;			// 画面高さ（ピクセル）
+    constexpr float HIT_ZONE_UPPER_LIMIT = 6090.0f;		// ヒットゾーンの上限（バッターの位置からの相対距離）
+    constexpr float HIT_ZONE_LOWER_LIMIT = 6070.0f;		// ヒットゾーンの下限（バッターの位置からの相対距離）
+    constexpr float HIT_ZONE_CENTER = 6080.0f;			// ヒットゾーンの中心（バッターの位置からの相対距離）
+    constexpr float HIT_ZONE_RADIUS = 10.0f;			// 真ん中から端までの最大距離 (6080 - 6075)
+    constexpr float RAD_TO_DEG = 180.0f / 3.14159265f;	//ラジアンを度に変換するための定数
+    constexpr float CURSOR_MOVE_SPEED = 500.0f;			// カーソルの移動速度（ピクセル/秒）
+	constexpr float ROTATION_RADIUS = 230.0f;			// 回転の半径
+	constexpr float LENGTH_EPSILON = 0.001f;            // 長さの比較に使用する小さな値
+	constexpr float READY_TIME = 5.0f;					// 準備時間
 }
 
 
 class Batter : public Character
 {
-public:
+private:
     // アニメーションID
     enum EnAnimationClip
     {
@@ -84,8 +58,6 @@ public:
         enAnimationClip_Swing,      // スイング
         enAnimationClip_Num
     };
-
-private: 
     std::unique_ptr<BatterStateMachine> m_stateMachine;                 // バッターステート管理   
     std::unique_ptr<DebuffStageStateMachine> m_debuffStageStateMachine; // デバフステート管理    
     std::unique_ptr<nsApp::CharacterModel> m_characterModel;            // キャラクターモデル

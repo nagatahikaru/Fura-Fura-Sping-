@@ -6,33 +6,13 @@ class MasterData :public IGameObject
 	MasterData() {}
 	virtual ~MasterData() {}
 
-	void SetRandom(Vector3& seed)
-	{
-		m_randomSeed = seed;
-	}
-
-	void SetNumberofRevolutions(int number)
-	{
-		m_numberOfRevolutions = number;
-	}
-
-	Vector3 GetRandom() const
-	{
-		return m_randomSeed;
-	}
-
-	int GetNumberOfRevolutions() const
-	{
-		return m_numberOfRevolutions;
-	}
-
 	/// <summary>
-/// float用のデバック関数です。
-/// </summary>
-/// <param name="type"> デバックする値の名前を指定します。
-/// <para>name ：デバックする値の名前</para>
-/// <para>value：デバックするfloatの値</para>
-/// </param>
+	/// float用のデバック関数です。
+	/// </summary>
+	/// <param name="type"> デバックする値の名前を指定します。
+	/// <para>name ：デバックする値の名前</para>
+	/// <para>value：デバックするfloatの値</para>
+	/// </param>
 	void DebugLogFloat(const char* name, float value)
 	{
 		char buf[256];
@@ -54,7 +34,5 @@ class MasterData :public IGameObject
 		OutputDebugStringA(buf);
 	}
 private:
-	int m_numberOfRevolutions = 0;
-	Vector3 m_randomSeed;
 };
 
