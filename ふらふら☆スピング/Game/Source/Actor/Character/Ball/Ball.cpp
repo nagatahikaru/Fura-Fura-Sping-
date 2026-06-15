@@ -212,6 +212,7 @@ void Ball::Update()
             if (!m_hasHit && m_position.z > 9000.0f) {
                 Game* game = FindGO<Game>("game");
                 if (game) {
+                    game->m_isInputLocked = true;
                     InGameUI* ui = game->GetInGameUI();
                     if (ui) {
                         ui->OnStrike(game->m_shots);   // 今の球にバツを付ける
@@ -533,6 +534,7 @@ void Ball::ResetBall()
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
     if (game) {
+        game->m_isInputLocked = false;
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
             ui->ResetBatAndMeetOnly();

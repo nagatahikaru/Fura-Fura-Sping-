@@ -128,6 +128,7 @@ public:
 	bool m_isKakutei = false;
 	float m_kakuteiTimer = 0.0f;
 	float m_timeScale = 1.0f;
+	bool m_isInputLocked = false;
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。

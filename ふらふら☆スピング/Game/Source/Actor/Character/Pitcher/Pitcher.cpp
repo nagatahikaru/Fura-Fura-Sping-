@@ -44,6 +44,7 @@ namespace PITCHER {
 		PlayerVariable::Transform::INITIAL_SCALE,
 		GetModelFilePath(i));
 	*/
+	// ★ここで正しく関数を定義
 	void InitModelRender(
 		ModelRender* modelRender
 		, AnimationClip* m_animationClips
