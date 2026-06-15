@@ -15,6 +15,7 @@ BatterStateMachine::BatterStateMachine()
 	RegisterState<BatterRotationState>();
 	RegisterState<BatterSwingState>();
 	RegisterState<BatterCursorSetState>();
+	RegisterState<BatterReplayState>();
 	m_currentState = FindState(BatterIdleState::ID());
 	
 }
@@ -65,6 +66,12 @@ void BatterIdleState::Exit()
 bool BatterIdleState::RequestState(uint32_t& request)
 {
 	Batter* batter = GetBatter();
+
+	if (batter->GetIsReplay())
+	{
+		request = BatterReplayState::ID();
+		return true;
+	}
 
 	if (batter->GetRotationSeen())
 	{
@@ -152,7 +159,7 @@ void BatterCursorSetState::Enter()
 void BatterCursorSetState::Update()
 {
 	Batter* batter = GetBatter();
-	batter->EffectUpdate();
+	batter->DownArrowEffect();
 	batter->UpdateCursor3D();   // ★ 位置更新だけ
 	batter->BatHitBoxPosition(); // ★ 当たり判定の位置更新
 	batter->AnimationUpdate();
@@ -204,13 +211,11 @@ void BatterSwingState::Enter()
 void BatterSwingState::Update()
 {
 	Batter* batter = GetBatter();
-	// ★ スイングアニメを1.8倍速にする
-  // ★ スイングアニメを1.8倍速にする
-	   // ★ スイングアニメだけ 1.8倍速
+	// ★ スイングアニメを4.0倍速にする
 	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
 	batter->AnimationUpdate();
 	// ★ スイング中だけ当たり判定
-	batter->EffectUpdate();
+	batter->DownArrowEffect();
 	batter->BatHitBoxPosition();
 	batter->HitBat();
 }
@@ -219,7 +224,7 @@ void BatterSwingState::Exit()
 {
 	Batter* batter = GetBatter();
 	// ★ アニメ速度を元に戻す
-	   // ★ スイングアニメだけ 1.8倍速
+	   // ★ スイングアニメだけ 1.0倍速
 	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(1.0f);
 }
 
@@ -234,5 +239,44 @@ bool BatterSwingState::RequestState(uint32_t& request)
 		return true;
 	}
 
+	return false;
+}
+
+void BatterReplayState::Enter()
+{
+	Batter* batter = GetBatter();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());
+}
+
+void BatterReplayState::Update()
+{
+	Batter* batter = GetBatter();
+	batter->AnimationUpdate();
+	batter->DownArrowEffect();
+
+	if (!m_isReplayHitEffectPlayed)
+	{
+		Vector3 hitPos = batter->GetHitPosition();
+		Vector3 ballPos = batter->GetBall()->GetPosition();
+
+		float dist = (ballPos - hitPos).Length();
+
+		if (dist < batter->GetMeatRange())
+		{
+			batter->HitEffect(hitPos);
+			m_isReplayHitEffectPlayed = true;
+		}
+	}
+}
+
+void BatterReplayState::Exit()
+{
+	Batter* batter = GetBatter();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());
+}
+
+bool BatterReplayState::RequestState(uint32_t& request)
+{
+	// ★ リプレイ中は状態遷移しない
 	return false;
 }

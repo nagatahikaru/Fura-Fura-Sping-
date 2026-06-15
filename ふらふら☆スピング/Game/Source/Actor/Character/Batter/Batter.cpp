@@ -146,8 +146,11 @@ void Batter::Update()
 		m_inGameUI = FindGO<InGameUI>("inGameUI");
 		return;
 	}
-	m_game = FindGO<Game>("game");
-	EffectInfo info;
+	m_game = FindGO<Game>("game");	
+	if(m_isReplay!= m_game->IsReplayPlaying())
+	{
+		m_isReplay = m_game->IsReplayPlaying();
+	}
 	// ★ リプレイ中はバッターの通常処理を完全停止
 	if (m_game && m_game->IsReplayPlaying()) {
 		// ★ ポーズ中ならアニメーションも止める
@@ -160,6 +163,8 @@ void Batter::Update()
 		}
 		// アニメーションだけ進めたい場合はこれを残す
 		m_characterModel->Update();
+		// バッターのステートマシンを更新
+		m_stateMachine->Update();
 
 		return; // ← 入力・ぐるぐる・カーソル・移動など全部止める
 	}
@@ -169,7 +174,7 @@ void Batter::Update()
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
 	
-	// ★ 遅延ヒット処理
+	// バッターのステートマシンを更新
 	m_stateMachine->Update();
 	// ★ フラグが切り替わったら、ぐるぐるバットの処理を行う
 	if(!m_isRotation)
@@ -459,18 +464,17 @@ void Batter::HitBat()
 
 	// ③ 距離判定
 	float dist = (ballPos - cursor).Length();
-	DebugLogFloat("Hit判定距離", m_meatRange);
 	if (dist < m_meatRange)
 	{
 		Vector3 hitDir = ballPos - cursor;
-
+		m_hitPosition = m_ball->GetPosition();
+		HitEffect(m_ball->GetPosition());
 		// 前方向の力
 		if (fabs(hitDir.z) >= 0.0f) {
 			hitDir.z = -100.0f;
 		}
 
 		if (m_inGameUI) {
-			HitEffect();
 			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
 		}
 
@@ -596,7 +600,7 @@ void Batter::ResetSwing()
 }
 
 /** 演出関連コード */
-void Batter::EffectUpdate()
+void Batter::DownArrowEffect()
 {	
 	if (m_guruGuruBatCount < 3) return;
 
@@ -617,17 +621,15 @@ void Batter::EffectUpdate()
 		Vector3(15.0f, 40.0f, 15.0f));
 }
 
-void Batter::HitEffect()
+void Batter::HitEffect(Vector3 pos)
 {
-	Vector3 pos = m_ball->GetPosition();
 	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectHitID)) {
 		return; // すでにエフェクトが再生中なら新たに出さない
-	}
-	
+	}	
 	m_inro.m_effectHitID = g_effectManager->PlayEffect(
 		enEffect_HitBat,
 		pos,
-		Vector3(20.0f, 20.0f, 20.0f));
+		Vector3(30.0f, 30.0f, 30.0f));
 }
 
 /** 計算関連コード */

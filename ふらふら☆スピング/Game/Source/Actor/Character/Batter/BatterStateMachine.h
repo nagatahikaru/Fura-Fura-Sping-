@@ -86,3 +86,19 @@ public:
 	virtual void Exit()override;
 	virtual bool RequestState(uint32_t& request)override;
 };
+
+class BatterReplayState :public BatterIStateBess
+{
+	appState(BatterReplayState);
+	
+private:
+	bool m_isReplayHitEffectPlayed = false; // リプレイ中のヒットエフェクト再生フラグ
+
+public:
+	BatterReplayState() :BatterIStateBess() {};
+	virtual ~BatterReplayState() {};
+	virtual void Enter()override;
+	virtual void Update()override;
+	virtual void Exit()override;
+	virtual bool RequestState(uint32_t& request)override;
+};
