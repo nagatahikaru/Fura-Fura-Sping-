@@ -7,7 +7,6 @@ class InGameUI;
 class Batter;
 class Pitcher;
 class Catcher;
-class Ball;
 class Start1;
 
 

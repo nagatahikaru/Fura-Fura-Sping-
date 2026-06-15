@@ -18,6 +18,35 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
     return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
+namespace BATTER {
+	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
+	std::string FILE_PATH_DDS = (".tka");
+	std::string FILE_PATH_ANIMATION[3] = {
+		"idle",
+		"guruguru",
+		"swing"
+
+	};
+
+	inline std::string GetAnimationFilePath(int number)
+	{
+		return FILE_PATH_BATTER + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
+	}
+
+	void InitAnimation(AnimationClip animation[], int number, bool loop)
+	{
+		animation[number].Load(GetAnimationFilePath(number).c_str());
+		animation[number].SetLoopFlag(loop);
+	}
+
+	void InitCharacterController(CharacterController* characterController, const Vector3& scale, const Vector3& pos)
+	{
+		characterController->Init(scale.x, scale.y, pos);
+		characterController->SetCollisionActive(true);
+		characterController->IsOnGround();
+	}
+};
+
 Batter::Batter()
 {
 	m_stateMachine = std::make_unique<BatterStateMachine>();
@@ -45,11 +74,11 @@ bool Batter::Start()
 	//アニメーションクリップの読み込み
 	for (int j = enAnimationClip_Idle; j < enAnimationClip_Swing; j++)
 	{
-		InitAnimation(m_animationClips, j, true);
+		BATTER::InitAnimation(m_animationClips, j, true);
 	}
 	for(int j = enAnimationClip_Swing; j < enAnimationClip_Num; j++)
 	{
-		InitAnimation(m_animationClips, j, false);
+		BATTER::InitAnimation(m_animationClips, j, false);
 	}
 	// インスタンスの生成
 	m_characterModel = std::make_unique<nsApp::CharacterModel>();
@@ -65,7 +94,7 @@ bool Batter::Start()
 
 	// 3. アタッチするボーンの設定とオフセットの調整
 	m_characterModel->SetWeaponAttackBone(L"mixamorig:RightHand"); // 実際のボーン名に合わせる
-	m_characterModel->SetWeaponOffset(BAT::OFFSET_BAT);
+	m_characterModel->SetWeaponOffset(BATTER::BAT::OFFSET_BAT);
 
 	m_transform.m_position = BATTER::INITIAL_COORDINATE;
 	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);	
@@ -77,7 +106,7 @@ bool Batter::Start()
 	m_characterModel->SetWeaponScale(BATTER::INITIAL_SCALE);
 	
 
-	InitCharacterController(&m_characterController,
+	BATTER::InitCharacterController(&m_characterController,
 		BATTER::COLLISION_SCALE,
 		BATTER::INITIAL_COORDINATE);
 
@@ -90,13 +119,13 @@ bool Batter::Start()
 
 	m_bodyCenter = BATTER::INITIAL_COORDINATE;
 
-	m_guruGuruBatTimer = BAT::SPIN_TIME_LIMIT;
+	m_guruGuruBatTimer = BATTER::BAT::SPIN_TIME_LIMIT;
 
 	m_collisionObject = new CollisionObject;
 	m_collisionObject->CreateBox(
 		m_meetCursorWorldPos,
 		Quaternion::Identity,
-		BAT::COLLISION_SCALE_BAT);
+		BATTER::BAT::COLLISION_SCALE_BAT);
 
 	m_characterModel->Update();	
 	m_inGameUI = FindGO<InGameUI>("inGameUI");
@@ -195,9 +224,9 @@ void Batter::Rotation()
 	float inputAngle = atan2f(stickL.y, stickL.x); // 入力角度を計算
 
 	// 入力角度に基づいてバッターの位置を更新
-	m_modelPos.x = m_bodyCenter.x + ROTATION_RADIUS * cosf(inputAngle);
+	m_modelPos.x = m_bodyCenter.x + BATTER::ROTATION_RADIUS * cosf(inputAngle);
 	m_modelPos.y = m_bodyCenter.y;
-	m_modelPos.z = m_bodyCenter.z + ROTATION_RADIUS * sinf(inputAngle);
+	m_modelPos.z = m_bodyCenter.z + BATTER::ROTATION_RADIUS * sinf(inputAngle);
 
 	// バッターの位置を更新
 	Vector3 toCenter = m_bodyCenter - m_modelPos;
@@ -205,7 +234,7 @@ void Batter::Rotation()
 	toCenter.Normalize();
 
 	//回転処理
-	if (toCenter.Length() > LENGTH_EPSILON)
+	if (toCenter.Length() > BATTER::LENGTH_EPSILON)
 	{
 		toCenter.Normalize();
 
@@ -213,7 +242,7 @@ void Batter::Rotation()
 		m_facingDir = toCenter;
 	}
 
-	float currentAngle = atan2f(m_facingDir.x, m_facingDir.z) * RAD_TO_DEG;
+	float currentAngle = atan2f(m_facingDir.x, m_facingDir.z) * BATTER::RAD_TO_DEG;
 	GuruGuruCountUP(currentAngle);
 }
 
@@ -237,7 +266,7 @@ void Batter::RoundAndRoundBat()
 		m_game->SetRotationSeen(false);
 		//m_game->SetGameStarted(true);
 		m_game->m_isReadyPhase = true;
-		m_game->m_readyTimer = READY_TIME; // 5秒にセット
+		m_game->m_readyTimer = BATTER::READY_TIME; // 5秒にセット
 		m_characterModel->Update();
 	}
 }
@@ -248,24 +277,24 @@ void Batter::GuruGuruCountUP(float currentAngle)
 	float delta = currentAngle - m_prevAngle;
 
 	// ★ 角度のラップ補正（重要！）
-	if (delta > BAT::HALF_ROTATION_ANGLE) {
-		delta -= BAT::FULL_ROTATION_ANGLE;
+	if (delta > BATTER::BAT::HALF_ROTATION_ANGLE) {
+		delta -= BATTER::BAT::FULL_ROTATION_ANGLE;
 	}
-	else if (delta < -BAT::HALF_ROTATION_ANGLE) {
-		delta += BAT::FULL_ROTATION_ANGLE;
+	else if (delta < -BATTER::BAT::HALF_ROTATION_ANGLE) {
+		delta += BATTER::BAT::FULL_ROTATION_ANGLE;
 	}
 
 	// 累積
 	m_totalRotation += delta;
 
 	// ★ 1回転判定
-	if (m_totalRotation >= BAT::FULL_ROTATION_ANGLE) {
+	if (m_totalRotation >= BATTER::BAT::FULL_ROTATION_ANGLE) {
 		m_guruGuruBatCount++;
-		m_totalRotation -= BAT::FULL_ROTATION_ANGLE;
+		m_totalRotation -= BATTER::BAT::FULL_ROTATION_ANGLE;
 	}
-	else if (m_totalRotation <= -BAT::FULL_ROTATION_ANGLE) {
+	else if (m_totalRotation <= -BATTER::BAT::FULL_ROTATION_ANGLE) {
 		m_guruGuruBatCount++;
-		m_totalRotation += BAT::FULL_ROTATION_ANGLE;
+		m_totalRotation += BATTER::BAT::FULL_ROTATION_ANGLE;
 	}
 	m_game->SetGuruGuru(m_guruGuruBatCount);
 	m_prevAngle = currentAngle;
@@ -292,10 +321,10 @@ void Batter::RotationUpdate()
 		m_characterModel->SettRotation(rot);
 
 		Quaternion weaponrot;
-		weaponrot.SetRotationDeg(BAT::ROTATION_ANGLE, 230.0f);
+		weaponrot.SetRotationDeg(BATTER::BAT::ROTATION_ANGLE, 230.0f);
 		m_characterModel->SetWeaponRotation(true);
 		m_characterModel->SetWeaponRotation(weaponrot);
-		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y + BAT::HEIGHT_OFFSET, m_transform.m_position.z));
+		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y + BATTER::BAT::HEIGHT_OFFSET, m_transform.m_position.z));
 	
 	}
 	else
@@ -339,7 +368,7 @@ void Batter::SetCursorPosition()
 		}
 
 		float speed =
-			CURSOR_MOVE_SPEED * m_cursorMoveScale;
+			BATTER::CURSOR_MOVE_SPEED * m_cursorMoveScale;
 
 		Vector3 driftmove = move + m_driftCursorOffset;
 
@@ -347,10 +376,10 @@ void Batter::SetCursorPosition()
 		m_meetPosition += driftmove * speed * dt;
 
 		m_meetPosition.x =
-			clamp(m_meetPosition.x, CURSOR_MIN_X, CURSOR_MAX_X);
+			clamp(m_meetPosition.x, BATTER::CURSOR_MIN_X, BATTER::CURSOR_MAX_X);
 
 		m_meetPosition.y =
-			clamp(m_meetPosition.y, CURSOR_MIN_Y, CURSOR_MAX_Y);
+			clamp(m_meetPosition.y, BATTER::CURSOR_MIN_Y, BATTER::CURSOR_MAX_Y);
 	}
 
 	// デバフ適用後の最終座標
@@ -363,8 +392,8 @@ void Batter::SetCursorPosition()
 /** 3D空間に2Dカーソルを合わせる処理 */
 Vector3 Batter::CalcCursorWorldPos()
 {
-	float screenW = SCREEN_WIDTH;
-	float screenH = SCREEN_HEIGHT;
+	float screenW = BATTER::SCREEN_WIDTH;
+	float screenH = BATTER::SCREEN_HEIGHT;
 	Vector3 finalPos = GetFinalCursorPosition();
 
 	// UI座標（中心基準なら変換必要）
@@ -410,13 +439,13 @@ void Batter::HitBat()
 	Vector3 ballPos = m_ball->GetPosition();
 
 	// ① Z制限（打撃ゾーン）
-	if (ballPos.z < HIT_ZONE_LOWER_LIMIT || ballPos.z > HIT_ZONE_UPPER_LIMIT) return;
+	if (ballPos.z < BATTER::HIT_ZONE_LOWER_LIMIT || ballPos.z > BATTER::HIT_ZONE_UPPER_LIMIT) return;
 
 	// 真ん中からどれだけ離れているか（0.0 〜 5.0）
-	float timingDiff = fabs(ballPos.z - HIT_ZONE_CENTER);
+	float timingDiff = fabs(ballPos.z - BATTER::HIT_ZONE_CENTER);
 
 	// 離れ具合を 0.0（真ん中）〜 1.0（一番端）に正規化
-	float timingRatio = timingDiff / HIT_ZONE_RADIUS;
+	float timingRatio = timingDiff / BATTER::HIT_ZONE_RADIUS;
 
 	// ※ 0.25 のときは「端で0.75（一番最悪）」、0.05 のときは「端で0.95（一番最高）」
 	float luckScale = 0.20f + (static_cast<float>(rand()) / RAND_MAX) * 0.15f;
@@ -459,7 +488,7 @@ void Batter::HitBat()
 		hitDir.Normalize();
 		// 角度（打ち上げ角）を計算
 		// 角度（打ち上げ角）を計算
-		float angleDeg = atan2f(hitDir.y, -hitDir.z) * RAD_TO_DEG;
+		float angleDeg = atan2f(hitDir.y, -hitDir.z) * BATTER::RAD_TO_DEG;
 
 		// ★ 角度に応じてパワー補正（真ん中は補正なし）
 		float powerScale = 1.0f;

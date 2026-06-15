@@ -12,21 +12,18 @@ namespace nsApp
 	enum class CharacterModelType
 	{
 		/* バッターモデルを定義。*/
-		BatterUniformNumber_0,
-		BatterUniformNumber_1,
+		BatterUniformNumber_0,		
 
+		///* ピッチャーモデルを定義。*/		
+		//PicherUniformNumber_0,		
 
-		/* ピッチャーモデルを定義。*/		
-		PicherUniformNumber_0,
-		PicherUniformNumber_1,
-
-		/*キャッチャーモデルを定義。*/
-		CatcherUniformNumber_0,
+		///*キャッチャーモデルを定義。*/
+		//CatcherUniformNumber_0,
 
 		/* モデルを定義。*/
 		Bat,
 		Boll,
-		
+		Null
 	};
 
 

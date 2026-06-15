@@ -2,26 +2,25 @@
 #include "Catcher.h"
 #include "Source/Actor/Character/Ball/Ball.h"
 
-namespace {
-	std::string FILE_PATH_CATCHER = ("Assets/animData/catcher/");
-	std::string FILE_PATH_CATCHER_UNIFORMNUMBER = ("Assets/modelData/Catcher/UniformNumber/");
+namespace CATCHER {
+	std::string FILE_PATH_CATCHER_AIM = ("Assets/animData/catcher/");
+	std::string FILE_PATH_CATCHER = ("Assets/modelData/Catcher/");
 	std::string FILE_PATH_TKM = (".tkm");
 	std::string FILE_PATH_DDS = (".tka");
-	std::string FILE_PATH_NUMBER[1] = {
-		"0"
+	std::string FILE_PATH = {
+		"Catcher"
 	};
 	std::string FILE_PATH_ANIMATION[1] = {
 		"idle"
 	};
-
-	inline std::string GetcatcherUniformNumberFilePath(int number)
+	inline std::string GetcatcherFilePath()
 	{
-		return FILE_PATH_CATCHER_UNIFORMNUMBER + FILE_PATH_NUMBER[number] + FILE_PATH_TKM;
+		return FILE_PATH_CATCHER + FILE_PATH + FILE_PATH_TKM;
 	}
 
 	inline std::string GetAnimationFilePath(int number)
 	{
-		return FILE_PATH_CATCHER + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
+		return FILE_PATH_CATCHER_AIM + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
 	}
 
 	/**
@@ -64,16 +63,15 @@ namespace {
 		}
 	}
 
-
 	/**
 	*  CharacterControllerの初期化処理
 	*  characterController	初期化するCharacterControllerのポインタ
 	*  scale				体の大きさ
 	*  pos					初期位置
 	*  使い方
-	*	InitCharacterController(&m_characterController, 
-	*	Vector3(1.0f, 2.0f, 1.0f), 
-	*	Vector3(0.0f, 0.0f, 0.0f)); 
+	*	InitCharacterController(&m_characterController,
+	*	Vector3(1.0f, 2.0f, 1.0f),
+	*	Vector3(0.0f, 0.0f, 0.0f));
 	*/
 	void InitCharacterController(CharacterController* characterController, const Vector3& scale, const Vector3& pos)
 	{
@@ -81,7 +79,8 @@ namespace {
 		characterController->SetCollisionActive(true);
 		characterController->IsOnGround();
 	}
-}
+};
+
 
 Catcher::~Catcher()
 {
@@ -90,25 +89,25 @@ Catcher::~Catcher()
 
 bool Catcher::Start()
 {
-	LoadAnimationClips(m_animationClips,enAnimationClip_Idle, enAnimationClip_Num);
+	CATCHER::LoadAnimationClips(m_animationClips,enAnimationClip_Idle, enAnimationClip_Num);
 	
-	InitModelRender(
+	CATCHER::InitModelRender(
 		&m_modelRender,
 		m_animationClips,
 		enAnimationClip_Num,
-		CatcherBasicSettings::INITIAL_COORDINATE,
-		CatcherBasicSettings::INITIAL_SCALE,
-		GetcatcherUniformNumberFilePath(0));
+		CATCHER::CatcherBasicSettings::INITIAL_COORDINATE,
+		CATCHER::CatcherBasicSettings::INITIAL_SCALE,
+		CATCHER::GetcatcherFilePath());
 	
-	InitCharacterController(&m_characterController, 
-		CatcherBasicSettings::COLLISION_SCALE,
-		CatcherBasicSettings::INITIAL_COORDINATE);
+	CATCHER::InitCharacterController(&m_characterController,
+		CATCHER::CatcherBasicSettings::COLLISION_SCALE,
+		CATCHER::CatcherBasicSettings::INITIAL_COORDINATE);
 
 	m_collisionObject = new CollisionObject;
 	m_collisionObject->CreateBox(
-		CatcherBasicSettings::INITIAL_COORDINATE,
+		CATCHER::CatcherBasicSettings::INITIAL_COORDINATE,
 		Quaternion::Identity,
-		CatcherBasicSettings::COLLISION_SCALE);
+		CATCHER::CatcherBasicSettings::COLLISION_SCALE);
 
 	m_ball = FindGO<Ball>("ball");
 	m_game = FindGO<Game>("game");
@@ -120,9 +119,14 @@ void Catcher::Update()
 {
 	if (m_isPaused) return;
 
-	Game* game = FindGO<Game>("game");
-	if (game && game->m_isPaused) return;
-	if (!game->IsGameStarted())return;
+	if(m_game==nullptr)
+	{
+		m_game = FindGO<Game>("game");
+		return;
+	}
+
+	if (m_game && m_game->m_isPaused) return;
+	if (!m_game->IsGameStarted())return;
 
 	Catch();
 }
