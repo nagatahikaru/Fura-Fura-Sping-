@@ -195,5 +195,6 @@ private:
 	SpriteRender m_imagesen;
 	float        m_animeTimer = 0.0f;
 	SpriteRender m_kakin;
+	SpriteRender m_kiroku;
 };
 
