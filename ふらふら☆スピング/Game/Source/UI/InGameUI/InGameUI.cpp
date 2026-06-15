@@ -57,6 +57,7 @@ InGameUI::InGameUI() {
 	m_keisuu.Init("Assets/sprite/gurugurukeisuu.DDS", 400.0f, 300.0f);
 	m_kakunin.Init("Assets/sprite/kakunin.DDS", 400.0f, 300.0f);
 	m_kakin.Init("Assets/sprite/kakin.DDS", 500.0f, 500.0f);
+	m_kiroku.Init("Assets/sprite/kiiro.DDS", 820.0f, 820.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -878,6 +879,10 @@ void InGameUI::Render(RenderContext& rc) {
 				spr = &m_perfectSprite;   // ★ 追加
 			}
 
+			m_kiroku.SetPosition(Vector3{ 150.0f, -205.0f, 0.0f });
+			m_kiroku.Update();
+			m_kiroku.Draw(rc);
+
 			spr->SetPosition({ 0,0,0 });
 			spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
 			spr->SetMulColor({ 1,1,1, m_predictionAlpha });
@@ -889,7 +894,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_fontPrediction.SetText(predText);
 			m_fontPrediction.SetPosition(-150.0f, -150.0f, 0.0f); // Excellent表示の下あたりに配置
 			m_fontPrediction.SetScale(1.5f);
-			m_fontPrediction.SetColor(1.0f, 1.0f, 0.0f, m_predictionAlpha); // 黄色で見やすく
+			m_fontPrediction.SetColor(0.0f, 0.0f, 0.0f, m_predictionAlpha); // 黄色で見やすく
 			m_fontPrediction.Draw(rc);
 		}
 
