@@ -7,15 +7,6 @@ namespace {
 	namespace CatcherNumber {
 		enum {
 			UniformNumber_0,
-			UniformNumber_1,
-			UniformNumber_2,
-			UniformNumber_3,
-			UniformNumber_4,
-			UniformNumber_5,
-			UniformNumber_6,
-			UniformNumber_7,
-			UniformNumber_8,
-			UniformNumber_9,
 			Num
 		};
 	}
@@ -61,7 +52,6 @@ private:
 	Ball* m_ball = nullptr;
 	Game* m_game = nullptr;
 	AnimationClip m_animationClips[enAnimationClip_Num];
-	int m_UniformNumber = CatcherNumber::UniformNumber_1;
 	CharacterController m_characterController;
 	CollisionObject* m_collisionObject = nullptr; // 衝突オブジェクト
 };

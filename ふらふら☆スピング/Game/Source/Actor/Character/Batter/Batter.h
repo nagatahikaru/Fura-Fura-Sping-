@@ -8,52 +8,74 @@
 #include "Debuff/DebuffStageStateMachine.h"
 #include "Debuff/DebuffStage/DebuffStage.h"
 
+
 namespace {
-	namespace BatterNumber {
-		enum {
-			UniformNumber_0,
-			UniformNumber_1,
-			UniformNumber_2,
-			UniformNumber_3,
-			UniformNumber_4,
-			UniformNumber_5,
-			UniformNumber_6,
-			UniformNumber_7,
-			UniformNumber_8,
-			UniformNumber_9,
-			Num
-		};
-	}
+    std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
+    std::string FILE_PATH_DDS = (".tka");
+    std::string FILE_PATH_ANIMATION[3] = {
+        "idle",
+        "guruguru",
+        "swing"
 
-	namespace BatterBasicSettings
-	{
-		const Vector3 INITIAL_COORDINATE = Vector3(-420.0f, -50.0f, 5500.0f);//初期座標
-		const float BASICS_SPEED = 400.0f; //基本速度
-		const Vector3 VECTOR_UP = Vector3(0.0f, 1.0f, 0.0f); //上方向ベクトル
-		const Vector3 VECTOR_LOOKAT = Vector3(1.0f, 0.0f, 0.0f); //注視点ベクトル
-		const Vector3 INITIAL_SCALE = Vector3(10.0f, 10.0f, 10.0f); //初期スケール
-		const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
-		const float NONE_SPEED = 0.0f;//速度なし
-	}
+    };
 
-	namespace BatBasicSettings
-	{
-		const Vector3 INITIAL_SCALE = Vector3(10.0f, 10.0f, 10.0f); //初期スケール
-		const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
-		const Vector3 ROTATION_OFFSET = Vector3(1.0f, 0.0f, 0.0f); //回転の軸となるオフセット座標
-		const float ROTATION_ANGLE = 90.0f; //回転角度
-		const Vector3 COLLISION_SCALE_BAT = Vector3(114.285714286f, 80.0f, 40.0f);
-	}
-};
+    inline std::string GetAnimationFilePath(int number)
+    {
+        return FILE_PATH_BATTER + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
+    }
+
+    void InitAnimation(AnimationClip animation[], int number, bool loop)
+    {
+        animation[number].Load(GetAnimationFilePath(number).c_str());
+        animation[number].SetLoopFlag(loop);
+    }
+
+    void InitCharacterController(CharacterController* characterController, const Vector3& scale, const Vector3& pos)
+    {
+        characterController->Init(scale.x, scale.y, pos);
+        characterController->SetCollisionActive(true);
+        characterController->IsOnGround();
+    }
+
+    namespace BATTER
+    {
+        const Vector3 INITIAL_COORDINATE = Vector3(-420.0f, -50.0f, 5500.0f);//初期座標
+        const Vector3 INITIAL_SCALE = Vector3(10.0f, 10.0f, 10.0f); //初期スケール
+        const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
+    }
+
+    namespace BAT
+    {
+        const Vector3 OFFSET_BAT = Vector3(100.0f, 150.0f, 0.0f); //バットのオフセット
+        const Vector3 COLLISION_SCALE_BAT = Vector3(114.285714286f, 80.0f, 40.0f);
+        const Vector3 ROTATION_ANGLE = Vector3(0.0f, 0.0f, 1.0f); //バットの回転角度と回転速度
+		const float SPIN_TIME_LIMIT = 5.0f;             //回転の時間制限
+		constexpr float HALF_ROTATION_ANGLE = 180.0f;   //回転の半分の角度
+		constexpr float FULL_ROTATION_ANGLE = 360.0f;   //回転の全体の角度		
+		const float HEIGHT_OFFSET = 200.0f; //バットの高さオフセット
+    }
+
+    const float CURSOR_MIN_X = -300.0f;
+    const float CURSOR_MAX_X = 300.0f;
+    const float CURSOR_MIN_Y = -300.0f;
+    const float CURSOR_MAX_Y = 300.0f;
+    const float SCREEN_WIDTH = 1920.0f;				// 画面幅（ピクセル）
+    const float	SCREEN_HEIGHT = 1080.0f;			// 画面高さ（ピクセル）
+    const float HIT_ZONE_UPPER_LIMIT = 6090.0f;		// ヒットゾーンの上限（バッターの位置からの相対距離）
+    const float HIT_ZONE_LOWER_LIMIT = 6070.0f;		// ヒットゾーンの下限（バッターの位置からの相対距離）
+    const float HIT_ZONE_CENTER = 6080.0f;			// ヒットゾーンの中心（バッターの位置からの相対距離）
+    const float HIT_ZONE_RADIUS = 10.0f;			// 真ん中から端までの最大距離 (6080 - 6075)
+    const float RAD_TO_DEG = 180.0f / 3.14159265f;	//ラジアンを度に変換するための定数
+    const float CURSOR_MOVE_SPEED = 500.0f;			// カーソルの移動速度（ピクセル/秒）
+	const float ROTATION_RADIUS = 230.0f;			// 回転の半径
+	const float LENGTH_EPSILON = 0.001f;            // 長さの比較に使用する小さな値
+	const float READY_TIME = 5.0f;					// 準備時間
+}
+
 
 class Batter : public Character
 {
 public:
-
-    //=========================================================
-    // enum
-    //=========================================================
-
     // アニメーションID
     enum EnAnimationClip
     {
@@ -62,6 +84,65 @@ public:
         enAnimationClip_Swing,      // スイング
         enAnimationClip_Num
     };
+
+private: 
+    std::unique_ptr<BatterStateMachine> m_stateMachine;                 // バッターステート管理   
+    std::unique_ptr<DebuffStageStateMachine> m_debuffStageStateMachine; // デバフステート管理    
+    std::unique_ptr<nsApp::CharacterModel> m_characterModel;            // キャラクターモデル
+    
+    Game* m_game = nullptr;                                             // ゲーム本体    
+    InGameUI* m_inGameUI = nullptr;                                     // UI   
+    Ball* m_ball = nullptr;                                             // ボール
+    DebuffStage *m_debuffStage;                                         // デバフステージ
+    CollisionObject* m_collisionObject = nullptr;                       // 当たり判定    
+
+    AnimationClip m_animationClips[enAnimationClip_Num];                // アニメーション配列    
+    EnAnimationClip m_setAnimation = enAnimationClip_Idle;              // 現在アニメーション    
+	Transform m_transform;                                              // トランスフォーム    
+    Quaternion m_initialRotation;                                       // 初期回転
+    
+    Vector3 m_facingDir =  Vector3(0.0f, 0.0f, -1.0f);                  // プレイヤーの向き
+    Vector3 m_meetPosition;                                             // ミート位置    
+    Vector3 m_meetCursorWorldPos;                                       // カーソルワールド座標    
+    Vector3 m_cursorOffset;                                             // カーソルオフセット
+    Vector3 m_shakeCursorOffset = Vector3::Zero;                        // 揺れによるカーソルオフセット    
+    Vector3 m_assistCursorOffset = Vector3::Zero;                       // 揺れによるカーソルオフセットの減衰速度    
+    Vector3 m_magnetCursorOffset = Vector3::Zero;                       // 磁石によるカーソルオフセットの減衰速度    
+    Vector3 m_noiseCursorOffset = Vector3::Zero;                        // ノイズによるカーソルオフセットの減衰速度    
+    Vector3 m_driftCursorOffset = Vector3::Zero;                        // ドリフトによるカーソルオフセットの減衰速度
+    Vector2 m_inputdelayScale = Vector2(1.0f, 1.0f);                    // カーソル移動の遅延スケール
+    Vector3 m_bodyCenter;                                               // 本体中心
+    Vector3 m_modelPos;                                                 // モデルの半径
+
+    Vector2 m_inputScale = Vector2(1.0f, 1.0f);                         // カーソル入力スケール   
+    Vector2 m_inversioninputScale = Vector2(1.0f, 1.0f);                // 反転カーソル入力スケール
+    
+    bool m_isCursorMode = true;                                         // カーソルモード
+    bool m_isDelayFrag = false;                                         // カーソル移動の遅延フラグ    
+    bool m_isRotation = true;                                           // 回転有効
+    
+    float m_meatRange = 100.0f;                                         // ヒット範囲    
+    float m_cursorMoveScale = 1.0f;                                     // カーソル移動速度倍率 
+    float m_prevAngle = 0.0f;                                           // 前回角度    
+    float m_guruGuruBatTimer = 0.0f;                                    // 回転タイマー    
+    float m_totalRotation = 0.0f;                                       // 総回転量
+    
+    int m_guruGuruBatCount = 0;                                         // 回転回数
+
+    struct EffectInfo
+    {
+        // 出現エフェクト
+        uint32_t m_effectDawnID;
+
+        // ヒットエフェクト
+        uint32_t m_effectHitID;
+    };
+    EffectInfo m_inro;                                                  // エフェクト情報
+
+
+public:
+    // 一時停止フラグ
+    bool m_isPaused = false;
 
     //=========================================================
     // constructor / destructor
@@ -83,9 +164,7 @@ public:
     // 描画処理
     virtual void Render(RenderContext& rc);
 
-    //=========================================================
-    // animation
-    //=========================================================
+
 
     // アニメーション再生
     void SetPlayAnimation(int enAnimationClip)
@@ -144,18 +223,6 @@ public:
     {
         return m_characterModel->IsPlayAnimation()
             && m_setAnimation == enAnimationClip_Swing;
-    }
-
-    // 再生速度設定
-    void SetPlaySpeed(float speed)
-    {
-        m_playSpeed = speed;
-    }
-
-    // 再生速度取得
-    float GetPlaySpeed() const
-    {
-        return m_playSpeed;
     }
 
     //=========================================================
@@ -425,203 +492,4 @@ public:
     {
         return m_characterModel.get();
     }
-
-    // ランダム値取得
-    float SetRandom(const float min, const float max)
-    {
-        return min + (max - min)
-            * (rand() / (float)RAND_MAX);
-    }
-
-public:
-
-    // 一時停止フラグ
-    bool m_isPaused = false;
-
-private:
-
-    //=========================================================
-    // state machine
-    //=========================================================
-
-    // バッターステート管理
-    std::unique_ptr<BatterStateMachine> m_stateMachine;
-
-    // デバフステート管理
-    std::unique_ptr<DebuffStageStateMachine>
-        m_debuffStageStateMachine;
-
-    //=========================================================
-    // external reference
-    //=========================================================
-
-    // ゲーム本体
-    Game* m_game = nullptr;
-
-    // UI
-    InGameUI* m_inGameUI = nullptr;
-
-    // ボール
-    Ball* m_ball = nullptr;
-
-    // 当たり判定
-    CollisionObject* m_collisionObject = nullptr;
-
-    // フォント描画
-    FontRender m_fontRender;
-
-    DebuffStage m_debuffStage;
-
-    //=========================================================
-    // transform / model
-    //=========================================================
-
-    // Transform
-    Transform m_transform;
-
-    // キャラクターモデル
-    std::unique_ptr<nsApp::CharacterModel>
-        m_characterModel;
-
-    // 初期回転
-    Quaternion m_initialRotation;
-
-    // 現在回転
-    Quaternion m_rotation;
-
-    // 向き
-    Vector3 m_facingDir =
-        Vector3(0.0f, 0.0f, -1.0f);
-
-    // 新座標
-    Vector3 newPosition;
-
-    //=========================================================
-    // animation
-    //=========================================================
-
-    // 再生速度
-    float m_playSpeed = 1.0f;
-
-    // アニメーション配列
-    AnimationClip m_animationClips[enAnimationClip_Num];
-
-    // 現在アニメーション
-    EnAnimationClip m_setAnimation =
-        enAnimationClip_Idle;
-
-    //=========================================================
-    // cursor
-    //=========================================================
-
-    // カーソルモード
-    bool m_isCursorMode = true;
-
-	// カーソル入力スケール
-	Vector2 m_inputScale = Vector2(1.0f, 1.0f);
-
-	// 反転カーソル入力スケール
-    Vector2 m_inversioninputScale = Vector2(1.0f, 1.0f);
-
-    // ミート位置
-    Vector3 m_meetPosition;
-
-    // カーソルワールド座標
-    Vector3 m_meetCursorWorldPos;
-
-	// カーソルオフセット
-    Vector3 m_cursorOffset;
-
-	// ヒット範囲
-    float m_meatRange = 100.0f;
-
-	// カーソル移動速度倍率
-	float m_cursorMoveScale = 1.0f;
-
-	// 揺れによるカーソルオフセット
-    Vector3 m_shakeCursorOffset = Vector3::Zero;
-
-	// 揺れによるカーソルオフセットの減衰速度
-    Vector3 m_assistCursorOffset = Vector3::Zero;
-
-	// 磁石によるカーソルオフセットの減衰速度
-    Vector3 m_magnetCursorOffset = Vector3::Zero;
-
-	// ノイズによるカーソルオフセットの減衰速度
-	Vector3 m_noiseCursorOffset = Vector3::Zero;
-
-	// ドリフトによるカーソルオフセットの減衰速度
-	Vector3 m_driftCursorOffset = Vector3::Zero;
-
-	Vector2 m_inputdelayScale = Vector2(1.0f, 1.0f);
-
-    bool m_isDelayFrag = false;
-
-    //=========================================================
-    // bat
-    //=========================================================
-
-    // 回転有効
-    bool m_isRotation = true;
-
-    // 回転中心
-    Vector3 pivotOffset =
-    {
-        0.0f,
-        0.0f,
-        100.0f
-    };
-
-    Vector3 m_bodyCenter;      // 本体中心
-    Vector3 m_modelPos;     // モデルの半径
-    float   m_orbitAngle;      // 公転角度
-
-
-    // 前回角度
-    float m_prevAngle = 0.0f;
-
-    // 回転タイマー
-    float m_guruGuruBatTimer = 0.0f;
-
-    // 総回転量
-    float m_totalRotation = 0.0f;
-
-    // 回転回数
-    int m_guruGuruBatCount = 0;
-
-    // ユニフォーム番号
-    int m_UniformNumber =
-        BatterNumber::UniformNumber_1;
-
-    //=========================================================
-    // hit
-    //=========================================================
-
-    // ヒット予約
-    bool m_isHitReserved = false;
-
-    // ヒット遅延
-    float m_hitDelayTimer = 0.0f;
-
-    // ヒット威力
-    float m_reservedHitPower = 0.0f;
-
-    // ヒット方向
-    Vector3 m_reservedHitDir = Vector3::Zero;
-
-    //=========================================================
-    // effect
-    //=========================================================
-
-    struct EffectInfo
-    {
-        // 出現エフェクト
-        uint32_t m_effectDawnID;
-
-        // ヒットエフェクト
-        uint32_t m_effectHitID;
-    };
-
-    // エフェクト情報
-    EffectInfo m_inro;
 };

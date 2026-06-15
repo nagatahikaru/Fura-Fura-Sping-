@@ -8,7 +8,7 @@ namespace nsApp
 		/* モデルのファイルパスを格納。*/
 		/* キャラモデルの格納。*/
 		/* プレイヤーモデル。*/
-		m_filePathList[CharacterModelType::BatterUniformNumber_0] = GetCharacterModelFilePath("Batter/UniformNumber/1"); /* 1Pモデル。*/
+		m_filePathList[CharacterModelType::BatterUniformNumber_0] = GetCharacterModelFilePath("Batter/UniformNumber/0"); /* 1Pモデル。*/
 
 		/* ピッチャーモデル。*/
 		m_filePathList[CharacterModelType::PicherUniformNumber_0] = GetCharacterModelFilePath("Picher/UniformNumber/0");

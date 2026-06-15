@@ -94,15 +94,6 @@
     <Filter Include="Source\Actor\Character\Batter\Debuff\DebuffStage">
       <UniqueIdentifier>{56b4eccf-0e68-46ef-8b85-67ccaf08af27}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Actor\ShaderEffect">
-      <UniqueIdentifier>{0c463ae3-14b9-437b-b8f0-0832ef9b4c0b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Actor\ShaderEffect\ShaderEffectStage">
-      <UniqueIdentifier>{e882228e-40fe-4b23-a86e-a5614f247302}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Actor\ShaderEffect\Pattern">
-      <UniqueIdentifier>{2c8b321d-28a4-4d38-80f0-431c517054e9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Graphics">
       <UniqueIdentifier>{725ce803-2098-4b15-930b-2d7d10aed9ed}</UniqueIdentifier>
     </Filter>
@@ -245,39 +236,6 @@
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffMagnetPattern.cpp">
       <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\Pattern\ShaderEffectBase.cpp">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\ShaderEffectIStateBess.cpp">
-      <Filter>Source\Actor\ShaderEffect</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\Pattern\IShaderEffectPattern.cpp">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\ShaderEffectStage\ShaderEffectStage.cpp">
-      <Filter>Source\Actor\ShaderEffect\ShaderEffectStage</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\ShaderEffectStageStateMachine.cpp">
-      <Filter>Source\Actor\ShaderEffect</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\Pattern\SceneChangePattern.cpp">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\Pattern\HomeRunPattern.cpp">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\Pattern\FocusPattern.cpp">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\Pattern\MotionBlurPattern.cpp">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\Pattern\BallTrailPattern.cpp">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\ShaderEffect\Pattern\OutlinePattern.cpp">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -418,39 +376,6 @@
     </ClInclude>
     <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffMagnetPattern.h">
       <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\Pattern\ShaderEffectBase.h">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\Pattern\IShaderEffectPattern.h">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\ShaderEffectStage\ShaderEffectStage.h">
-      <Filter>Source\Actor\ShaderEffect\ShaderEffectStage</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\ShaderEffectIStateBess.h">
-      <Filter>Source\Actor\ShaderEffect</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\ShaderEffectStageStateMachine.h">
-      <Filter>Source\Actor\ShaderEffect</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\Pattern\SceneChangePattern.h">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\Pattern\HomeRunPattern.h">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\Pattern\FocusPattern.h">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\Pattern\MotionBlurPattern.h">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\Pattern\BallTrailPattern.h">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\ShaderEffect\Pattern\OutlinePattern.h">
-      <Filter>Source\Actor\ShaderEffect\Pattern</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
