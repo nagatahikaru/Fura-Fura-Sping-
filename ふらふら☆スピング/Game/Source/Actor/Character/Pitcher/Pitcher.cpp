@@ -44,7 +44,7 @@ namespace PITCHER {
 		PlayerVariable::Transform::INITIAL_SCALE,
 		GetModelFilePath(i));
 	*/
-	// ★ここで正しく関数を定義
+
 	void InitModelRender(
 		ModelRender* modelRender
 		, AnimationClip* m_animationClips
@@ -62,6 +62,13 @@ namespace PITCHER {
 	{
 		animation[number].Load(GetAnimationFilePath(number).c_str());
 		animation[number].SetLoopFlag(loop);
+	}
+
+	void InitCharacterController(CharacterController* characterController, const Vector3& scale, const Vector3& pos)
+	{
+		characterController->Init(scale.x, scale.y, pos);
+		characterController->SetCollisionActive(true);
+		characterController->IsOnGround();
 	}
 };
 
@@ -97,6 +104,11 @@ bool Pitcher::Start()
 		Vector3(10.0f, 10.0f, 10.0f),
 		PITCHER::GetPitcherFilePath());
 
+	PITCHER::InitCharacterController(
+		&m_collisionObject, 
+		Vector3(10.0f, 20.0f, 10.0f), 
+		Vector3(-0.0f, 140.0f, 1000.0f));
+
 
 	//アニメーション再生
 	m_modelRender.PlayAnimation(enAnimationClip_Idle);
@@ -105,7 +117,7 @@ bool Pitcher::Start()
 	m_isThrowing = false;
 
 	m_modelRender.SetPosition(Vector3{ 0.0f,150.0f,1100.0f });
-
+	m_position = Vector3{ 0.0f,150.0f,1100.0f };
 	m_game = FindGO<Game>("game");
 	m_batter = FindGO<Batter>("batter");
 	return true;
@@ -178,6 +190,12 @@ void Pitcher::Update()
 			m_isThrowing = false;
 		}
 	}
+	if(!m_characterController.IsOnGround())
+	{
+		m_position.y -= 0.1f;
+		m_modelRender.SetPosition(m_position);
+	}
+
 	m_modelRender.Update();
 }
 

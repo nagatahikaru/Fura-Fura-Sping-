@@ -442,16 +442,6 @@ public:
         return m_isReplay;
     }
 
-    // ƒ{[ƒ‹‚Æ‚Ì‹——£Žæ“¾
-    float GetDistanceToBall() const
-    {
-        if (m_ball)
-        {
-            return (m_ball->GetPosition() - m_transform.m_position).Length();
-        }
-        return FLT_MAX;
-    }
-
     float GetMeatRange() const
     {
         return m_meatRange;

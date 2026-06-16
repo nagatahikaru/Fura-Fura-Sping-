@@ -69,7 +69,7 @@ float CookTorranceSpecular(float3 L, float3 V, float3 N, float smooth)
 
     // 金属度を垂直入射の時のフレネル反射率として扱う
     // 金属度が高いほどフレネル反射は大きくなる
-    float f0 = 0.5;
+    float f0 = 0.04;
 
     // ライトに向かうベクトルと視線に向かうベクトルのハーフベクトルを求める
     float3 H = normalize(L + V);
@@ -173,7 +173,8 @@ float3 CalcLighting(
     // クックトランスモデルの鏡面反射率を計算する
     float3 spec = CookTorranceSpecular(
         -ligDir, toEye, normal, smooth)
-        * ligColor;
+        * ligColor
+        *0.3;
 
     // 金属度が高ければ、鏡面反射はスペキュラカラー、低ければ白
     // スペキュラカラーの強さを鏡面反射率として扱う

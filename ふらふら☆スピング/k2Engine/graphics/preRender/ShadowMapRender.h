@@ -83,7 +83,7 @@ namespace nsK2Engine {
         CascadeShadowMapMatrix m_cascadeShadowMapMatrix;    // カスケードシャドウマップの行列を扱うオブジェクト
         RenderTarget m_shadowMaps[NUM_SHADOW_MAP];          // シャドウマップ
         std::vector< IRenderer* > m_renderers;              // シャドウマップへのレンダラーの配列。
-        float m_cascadeAreaRateArray[NUM_SHADOW_MAP] = { 0.05f,0.3f, 1.0f };
+        float m_cascadeAreaRateArray[NUM_SHADOW_MAP] = { 0.15f,0.3f, 1.0f };
         GaussianBlur m_blur[NUM_SHADOW_MAP];                // シャドウマップにブラーをかける処理。ソフトシャドウを行う際に使われます。
         bool m_isSoftShadow = false;                        // ソフトシャドウ？
     };
