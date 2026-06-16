@@ -28,6 +28,7 @@ private:
 	Vector3 m_targetPosition = Vector3::Zero;
 
 	ModelRender m_modelRender;
+	CharacterController m_collisionObject;
 
 	AnimationClip m_animationClips[enAnimationClip_Num];
 

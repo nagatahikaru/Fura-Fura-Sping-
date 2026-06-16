@@ -69,9 +69,9 @@ float4 PSMain(PSInput input) : SV_Target0
 	//法線ベクトルを法線マップから取得して、元の法線の値に戻している。
 	float3 norm = normalize((normalTexture .Sample(Sampler, input.uv).xyz * 2) - 1);
 	//計算する回数。
-	const int trycnt = 30;
+    const int trycnt = 64;
 	//半球の半径。
-	const float radius = 30.5f;
+	const float radius = 5.0f;
 
 	float sumDepth = 0.0f;
 
@@ -132,14 +132,13 @@ float4 PSMain(PSInput input) : SV_Target0
 		}
 		//cosΘの総和(全てが遮蔽されていた時の値)で割る。
 		// /= div;
-		sumDepth /= trycnt;
-	
+		sumDepth /= trycnt;	
 	}
 
 	// 遮蔽されないポイントの数から環境遮蔽係数を求める
 	float a = clamp(float(count) * SAMPLING_RATIO / float(trycnt), 0.0, 1.0);
-
-
+    a = pow(a, 2.0f);
+	
 	float brightNess = 0.0f;
 	//サンプリングした深度値-計算した深度値の平均。
 	//brightNess = sumDepth;
