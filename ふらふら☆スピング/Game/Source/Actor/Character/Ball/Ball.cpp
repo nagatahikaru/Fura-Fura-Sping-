@@ -156,7 +156,7 @@ void Ball::Update()
                 if (game) {
                     game->SetKmValue(distance);
 
-                    if (!m_hasShownPrediction && distance >= 10500.0f) {
+                    if (!m_hasShownPrediction && distance >= 10500.0f&&m_position.y >=80.0f) {
 
                         float predicted = PredictLandingDistance();
                         m_storedPredictedDistance = predicted;
@@ -169,7 +169,7 @@ void Ball::Update()
                     }
 
                     // ★ 空中で100m超えた瞬間にイベント発火
-                    if (!game->m_hasTriggered100m && distance >= 11500.0f) {
+                    if (!game->m_hasTriggered100m && distance >= 11500.0f&&m_position.y>=50.0f) {
                         game->OnOver100m();
                         game->m_hasTriggered100m = true;
                     }
@@ -534,7 +534,9 @@ void Ball::ResetBall()
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
     if (game) {
-        game->m_isInputLocked = false;
+        if (game->m_shots < 2) {
+            game->m_isInputLocked = false;
+        }
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
             ui->ResetBatAndMeetOnly();
@@ -614,7 +616,7 @@ void Ball::Render(RenderContext& rc)
     {
         if (m_isMagicBall)
         {
-            if (m_throwTimer < 0.9f)
+            if (m_throwTimer < 0.9f&&m_position.z>1100.0f)
             {
                 return;
             }
@@ -625,14 +627,14 @@ void Ball::Render(RenderContext& rc)
         }
         else
         {
-            if (m_throwTimer < 0.9f)
+            if (m_throwTimer < 0.9f&&m_position.z>1100.0f)
             {
                 return;
             }
         }
 
         // 一定距離で消す（通常プレイ中のバッター手前での消失処理など）
-        if (m_position.z > 7000.0f)
+        if (game && game->m_isReplayPlaying &&m_position.z > 6600.0f)
         {
             return;
         }
