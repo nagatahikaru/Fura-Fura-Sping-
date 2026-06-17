@@ -156,7 +156,7 @@ void Ball::Update()
                 if (game) {
                     game->SetKmValue(distance);
 
-                    if (!m_hasShownPrediction && distance >= 10500.0f&&m_position.y >=80.0f) {
+                    if (!m_hasShownPrediction && distance >= 10500.0f&&m_position.y >=150.0f) {
 
                         float predicted = PredictLandingDistance();
                         m_storedPredictedDistance = predicted;
@@ -169,7 +169,7 @@ void Ball::Update()
                     }
 
                     // ★ 空中で100m超えた瞬間にイベント発火
-                    if (!game->m_hasTriggered100m && distance >= 11500.0f&&m_position.y>=50.0f) {
+                    if (!game->m_hasTriggered100m && distance >= 11500.0f&&m_position.y>=100.0f) {
                         game->OnOver100m();
                         game->m_hasTriggered100m = true;
                     }
