@@ -509,7 +509,7 @@ void Game::OnBallLanded()
 	// 3球目が終わった？
 	if (m_shots == 2) {
 		DecideBestReplay();
-
+		m_isInputLocked = true;
 		if (m_bestShotIndex != -1) {
 			// ベストショットがある → リプレイ開始を予約
 			m_shouldStartReplay = true;
@@ -588,7 +588,7 @@ void Game::StartReplay(int index)
 	m_replayTimer = 0.0f;
 	m_hasAppliedHitMoment = false;
 	// ▼ 追加：タイマーとアキュムレータの初期化
-	m_replayDelayTimer = 1.3f;  // 1.5秒待機
+	m_replayDelayTimer = 1.1f;  // 1.5秒待機
 	m_replayAccumulator = 0.0f; // アキュムレータ初期化
 	m_cameraMode = Camera_Replay;
 	m_currentReplay = m_replayPaths[index];

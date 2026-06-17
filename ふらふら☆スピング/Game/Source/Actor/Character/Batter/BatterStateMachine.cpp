@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Source/Actor/ActorStateMachine.h"
 #include "BatterStateMachine.h"
 #include "Batter.h" 
@@ -60,13 +60,13 @@ void BatterIdleState::Exit()
 	
 }
 
-//‘Ò‹@ó‘Ô‚©‚ç‚Ìó‘Ô‘JˆÚ”»’èB
-//ƒXƒeƒBƒbƒN“ü—Í‚Å‰ñ“]ó‘ÔB
-//–ß‚è’lFó‘Ô‘JˆÚ‚ª”­¶‚µ‚½‚çtrueA‚µ‚È‚©‚Á‚½‚çfalse‚ğ•Ô‚·B
+//å¾…æ©ŸçŠ¶æ…‹ã‹ã‚‰ã®çŠ¶æ…‹é·ç§»åˆ¤å®šã€‚
+//ã‚¹ãƒ†ã‚£ãƒƒã‚¯å…¥åŠ›ã§å›è»¢çŠ¶æ…‹ã€‚
+//æˆ»ã‚Šå€¤ï¼šçŠ¶æ…‹é·ç§»ãŒç™ºç”Ÿã—ãŸã‚‰trueã€ã—ãªã‹ã£ãŸã‚‰falseã‚’è¿”ã™ã€‚
 bool BatterIdleState::RequestState(uint32_t& request)
 {
 	Batter* batter = GetBatter();
-
+	Game* game = FindGO<Game>("game");
 	if (batter->GetIsReplay())
 	{
 		request = BatterReplayState::ID();
@@ -81,16 +81,19 @@ bool BatterIdleState::RequestState(uint32_t& request)
 
 	if (g_pad[0]->IsTrigger(enButtonA))
 	{
-		Game* game = FindGO<Game>("game");
+		
 		if (game && game->m_isInputLocked)
 		{
-			return false;
+			if (game->GetCurrentShotIndex() == 2 && game->m_isInputLocked)
+			{
+				return false; // å®Œå…¨ã«ç„¡è¦–ã—ã¦å¾…æ©ŸçŠ¶æ…‹ã‚’ç¶­æŒ
+			}
 		}
 		if (game) {
 			int shot = game->GetCurrentShotIndex();
 			int frame = game->GetCurrentReplayRecordFrame();
 
-			// š ‚±‚ÌƒtƒŒ[ƒ€‚Ì swingTriggered ‚ğ true ‚É‚·‚é
+			// â˜… ã“ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã® swingTriggered ã‚’ true ã«ã™ã‚‹
 			if (frame < game->m_replayFrames[shot].size()) {
 				game->m_replayFrames[shot][frame].swingTriggered = true;
 			}
@@ -160,8 +163,8 @@ void BatterCursorSetState::Update()
 {
 	Batter* batter = GetBatter();
 	batter->DownArrowEffect();
-	batter->UpdateCursor3D();   // š ˆÊ’uXV‚¾‚¯
-	batter->BatHitBoxPosition(); // š “–‚½‚è”»’è‚ÌˆÊ’uXV
+	batter->UpdateCursor3D();   // â˜… ä½ç½®æ›´æ–°ã ã‘
+	batter->BatHitBoxPosition(); // â˜… å½“ãŸã‚Šåˆ¤å®šã®ä½ç½®æ›´æ–°
 	batter->AnimationUpdate();
 }
 
@@ -177,7 +180,10 @@ bool BatterCursorSetState::RequestState(uint32_t& request)
 	{
 			if (game && game->m_isInputLocked)
 			{
-				return false;
+				if (game->GetCurrentShotIndex() == 2 && game->m_isInputLocked)
+				{
+					return false; // é·ç§»ã‚’æ‹’å¦
+				}
 			}
 		request = BatterSwingState::ID();
 		return true;
@@ -193,46 +199,63 @@ bool BatterCursorSetState::RequestState(uint32_t& request)
 void BatterSwingState::Enter()
 {
 	Batter* batter = GetBatter();
+	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
 	batter->Swing();
 	batter->RotationUpdate();
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
-
-	// ššš ‚±‚±‚ğC³E’Ç‹L ššš
+	m_swingTimer = 0.0f;
+	// â˜…â˜…â˜… ã“ã“ã‚’ä¿®æ­£ãƒ»è¿½è¨˜ â˜…â˜…â˜…
 	Game* game = FindGO<Game>("game");
 	if (game) {
 		int shot = game->GetCurrentShotIndex();
 		int frame = game->GetCurrentReplayRecordFrame();
 
-		game->SetSwingFrame(shot, frame); // Šù‘¶‚ÌƒtƒŒ[ƒ€‹L˜^
-		game->SetHasSwung(shot, true);    // šÀÛ‚ÉU‚Á‚½ƒtƒ‰ƒO‚ğ true ‚ÉI
+		game->SetSwingFrame(shot, frame); // æ—¢å­˜ã®ãƒ•ãƒ¬ãƒ¼ãƒ è¨˜éŒ²
+		game->SetHasSwung(shot, true);    // â˜…å®Ÿéš›ã«æŒ¯ã£ãŸãƒ•ãƒ©ã‚°ã‚’ true ã«ï¼
 	}
 }
 
 void BatterSwingState::Update()
 {
 	Batter* batter = GetBatter();
-	// š ƒXƒCƒ“ƒOƒAƒjƒ‚ğ4.0”{‘¬‚É‚·‚é
+	// â˜… ã‚¹ã‚¤ãƒ³ã‚°ã‚¢ãƒ‹ãƒ¡ã‚’4.0å€é€Ÿã«ã™ã‚‹ï¼ˆè¦‹ãŸç›®ã¯æœ€å¾Œã¾ã§æŒ¯ã‚Šåˆ‡ã‚‹ï¼‰
 	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
 	batter->AnimationUpdate();
-	// š ƒXƒCƒ“ƒO’†‚¾‚¯“–‚½‚è”»’è
-	batter->DownArrowEffect();
-	batter->BatHitBoxPosition();
-	batter->HitBat();
-}
 
+	// 1. ã‚¹ã‚¤ãƒ³ã‚°é–‹å§‹ã‹ã‚‰ã®çµŒéæ™‚é–“ï¼ˆç§’ï¼‰ã‚’è¨ˆç®—
+	// 4.0å€é€Ÿã§å†ç”Ÿã•ã‚Œã¦ã„ã‚‹ãŸã‚ã€å®Ÿéš›ã®çµŒéæ™‚é–“ã«4.0å€ã‚’æ›ã‘ã¦ç´¯ç©ã—ã¾ã™
+	m_swingTimer += g_gameTime->GetFrameDeltaTime() * 4.0f;
+
+	// 2. çµŒéç§’æ•°ã‚’ã€Œ60fpsæ›ç®—ã®ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã€ã«å¤‰æ›
+	float elapsedFrames = m_swingTimer * 60.0f;
+
+	// â˜…â˜…â˜… ã€ã“ã“ã‚’å¤‰æ›´ã€‘ã€‡ã€‡ãƒ•ãƒ¬ãƒ¼ãƒ ä»¥é™ã¯æ‰“ã¦ãªã„å‡¦ç† â˜…â˜…â˜…
+	// ã‚¹ã‚¤ãƒ³ã‚°é–‹å§‹ã‹ã‚‰ã€Œ8ãƒ•ãƒ¬ãƒ¼ãƒ ã€ãŒçµŒéã™ã‚‹ã¾ã§ã¯æ‰“ã¦ã‚‹ï¼ˆHitBatã‚’å®Ÿè¡Œã™ã‚‹ï¼‰ã€‚
+	// 8ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’è¶…ãˆãŸã‚‰ï¼ˆ9ãƒ•ãƒ¬ãƒ¼ãƒ ç›®ä»¥é™ã¯ï¼‰HitBatãŒå‘¼ã°ã‚Œãªã„ãŸã‚ã€ãƒ•ã‚©ãƒ­ãƒ¼ã‚¹ãƒ«ãƒ¼ã¨ãªã‚Šæ‰“ã¦ãªããªã‚Šã¾ã™ã€‚
+	if (elapsedFrames <= 20.0f)
+	{
+		batter->DownArrowEffect();
+		batter->BatHitBoxPosition();
+		batter->HitBat(); // â† ã“ã“ã§å®Ÿéš›ã«æ‰“ã¦ã‚‹åˆ¤å®šã‚’è¡Œã†
+	}
+	else
+	{
+	}
+}
 void BatterSwingState::Exit()
 {
 	Batter* batter = GetBatter();
-	// š ƒAƒjƒ‘¬“x‚ğŒ³‚É–ß‚·
-	   // š ƒXƒCƒ“ƒOƒAƒjƒ‚¾‚¯ 1.0”{‘¬
+	// â˜… ã‚¢ãƒ‹ãƒ¡é€Ÿåº¦ã‚’å…ƒã«æˆ»ã™
+	   // â˜… ã‚¹ã‚¤ãƒ³ã‚°ã‚¢ãƒ‹ãƒ¡ã ã‘ 1.0å€é€Ÿ
 	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(1.0f);
+	m_swingTimer = 0.0f;
 }
 
 bool BatterSwingState::RequestState(uint32_t& request)
 {
 	Batter* batter = GetBatter();
 
-	// š ƒXƒCƒ“ƒOƒAƒjƒ‚ªI‚í‚Á‚½‚ç Idle ‚É–ß‚·
+	// â˜… ã‚¹ã‚¤ãƒ³ã‚°ã‚¢ãƒ‹ãƒ¡ãŒçµ‚ã‚ã£ãŸã‚‰ Idle ã«æˆ»ã™
 	if (!batter->IsSwingAnimationPlaying())
 	{
 		request = BatterIdleState::ID();
@@ -277,6 +300,6 @@ void BatterReplayState::Exit()
 
 bool BatterReplayState::RequestState(uint32_t& request)
 {
-	// š ƒŠƒvƒŒƒC’†‚Íó‘Ô‘JˆÚ‚µ‚È‚¢
+	// â˜… ãƒªãƒ—ãƒ¬ã‚¤ä¸­ã¯çŠ¶æ…‹é·ç§»ã—ãªã„
 	return false;
 }
