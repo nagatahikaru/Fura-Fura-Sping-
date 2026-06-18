@@ -59,5 +59,6 @@ private:
 private:	
     ShakeType m_type;
 	float m_waveTime = 0.0f;
+    float m_timer = 0.0f;
 };
 

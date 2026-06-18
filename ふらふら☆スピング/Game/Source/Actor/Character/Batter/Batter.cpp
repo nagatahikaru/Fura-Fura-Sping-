@@ -194,29 +194,29 @@ void Batter::Update()
 /** 回転計算処理関数 */
 void Batter::Rotation()
 {	
-//	if (g_pad[0]->IsTrigger(enButtonA))
-//	{
-//		m_guruGuruBatCount++; // 連打でカウントを増やす
-//
-//		// 各種マネージャーやUIに即座に通知
-//		m_game->SetGuruGuru(m_guruGuruBatCount);
-//		if (m_inGameUI) {
-//			m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
-//		}
-//	}
-//
-//	// 棒立ちを防ぐために、見た目だけ自動で回転させる処理
-//	static float dummyAngle = 0.0f;
-//	dummyAngle += 720.0f * g_gameTime->GetFrameDeltaTime(); // 毎秒2回転
-//	if (dummyAngle >= 360.0f) dummyAngle -= 360.0f;
-//
-//	float rad = dummyAngle * 3.14159265f / 180.0f;
-//	m_facingDir.x = cosf(rad);
-//	m_facingDir.z = sinf(rad);
-//	m_facingDir.y = 0.0f;
-//	m_facingDir.Normalize();
-//
-//	m_modelPos = m_bodyCenter; // 位置は中心固定
+	if (g_pad[0]->IsTrigger(enButtonA))
+	{
+		m_guruGuruBatCount+=3; // 連打でカウントを増やす
+
+		// 各種マネージャーやUIに即座に通知
+		m_game->SetGuruGuru(m_guruGuruBatCount);
+		if (m_inGameUI) {
+			m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
+		}
+	}
+
+	// 棒立ちを防ぐために、見た目だけ自動で回転させる処理
+	static float dummyAngle = 0.0f;
+	dummyAngle += 720.0f * g_gameTime->GetFrameDeltaTime(); // 毎秒2回転
+	if (dummyAngle >= 360.0f) dummyAngle -= 360.0f;
+
+	float rad = dummyAngle * 3.14159265f / 180.0f;
+	m_facingDir.x = cosf(rad);
+	m_facingDir.z = sinf(rad);
+	m_facingDir.y = 0.0f;
+	m_facingDir.Normalize();
+
+	m_modelPos = m_bodyCenter; // 位置は中心固定
 
 
 	//////////////////////////
@@ -427,6 +427,7 @@ Vector3 Batter::CalcCursorWorldPos()
 
 
 /** Hit計算関連コード */
+
 void Batter::HitBat()
 {
 	if (m_ball->m_hasHit) return;
@@ -457,7 +458,7 @@ void Batter::HitBat()
 
 	// 真ん中に行くにつれて timingRatio が 0 になるため、luckScale がいくつであっても必ず 1.0 に近づきます
 	float timingPowerScale = 1.0f - (timingRatio * luckScale);
-	
+
 	// ② カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
 	cursor.z = ballPos.z;
@@ -469,17 +470,31 @@ void Batter::HitBat()
 		Vector3 hitDir = ballPos - cursor;
 		m_hitPosition = m_ball->GetPosition();
 		HitEffect(m_ball->GetPosition());
-		// 前方向の力
+
+		// センター（ジャストミート）からのZのズレを算出
+		// zDiff > 0 : 早い（手前で捉えた）/ zDiff < 0 : 遅い（引き付けた）
+		float zDiff = ballPos.z - BATTER::HIT_ZONE_CENTER;
+
+		// 左右のブレ幅を調節する係数（小さくするほど正面に飛びやすくなります）
+		// 「少し行くくらい」にするために 2.5f 〜 4.0f 程度で調整してみてください
+		const float sideInfluence = 1.2f;
+
+		// 左打者：
+		// 早い（zDiffがプラス） -> ライト方向（Xプラス）へ引っ張り
+		// 遅い（zDiffがマイナス） -> レフト方向（Xマイナス）へ流し
+		hitDir.x += zDiff * sideInfluence;
+
+		// 前方向（ピッチャー方向）への基本的な力
 		if (fabs(hitDir.z) >= 0.0f) {
 			hitDir.z = -100.0f;
 		}
 
 		if (m_inGameUI) {
-			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.2秒表示
+			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.5秒表示
 		}
 
 		if (m_game) {
-			// 1. まだヒットストップがかかっていない場合だけ、しっかり 0.08秒 止める
+			// 1. まだヒットストップがかかっていない場合だけ、しっかり 0.06秒 止める
 			if (!m_game->m_isHitStop) {
 				m_game->m_hitStopTimer = 0.06f;
 			}
@@ -490,7 +505,7 @@ void Batter::HitBat()
 
 		hitDir.y += 21.0f;
 		hitDir.Normalize();
-		// 角度（打ち上げ角）を計算
+
 		// 角度（打ち上げ角）を計算
 		float angleDeg = atan2f(hitDir.y, -hitDir.z) * BATTER::RAD_TO_DEG;
 
@@ -499,59 +514,54 @@ void Batter::HitBat()
 
 		// 高いフライほどパワーを弱くする
 		if (angleDeg > 60.0f) {
-			powerScale = 0.35f;   // 高フライ → 40%減衰
-			// ★ Y軸の上昇力を追加（強いフライにする）
-			hitDir.y += 50.0f;    // ← 好きな値に調整（50〜80が自然）
+			powerScale = 0.35f;    // 高フライ → 40%減衰
+			hitDir.y += 50.0f;
 		}
 		else if (angleDeg > 30.0f) {
-			powerScale = 0.55f;   // 中フライ → 20%減衰
+			powerScale = 0.55f;    // 中フライ → 20%減衰
 		}
 		// ★ 真ん中（10〜30度）→ パワー増加
 		else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
-			powerScale = 1.0f;   // ← 好きな倍率に調整
+			powerScale = 1.0f;
 		}
 		// ゴロ（角度が低すぎる）は少し弱くしてもOK
 		else if (angleDeg < 0.0f) {
-			powerScale = 0.8f;   // ゴロ → 少し弱く
+			powerScale = 0.8f;     // ゴロ → 少し弱く
 		}
 
 		// 最終パワー
 		float finalPower = 935.0f * powerScale;
 
-			// ★ 通常ヒット（即飛ぶ）
-			m_ball->HitBall(hitDir,+finalPower);
-			// ★ カメラ切り替え
-			if (m_game) {
-				m_game->SetCameraMode(Camera_BackBall);
+		// ★ 通常ヒット（即飛ぶ）
+		m_ball->HitBall(hitDir, finalPower);
 
-				GameCamera* cam = m_game->GetGameCamera();
-				if (cam) cam->StartHitMomentCamera();
-			}
+		// ★ カメラ切り替え
+		if (m_game) {
+			m_game->SetCameraMode(Camera_BackBall);
+
+			GameCamera* cam = m_game->GetGameCamera();
+			if (cam) cam->StartHitMomentCamera();
+		}
 
 		// UI・SE・カメラなどは共通でOK
 		if (m_inGameUI) {
 			m_inGameUI->m_shuchusenTimer = 0.5f;
 		}
-	
+
 		if (!m_game->m_isPaused && g_soundManager) {
-			// ★ 確定演出（パーフェクト）かどうかで鳴らすSEを切り替える
 			if (m_game && m_game->m_isKakutei) {
-				// 確定演出の時だけSE15を再生
 				g_soundManager->PlaySE(Sound::enSound_SE15, 100.0f);
 			}
 			else {
-				// 通常ヒット時は今までのSEを再生
 				g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
 			}
 
-			// パキーンという強い打撃音（SE2）は共通、あるいはここもお好みで調整してください
 			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 300.0f);
 			if (se2) se2->SetVolume(3.0f);
 			se2->SetName("SE2");
 		}
 	}
 }
-
 void Batter::UpdateBatAim()
 {
 	if (!IsSwingAnimationPlaying()) return;

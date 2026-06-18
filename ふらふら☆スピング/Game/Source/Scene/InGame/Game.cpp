@@ -126,7 +126,6 @@ void Game::Update()
 	}
 
 	if (m_isReadyPhase) {
-
 		if (g_pad[0]->IsTrigger(enButtonB)) {
 			m_isReadyPhase = false;
 			m_readyTimer = 0.0f;
@@ -149,11 +148,6 @@ void Game::Update()
 		if (m_InGameUI) {
 			m_InGameUI->SetGuruGuruTimer(m_readyTimer);
 		}
-
-		// 操作確認中もバッターのカーソル移動やアニメーションは動かす
-		if (m_batter) m_batter->Update(); // スティック操作などの更新を通す
-		if (m_pitcher) m_pitcher->GetModelRender()->Update();
-		if (m_catcher) m_catcher->GetModelRender()->Update(); // キャッチャーも動かす場合
 
 		// 5秒経過したら、本格的に1球目を開始する
 		if (m_readyTimer <= 0.0f) {

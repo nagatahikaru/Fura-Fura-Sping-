@@ -54,7 +54,11 @@ class DebuffStage
     void DebuffStageEight();
     void DebuffStageNine();
     void DebuffStageTen();
-
+    void DebuffStageEleven();
+    void DebuffStageTwelve();
+    void DebuffStageThirteen();
+    void DebuffStageFourteen();
+    void DebuffStageFifteen();
 private:
 	// デバフパターンのベクター
     std::vector<
