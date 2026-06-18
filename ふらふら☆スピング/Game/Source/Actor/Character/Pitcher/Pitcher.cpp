@@ -106,7 +106,7 @@ bool Pitcher::Start()
 
 	PITCHER::InitCharacterController(
 		&m_collisionObject, 
-		Vector3(10.0f, 20.0f, 10.0f), 
+		Vector3(10.0f, 10.0f, 10.0f), 
 		Vector3(-0.0f, 140.0f, 1000.0f));
 
 
@@ -116,8 +116,8 @@ bool Pitcher::Start()
 	m_timer = 0.0f;
 	m_isThrowing = false;
 
-	m_modelRender.SetPosition(Vector3{ 0.0f,150.0f,1100.0f });
-	m_position = Vector3{ 0.0f,150.0f,1100.0f };
+	m_modelRender.SetPosition(Vector3{ 0.0f,-50.0f,250.0f });
+	m_position = Vector3{ 0.0f,-50.0f,250.0f };
 	m_game = FindGO<Game>("game");
 	m_batter = FindGO<Batter>("batter");
 	return true;

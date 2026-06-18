@@ -24,9 +24,9 @@ bool Ball::Start()
 
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-	m_modelRender.SetScale({ 8.5f,8.5f,8.5f });
+	m_modelRender.SetScale({ 8.5f,8.5f,8.0f });
 
-	m_position = { -0.0f, 650.0f, 1000.0f };
+	m_position = { -0.0f, 600.0f, 800.0f };
 	m_modelRender.SetPosition(m_position);
 
 
