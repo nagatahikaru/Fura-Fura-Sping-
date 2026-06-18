@@ -634,7 +634,7 @@ void Ball::Render(RenderContext& rc)
         }
 
         // 一定距離で消す（通常プレイ中のバッター手前での消失処理など）
-        if (game && game->m_isReplayPlaying &&m_position.z > 6600.0f)
+        if (game && game->m_isReplayPlaying &&m_position.z > 6900.0f)
         {
             return;
         }

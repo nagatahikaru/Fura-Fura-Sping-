@@ -203,9 +203,6 @@
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStageStateMachine.cpp">
       <Filter>Source\Actor\Character\Batter\Debuff</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffIStateBess.cpp">
-      <Filter>Source\Actor\Character\Batter\Debuff</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\IDebuffPattern.cpp">
       <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
     </ClCompile>
@@ -234,6 +231,9 @@
       <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
     </ClCompile>
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffMagnetPattern.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffIStateBess.cpp">
       <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
     </ClCompile>
   </ItemGroup>
