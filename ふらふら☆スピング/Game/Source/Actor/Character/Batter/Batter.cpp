@@ -194,16 +194,16 @@ void Batter::Update()
 /** 回転計算処理関数 */
 void Batter::Rotation()
 {	
-	if (g_pad[0]->IsTrigger(enButtonA))
-	{
-		m_guruGuruBatCount+=3; // 連打でカウントを増やす
+	//if (g_pad[0]->IsTrigger(enButtonA))
+	//{
+	//	m_guruGuruBatCount+=3; // 連打でカウントを増やす
 
-		// 各種マネージャーやUIに即座に通知
-		m_game->SetGuruGuru(m_guruGuruBatCount);
-		if (m_inGameUI) {
-			m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
-		}
-	}
+	//	// 各種マネージャーやUIに即座に通知
+	//	m_game->SetGuruGuru(m_guruGuruBatCount);
+	//	if (m_inGameUI) {
+	//		m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
+	//	}
+	//}
 
 	// 棒立ちを防ぐために、見た目だけ自動で回転させる処理
 	static float dummyAngle = 0.0f;
