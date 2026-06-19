@@ -280,8 +280,8 @@ void DebuffStage::DebuffStageEleven()
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 300.0f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 300.0f);
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.1f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.1f);
 }
 
 void DebuffStage::DebuffStageTwelve()
@@ -304,8 +304,8 @@ void DebuffStage::DebuffStageTwelve()
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 600.0f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 600.0f);
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.2f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.2f);
 }
 
 void DebuffStage::DebuffStageThirteen()
@@ -328,8 +328,8 @@ void DebuffStage::DebuffStageThirteen()
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 900.0f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 900.0f);
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.3f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.3f);
 }
 
 void DebuffStage::DebuffStageFourteen()
@@ -352,8 +352,8 @@ void DebuffStage::DebuffStageFourteen()
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1200.0f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1200.0f);
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.4f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.4f);
 }
 
 void DebuffStage::DebuffStageFifteen()
@@ -376,6 +376,6 @@ void DebuffStage::DebuffStageFifteen()
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1500.0f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1500.0f);
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.5f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.5f);
 }

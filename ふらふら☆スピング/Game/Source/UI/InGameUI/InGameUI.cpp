@@ -15,9 +15,9 @@ InGameUI::InGameUI() {
 	m_spriteRenderMeet.Init("Assets/sprite/mi-to.DDS", 45.0f, 45.0f);
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
 	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 30.0f, 30.0f);
-	m_kiiro1.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
-	m_kiiro2.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
-	m_kiiro3.Init("Assets/sprite/kiiro.DDS", 620.0f, 600.0f);
+	m_kiiro1.Init("Assets/sprite/kiiro.DDS", 680.0f, 600.0f);
+	m_kiiro2.Init("Assets/sprite/kiiro.DDS", 680.0f, 600.0f);
+	m_kiiro3.Init("Assets/sprite/kiiro.DDS", 680.0f, 600.0f);
 	m_besu.Init("Assets/sprite/besu.DDS", 400.0f, 450.0f);
 	m_baisoku.Init("Assets/sprite/baisoku.DDS", 150.0f, 150.0f);
 	m_shuchusen.Init("Assets/sprite/shuchusen.DDS", 1920.0f, 1080.0f);
@@ -50,7 +50,7 @@ InGameUI::InGameUI() {
 	m_batu[0].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
 	m_batu[1].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
 	m_batu[2].Init("Assets/sprite/batu.dds", 50.0f, 50.0f);
-	m_guruguruSprite.Init("Assets/sprite/kiken.dds", 900.0f,700.0f);
+	m_guruguruSprite.Init("Assets/sprite/kiken.dds", 1000.0f,750.0f);
 	m_ballMapIcon.Init("Assets/sprite/ball.dds", 30.0f, 30.0f); 
 	m_gurahu.Init("Assets/sprite/gurahu.dds", 300.0f, 270.0f);
 	m_kuro.Init("Assets/sprite/kuro.DDS", 300.0f, 270.0f);
@@ -384,15 +384,15 @@ void InGameUI::StartStrikeAnim()
 
 void InGameUI::ShowPrediction(float predicted)
 {
-	if (predicted < 30000.0f) {
+	if (predicted < 80000.0f) {
 		m_predictionType = Prediction_Nice;
 		g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
 	}
-	else if (predicted < 45000.0f) {
+	else if (predicted < 95000.0f) {
 		m_predictionType = Prediction_Great;
 		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
 	}
-	else if (predicted < 52000.0f) {
+	else if (predicted < 102000.0f) {
 		m_predictionType = Prediction_Excellent;
 		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
 	}
@@ -665,7 +665,7 @@ void InGameUI::Render(RenderContext& rc) {
 			const wchar_t* stageText = m_stageTextList[stage];
 
 			m_fontStage[stage].SetText(stageText);
-			m_fontStage[stage].SetPosition(-230.0f, 500.0f, 0.0f);
+			m_fontStage[stage].SetPosition(-270.0f, 500.0f, 0.0f);
 			m_fontStage[stage].SetScale(0.8f);
 			m_fontStage[stage].SetColor(0, 0, 0, 1);
 			m_fontStage[stage].Draw(rc);
@@ -694,13 +694,13 @@ void InGameUI::Render(RenderContext& rc) {
 			m_ballIcon[i].Draw(rc);
 		}
 
-		m_kiiro1.SetPosition(Vector3{ 915.0f, 470.0f, 0.0f });
+		m_kiiro1.SetPosition(Vector3{ 905.0f, 470.0f, 0.0f });
 		m_kiiro1.Update();
 		m_kiiro1.Draw(rc);
-		m_kiiro2.SetPosition(Vector3{ 915.0f, 370.0f, 0.0f });
+		m_kiiro2.SetPosition(Vector3{ 905.0f, 370.0f, 0.0f });
 		m_kiiro2.Update();
 		m_kiiro2.Draw(rc);
-		m_kiiro3.SetPosition(Vector3{ 915.0f, 270.0f, 0.0f });
+		m_kiiro3.SetPosition(Vector3{ 905.0f, 270.0f, 0.0f });
 		m_kiiro3.Update();
 		m_kiiro3.Draw(rc);
 
@@ -844,19 +844,19 @@ void InGameUI::Render(RenderContext& rc) {
 
 			if (i == 0) {
 				m_fontBollRender1.SetText(buf);
-				m_fontBollRender1.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender1.SetPosition(654.0f, y, 0.0f);
 				m_fontBollRender1.SetColor(0, 0, 0, 1);
 				m_fontBollRender1.Draw(rc);
 			}
 			else if (i == 1) {
 				m_fontBollRender2.SetText(buf);
-				m_fontBollRender2.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender2.SetPosition(654.0f, y, 0.0f);
 				m_fontBollRender2.SetColor(0, 0, 0, 1);
 				m_fontBollRender2.Draw(rc);
 			}
 			else {
 				m_fontBollRender3.SetText(buf);
-				m_fontBollRender3.SetPosition(684.0f, y, 0.0f);
+				m_fontBollRender3.SetPosition(654.0f, y, 0.0f);
 				m_fontBollRender3.SetColor(0, 0, 0, 1);
 				m_fontBollRender3.Draw(rc);
 			}
