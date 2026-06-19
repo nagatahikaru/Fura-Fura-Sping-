@@ -72,7 +72,7 @@ void DebuffStageState::Update()
 
 	// デバフステージの段階は、ぐるぐるバットの回数に応じて変化します。
 	// 例えば、3回振ったら段階1、6回振ったら段階2、といった具合です。
-	level = min(level, 10);
+	level = min(level, 15);
 
 	// ぐるぐるバットの回数に応じて、デバフステージの段階を更新します。
 	if (level != m_stageLevel)

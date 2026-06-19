@@ -475,15 +475,11 @@ void Batter::HitBat()
 		// zDiff > 0 : 早い（手前で捉えた）/ zDiff < 0 : 遅い（引き付けた）
 		float zDiff = ballPos.z - BATTER::HIT_ZONE_CENTER;
 
-		// 左右のブレ幅を調節する係数（小さくするほど正面に飛びやすくなります）
-		// 「少し行くくらい」にするために 2.5f 〜 4.0f 程度で調整してみてください
-		const float sideInfluence = 1.2f;
+		float randomInfluence = (static_cast<float>(rand()) / RAND_MAX) * 0.7f;
 
-		// 左打者：
-		// 早い（zDiffがプラス） -> ライト方向（Xプラス）へ引っ張り
-		// 遅い（zDiffがマイナス） -> レフト方向（Xマイナス）へ流し
-		hitDir.x += zDiff * sideInfluence;
+		float sign = (rand() % 2 == 0) ? 1.0f : -1.0f;
 
+		hitDir.x += zDiff * randomInfluence * sign;
 		// 前方向（ピッチャー方向）への基本的な力
 		if (fabs(hitDir.z) >= 0.0f) {
 			hitDir.z = -100.0f;
@@ -514,19 +510,19 @@ void Batter::HitBat()
 
 		// 高いフライほどパワーを弱くする
 		if (angleDeg > 60.0f) {
-			powerScale = 0.35f;    // 高フライ → 40%減衰
+			powerScale = 0.65f;    // 高フライ → 40%減衰
 			hitDir.y += 50.0f;
 		}
 		else if (angleDeg > 30.0f) {
-			powerScale = 0.55f;    // 中フライ → 20%減衰
+			powerScale = 0.85f;    // 中フライ → 20%減衰
 		}
 		// ★ 真ん中（10〜30度）→ パワー増加
 		else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
-			powerScale = 1.0f;
+			powerScale = 1.4f;
 		}
 		// ゴロ（角度が低すぎる）は少し弱くしてもOK
 		else if (angleDeg < 0.0f) {
-			powerScale = 0.8f;     // ゴロ → 少し弱く
+			powerScale = 1.1f;     // ゴロ → 少し弱く
 		}
 
 		// 最終パワー

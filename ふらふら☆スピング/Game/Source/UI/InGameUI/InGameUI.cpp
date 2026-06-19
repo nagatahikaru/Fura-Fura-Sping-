@@ -384,15 +384,15 @@ void InGameUI::StartStrikeAnim()
 
 void InGameUI::ShowPrediction(float predicted)
 {
-	if (predicted < 30000.0f) {
+	if (predicted < 80000.0f) {
 		m_predictionType = Prediction_Nice;
 		g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
 	}
-	else if (predicted < 45000.0f) {
+	else if (predicted < 95000.0f) {
 		m_predictionType = Prediction_Great;
 		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
 	}
-	else if (predicted < 52000.0f) {
+	else if (predicted < 102000.0f) {
 		m_predictionType = Prediction_Excellent;
 		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
 	}

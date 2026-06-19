@@ -51,7 +51,7 @@ void GameCamera::SetkakuteiCamera() {
 }
 
 void GameCamera::SetReplayCamera() {
-    m_cameraPos = { 1080.0f, 630.0f, 0.0f };  // 斜め上から
+    m_cameraPos = { 1080.0f, 630.0f, -1000.0f };  // 斜め上から
     m_target = { 0.0f, 300.0f, 0.0f };        // 固定ターゲット（例）
     m_yaw = 165.0f;
     m_pitch = 3.0f;
@@ -140,9 +140,9 @@ void GameCamera::Update() {
         Vector3 fixedDir = Vector3(0, 0, 1);
         Vector3 targetCamPos = ballPos + fixedDir * followDistance;
 
-        targetCamPos.y = ballPos.y - 200.0f + distanceFromHome * 0.02f;
+        targetCamPos.y = ballPos.y - 300.0f + distanceFromHome * 0.02f;
 
-        m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 1.0f);
+        m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 0.97f);
         m_target = ballPos;
     }
     else if (m_followMode == Follow_Side && m_ball != nullptr) {
@@ -153,7 +153,7 @@ void GameCamera::Update() {
     else {
         m_target = m_cameraPos - m_forward * 100.0f;
     }
-    float minCameraHeight = 300.0f;
+    float minCameraHeight = 150.0f;
     if (m_followMode != Follow_None && m_cameraPos.y < minCameraHeight) {
         m_cameraPos.y = minCameraHeight;
     }
