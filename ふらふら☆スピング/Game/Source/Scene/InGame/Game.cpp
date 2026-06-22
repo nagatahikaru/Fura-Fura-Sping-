@@ -177,7 +177,7 @@ void Game::Update()
 
 	// ★★★ パーフェクト確定演出中（2秒間） ★★★
 	if (m_isKakutei) {
-	
+
 		if (m_InGameUI) {
 			m_InGameUI->SetUIVisible(false);
 			m_InGameUI->SetFontVisble(false);
@@ -302,9 +302,36 @@ void Game::Update()
 
 		if (m_afterLandingTimer >= 1.0f) {
 
-			// ★ 3球目なら次の球へ行かない（リプレイへ）
+			// ★ 3球目の着地から1秒経ったら、ここで初めて入力をロックしてフェードアウトを開始する
 			if (m_shots == 2) {
+				m_isInputLocked = true; // ★リプレイ直前のここでロック！
+				DecideBestReplay();
+				if (m_bestShotIndex != -1) {
+					m_shouldStartReplay = true;
+				}
+				else {
+					GoToResult();
+					return;
+				}
+				StartEndFade(); // フェードアウトしてリプレイへ
 				return;
+			}
+
+			// ★ 1球目・2球目の着地後1秒経ったときの処理
+			if (!m_hasTriggered100m) {
+				m_cameraMode = Camera_Catcher;
+
+				// UI も通常状態に戻す
+				if (m_InGameUI) {
+					m_InGameUI->SetUIVisible(true);
+					m_InGameUI->SetFontVisble(true);
+					m_InGameUI->SetReplayVisible(false);
+
+					if (m_batter) {
+						m_batter->ResetSwing();
+					}
+					m_InGameUI->ResetBatAndMeetOnly();
+				}
 			}
 
 			m_shots++;
@@ -355,9 +382,13 @@ void Game::Update()
 		// 振りかぶりなどの遅延処理
 		if (m_replayDelayTimer > 0.0f) {
 			m_replayDelayTimer -= g_gameTime->GetFrameDeltaTime();
-			float swingSec = (m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex]) / 60.0f;
+			float swingSec = 0.0f;
+			if (m_bestShotIndex >= 0) {
+				swingSec = (m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex]) / 60.0f;
+			}
 
-			if (m_hasSwung[m_bestShotIndex] && m_replaySwingTimer >= swingSec && !m_hasPlayedReplaySwing) {
+			// 記録フレーム情報が存在すれば、その時間で再生する（ランタイムフラグには依存しない）
+			if (m_bestShotIndex >= 0 && !m_hasPlayedReplaySwing && m_replaySwingTimer >= swingSec) {
 				m_batter->PlaySwingAnimation();
 				m_hasPlayedReplaySwing = true;
 			}
@@ -372,7 +403,7 @@ void Game::Update()
 		auto& path = m_currentReplay;
 		int index = m_replayStartFrame;
 
-		// ★ 安全に座標を流し込む
+		// 安全に位置を流し込む
 		if (index < path.size()) {
 			m_ball->SetPosition(path[index]);
 		}
@@ -380,7 +411,8 @@ void Game::Update()
 		// スイング（インパクト）の同期タイミング
 		int swingTiming = m_bestSwingFrame - m_bestPitchFrame;
 
-		if (m_hasSwung[m_bestShotIndex] && index == swingTiming) {
+		// 記録されたスイングフレーム情報がある場合は、必ずそのタイミングでアニメを再生する
+		if (m_bestShotIndex >= 0 && index == swingTiming) {
 			m_batter->PlaySwingAnimation();
 			m_batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
 
@@ -432,7 +464,7 @@ void Game::ResetForNextShot()
 		m_ball->ResetBall();
 	}
 
-	// 2. ★バッター内部のスティック移動累積（m_meetPosition）を完全にゼロリセット
+	// 2. バッター内部のスティック移動累積（m_meetPosition）を完全にゼロリセット
 	if (m_batter) {
 		m_batter->ResetSwing();
 	}
@@ -441,20 +473,21 @@ void Game::ResetForNextShot()
 	if (m_InGameUI) {
 		m_InGameUI->SetKm(0);
 		m_InGameUI->SetBaisokuVisible(false);
-
-		// 対処法2（FindGO）を使っている場合は自動でBatUIを探してリセットしてくれます
 		m_InGameUI->ResetBatAndMeetOnly();
 	}
 
+	// バッターはカーソル操作可能に戻す
 	if (m_batter) {
 		m_batter->SetCursorMode(true);
 	}
 
+	m_isInputLocked = false;
+
+	// 次のショット用のフラグ初期化（既存）
 	if (m_shots < 3) {
 		m_hasSwung[m_shots] = false;
 	}
 }
-
 void Game::OnBallLanded()
 {
 	m_isBallLanded = true;
@@ -466,22 +499,9 @@ void Game::OnBallLanded()
 	if (pitcher) {
 		pitcher->ResetThrow();
 	}
-	// ★ 100m未満のヒットはフェードアウトしないので、着地した瞬間にカメラを戻す
-	if (!m_hasTriggered100m) {
-		m_cameraMode = Camera_Catcher;
-
-		// UI も通常状態に戻す
-		if (m_InGameUI) {
-			m_InGameUI->SetUIVisible(true);
-			m_InGameUI->SetFontVisble(true);
-			m_InGameUI->SetReplayVisible(false);
-
-			// ★ここでも次の球に備えてバッターとUIを先行リセット
-			if (m_batter) {
-				m_batter->ResetSwing();
-			}
-			m_InGameUI->ResetBatAndMeetOnly();
-		}
+	// 追加: Ball内部の投球タイマーをリセットして、着地直後の即リセット／再投球を防止
+	if (m_ball) {
+		m_ball->ResetThrowTimer();
 	}
 	// スコア保存
 	m_scores[m_shots] = m_km;
@@ -518,7 +538,6 @@ void Game::OnBallLanded()
 		return;
 	}
 }
-
 
 void Game::OnOver100m()
 {

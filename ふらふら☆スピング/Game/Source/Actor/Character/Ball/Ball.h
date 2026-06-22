@@ -39,6 +39,7 @@ class Ball :public Character
 	void SetVelocity(const Vector3& v) { m_velocity = v; }
 	void ResetBall();
 	float PredictLandingDistance();
+	void ResetThrowTimer();
 	std::vector<Vector3> m_replayPath;
 	bool m_isRecording = false;
 	bool m_isMove = false;
