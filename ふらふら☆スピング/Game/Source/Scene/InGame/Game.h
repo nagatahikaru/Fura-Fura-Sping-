@@ -129,6 +129,8 @@ public:
 	float m_kakuteiTimer = 0.0f;
 	float m_timeScale = 1.0f;
 	bool m_isInputLocked = false;
+	void SetBallLanded(bool flag) { m_isBallLanded = flag; }
+
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。

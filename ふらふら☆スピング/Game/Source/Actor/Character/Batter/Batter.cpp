@@ -475,7 +475,7 @@ void Batter::HitBat()
 		// zDiff > 0 : 早い（手前で捉えた）/ zDiff < 0 : 遅い（引き付けた）
 		float zDiff = ballPos.z - BATTER::HIT_ZONE_CENTER;
 
-		float randomInfluence = (static_cast<float>(rand()) / RAND_MAX) * 0.7f;
+		float randomInfluence = (static_cast<float>(rand()) / RAND_MAX) * 0.3f;
 
 		float sign = (rand() % 2 == 0) ? 1.0f : -1.0f;
 

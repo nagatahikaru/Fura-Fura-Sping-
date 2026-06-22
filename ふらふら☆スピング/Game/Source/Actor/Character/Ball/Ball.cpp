@@ -534,14 +534,17 @@ void Ball::ResetBall()
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
     if (game) {
-        if (game->m_shots < 2) {
-            game->m_isInputLocked = false;
-        }
+        // 入力ロック解除は Game 側で一元管理するためここでは操作しない
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
             ui->ResetBatAndMeetOnly();
         }
     }
+}
+// 追加: 着地など外部から投球タイマーをリセットするための関数
+void Ball::ResetThrowTimer()
+{
+     m_throwTimer = 0.0f;
 }
 
 void Ball::Render(RenderContext& rc)
