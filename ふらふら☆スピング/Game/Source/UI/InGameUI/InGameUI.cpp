@@ -528,12 +528,12 @@ void InGameUI::Render(RenderContext& rc) {
 		m_keisuu.Update();
 		m_keisuu.Draw(rc);
 
-		double t = (double)m_guruGuruCount / 45.0;
+		double t = (double)m_guruGuruCount / 50.0;
 		t = clamp(t, 0.0, 1.0);
 
-		double currentMultiplier = 1.0 + 44.0 * pow(t, 2.5);
+		double currentMultiplier = 1.0 + 49.0 * pow(t, 2.5);
 
-		float progressRatioY = (float)((currentMultiplier - 1.0) / 44.0);
+		float progressRatioY = (float)((currentMultiplier - 1.0) / 49.0);
 		progressRatioY = clamp(progressRatioY, 0.0f, 1.0f);
 
 		float progressRatioX = (float)t;
