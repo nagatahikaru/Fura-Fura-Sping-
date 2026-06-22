@@ -36,7 +36,7 @@ namespace BATTER{
     constexpr float SCREEN_WIDTH = 1920.0f;				// 画面幅（ピクセル）
     constexpr float	SCREEN_HEIGHT = 1080.0f;			// 画面高さ（ピクセル）
     constexpr float HIT_ZONE_UPPER_LIMIT = 6100.0f;		// ヒットゾーンの上限（バッターの位置からの相対距離）
-    constexpr float HIT_ZONE_LOWER_LIMIT = 6005.0f;		// ヒットゾーンの下限（バッターの位置からの相対距離）
+    constexpr float HIT_ZONE_LOWER_LIMIT = 5900.0f;		// ヒットゾーンの下限（バッターの位置からの相対距離）
     constexpr float HIT_ZONE_CENTER = 6085.0f;			// ヒットゾーンの中心（バッターの位置からの相対距離）
     constexpr float HIT_ZONE_RADIUS = 15.0f;			// 真ん中から端までの最大距離 (6080 - 6075)
     constexpr float RAD_TO_DEG = 180.0f / 3.14159265f;	//ラジアンを度に変換するための定数
