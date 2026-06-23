@@ -873,7 +873,15 @@ void InGameUI::Render(RenderContext& rc) {
 			}
 		}
 
-		if (m_isPredictionVisible) {
+		Game* game = FindGO<Game>("game");
+		bool isFollowCamera = false;
+
+		if (game) {
+			CameraMode cam = game->GetCameraMode();
+			isFollowCamera = (cam == Camera_Ball || cam == Camera_BackBall);
+		}
+
+		if (m_isPredictionVisible && isFollowCamera) {
 
 			m_kiroku.SetPosition(Vector3{ 150.0f, -205.0f, 0.0f });
 			m_kiroku.Update();
