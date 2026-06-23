@@ -194,16 +194,16 @@ void Batter::Update()
 /** 回転計算処理関数 */
 void Batter::Rotation()
 {	
-	//if (g_pad[0]->IsTrigger(enButtonA))
-	//{
-	//	m_guruGuruBatCount+=3; // 連打でカウントを増やす
+	if (g_pad[0]->IsTrigger(enButtonA)|| g_pad[0]->IsTrigger(enButtonB))
+	{
+		m_guruGuruBatCount+=1; // 連打でカウントを増やす
 
-	//	// 各種マネージャーやUIに即座に通知
-	//	m_game->SetGuruGuru(m_guruGuruBatCount);
-	//	if (m_inGameUI) {
-	//		m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
-	//	}
-	//}
+		// 各種マネージャーやUIに即座に通知
+		m_game->SetGuruGuru(m_guruGuruBatCount);
+		if (m_inGameUI) {
+			m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
+		}
+	}
 
 	// 棒立ちを防ぐために、見た目だけ自動で回転させる処理
 	static float dummyAngle = 0.0f;
@@ -500,6 +500,22 @@ void Batter::HitBat()
 		}
 
 		hitDir.y += 21.0f;
+
+		float currentAngleRad = atan2f(hitDir.x, -hitDir.z);
+		constexpr float MAX_ANGLE_DEG = 30.0f; // 左右の限界角度（45度）
+		constexpr float maxAngleRad = nsK2EngineLow::Math::DegToRad(MAX_ANGLE_DEG);
+
+		if (currentAngleRad > maxAngleRad) {
+			currentAngleRad = maxAngleRad;
+		}
+		else if (currentAngleRad < -maxAngleRad) {
+			currentAngleRad = -maxAngleRad;
+		}
+
+		float xzLength = sqrtf(hitDir.x * hitDir.x + hitDir.z * hitDir.z);
+		hitDir.x = sinf(currentAngleRad) * xzLength;
+		hitDir.z = -cosf(currentAngleRad) * xzLength;
+
 		hitDir.Normalize();
 
 		// 角度（打ち上げ角）を計算
@@ -522,7 +538,7 @@ void Batter::HitBat()
 		}
 		// ゴロ（角度が低すぎる）は少し弱くしてもOK
 		else if (angleDeg < 0.0f) {
-			powerScale = 1.1f;     // ゴロ → 少し弱く
+			powerScale = 0.8f;     // ゴロ → 少し弱く
 		}
 
 		// 最終パワー
