@@ -300,7 +300,7 @@ void Game::Update()
 	if (m_isBallLanded && !m_isReplayPlaying) {
 		m_afterLandingTimer += (1.0f / 60.0f) * m_timeScale;
 
-		if (m_afterLandingTimer >= 1.0f) {
+		if (m_afterLandingTimer >= 1.5f) {
 
 			// ★ 3球目の着地から1秒経ったら、ここで初めて入力をロックしてフェードアウトを開始する
 			if (m_shots == 2) {

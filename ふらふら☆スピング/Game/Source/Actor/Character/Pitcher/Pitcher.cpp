@@ -168,7 +168,7 @@ void Pitcher::Update()
 
 	m_timer += dt;
 
-	if (!m_isThrowing && m_timer > 2.0f)
+	if (!m_isThrowing && m_timer > 2.5f)
 	{
 		SetPlayAnimation(enAnimationClip_Throw);
 		m_isThrowing = true;
