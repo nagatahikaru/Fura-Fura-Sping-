@@ -281,7 +281,7 @@ void DebuffStage::DebuffStageEleven()
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
 	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.1f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.1f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.2f);
 }
 
 void DebuffStage::DebuffStageTwelve()
@@ -305,7 +305,7 @@ void DebuffStage::DebuffStageTwelve()
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
 	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.2f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.2f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.4f);
 }
 
 void DebuffStage::DebuffStageThirteen()
@@ -329,7 +329,7 @@ void DebuffStage::DebuffStageThirteen()
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
 	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.3f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.3f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.6f);
 }
 
 void DebuffStage::DebuffStageFourteen()
@@ -352,8 +352,8 @@ void DebuffStage::DebuffStageFourteen()
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.4f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.4f);
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.3f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.8f);
 }
 
 void DebuffStage::DebuffStageFifteen()
@@ -376,6 +376,6 @@ void DebuffStage::DebuffStageFifteen()
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.5f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.5f);
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.3f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 2.0f);
 }

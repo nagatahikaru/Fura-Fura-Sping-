@@ -156,13 +156,13 @@ void Ball::Update()
                 if (game) {
                     game->SetKmValue(distance);
 
-                    if (!m_hasShownPrediction && distance >= 25000.0f && m_position.y >= 150.0f) {
+                    if (!m_hasShownPrediction && distance >= 24000.0f && m_position.y >= 300.0f) {
 
                         float predicted = PredictLandingDistance();
                         m_storedPredictedDistance = predicted;
 
                         // 🌟 追加：予測距離が 80000.0f（80m）未満の「ボテボテの当たり」ならNiceなどのUIを出さない
-                        if (predicted >= 25000.0f) {
+                        if (predicted >= 24000.0f) {
                             InGameUI* ui = game->GetInGameUI();
                             if (ui) {
                                 ui->ShowPrediction(predicted);
@@ -177,7 +177,7 @@ void Ball::Update()
                     }
 
                     // ★ 空中で100m超えた瞬間にイベント発火
-                    if (!game->m_hasTriggered100m && distance >= 26000.0f&&m_position.y>=100.0f) {
+                    if (!game->m_hasTriggered100m && distance >= 25000.0f&&m_position.y>=250.0f) {
                         game->OnOver100m();
                         game->m_hasTriggered100m = true;
                     }
