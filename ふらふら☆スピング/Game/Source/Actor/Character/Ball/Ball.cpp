@@ -66,7 +66,7 @@ void Ball::Update()
 
         m_throwTimer += dt;
 
-        if (m_throwTimer >= 2.2f && !m_isMove)
+        if (m_throwTimer >= 2.7f && !m_isMove)
         {
             ResetBall();
 
@@ -156,20 +156,28 @@ void Ball::Update()
                 if (game) {
                     game->SetKmValue(distance);
 
-                    if (!m_hasShownPrediction && distance >= 26500.0f&&m_position.y >=150.0f) {
+                    if (!m_hasShownPrediction && distance >= 25000.0f && m_position.y >= 150.0f) {
 
                         float predicted = PredictLandingDistance();
                         m_storedPredictedDistance = predicted;
-                        InGameUI* ui = game->GetInGameUI();
-                        if (ui) {
-                            ui->ShowPrediction(predicted);
-                        }
 
-                        m_hasShownPrediction = true;
+                        // 🌟 追加：予測距離が 80000.0f（80m）未満の「ボテボテの当たり」ならNiceなどのUIを出さない
+                        if (predicted >= 25000.0f) {
+                            InGameUI* ui = game->GetInGameUI();
+                            if (ui) {
+                                ui->ShowPrediction(predicted);
+                            }
+                            m_hasShownPrediction = true;
+                        }
+                        else {
+                            // 80m未満のゴロだった場合は、空中での予測表示フラグだけ true にして
+                            // 何度もこのブロックに入らないようにロックだけしておく
+                            m_hasShownPrediction = true;
+                        }
                     }
 
                     // ★ 空中で100m超えた瞬間にイベント発火
-                    if (!game->m_hasTriggered100m && distance >= 27500.0f&&m_position.y>=100.0f) {
+                    if (!game->m_hasTriggered100m && distance >= 26000.0f&&m_position.y>=100.0f) {
                         game->OnOver100m();
                         game->m_hasTriggered100m = true;
                     }
@@ -236,20 +244,26 @@ void Ball::Update()
                     InGameUI* ui = game->GetInGameUI();
 
                     if (m_hasHit) {
-                        // ★ ポイント1：UIが表示されているなら、UIが持っている数値をそのまま採用する
                         if (m_hasShownPrediction) {
-                            // Ballが計算した「生の数値」をそのまま使う（単位をcmに合わせる）
+                            // すでに空中ですごい当たり（Nice以上）の予測UIが出ている場合
                             finalDistance = m_storedPredictedDistance;
                         }
                         else {
-                            // 予測が出る前に着地した場合（ボテボテのゴロなど）
+                            // ★空中で予測が出なかった場合（ボテボテのゴロなど）
                             float dz = m_position.z - m_hitStartPos.z;
-                            finalDistance = -dz;
+                            finalDistance = -dz; // 実際の着地距離を計算
+
+                            // 🌟 着地した瞬間に、ゴロ用としてUIをキックする！
+                            if (ui) {
+                                // UI側に新しく作った Prediction_Goro などのタイプを渡す
+                                // （もしShowPredictionにタイプを渡せない構造なら、ui->ShowGoroPrediction(finalDistance) のような専用関数を作ってもOKです）
+                                ui->ShowPrediction(finalDistance);
+                            }
                         }
                         m_hasHit = false;
                     }
 
-                    // ★ ポイント2：ここで確実に finalDistance をセットする
+                    // 確実にゲーム側に最終飛距離をセットして着地イベントを呼ぶ
                     game->SetKmValue(finalDistance);
                     game->OnBallLanded();
                 }
@@ -470,7 +484,7 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     if (game) {
         bool isReplay = game->m_isReplayPlaying;
         // ★ パーフェクト閾値（あなたのUIと合わせる）
-        bool isPerfect = (predicted >= 101500.0f);
+        bool isPerfect = (predicted >= 99500.0f);
 
         if (isPerfect&& !isReplay) {
 
