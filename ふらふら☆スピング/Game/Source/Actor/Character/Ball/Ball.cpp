@@ -309,7 +309,7 @@ void Ball::Update()
 
        // いつでも左に寄せる処理（必要なければ 0.0f にしてください）
        loweredPos.x -= 100.0f;
-
+       loweredPos.z -= 650.0f;
        // ★ バッターに近づくほど、徐々に指定の高さ（-280.0f）へ沈み込ませる
        // t=0(投げた瞬間) はそのままの高さ、t=1(打たれる場所) でジャスト -280.0f 下がります
        loweredPos.y -= 290.0f * t;
@@ -317,7 +317,7 @@ void Ball::Update()
        m_modelRender.SetPosition(loweredPos);
 
        // 2. リプレイ中のボール拡大処理
-       float replayScale = 13.0f;
+       float replayScale = 14.0f;
        m_modelRender.SetScale({ replayScale, replayScale, replayScale });
     }
 
