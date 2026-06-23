@@ -38,7 +38,7 @@ namespace BATTER{
     constexpr float HIT_ZONE_UPPER_LIMIT = 6100.0f;		// ヒットゾーンの上限（バッターの位置からの相対距離）
     constexpr float HIT_ZONE_LOWER_LIMIT = 5900.0f;		// ヒットゾーンの下限（バッターの位置からの相対距離）
     constexpr float HIT_ZONE_CENTER = 6085.0f;			// ヒットゾーンの中心（バッターの位置からの相対距離）
-    constexpr float HIT_ZONE_RADIUS = 15.0f;			// 真ん中から端までの最大距離 (6080 - 6075)
+    constexpr float HIT_ZONE_RADIUS = 30.0f;			// 真ん中から端までの最大距離 (6080 - 6075)
     constexpr float RAD_TO_DEG = 180.0f / 3.14159265f;	//ラジアンを度に変換するための定数
     constexpr float CURSOR_MOVE_SPEED = 500.0f;			// カーソルの移動速度（ピクセル/秒）
 	constexpr float ROTATION_RADIUS = 230.0f;			// 回転の半径

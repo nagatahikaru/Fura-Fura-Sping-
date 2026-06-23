@@ -349,15 +349,6 @@ void Ball::Throw(const Vector3& targetPos)
     {
         m_isMagicBall = false; // 90%は通常球
     }
-    //デバック用スローボール
-  /*  if (rand() % 2 == 0)
-    {
-        m_ballType = SlowBall;
-    }
-    else
-    {
-        m_ballType = Straight;
-    }*/
 
     // 【確率調整】0〜99の乱数を取得
     int rate = rand() % 100;
@@ -608,26 +599,6 @@ void Ball::Render(RenderContext& rc)
             m_hasPlayedDisappearEffect = true;
         }
     }
-
-    // ★ 魔球が再出現した瞬間のエフェクト
-    //if (m_isMagicBall && !m_hasHit)
-    //{
-    //    // 消えていた区間を抜けた瞬間（Z >= 6000）
-    //    if (m_hasPlayedDisappearEffect && !m_hasPlayedReappearEffect)
-    //    {
-    //        if (m_position.z >= 6000.0f)
-    //        {
-    //            g_effectManager->PlayEffect(
-    //                enEffect_kemuri,
-    //                m_position,
-    //                Vector3(10.0f, 10.0f, 10.0f)
-    //            );
-    //            g_soundManager->PlaySE(enSound_SE14);
-    //            m_hasPlayedReappearEffect = true; // 二重発火防止
-    //        }
-    //    }
-    //}
-
 
     if (!m_hasHit)
     {
