@@ -162,7 +162,7 @@ void Ball::Update()
                         m_storedPredictedDistance = predicted;
 
                         // 🌟 追加：予測距離が 80000.0f（80m）未満の「ボテボテの当たり」ならNiceなどのUIを出さない
-                        if (predicted >= 80000.0f) {
+                        if (predicted >= 25000.0f) {
                             InGameUI* ui = game->GetInGameUI();
                             if (ui) {
                                 ui->ShowPrediction(predicted);
@@ -484,7 +484,7 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     if (game) {
         bool isReplay = game->m_isReplayPlaying;
         // ★ パーフェクト閾値（あなたのUIと合わせる）
-        bool isPerfect = (predicted >= 101500.0f);
+        bool isPerfect = (predicted >= 99500.0f);
 
         if (isPerfect&& !isReplay) {
 

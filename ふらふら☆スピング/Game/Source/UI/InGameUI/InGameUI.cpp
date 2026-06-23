@@ -389,7 +389,7 @@ void InGameUI::ShowPrediction(float prDistance)
 	m_predictionAlpha = 1.0f; // 必要に応じてフェードインの初期値など
 
 	// 🌟 距離が 80m 未満なら「ゴロ」として扱う
-	if (m_predictedDistance < 80000.0f)
+	if (m_predictedDistance < 25000.0f)
 	{
 		m_predictionType = Prediction_Goro;
 	}
@@ -399,11 +399,11 @@ void InGameUI::ShowPrediction(float prDistance)
 			m_predictionType = Prediction_Nice;
 			g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
 		}
-		else if (m_predictedDistance < 95000.0f) {
+		else if (m_predictedDistance < 93000.0f) {
 			m_predictionType = Prediction_Great;
 			g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
 		}
-		else if (m_predictedDistance < 102000.0f) {
+		else if (m_predictedDistance < 100000.0f) {
 			m_predictionType = Prediction_Excellent;
 			g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
 		}
@@ -893,7 +893,6 @@ void InGameUI::Render(RenderContext& rc) {
 			else if (m_predictionType == Prediction_Perfect) { // ★ 追加
 				spr = &m_perfectSprite;
 			}
-			// 🌟 m_predictionType が Prediction_Goro の時は spr は nullptr のままになる
 
 			if (spr) {
 				spr->SetPosition({ 0,0,0 });
