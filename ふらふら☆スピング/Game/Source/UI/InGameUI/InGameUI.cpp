@@ -57,7 +57,7 @@ InGameUI::InGameUI() {
 	m_keisuu.Init("Assets/sprite/gurugurukeisuu.DDS", 400.0f, 300.0f);
 	m_kakunin.Init("Assets/sprite/kakunin.DDS", 400.0f, 300.0f);
 	m_kakin.Init("Assets/sprite/kakin.DDS", 500.0f, 500.0f);
-	m_kiroku.Init("Assets/sprite/kiiro.DDS", 820.0f, 820.0f);
+	m_kiroku.Init("Assets/sprite/kiiro.DDS", 880.0f, 820.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -883,7 +883,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 		if (m_isPredictionVisible && isFollowCamera) {
 
-			m_kiroku.SetPosition(Vector3{ 150.0f, -205.0f, 0.0f });
+			m_kiroku.SetPosition(Vector3{ 180.0f, -205.0f, 0.0f });
 			m_kiroku.Update();
 			m_kiroku.Draw(rc);
 
@@ -915,9 +915,16 @@ void InGameUI::Render(RenderContext& rc) {
 			m_fontPrediction.SetText(predText);
 			m_fontPrediction.SetPosition(-150.0f, -150.0f, 0.0f);
 			m_fontPrediction.SetScale(1.5f);
-			m_fontPrediction.SetColor(0.0f, 0.0f, 0.0f, m_predictionAlpha);
-			m_fontPrediction.Draw(rc);
 
+			// ★ 1000を超えたら赤、それ以外は黒にする条件分岐
+			if (m_predictedDistance > 1000.0f) {
+				m_fontPrediction.SetColor(1.0f, 0.0f, 0.0f, m_predictionAlpha); // 赤色
+			}
+			else {
+				m_fontPrediction.SetColor(0.0f, 0.0f, 0.0f, m_predictionAlpha); // 元の黒色
+			}
+
+			m_fontPrediction.Draw(rc);
 		}
 
 		if (m_guruGuruTimer > 0.0 && !isReadyPhase) {

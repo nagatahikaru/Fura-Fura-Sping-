@@ -454,7 +454,7 @@ void Batter::HitBat()
 	float timingRatio = timingDiff / BATTER::HIT_ZONE_RADIUS;
 
 	// ※ 0.25 のときは「端で0.75（一番最悪）」、0.05 のときは「端で0.95（一番最高）」
-	float luckScale = 0.15f + (static_cast<float>(rand()) / RAND_MAX) * 0.10f;
+	float luckScale = 0.35f + (static_cast<float>(rand()) / RAND_MAX) * 0.10f;
 
 	// 真ん中に行くにつれて timingRatio が 0 になるため、luckScale がいくつであっても必ず 1.0 に近づきます
 	float timingPowerScale = 1.0f - (timingRatio * luckScale);
@@ -475,7 +475,7 @@ void Batter::HitBat()
 		// zDiff > 0 : 早い（手前で捉えた）/ zDiff < 0 : 遅い（引き付けた）
 		float zDiff = ballPos.z - BATTER::HIT_ZONE_CENTER;
 
-		float randomInfluence = (static_cast<float>(rand()) / RAND_MAX) * 0.25f;
+		float randomInfluence = (static_cast<float>(rand()) / RAND_MAX) * 0.15f;
 
 		float sign = (rand() % 2 == 0) ? 1.0f : -1.0f;
 
