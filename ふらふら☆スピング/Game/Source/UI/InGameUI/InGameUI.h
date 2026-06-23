@@ -9,7 +9,8 @@ public:
 		Prediction_Nice,
 		Prediction_Great,
 		Prediction_Excellent,
-		Prediction_Perfect
+		Prediction_Perfect,
+		Prediction_Goro
 	};
 	PredictionType m_predictionType = Prediction_None;
 	inline float Lerp(float a, float b, float t) {

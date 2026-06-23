@@ -382,32 +382,43 @@ void InGameUI::StartStrikeAnim()
 	m_strikeSprite.SetMulColor({ 1,1,1,0 }); // 透明
 }
 
-void InGameUI::ShowPrediction(float predicted)
+void InGameUI::ShowPrediction(float prDistance)
 {
-	if (predicted < 80000.0f) {
-		m_predictionType = Prediction_Nice;
-		g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
-	}
-	else if (predicted < 95000.0f) {
-		m_predictionType = Prediction_Great;
-		g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
-	}
-	else if (predicted < 102000.0f) {
-		m_predictionType = Prediction_Excellent;
-		g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
-	}
-	else {
-		m_predictionType = Prediction_Perfect;
-		g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f); // ★ パーフェクト音
-	}
+	m_predictedDistance = prDistance;
+	m_isPredictionVisible = true;
+	m_predictionAlpha = 1.0f; // 必要に応じてフェードインの初期値など
 
+	// 🌟 距離が 80m 未満なら「ゴロ」として扱う
+	if (m_predictedDistance < 80000.0f)
+	{
+		m_predictionType = Prediction_Goro;
+	}
+	else
+	{
+		if (m_predictedDistance < 80000.0f) {
+			m_predictionType = Prediction_Nice;
+			g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
+		}
+		else if (m_predictedDistance < 95000.0f) {
+			m_predictionType = Prediction_Great;
+			g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
+		}
+		else if (m_predictedDistance < 102000.0f) {
+			m_predictionType = Prediction_Excellent;
+			g_soundManager->PlaySE(Sound::enSound_SE9, 100.0f);  // ★ エクセレント音
+		}
+		else {
+			m_predictionType = Prediction_Perfect;
+			g_soundManager->PlaySE(Sound::enSound_SE10, 100.0f); // ★ パーフェクト音
+		}
+	}
 	// ★ アニメ開始
 	m_isPredictionAnim = true;
 	m_predictionAnimTimer = 0.0f;
 	m_predictionHoldTime = 1.5f;
 	m_predictionScale = 0.3f;
 	m_predictionAlpha = 0.0f;
-	m_predictedDistance = floorf(predicted + 0.01f) / 100.0f;
+	m_predictedDistance = floorf(m_predictedDistance + 0.005f) / 100.0f;
 	m_isPredictionVisible = true;
 }
 
@@ -864,6 +875,10 @@ void InGameUI::Render(RenderContext& rc) {
 
 		if (m_isPredictionVisible) {
 
+			m_kiroku.SetPosition(Vector3{ 150.0f, -205.0f, 0.0f });
+			m_kiroku.Update();
+			m_kiroku.Draw(rc);
+
 			SpriteRender* spr = nullptr;
 
 			if (m_predictionType == Prediction_Nice) {
@@ -875,27 +890,27 @@ void InGameUI::Render(RenderContext& rc) {
 			else if (m_predictionType == Prediction_Excellent) {
 				spr = &m_excellentSprite;
 			}
-			else {
-				spr = &m_perfectSprite;   // ★ 追加
+			else if (m_predictionType == Prediction_Perfect) { // ★ 追加
+				spr = &m_perfectSprite;
 			}
+			// 🌟 m_predictionType が Prediction_Goro の時は spr は nullptr のままになる
 
-			m_kiroku.SetPosition(Vector3{ 150.0f, -205.0f, 0.0f });
-			m_kiroku.Update();
-			m_kiroku.Draw(rc);
-
-			spr->SetPosition({ 0,0,0 });
-			spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
-			spr->SetMulColor({ 1,1,1, m_predictionAlpha });
-			spr->Update();
-			spr->Draw(rc);
+			if (spr) {
+				spr->SetPosition({ 0,0,0 });
+				spr->SetScale({ m_predictionScale, m_predictionScale, 1.0f });
+				spr->SetMulColor({ 1,1,1, m_predictionAlpha });
+				spr->Update();
+				spr->Draw(rc);
+			}
 
 			wchar_t predText[64];
 			swprintf_s(predText, L"%.2f m", m_predictedDistance);
 			m_fontPrediction.SetText(predText);
-			m_fontPrediction.SetPosition(-150.0f, -150.0f, 0.0f); // Excellent表示の下あたりに配置
+			m_fontPrediction.SetPosition(-150.0f, -150.0f, 0.0f);
 			m_fontPrediction.SetScale(1.5f);
-			m_fontPrediction.SetColor(0.0f, 0.0f, 0.0f, m_predictionAlpha); // 黄色で見やすく
+			m_fontPrediction.SetColor(0.0f, 0.0f, 0.0f, m_predictionAlpha);
 			m_fontPrediction.Draw(rc);
+
 		}
 
 		if (m_guruGuruTimer > 0.0 && !isReadyPhase) {
