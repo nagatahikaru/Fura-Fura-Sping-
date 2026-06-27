@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Background.h"
 
 namespace {
@@ -14,18 +14,18 @@ namespace {
 	}
 
 	/**
-		ƒXƒvƒ‰ƒCƒgî•ñXV
-		spriteRender:ƒXƒvƒ‰ƒCƒgƒŒƒ“ƒ_[
-		pos:À•W
-		scl:ƒXƒP[ƒ‹
-		Šî‘b’l:X=1.0f,Y=1.0f
-		Å‘å’l:X1920.0f,Y1080.0f
-		’†S‚ğ0‚Æ‚µ‚Ä
+		ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæƒ…å ±æ›´æ–°
+		spriteRender:ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆãƒ¬ãƒ³ãƒ€ãƒ¼
+		pos:åº§æ¨™
+		scl:ã‚¹ã‚±ãƒ¼ãƒ«
+		åŸºç¤å€¤:X=1.0f,Y=1.0f
+		æœ€å¤§å€¤:X1920.0f,Y1080.0f
+		ä¸­å¿ƒã‚’0ã¨ã—ã¦
 		x:-960.0f~960.0f
 		y:-540.0f~540.0f
-		filePath:ƒtƒ@ƒCƒ‹ƒpƒX
-		–ß‚è’l:‚È‚µ
-		—á:
+		filePath:ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+		æˆ»ã‚Šå€¤:ãªã—
+		ä¾‹:
 		UpdateSpriteInfo(&spriteRender,
 		Vector3(0.0f,0.0f,0.0f),
 		Vector3(1.0f,1.0f,1.0f),
@@ -38,7 +38,7 @@ namespace {
 		modelRender->Init(filePath.c_str());
 		physicsStaticObject->CreateFromModel(
 			modelRender->GetModel()
-			, modelRender->GetModel().GetWorldMatrix());//ƒ‚ƒfƒ‹‚©‚çÃ“I‚È•¨—ƒIƒuƒWƒFƒNƒg‚ğ¶¬
+			, modelRender->GetModel().GetWorldMatrix());//ãƒ¢ãƒ‡ãƒ«ã‹ã‚‰é™çš„ãªç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
 		return;
 	}
 }
