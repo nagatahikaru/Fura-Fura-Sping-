@@ -48,7 +48,7 @@ class Ball :public Character
 	Vector3 m_position;  //ボールの位置
 	Vector3 m_velocity;  //ボールの速度
 	Vector3 m_targetPos; //目標位置
-	Vector3 m_rotation;
+	//Vector3 m_rotation;
 
 	Quaternion m_rotation = Quaternion::Identity;
 	float m_rotateSpeed = 720.0f;   // 1秒で2回転
