@@ -70,7 +70,8 @@ public:
 	bool  m_isPerfectAnimActive = false;
 
 private:
-
+	enum class UIDifficulty { Easy, Normal, Hard };
+	UIDifficulty m_uiDifficulty = UIDifficulty::Normal;
 	FontRender m_fontRender;
 	FontRender m_fontBollRender1;
 	FontRender m_fontBollRender2;

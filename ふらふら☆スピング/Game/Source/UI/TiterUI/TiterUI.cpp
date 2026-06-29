@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "TiterUI.h"
-#include"Source/Scene/Load/Load.h"
 #include"Source/Scene/Titer/Titer.h"
 #include"Source/Scene/SoundTest/SoundTest.h"
 #include"Source/Scene/Ranking/Ranking.h"
-
+#include "Source/Scene/Load/Load.h"       
+#include "Source/Sound/SoundManager.h"
 TiterUI::TiterUI() {
 
 }
@@ -14,8 +14,10 @@ TiterUI::~TiterUI() {
 
 bool TiterUI::Start()
 {
+    // ▼ 共通の背景
     m_spriteRender.Init("Assets/sprite/Title.DDS", 1920.0f, 1080.0f);
 
+    // ▼ メインメニュー用UI
     m_start.Init("Assets/sprite/Start.dds", 250.0f, 150.0f);
     m_start.SetPosition({ 0.0f, -150.0f, 0.0f });
 
@@ -28,111 +30,195 @@ bool TiterUI::Start()
     m_ranking.Init("Assets/sprite/RankingUI.dds", 250.0f, 150.0f);
     m_ranking.SetPosition({ 0.0f, -300.0f, 0.0f });
 
+    // ▼ 難易度選択用UI（TransitionUIから引越し）
+    m_easySprite.Init("Assets/sprite/Difficulty_Easy.dds", 400.0f, 400.0f);
+    m_easySprite.SetPosition({ -500.0f, -300.0f, 0.0f });
+
+    m_normalSprite.Init("Assets/sprite/Difficulty_Normal.dds", 400.0f, 400.0f);
+    m_normalSprite.SetPosition({ 0.0f, -300.0f, 0.0f });
+
+    m_hardSprite.Init("Assets/sprite/Difficulty_Hard.dds", 400.0f, 400.0f);
+    m_hardSprite.SetPosition({ 500.0f, -300.0f, 0.0f });
+
+    m_nanido.Init("Assets/sprite/nanido.dds", 600.0f, 600.0f);
+    m_nanido.SetPosition({ 0.0f, 400.0f, 0.0f });
+
     m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
 
-    // ★ タイトルに入ってから 0.2秒は A 無効
-    m_inputBlockTime = 0.0f;
+    // 各種変数の初期化
+    m_state = State_MainMenu;
+    m_cursor = 0;
+    m_selectedDifficulty = 0;
+    m_isDeciding = false;
+    m_decideTimer = 0.0f;
+    m_fadeAlpha = 0.0f;
 
     return true;
 }
-
 void TiterUI::Update()
 {
-    // ▼ 決定アニメ中は入力を受け付けない
+    float dt = g_gameTime->GetFrameDeltaTime();
+
+    // -----------------------------------------------------------------
+    // 【共通】難易度決定後のアニメーション・フェードアウト処理
+    // -----------------------------------------------------------------
     if (m_isDeciding) {
+        m_decideTimer += dt;
 
-        // 1. START ボタン点滅（0.5秒）
-        m_decideTimer += g_gameTime->GetFrameDeltaTime();
+        // 1. 選択中ボタンの点滅（0.5秒）
         float blink = (sin(m_decideTimer * 20.0f) * 0.5f) + 0.5f;
-        m_start.SetMulColor({ 1,1,1, blink });
+        if (m_selectedDifficulty == 0)      m_easySprite.SetMulColor({ 1,1,1, blink });
+        else if (m_selectedDifficulty == 1) m_normalSprite.SetMulColor({ 1,1,1, blink });
+        else if (m_selectedDifficulty == 2) m_hardSprite.SetMulColor({ 1,1,1, blink });
 
-        // 2. 点滅後フェードアウト開始
+        // 2. 点滅開始から0.5秒後に黒フェード開始
         if (m_decideTimer >= 0.5f) {
-            m_fadeAlpha += g_gameTime->GetFrameDeltaTime() * 1.5f;
+            m_fadeAlpha += dt * 1.5f;
             if (m_fadeAlpha > 1.0f) m_fadeAlpha = 1.0f;
         }
 
-        // 3. フェード完了 → Load へ
-        if (m_fadeAlpha >= 1.0f) {
-            NewGO<Load>(0);
-            DeleteGO(this);
+        // 3. 全ての演出が終わったらLoadへ遷移（Transition.cppにあったロジックを統合）
+        if (m_decideTimer >= 1.2f) {
+            Load* load = NewGO<Load>(0);
+            if (load) {
+                load->SetDifficulty(static_cast<Difficulty>(m_selectedDifficulty));
+            }
+            DeleteGO(this); // 自身を削除して終了
+        }
+        return; // 演出中は以下の入力を受け付けない
+    }
+
+    if (m_state == State_MainMenu) {
+        // 上下カーソル移動
+        if (g_pad[0]->IsTrigger(enButtonUp)) {
+            m_cursor--;
+            if (m_cursor < 0) m_cursor = 2;
+            g_soundManager->PlaySE(enSound_SE12);
+        }
+        if (g_pad[0]->IsTrigger(enButtonDown)) {
+            m_cursor++;
+            if (m_cursor > 2) m_cursor = 0;
+            g_soundManager->PlaySE(enSound_SE12);
         }
 
-        return;
-    }
-
-    // ▼ カーソル移動（上下のみ）
-    if (g_pad[0]->IsTrigger(enButtonUp)) {
-        m_cursor--;
-        if (m_cursor < 0) m_cursor = 2;   // 0 → 上 → 2
-        g_soundManager->PlaySE(enSound_SE12);
-        m_inputBlockTime = 0.1f;
-    }
-
-    if (g_pad[0]->IsTrigger(enButtonDown)) {
-        m_cursor++;
-        if (m_cursor > 2) m_cursor = 0;   // 2 → 下 → 0
-        g_soundManager->PlaySE(enSound_SE12);
-        m_inputBlockTime = 0.1f;
-    }
-
-    // ▼ カーソル移動後の一瞬は A を無効化 ← ★ ここに置く！
-    if (m_inputBlockTime > 0.0f) {
-        m_inputBlockTime -= g_gameTime->GetFrameDeltaTime();
-        return;
-    }
-
-    // ▼ Aボタンで決定
-    if (g_pad[0]->IsTrigger(enButtonA)) {
-        g_soundManager->PlaySE(enSound_SE); // ← 決定音
+        // カーソル拡縮演出
         if (m_cursor == 0) {
-            m_isDeciding = true;
-            return;
+            m_start.SetScale({ 2.0f, 2.0f, 1.0f });
+            m_ranking.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_option.SetScale({ 1.0f, 1.0f, 1.0f });
         }
         else if (m_cursor == 1) {
-            NewGO<Ranking>(0);  // ★ ランキングへ
+            m_start.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_ranking.SetScale({ 2.0f, 2.0f, 1.0f });
+            m_option.SetScale({ 1.0f, 1.0f, 1.0f });
         }
         else if (m_cursor == 2) {
-            auto st = NewGO<SoundTestUI>(0); // OPTION
-            st->m_returnType = ReturnToTitle;
+            m_start.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_ranking.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_option.SetScale({ 2.0f, 2.0f, 1.0f });
         }
-        DeleteGO(this); // UI削除
-    }
 
-    // ▼ カーソルに応じて見た目を変える（例：少し拡大）
-    if (m_cursor == 0) {
-        m_start.SetScale({ 2.0f, 2.0f, 1.0f });   // ← 追加
-        m_option.SetScale({ 1.0f, 1.0f, 1.0f });  // ← 追加
-        m_ranking.SetScale({1.0f , 1.0f, 1.0f});
+        // Aボタン決定
+        if (g_pad[0]->IsTrigger(enButtonA)) {
+            g_soundManager->PlaySE(enSound_SE);
+            if (m_cursor == 0) {
+                // ★ 画面遷移せず、状態を「難易度選択」に切り替えるだけ！
+                m_state = State_DifficultySelect;
+                m_selectedDifficulty = 0;
+            }
+            else if (m_cursor == 1) {
+                NewGO<Ranking>(0);  // ランキングへ（TiterUIは使い捨て）
+                DeleteGO(this);
+            }
+            else if (m_cursor == 2) {
+                auto st = NewGO<SoundTestUI>(0); // オプションへ
+                st->m_returnType = ReturnToTitle;
+                DeleteGO(this);
+            }
+        }
     }
-    else if (m_cursor == 1) {
-        m_start.SetScale({ 1.0f, 1.0f, 1.0f });   // ← 追加
-        m_option.SetScale({ 1.0f, 1.0f, 1.0f });  // ← 追加
-        m_ranking.SetScale({ 2.0f, 2.0f, 1.0f });
-    }
-    else if (m_cursor == 2) {
-        m_start.SetScale({ 1.0f, 1.0f, 1.0f });   // ← 追加
-        m_option.SetScale({ 2.0f, 2.0f, 1.0f });  // ← 追加
-        m_ranking.SetScale({ 1.0f , 1.0f, 1.0f });
+ 
+    else if (m_state == State_DifficultySelect) {
+        // 左右カーソル移動
+        if (g_pad[0]->IsTrigger(enButtonLeft)) {
+            m_selectedDifficulty--;
+            if (m_selectedDifficulty < 0) m_selectedDifficulty = 2;
+            g_soundManager->PlaySE(enSound_SE12);
+        }
+        if (g_pad[0]->IsTrigger(enButtonRight)) {
+            m_selectedDifficulty++;
+            if (m_selectedDifficulty > 2) m_selectedDifficulty = 0;
+            g_soundManager->PlaySE(enSound_SE12);
+        }
+
+        // 難易度ボタン拡縮演出
+        if (m_selectedDifficulty == 0) {
+            m_easySprite.SetScale({ 2.0f, 2.0f, 1.0f });
+            m_normalSprite.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_hardSprite.SetScale({ 1.0f, 1.0f, 1.0f });
+        }
+        else if (m_selectedDifficulty == 1) {
+            m_easySprite.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_normalSprite.SetScale({ 2.0f, 2.0f, 1.0f });
+            m_hardSprite.SetScale({ 1.0f, 1.0f, 1.0f });
+        }
+        else if (m_selectedDifficulty == 2) {
+            m_easySprite.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_normalSprite.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_hardSprite.SetScale({ 2.0f, 2.0f, 1.0f });
+        }
+
+        // Aボタンで難易度確定
+        if (g_pad[0]->IsTrigger(enButtonA)) {
+            g_soundManager->PlaySE(enSound_SE); // 決定音
+            m_isDeciding = true;
+        }
+
+        // Bボタンでメインメニューに戻る
+        if (g_pad[0]->IsTrigger(enButtonB)) {
+            // ★スプライトのカラーを元（不透明）に戻してメニューに帰る
+            m_easySprite.SetMulColor({ 1,1,1,1 });
+            m_normalSprite.SetMulColor({ 1,1,1,1 });
+            m_hardSprite.SetMulColor({ 1,1,1,1 });
+            m_state = State_MainMenu;
+        }
     }
 }
-
 
 void TiterUI::Render(RenderContext& rc)
 {
     m_spriteRender.Draw(rc);
-    m_start.Update();
-    m_start.Draw(rc);
-    m_option.Update();
-    m_option.Draw(rc);
-    m_Title.Update();
-    m_Title.Draw(rc);
-    m_ranking.Update();
-    m_ranking.Draw(rc);
-    // ▼ フェードアウト（黒い板）
-    if (m_isDeciding) {
 
-        m_spritekuro.SetMulColor({ 1,1,1, m_fadeAlpha });
-        m_spritekuro.Draw(rc);
+    if (m_state == State_MainMenu) {
+        m_Title.Update();
+        m_Title.Draw(rc);
+
+        m_start.Update();
+        m_start.Draw(rc);
+
+        m_ranking.Update();
+        m_ranking.Draw(rc);
+
+        m_option.Update();
+        m_option.Draw(rc);
+    }
+    else if (m_state == State_DifficultySelect) {
+        m_nanido.Update();
+        m_nanido.Draw(rc);
+
+        m_easySprite.Update();
+        m_easySprite.Draw(rc);
+
+        m_normalSprite.Update();
+        m_normalSprite.Draw(rc);
+
+        m_hardSprite.Update();
+        m_hardSprite.Draw(rc);
+
+        // ▼ フェードアウト（黒い板）
+        if (m_isDeciding) {
+            m_spritekuro.SetMulColor({ 1,1,1, m_fadeAlpha });
+            m_spritekuro.Draw(rc);
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Source/Source.h"
-
+#include"Source/Scene/InGame/Game.h"
 class Result : public Source
 {
 public:
@@ -17,6 +17,7 @@ public:
 	void Render(RenderContext& rc);
 	void SetResultValues(int guruguru, int km, int scores[3]);
 	void StartFadeOut(float speed, std::function<void()> onFinished);
+	void SetDifficulty(Difficulty difficulty) { m_difficulty = difficulty; }
 	std::function<void()> m_onFadeOutFinished;
 private:
 	SpriteRender m_spriteRender;
@@ -64,5 +65,6 @@ private:
 	bool m_isFadeOut = false;
 	float m_fadeAlpha = 0.0f;
 	float m_fadeSpeed = 1.0f;
+	Difficulty m_difficulty = Difficulty::Easy;
 };
 

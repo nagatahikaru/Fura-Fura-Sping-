@@ -341,42 +341,45 @@ void Ball::Throw(const Vector3& targetPos)
 
     float speed = 2000.0f + (rand() % 250);
  
-    if (rand() % 10 == 0)
-    {
-      m_isMagicBall = true; // 10%で魔球になる
-    }
-    else
-    {
-        m_isMagicBall = false; // 90%は通常球
+    // ★ 1. ゲーム側から現在の難易度を取得する
+    Difficulty currentDifficulty = Normal; // デフォルト
+    Game* game = FindGO<Game>("game");
+    if (game) {
+        currentDifficulty = game->GetDifficulty(); // ※Gameクラスにある難易度取得関数
     }
 
-    // 【確率調整】0〜99の乱数を取得
-    int rate = rand() % 100;
+    // ★ 2. 難易度に応じた球種の確率調整
+    m_isMagicBall = false; // 初期化
 
-    if (rate < 24)
+    if (currentDifficulty == Easy)
     {
-        // 0〜23（24%の確率）でストレート
         m_ballType = Straight;
     }
-    else if (rate < 46)
+    else if (currentDifficulty == Normal)
     {
-        // 24〜45（22%の確率）で左右に揺れる
-        m_ballType = ShakeHorizontal;
-    }
-    else if (rate < 56)
-    {
-        // 46〜55（10%の確率）でスローボール
-        m_ballType = SlowBall;
-    }
-    else if (rate < 78)
-    {
-        // 56〜77（22%の確率）で上下に揺れる
-        m_ballType = ShakeVertical;
+        int rate = rand() % 100;
+        if (rate < 70) {
+            m_ballType = Straight;          // 40% ストレート
+        }
+        else if (rate < 90) {
+            m_ballType = Curve;             // 30% カーブ
+        }
+        else {
+            m_ballType = SlowBall;          // 30% スローボール
+        }
     }
     else
     {
-        // 78〜99（22%の確率）でカーブ
-        m_ballType = Curve;
+        if (rand() % 10 == 0) {
+            m_isMagicBall = true;
+        }
+
+        int rate = rand() % 100;
+        if (rate < 24)        m_ballType = Straight;
+        else if (rate < 46)   m_ballType = ShakeHorizontal;
+        else if (rate < 68)   m_ballType = Curve;
+        else if (rate < 90)   m_ballType = ShakeVertical;
+        else                  m_ballType = SlowBall;
     }
 
     //スローボールに魔球を追加しない
@@ -407,7 +410,6 @@ void Ball::Throw(const Vector3& targetPos)
     m_isRecording = true;
 
     // ★ 投げた瞬間の Z を UI に送る（必須）
-    Game* game = FindGO<Game>("game");
     if (game) {
         game->m_isKakutei = false;
         InGameUI* ui = game->GetInGameUI();
