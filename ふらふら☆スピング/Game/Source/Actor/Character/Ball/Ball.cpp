@@ -330,6 +330,14 @@ void Ball::Update()
        // 2. リプレイ中のボール拡大処理
        float replayScale = 14.0f;
        m_modelRender.SetScale({ replayScale, replayScale, replayScale });
+
+       float dt = game->m_isHitStop ? 0.0f : g_gameTime->GetFrameDeltaTime();
+
+       m_rotationAngle += m_rotateSpeed * dt;
+
+       Quaternion rot;
+       rot.SetRotationDegX(m_rotationAngle);
+       m_modelRender.SetRotation(rot);
     }
 
     // ★ UI に毎フレーム位置を送る（必須）
