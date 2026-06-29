@@ -97,6 +97,12 @@
     <Filter Include="Source\Graphics">
       <UniqueIdentifier>{725ce803-2098-4b15-930b-2d7d10aed9ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Scene\Transition">
+      <UniqueIdentifier>{a940ba77-eb88-463a-9fc6-710ac96f5d79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI\TransitionUI">
+      <UniqueIdentifier>{9448cab0-8f71-4eee-bf96-6d728ef0209d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

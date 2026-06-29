@@ -116,8 +116,10 @@ void Game::Update()
 		if (m_InGameUI) {
 			m_InGameUI->SetPause(true);
 		}
-
-		NewGO<PauseUI>(0, "pause");
+		PauseUI* pause = NewGO<PauseUI>(0, "pause");
+		if (pause) {
+			pause->SetDifficulty(m_difficulty); 
+		}
 	}
 
 	// ★ ポーズ中はゲーム停止
@@ -681,6 +683,9 @@ void Game::GoToResult()
 
 	int best = max(m_scores[0], max(m_scores[1], m_scores[2]));
 	Result* result = NewGO<Result>(0);
+	if (result) {
+		result->SetDifficulty(GetDifficulty());
+	}
 	result->SetResultValues(m_guruguru, best, m_scores);
 	DeleteGO(this);
 }

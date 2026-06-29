@@ -3,7 +3,19 @@
 #include "DebuffStageStateMachine.h"
 #include "Source/Actor/Character/Batter/Batter.h" 
 #include "DebuffStage/DebuffStage.h"
+#include "Source/Scene/InGame/Game.h"
 
+struct DebuffMasterData {
+	int rotationPerLevel; // 1ステージ上昇に必要なぐるぐるバットの回転数
+	int maxLevel;         // その難易度におけるデバフの最大レベル上限
+};
+
+// 難易度 [Easy, Normal, Hard] の enum 順に対応したマスタデータテーブル
+static const DebuffMasterData g_DebuffMasterTable[] = {
+	{ 10, 3 }, // Easy:   5回転で1レベル上昇、最大レベル5
+	{ 5, 7 }, // Normal: 3回転で1レベル上昇、最大レベル10
+	{ 3, 15 }  // Hard:   1回転で1レベル上昇、最大レベル15
+};
 
 // ぐるぐるバットの段階を管理するステートマシンの実装
 // ぐるぐるバットの段階は、バッターがぐるぐるバットを振った回数に応じて変化します。
@@ -68,20 +80,28 @@ void DebuffStageState::Update()
 	if (!batter || !debuffStage)
 		return;
 
-	int level = batter->GetGuruGuru() / 3;
+	Difficulty currentDiff = Difficulty::Normal; // ヌルチェック落ちした際の安全用デフォルト
+	if (batter->GetGame()) {
+		currentDiff = batter->GetGame()->GetDifficulty();
+	}
 
-	// デバフステージの段階は、ぐるぐるバットの回数に応じて変化します。
-	// 例えば、3回振ったら段階1、6回振ったら段階2、といった具合です。
-	level = min(level, 15);
+	// 難易度の enum 値をテーブルのインデックスとして使用
+	const auto& master = g_DebuffMasterTable[static_cast<int>(currentDiff)];
 
-	// ぐるぐるバットの回数に応じて、デバフステージの段階を更新します。
+	// 難易度に応じた回転数の基準で現在のレベルを算出
+	int level = batter->GetGuruGuru() / master.rotationPerLevel;
+
+	// 難易度ごとの最大レベルでクランプ
+	level = min(level, master.maxLevel);
+
+	// 算出されたデバフステージの段階に変更があった場合のみ、ステージを再構築します。
 	if (level != m_stageLevel)
 	{
 		m_stageLevel = level;
-		
+
 		debuffStage->ClearPatterns();
 		debuffStage->SetRotationCount(batter->GetGuruGuru());
-		debuffStage->BuildStage(m_stageLevel);		
+		debuffStage->BuildStage(m_stageLevel);
 	}
 
 	debuffStage->Update(batter);

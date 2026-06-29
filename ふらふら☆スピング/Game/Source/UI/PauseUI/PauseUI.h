@@ -1,6 +1,6 @@
 #pragma once
 #include "Source/Source.h"
-
+#include"Source/Scene/InGame/Game.h"
 class PauseUI :public Source
 {
 public:
@@ -9,6 +9,7 @@ public:
 	bool Start();
 	void Update();
 	void Render(RenderContext& rc);
+	void SetDifficulty(Difficulty difficulty) { m_difficulty = difficulty; }
 private:
 	SpriteRender m_spriteRender;
 	SpriteRender m_spritePause;
@@ -17,4 +18,5 @@ private:
 	SpriteRender m_Title;
 	SpriteRender m_yari;
 	int m_cursor = 0; // 0 = ÉQÅ[ÉÄ, 1 = ÉÅÉjÉÖÅ[
+	Difficulty m_difficulty = Difficulty::Easy;
 };
