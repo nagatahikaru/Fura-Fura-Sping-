@@ -278,8 +278,10 @@ void Ball::Update()
 
      m_rotationAngle += m_rotateSpeed * dt;
 
+     ////////
      Quaternion rot;
      rot.SetRotationDegX(m_rotationAngle);
+     ///////
 
      m_modelRender.SetRotation(rot);
      

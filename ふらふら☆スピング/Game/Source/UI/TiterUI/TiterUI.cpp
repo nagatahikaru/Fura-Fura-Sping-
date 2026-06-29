@@ -32,19 +32,25 @@ bool TiterUI::Start()
 
     // ▼ 難易度選択用UI（TransitionUIから引越し）
     m_easySprite.Init("Assets/sprite/Difficulty_Easy.dds", 400.0f, 400.0f);
-    m_easySprite.SetPosition({ -500.0f, -300.0f, 0.0f });
+    m_easySprite.SetPosition({ -490.0f, -300.0f, 0.0f });
 
     m_normalSprite.Init("Assets/sprite/Difficulty_Normal.dds", 400.0f, 400.0f);
     m_normalSprite.SetPosition({ 0.0f, -300.0f, 0.0f });
 
-    m_hardSprite.Init("Assets/sprite/Difficulty_Hard.dds", 400.0f, 400.0f);
-    m_hardSprite.SetPosition({ 500.0f, -300.0f, 0.0f });
+    m_hardSprite.Init("Assets/sprite/Difficulty_Hard.dds", 360.0f, 360.0f);
+    m_hardSprite.SetPosition({ 490.0f, -300.0f, 0.0f });
 
     m_nanido.Init("Assets/sprite/nanido.dds", 600.0f, 600.0f);
     m_nanido.SetPosition({ 0.0f, 420.0f, 0.0f });
 
     m_nanido2.Init("Assets/sprite/nanido2.dds", 700.0f, 500.0f);
     m_nanido2.SetPosition({ 0.0f, 80.0f, 0.0f });
+
+    m_B.Init("Assets/sprite/Bback.dds", 220.0f, 170.0f);
+    m_B.SetPosition({ 830.0f, -400.0f, 0.0f });
+
+    m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
+    m_grobu.SetPosition({ 830.0f, -400.0f, 0.0f });
 
     m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
 
@@ -220,6 +226,11 @@ void TiterUI::Render(RenderContext& rc)
 
         m_nanido2.Update();
         m_nanido2.Draw(rc);
+
+        m_grobu.Update();
+        m_grobu.Draw(rc);
+        m_B.Update();
+        m_B.Draw(rc);
 
         // ▼ フェードアウト（黒い板）
         if (m_isDeciding) {
