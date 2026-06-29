@@ -41,7 +41,10 @@ bool TiterUI::Start()
     m_hardSprite.SetPosition({ 500.0f, -300.0f, 0.0f });
 
     m_nanido.Init("Assets/sprite/nanido.dds", 600.0f, 600.0f);
-    m_nanido.SetPosition({ 0.0f, 400.0f, 0.0f });
+    m_nanido.SetPosition({ 0.0f, 420.0f, 0.0f });
+
+    m_nanido2.Init("Assets/sprite/nanido2.dds", 700.0f, 500.0f);
+    m_nanido2.SetPosition({ 0.0f, 80.0f, 0.0f });
 
     m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
 
@@ -214,6 +217,9 @@ void TiterUI::Render(RenderContext& rc)
 
         m_hardSprite.Update();
         m_hardSprite.Draw(rc);
+
+        m_nanido2.Update();
+        m_nanido2.Draw(rc);
 
         // ▼ フェードアウト（黒い板）
         if (m_isDeciding) {

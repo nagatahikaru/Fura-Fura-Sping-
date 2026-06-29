@@ -652,36 +652,62 @@ void InGameUI::Render(RenderContext& rc) {
 				shouldShowStageUI = true;
 			}
 		}
-		// ★ 3回以上でスプライト表示
-		if (shouldShowStageUI && m_guruGuruCount >= 3) {
 
-			m_guruguruSprite.SetMulColor({ 1,1,1,1 }); // 表示
+		// 難易度別の回転数設定（1回だけ）
+		int rotationPerLevel = 3;
+		Difficulty diff = game->GetDifficulty();
+
+		if (diff == Difficulty::Easy) {
+			rotationPerLevel = 10;
+		}
+		else if (diff == Difficulty::Normal) {
+			rotationPerLevel = 5;
+		}
+		else {
+			rotationPerLevel = 3;
+		}
+
+		// ★ 警告スプライト表示（難易度別）
+		if (shouldShowStageUI && m_guruGuruCount >= rotationPerLevel)
+		{
+			m_guruguruSprite.SetMulColor({ 1,1,1,1 });
 			m_guruguruSprite.SetPosition(Vector3{ 0.0f,465.0f, 0.0f });
 			m_guruguruSprite.Update();
 			m_guruguruSprite.Draw(rc);
-
 		}
-		else {
-
-			// 3回未満は非表示
+		else
+		{
 			m_guruguruSprite.SetMulColor({ 1,1,1,0 });
 		}
 
-		// --- ぐるぐる段階（10段階） ---
-		int stage = clamp((m_guruGuruCount - 3) / 3, 0, 9);
-
-		// ★ 3回未満は何も表示しない
-		if (shouldShowStageUI && m_guruGuruCount >= 3)
+		// ★ ステージテキスト表示（同じ rotationPerLevel を使う）
+		if (shouldShowStageUI && m_guruGuruCount >= rotationPerLevel)
 		{
-			const wchar_t* stageText = m_stageTextList[stage];
+			const wchar_t** stageList = nullptr;
+			int maxStage = 0;
 
-			m_fontStage[stage].SetText(stageText);
+			if (diff == Difficulty::Easy) {
+				stageList = m_stageTextEasy;
+				maxStage = 3;
+			}
+			else if (diff == Difficulty::Normal) {
+				stageList = m_stageTextNormal;
+				maxStage = 7;
+			}
+			else {
+				stageList = m_stageTextHard;
+				maxStage = 15;
+			}
+
+			int stage = (m_guruGuruCount / rotationPerLevel) - 1;
+			stage = clamp(stage, 0, maxStage - 1);
+
+			m_fontStage[stage].SetText(stageList[stage]);
 			m_fontStage[stage].SetPosition(-270.0f, 500.0f, 0.0f);
 			m_fontStage[stage].SetScale(0.8f);
 			m_fontStage[stage].SetColor(0, 0, 0, 1);
 			m_fontStage[stage].Draw(rc);
 		}
-		
 	}
 
 	if (m_isFontVisible) {

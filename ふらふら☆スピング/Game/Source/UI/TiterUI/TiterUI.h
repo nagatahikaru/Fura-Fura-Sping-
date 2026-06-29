@@ -25,6 +25,7 @@ private:
 	SpriteRender m_hardSprite;
 	SpriteRender m_spritekuro;
 	SpriteRender m_nanido;
+	SpriteRender m_nanido2;
 	int m_cursor = 0; // 0 = ゲーム, 1 = メニュー
 	int m_selectedDifficulty = 0; // 難易度選択のカーソル用
 	bool m_isDeciding = false;     // 決定演出中か
