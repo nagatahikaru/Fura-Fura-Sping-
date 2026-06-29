@@ -276,6 +276,15 @@ void Ball::Update()
       
      SetPosition(m_position);
 
+     m_rotationAngle += m_rotateSpeed * dt;
+
+     Quaternion rot;
+     rot.SetRotationDegX(m_rotationAngle);
+
+     m_modelRender.SetRotation(rot);
+     
+
+
      //距離に応じてスケール変更
      float minZ = 1000.0f;  // ピッチャーマウンド（スタート）
      float maxZ = 6200.0f;  // キャッチャー・バッター付近（最小になる位置）
@@ -335,6 +344,7 @@ void Ball::Update()
 
 void Ball::Throw(const Vector3& targetPos)
 {
+    m_rotationAngle = 0.0f;
 
     Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
