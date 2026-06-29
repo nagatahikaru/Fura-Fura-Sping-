@@ -50,9 +50,8 @@ class Ball :public Character
 	Vector3 m_targetPos; //目標位置
 	Vector3 m_rotation;
 
-	Quaternion m_rotation = Quaternion::Identity;
-	float m_rotateSpeed = 720.0f;   // 1秒で2回転
-
+	float m_rotateSpeed = 2880.0f;
+	float m_rotationAngle = 0.0f;
 	int m_curveDir = 0;
 	float m_throwTimer = 0.0f;
 	float m_radius = 10.0f;
