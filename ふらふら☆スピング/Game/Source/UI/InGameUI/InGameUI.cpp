@@ -58,6 +58,9 @@ InGameUI::InGameUI() {
 	m_kakunin.Init("Assets/sprite/kakunin.DDS", 400.0f, 300.0f);
 	m_kakin.Init("Assets/sprite/kakin.DDS", 500.0f, 500.0f);
 	m_kiroku.Init("Assets/sprite/kiiro.DDS", 880.0f, 820.0f);
+	m_easySprite.Init("Assets/sprite/Difficulty_Easy.DDS", 350.0f, 350.0f);
+	m_normalSprite.Init("Assets/sprite/Difficulty_Normal.DDS", 350.0f, 350.0f);
+	m_hardSprite.Init("Assets/sprite/Difficulty_Hard.DDS", 300.0f, 200.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -711,6 +714,30 @@ void InGameUI::Render(RenderContext& rc) {
 	}
 
 	if (m_isFontVisible) {
+
+		if (game) {
+			Difficulty diff = game->GetDifficulty();
+			SpriteRender* pDiffSprite = nullptr;
+
+			// 現在の難易度に応じて描画するスプライトを決定
+			if (diff == Difficulty::Easy) {
+				pDiffSprite = &m_easySprite;
+			}
+			else if (diff == Difficulty::Normal) {
+				pDiffSprite = &m_normalSprite;
+			}
+			else if (diff == Difficulty::Hard) { // 必要に応じて異なるDifficulty列挙型に合わせてください
+				pDiffSprite = &m_hardSprite;
+			}
+
+			// スプライトが存在すれば位置を設定して描画
+			if (pDiffSprite) {
+				// 表示位置（画面左上あたり、バスカットや残り球数の邪魔にならない位置に調整してください）
+				pDiffSprite->SetPosition(Vector3{ -535.0f, 350.0f, 0.0f });
+				pDiffSprite->Update();
+				pDiffSprite->Draw(rc);
+			}
+		}
 
 		wchar_t kyu[64];
 		swprintf_s(kyu, 64, L"のこり%d球", m_ballCount);

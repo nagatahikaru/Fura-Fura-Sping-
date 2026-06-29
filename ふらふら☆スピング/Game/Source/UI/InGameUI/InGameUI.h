@@ -221,5 +221,8 @@ private:
 	float        m_animeTimer = 0.0f;
 	SpriteRender m_kakin;
 	SpriteRender m_kiroku;
+	SpriteRender m_easySprite;
+	SpriteRender m_normalSprite;
+	SpriteRender m_hardSprite;
 };
 
