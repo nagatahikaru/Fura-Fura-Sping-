@@ -126,8 +126,8 @@ bool Batter::Start()
 		m_meetCursorWorldPos,
 		Quaternion::Identity,
 		BATTER::BAT::COLLISION_SCALE_BAT);
-
 	m_characterModel->Update();	
+
 	m_inGameUI = FindGO<InGameUI>("inGameUI");
 	m_game = FindGO<Game>("game");
 	m_ball = FindGO<Ball>("ball");
@@ -431,149 +431,134 @@ Vector3 Batter::CalcCursorWorldPos()
 void Batter::HitBat()
 {
 	if (m_ball->m_hasHit) return;
-	// ★ リプレイ中は絶対に打撃処理しない
-	if (m_game && m_game->IsReplayPlaying()) {
-		return;
-	}
-	// ★ ポーズ中は絶対に打撃処理しない
-	if (m_game && m_game->m_isPaused) {
-		return;
-	}
-
+	if (m_game && m_game->IsReplayPlaying()) return;
+	if (m_game && m_game->m_isPaused) return;
 	if (!IsSwingAnimationPlaying()) return;
 
+	// アニメーションの当たりフレーム
+	constexpr int HIT_CENTER_FRAME = 20;
+	constexpr int HIT_FRAME_RANGE = 2;
+	if (m_characterModel == nullptr ||
+		!m_characterModel->IsInKeyFrameWindow(HIT_CENTER_FRAME, HIT_FRAME_RANGE))
+	{
+		return;
+	}
+
+	// Z制限
 	Vector3 ballPos = m_ball->GetPosition();
+	if (ballPos.z < BATTER::HIT_ZONE_LOWER_LIMIT ||
+		ballPos.z > BATTER::HIT_ZONE_UPPER_LIMIT)
+	{
+		return;
+	}
 
-	// ① Z制限（打撃ゾーン）
-	if (ballPos.z < BATTER::HIT_ZONE_LOWER_LIMIT || ballPos.z > BATTER::HIT_ZONE_UPPER_LIMIT) return;
+	// レイ判定
+	Vector3 hitPos;
+	if (!PhysicsWorld::GetInstance()->RayTest(
+		m_ball->GetPrevPosition(),
+		m_ball->GetPosition(),
+		hitPos))
+	{
+		return;
+	}
 
-	// 真ん中からどれだけ離れているか（0.0 〜 5.0）
-	float timingDiff = fabs(ballPos.z - BATTER::HIT_ZONE_CENTER);
-
-	// 離れ具合を 0.0（真ん中）〜 1.0（一番端）に正規化
-	float timingRatio = timingDiff / BATTER::HIT_ZONE_RADIUS;
-
-	// ※ 0.25 のときは「端で0.75（一番最悪）」、0.05 のときは「端で0.95（一番最高）」
-	float luckScale = 0.50f + (static_cast<float>(rand()) / RAND_MAX) * 0.10f;
-
-	// 真ん中に行くにつれて timingRatio が 0 になるため、luckScale がいくつであっても必ず 1.0 に近づきます
-	float timingPowerScale = 1.0f - (timingRatio * luckScale);
-
-	// ② カーソル位置（Zはボールに合わせる）
+	// ③ カーソル位置（Zはボールに合わせる）
 	Vector3 cursor = m_meetCursorWorldPos;
 	cursor.z = ballPos.z;
 
-	// ③ 距離判定
+	// ④ 距離判定
 	float dist = (ballPos - cursor).Length();
-	if (dist < m_meatRange)
-	{
-		Vector3 hitDir = ballPos - cursor;
-		m_hitPosition = m_ball->GetPosition();
-		HitEffect(m_ball->GetPosition());
+	if (dist >= m_meatRange)
+		return;
 
-		// センター（ジャストミート）からのZのズレを算出
-		// zDiff > 0 : 早い（手前で捉えた）/ zDiff < 0 : 遅い（引き付けた）
-		float zDiff = ballPos.z - BATTER::HIT_ZONE_CENTER;
+	Vector3 hitDir = ballPos - cursor;
+	m_hitPosition = m_ball->GetPosition();
+	HitEffect(m_ball->GetPosition());
 
-		float randomInfluence = (static_cast<float>(rand()) / RAND_MAX) * 0.05f;
+	float zDiff = ballPos.z - BATTER::HIT_ZONE_CENTER;
+	float randomInfluence = (static_cast<float>(rand()) / RAND_MAX) * 0.05f;
+	float sign = (rand() % 2 == 0) ? 1.0f : -1.0f;
 
-		float sign = (rand() % 2 == 0) ? 1.0f : -1.0f;
+	hitDir.x += zDiff * randomInfluence * sign;
+	if (fabs(hitDir.z) >= 0.0f) {
+		hitDir.z = -100.0f;
+	}
 
-		hitDir.x += zDiff * randomInfluence * sign;
-		// 前方向（ピッチャー方向）への基本的な力
-		if (fabs(hitDir.z) >= 0.0f) {
-			hitDir.z = -100.0f;
+	if (m_inGameUI) {
+		m_inGameUI->m_shuchusenTimer = 0.5f;
+	}
+
+	if (m_game) {
+		if (!m_game->m_isHitStop) {
+			m_game->m_hitStopTimer = 0.06f;
+		}
+		m_game->m_canFastForward = true;
+	}
+
+	hitDir.y += 21.0f;
+
+	float currentAngleRad = atan2f(hitDir.x, -hitDir.z);
+	constexpr float MAX_ANGLE_DEG = 30.0f;
+	constexpr float maxAngleRad = nsK2EngineLow::Math::DegToRad(MAX_ANGLE_DEG);
+
+	if (currentAngleRad > maxAngleRad) {
+		currentAngleRad = maxAngleRad;
+	}
+	else if (currentAngleRad < -maxAngleRad) {
+		currentAngleRad = -maxAngleRad;
+	}
+
+	float xzLength = sqrtf(hitDir.x * hitDir.x + hitDir.z * hitDir.z);
+	hitDir.x = sinf(currentAngleRad) * xzLength;
+	hitDir.z = -cosf(currentAngleRad) * xzLength;
+
+	hitDir.Normalize();
+
+	float angleDeg = atan2f(hitDir.y, -hitDir.z) * BATTER::RAD_TO_DEG;
+	float powerScale = 1.0f;
+
+	if (angleDeg > 60.0f) {
+		powerScale = 0.65f;
+		hitDir.y += 50.0f;
+	}
+	else if (angleDeg > 30.0f) {
+		powerScale = 0.85f;
+	}
+	else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
+		powerScale = 1.4f;
+	}
+	else if (angleDeg < 0.0f) {
+		powerScale = 0.8f;
+	}
+
+	float finalPower = 935.0f * powerScale;
+	m_ball->HitBall(hitDir, finalPower);
+
+	if (m_game) {
+		m_game->SetCameraMode(Camera_BackBall);
+
+		GameCamera* cam = m_game->GetGameCamera();
+		if (cam) cam->StartHitMomentCamera();
+	}
+
+	if (m_inGameUI) {
+		m_inGameUI->m_shuchusenTimer = 0.5f;
+	}
+
+	if (m_game && !m_game->m_isPaused && g_soundManager) {
+		if (m_game->m_isKakutei) {
+			g_soundManager->PlaySE(Sound::enSound_SE15, 100.0f);
+		}
+		else {
+			g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
 		}
 
-		if (m_inGameUI) {
-			m_inGameUI->m_shuchusenTimer = 0.5f;  // ← 集中線を0.5秒表示
-		}
-
-		if (m_game) {
-			// 1. まだヒットストップがかかっていない場合だけ、しっかり 0.06秒 止める
-			if (!m_game->m_isHitStop) {
-				m_game->m_hitStopTimer = 0.06f;
-			}
-
-			// 2. 早送り（Bボタン倍速など）の許可フラグだけを立てる（タイマーは弄らない）
-			m_game->m_canFastForward = true;
-		}
-
-		hitDir.y += 21.0f;
-
-		float currentAngleRad = atan2f(hitDir.x, -hitDir.z);
-		constexpr float MAX_ANGLE_DEG = 30.0f; // 左右の限界角度（45度）
-		constexpr float maxAngleRad = nsK2EngineLow::Math::DegToRad(MAX_ANGLE_DEG);
-
-		if (currentAngleRad > maxAngleRad) {
-			currentAngleRad = maxAngleRad;
-		}
-		else if (currentAngleRad < -maxAngleRad) {
-			currentAngleRad = -maxAngleRad;
-		}
-
-		float xzLength = sqrtf(hitDir.x * hitDir.x + hitDir.z * hitDir.z);
-		hitDir.x = sinf(currentAngleRad) * xzLength;
-		hitDir.z = -cosf(currentAngleRad) * xzLength;
-
-		hitDir.Normalize();
-
-		// 角度（打ち上げ角）を計算
-		float angleDeg = atan2f(hitDir.y, -hitDir.z) * BATTER::RAD_TO_DEG;
-
-		// ★ 角度に応じてパワー補正（真ん中は補正なし）
-		float powerScale = 1.0f;
-
-		// 高いフライほどパワーを弱くする
-		if (angleDeg > 60.0f) {
-			powerScale = 0.65f;    // 高フライ → 40%減衰
-			hitDir.y += 50.0f;
-		}
-		else if (angleDeg > 30.0f) {
-			powerScale = 0.85f;    // 中フライ → 20%減衰
-		}
-		// ★ 真ん中（10〜30度）→ パワー増加
-		else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
-			powerScale = 1.4f;
-		}
-		// ゴロ（角度が低すぎる）は少し弱くしてもOK
-		else if (angleDeg < 0.0f) {
-			powerScale = 0.8f;     // ゴロ → 少し弱く
-		}
-
-		// 最終パワー
-		float finalPower = 935.0f * powerScale;
-
-		// ★ 通常ヒット（即飛ぶ）
-		m_ball->HitBall(hitDir, finalPower);
-
-		// ★ カメラ切り替え
-		if (m_game) {
-			m_game->SetCameraMode(Camera_BackBall);
-
-			GameCamera* cam = m_game->GetGameCamera();
-			if (cam) cam->StartHitMomentCamera();
-		}
-
-		// UI・SE・カメラなどは共通でOK
-		if (m_inGameUI) {
-			m_inGameUI->m_shuchusenTimer = 0.5f;
-		}
-
-		if (!m_game->m_isPaused && g_soundManager) {
-			if (m_game && m_game->m_isKakutei) {
-				g_soundManager->PlaySE(Sound::enSound_SE15, 100.0f);
-			}
-			else {
-				g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
-			}
-
-			auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 300.0f);
-			if (se2) se2->SetVolume(3.0f);
-			se2->SetName("SE2");
-		}
+		auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 300.0f);
+		if (se2) se2->SetVolume(3.0f);
+		se2->SetName("SE2");
 	}
 }
+
 void Batter::UpdateBatAim()
 {
 	if (!IsSwingAnimationPlaying()) return;
@@ -805,6 +790,8 @@ Vector3 Batter::RayToPlane(
 
 void Batter::Render(RenderContext& rc)
 {
+	
+
 	//モデルの描画
 	m_characterModel->DrawCharacterModel(rc);
 }

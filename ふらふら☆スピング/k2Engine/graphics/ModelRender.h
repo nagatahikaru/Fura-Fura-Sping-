@@ -104,6 +104,11 @@ namespace nsK2Engine {
 			m_animation.Play(animNo, interpolateTime);
 		}
 
+		Animation& GetAnimation()
+		{
+			return m_animation;
+		}
+
 		/// <summary>
 		/// アニメーションの再生中？
 		/// </summary>

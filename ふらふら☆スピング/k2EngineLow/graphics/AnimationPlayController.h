@@ -118,6 +118,21 @@ namespace nsK2EngineLow {
 		{
 			return m_footstepDeltaValue;
 		}
+
+		int GetCurrentKeyFrameNo() const
+		{
+			return m_currentKeyFrameNo;
+		}
+
+		int GetLastKeyFrameNo() const
+		{
+			return m_currentKeyFrameNoLastFrame;
+		}
+
+		bool IsInKeyFrameWindow(int centerFrame, int range) const
+		{
+			return std::abs(m_currentKeyFrameNo - centerFrame) <= range;
+		}
 	private:
 		
 

@@ -175,6 +175,28 @@ namespace nsApp
 			return m_characterModelRender.get();
 		}
 
+		bool IsInKeyFrameWindow(int centerFrame, int range) const
+		{
+			return m_characterModelRender != nullptr
+				&& m_characterModelRender->GetAnimation().IsInKeyFrameWindow(centerFrame, range);
+		}
+
+		int GetCurrentKeyFrameNo() const
+		{
+			return m_characterModelRender != nullptr
+				? m_characterModelRender->GetAnimation().GetCurrentKeyFrameNo()
+				: -1;
+		}
+
+		int GetLastKeyFrameNo() const
+		{
+			return m_characterModelRender != nullptr
+				? m_characterModelRender->GetAnimation().GetLastKeyFrameNo()
+				: -1;
+		}
+
+
+
 	private:	
 		std::unordered_map<CharacterModelType, std::string> m_filePathList;		                                               /* モデルIDからファイルパスを文字列に変化。*/
 		std::unique_ptr<ModelRender> m_characterModelRender;                                                                   /* モデルを管理。*/

@@ -26,6 +26,9 @@ class Ball :public Character
 	void Throw(const Vector3& targetPos);
 	void SetPosition(const Vector3& pos);
 	Vector3 GetPosition() const { return m_position; }
+	void GetFlightRay(Vector3& startPos, Vector3& endPos) const;
+	Vector3 GetFlightDirection() const;
+	float GetFlightLength() const;
 
 	bool IsMoving() const;
 	bool CheckCollision(const Vector3& pos, float radius);
@@ -40,6 +43,12 @@ class Ball :public Character
 	void ResetBall();
 	float PredictLandingDistance();
 	void ResetThrowTimer();
+
+	Vector3 GetPrevPosition() const
+	{
+		return m_prevPosition;
+	}
+
 	std::vector<Vector3> m_replayPath;
 	bool m_isRecording = false;
 	bool m_isMove = false;
@@ -48,6 +57,10 @@ class Ball :public Character
 	Vector3 m_position;  //ボールの位置
 	Vector3 m_velocity;  //ボールの速度
 	Vector3 m_targetPos; //目標位置
+	Vector3 m_throwStartPos = Vector3::Zero;
+	Vector3 m_throwEndPos = Vector3::Zero;
+	Vector3 m_prevPosition;
+
 	//Vector3 m_rotation;
 
 	float m_rotateSpeed = 2880.0f;
