@@ -24,11 +24,20 @@ bool TiterUI::Start()
     m_option.Init("Assets/sprite/Soundtest2.dds", 250.0f, 150.0f);
     m_option.SetPosition({ 0.0f, -450.0f, 0.0f });
 
-    m_Title.Init("Assets/sprite/hurahura.dds", 1900.0f, 1500.0f);
-    m_Title.SetPosition({ 0.0f, 100.0f, 0.0f });
+    m_Title.Init("Assets/sprite/hurahura.dds", 1700.0f, 1300.0f);
+    m_Title.SetPosition({ 0.0f, 180.0f, 0.0f });
 
     m_ranking.Init("Assets/sprite/RankingUI.dds", 250.0f, 150.0f);
     m_ranking.SetPosition({ 0.0f, -300.0f, 0.0f });
+
+    m_start2.Init("Assets/sprite/Start2.dds", 250.0f, 150.0f);
+    m_start2.SetPosition({ 0.0f, -150.0f, 0.0f });
+
+    m_option2.Init("Assets/sprite/Soundtest3.dds", 250.0f, 150.0f);
+    m_option2.SetPosition({ 0.0f, -450.0f, 0.0f });
+
+    m_ranking2.Init("Assets/sprite/RankingUI2.dds", 250.0f, 150.0f);
+    m_ranking2.SetPosition({ 0.0f, -300.0f, 0.0f });
 
     // ▼ 難易度選択用UI（TransitionUIから引越し）
     m_easySprite.Init("Assets/sprite/Difficulty_Easy.dds", 400.0f, 400.0f);
@@ -112,19 +121,37 @@ void TiterUI::Update()
 
         // カーソル拡縮演出
         if (m_cursor == 0) {
+            m_start2.SetMulColor({ 1,1,1,0 });
+            m_start.SetMulColor({ 1,1,1,1 });
             m_start.SetScale({ 2.0f, 2.0f, 1.0f });
-            m_ranking.SetScale({ 1.0f, 1.0f, 1.0f });
-            m_option.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_ranking2.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_ranking.SetMulColor({ 1,1,1,0 });
+            m_ranking2.SetMulColor({ 1,1,1,1 });
+            m_option2.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_option2.SetMulColor({ 1,1,1,1 });
+            m_option.SetMulColor({ 1,1,1,0 });
         }
         else if (m_cursor == 1) {
-            m_start.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_start2.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_start.SetMulColor({ 1,1,1,0 });
+            m_start2.SetMulColor({ 1,1,1,1 });
             m_ranking.SetScale({ 2.0f, 2.0f, 1.0f });
-            m_option.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_ranking.SetMulColor({ 1,1,1,1 });
+            m_ranking2.SetMulColor({ 1,1,1,0 });
+            m_option2.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_option.SetMulColor({ 1,1,1,0 });
+            m_option2.SetMulColor({ 1,1,1,1 });
         }
         else if (m_cursor == 2) {
-            m_start.SetScale({ 1.0f, 1.0f, 1.0f });
-            m_ranking.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_start2.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_start.SetMulColor({ 1,1,1,0 });
+            m_start2.SetMulColor({ 1,1,1,1 });
+            m_ranking2.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_ranking.SetMulColor({ 1,1,1,0 });
+            m_ranking2.SetMulColor({ 1,1,1,1 });
             m_option.SetScale({ 2.0f, 2.0f, 1.0f });
+            m_option.SetMulColor({ 1,1,1,1 });
+            m_option2.SetMulColor({ 1,1,1,0 });
         }
 
         // Aボタン決定
@@ -210,6 +237,15 @@ void TiterUI::Render(RenderContext& rc)
 
         m_option.Update();
         m_option.Draw(rc);
+
+        m_start2.Update();
+        m_start2.Draw(rc);
+
+        m_ranking2.Update();
+        m_ranking2.Draw(rc);
+
+        m_option2.Update();
+        m_option2.Draw(rc);
     }
     else if (m_state == State_DifficultySelect) {
         m_nanido.Update();
