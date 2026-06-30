@@ -50,8 +50,11 @@ class Ball :public Character
 	Vector3 m_targetPos; //目標位置
 	Vector3 m_rotation;
 
-	float m_rotateSpeed = 2880.0f;
+	float m_rotateSpeed = 7660.0f;
 	float m_rotationAngle = 0.0f;
+	float m_currentRotationSpeed = 2880.0f;
+	float m_speedRate = 1.0f;
+	float m_rotationSpeed = 0.0f;
 	int m_curveDir = 0;
 	float m_throwTimer = 0.0f;
 	float m_radius = 10.0f;
