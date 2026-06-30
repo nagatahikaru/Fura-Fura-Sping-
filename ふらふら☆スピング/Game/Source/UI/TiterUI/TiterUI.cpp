@@ -32,13 +32,13 @@ bool TiterUI::Start()
 
     // ▼ 難易度選択用UI（TransitionUIから引越し）
     m_easySprite.Init("Assets/sprite/Difficulty_Easy.dds", 400.0f, 400.0f);
-    m_easySprite.SetPosition({ -490.0f, -300.0f, 0.0f });
+    m_easySprite.SetPosition({ -480.0f, -320.0f, 0.0f });
 
-    m_normalSprite.Init("Assets/sprite/Difficulty_Normal.dds", 400.0f, 400.0f);
-    m_normalSprite.SetPosition({ 0.0f, -300.0f, 0.0f });
+    m_normalSprite.Init("Assets/sprite/Difficulty_Normal.dds", 360.0f, 360.0f);
+    m_normalSprite.SetPosition({ 0.0f, -320.0f, 0.0f });
 
     m_hardSprite.Init("Assets/sprite/Difficulty_Hard.dds", 360.0f, 360.0f);
-    m_hardSprite.SetPosition({ 490.0f, -300.0f, 0.0f });
+    m_hardSprite.SetPosition({ 480.0f, -320.0f, 0.0f });
 
     m_nanido.Init("Assets/sprite/nanido.dds", 600.0f, 600.0f);
     m_nanido.SetPosition({ 0.0f, 420.0f, 0.0f });
