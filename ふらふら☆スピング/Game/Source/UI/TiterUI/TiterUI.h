@@ -19,6 +19,9 @@ private:
 	SpriteRender m_option;
 	SpriteRender m_Title;
 	SpriteRender m_ranking;
+	SpriteRender m_start2;
+	SpriteRender m_option2;
+	SpriteRender m_ranking2;
 	SpriteRender m_spriteRender;
 	SpriteRender m_easySprite;
 	SpriteRender m_normalSprite;

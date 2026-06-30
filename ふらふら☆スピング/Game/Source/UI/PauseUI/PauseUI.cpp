@@ -16,16 +16,29 @@ bool PauseUI::Start()
     m_spritePause.SetPosition({ 0.0f, 380.0f, 0.0f });
 
     m_start.Init("Assets/sprite/saikai.dds", 250.0f, 150.0f);
-    m_start.SetPosition({ 0.0f, 200.0f, 0.0f });
+    m_start.SetPosition({ 0.0f, 140.0f, 0.0f });
 
-    m_option.Init("Assets/sprite/Soundtest2.dds", 250.0f, 150.0f);
-    m_option.SetPosition({ 0.0f, -400.0f, 0.0f });
+    m_option.Init("Assets/sprite/Soundtest2.dds", 300.0f, 200.0f);
+    m_option.SetPosition({ 0.0f, -180.0f, 0.0f });
 
     m_Title.Init("Assets/sprite/modoru.dds", 250.0f, 150.0f);
-    m_Title.SetPosition({ 0.0f, 0.0f, 0.0f });
+    m_Title.SetPosition({ 0.0f, -340.0f, 0.0f });
 
     m_yari.Init("Assets/sprite/yari.dds", 250.0f, 150.0f);
-    m_yari.SetPosition({ 0.0f, -200.0f, 0.0f });
+    m_yari.SetPosition({ 0.0f, -20.0f, 0.0f });
+
+    m_start2.Init("Assets/sprite/saikai2.dds", 250.0f, 150.0f);
+    m_start2.SetPosition({ 0.0f,  140.0f, 0.0f });
+
+    m_option2.Init("Assets/sprite/Soundtest3.dds", 300.0f, 200.0f);
+    m_option2.SetPosition({ 0.0f,-180.0f, 0.0f });
+
+    m_Title2.Init("Assets/sprite/modoru2.dds", 250.0f, 150.0f);
+    m_Title2.SetPosition({ 0.0f,-340.0f, 0.0f });
+
+    m_yari2.Init("Assets/sprite/yari2.dds", 250.0f, 150.0f);
+    m_yari2.SetPosition({ 0.0f, -20.0f, 0.0f });
+
     // ★ ポーズ中は BGM を小さくする
     if (g_bgm) {
         float v = g_soundManager->m_bgmVolume / 100.0f;
@@ -49,27 +62,31 @@ void PauseUI::Update()
 {
     // ▼ START でも再開
     if (g_pad[0]->IsTrigger(enButtonStart)) {
-        // ★ ここでポーズ突入SE
+
         if (g_soundManager && g_soundManager->m_seVolume > 0) {
-            g_soundManager->PlaySE(enSound_SE);   // 好きなSEに
+            g_soundManager->PlaySE(enSound_SE);
         }
+
         Game* game = FindGO<Game>("game");
         if (game) {
             game->m_isPaused = false;
 
-            // ★ UI のポーズ解除を追加
             InGameUI* ui = FindGO<InGameUI>("inGameUI");
             if (ui) {
                 ui->SetPause(false);
             }
-            // ★ BGM の音量を最新の値に戻す（1.0f は絶対ダメ）
-            if (g_bgm) {
+
+            if (g_soundManager && g_bgm) {
                 float v = g_soundManager->m_bgmVolume / 100.0f;
                 float curved = powf(v, 1.5f);
                 g_bgm->SetVolume(curved);
             }
-            g_soundManager->UnmuteSE2();
+
+            if (g_soundManager) {
+                g_soundManager->UnmuteSE2();
+            }
         }
+
         DeleteGO(this);
         return;
     }
@@ -111,34 +128,8 @@ void PauseUI::Update()
         }
 
         else if (m_cursor == 1) {
-            // タイトルへ
-            Game* game = FindGO<Game>("game");
-            if (game) DeleteGO(game);
 
-            NewGO<Titer>(0);
-            DeleteGO(this);
-        }
-        else if (m_cursor == 3) {
-            Game* game = FindGO<Game>("game");
-            if (game) {
-                game->m_isPaused = true;  // ゲームを再開
-            }
-
-            if (g_bgm) {
-                float v = g_soundManager->m_bgmVolume / 100.0f;
-                float curved = powf(v, 1.5f);
-                g_bgm->SetVolume(curved);
-            }
-
-
-            auto st = NewGO<SoundTestUI>(0,"soundtest");
-            st->m_returnType = ReturnToPause;   // ★ ポーズから来たことを記録
-
-            DeleteGO(this);  // PauseUI を消す
-        }
-        else if (m_cursor == 2) {
-
-              // ★ SE2 を止める
+            // ★ SE2 を止める
             g_soundManager->StopSE2();
 
             if (g_bgm) {
@@ -160,42 +151,93 @@ void PauseUI::Update()
             }
             DeleteGO(this);  // PauseUI を閉じる
         }
+
+        else if (m_cursor == 2) {
+            Game* game = FindGO<Game>("game");
+            if (game) {
+                game->m_isPaused = true;  // ゲームを再開
+            }
+
+            if (g_bgm) {
+                float v = g_soundManager->m_bgmVolume / 100.0f;
+                float curved = powf(v, 1.5f);
+                g_bgm->SetVolume(curved);
+            }
+
+
+            auto st = NewGO<SoundTestUI>(0, "soundtest");
+            st->m_returnType = ReturnToPause;   // ★ ポーズから来たことを記録
+
+            DeleteGO(this);  // PauseUI を消す
+        }
+
+        else if (m_cursor == 3) {
+            // タイトルへ
+            Game* game = FindGO<Game>("game");
+            if (game) DeleteGO(game);
+
+            NewGO<Titer>(0);
+            DeleteGO(this);
+        }
     }
     if (m_cursor == 0) {
-        m_start.SetScale({ 1.7f,1.7f,1.0f });
-
-        m_Title.SetScale({ 1.0f,1.0f,1.0f });
-
-        m_option.SetScale({ 1.0f,1.0f,1.0f });
-
-        m_yari.SetScale({ 1.0f,1.0f,1.0f });
+        m_start.SetScale({ 2.0f,2.0f,1.0f });
+        m_start.SetMulColor({ 1,1,1,1 });
+        m_start2.SetMulColor({ 1,1,1,0 });
+        m_Title2.SetScale({ 1.0f,1.0f,1.0f });
+        m_Title.SetMulColor({ 1,1,1,0});
+        m_Title2.SetMulColor({ 1,1,1,1 });
+        m_option2.SetScale({ 1.0f,1.0f,1.0f });
+        m_option.SetMulColor({ 1,1,1,0 });
+        m_option2.SetMulColor({ 1,1,1,1 });
+        m_yari2.SetScale({ 1.0f,1.0f,1.0f });
+        m_yari.SetMulColor({ 1,1,1,0 });
+        m_yari2.SetMulColor({ 1,1,1,1 });
     }
+  
     else if (m_cursor == 1) {
-        m_start.SetScale({ 1.0f,1.0f,1.0f });
-
-        m_Title.SetScale({ 1.7f,1.7f,1.0f });
-
-        m_option.SetScale({ 1.0f,1.0f,1.0f });
-
-        m_yari.SetScale({ 1.0f,1.0f,1.0f });
+        m_start2.SetScale({ 1.0f,1.0f,1.0f });
+        m_start.SetMulColor({ 1,1,1,0 });
+        m_start2.SetMulColor({ 1,1,1,1 });
+        m_Title2.SetScale({ 1.0f,1.0f,1.0f });
+        m_Title.SetMulColor({ 1,1,1,0 });
+        m_Title2.SetMulColor({ 1,1,1,1 });
+        m_yari.SetScale({ 2.0f,2.0f,1.0f });
+        m_yari.SetMulColor({ 1,1,1,1 });
+        m_yari2.SetMulColor({ 1,1,1,0 });
+        m_option2.SetScale({ 1.0f,1.0f,1.0f });
+        m_option.SetMulColor({ 1,1,1,0 });
+        m_option2.SetMulColor({ 1,1,1,1 });
     }
+
     else if (m_cursor == 2) {
-        m_start.SetScale({ 1.0f,1.0f,1.0f });
-
-        m_Title.SetScale({ 1.0f,1.0f,1.0f });
-
-        m_option.SetScale({ 1.0f,1.0f,1.0f });
-
-        m_yari.SetScale({ 1.7f,1.7f,1.0f });
+        m_start2.SetScale({ 1.0f,1.0f,1.0f });
+        m_start.SetMulColor({ 1,1,1,0 });
+        m_start2.SetMulColor({ 1,1,1,1 });
+        m_Title2.SetScale({ 1.0f,1.0f,1.0f });
+        m_Title.SetMulColor({ 1,1,1,0 });
+        m_Title2.SetMulColor({ 1,1,1,1 });
+        m_yari2.SetScale({ 1.0f,1.0f,1.0f });
+        m_yari.SetMulColor({ 1,1,1,0 });
+        m_yari2.SetMulColor({ 1,1,1,1 });
+        m_option.SetScale({ 2.0f,2.0f,1.0f });
+        m_option.SetMulColor({ 1,1,1,1 });
+        m_option2.SetMulColor({ 1,1,1,0 });
     }
+
     else if (m_cursor == 3) {
-        m_start.SetScale({ 1.0f,1.0f,1.0f });
-
-        m_Title.SetScale({ 1.0f,1.0f,1.0f });
-
-        m_option.SetScale({ 1.7f,1.7f,1.0f });
-
-        m_yari.SetScale({ 1.0f,1.0f,1.0f });
+        m_start2.SetScale({ 1.0f,1.0f,1.0f });
+        m_start.SetMulColor({ 1,1,1,0 });
+        m_start2.SetMulColor({ 1,1,1,1 });
+        m_Title.SetScale({ 2.0f,2.0f,1.0f });
+        m_Title.SetMulColor({ 1,1,1,1 });
+        m_Title2.SetMulColor({ 1,1,1,0 });
+        m_option2.SetScale({ 1.0f,1.0f,1.0f });
+        m_option.SetMulColor({ 1,1,1,0 });
+        m_option2.SetMulColor({ 1,1,1,1 });
+        m_yari2.SetScale({ 1.0f,1.0f,1.0f });
+        m_yari.SetMulColor({ 1,1,1,0 });
+        m_yari2.SetMulColor({ 1,1,1,1 });
     }
 
 }
@@ -214,4 +256,12 @@ void PauseUI::Render(RenderContext& rc)
     m_Title.Draw(rc);
     m_yari.Update();
     m_yari.Draw(rc);
+    m_start2.Update();
+    m_start2.Draw(rc);
+    m_option2.Update();
+    m_option2.Draw(rc);
+    m_Title2.Update();
+    m_Title2.Draw(rc);
+    m_yari2.Update();
+    m_yari2.Draw(rc);
 }

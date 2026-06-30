@@ -17,6 +17,11 @@ private:
 	SpriteRender m_option;
 	SpriteRender m_Title;
 	SpriteRender m_yari;
+
+	SpriteRender m_start2;
+	SpriteRender m_option2;
+	SpriteRender m_Title2;
+	SpriteRender m_yari2;
 	int m_cursor = 0; // 0 = ƒQ[ƒ€, 1 = ƒƒjƒ…[
 	Difficulty m_difficulty = Difficulty::Easy;
 };

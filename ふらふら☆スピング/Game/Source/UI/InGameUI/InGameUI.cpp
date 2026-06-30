@@ -59,7 +59,7 @@ InGameUI::InGameUI() {
 	m_kakin.Init("Assets/sprite/kakin.DDS", 500.0f, 500.0f);
 	m_kiroku.Init("Assets/sprite/kiiro.DDS", 880.0f, 820.0f);
 	m_easySprite.Init("Assets/sprite/Difficulty_Easy.DDS", 350.0f, 350.0f);
-	m_normalSprite.Init("Assets/sprite/Difficulty_Normal.DDS", 350.0f, 350.0f);
+	m_normalSprite.Init("Assets/sprite/Difficulty_Normal.DDS", 280.0f, 280.0f);
 	m_hardSprite.Init("Assets/sprite/Difficulty_Hard.DDS", 300.0f, 200.0f);
 }
 
