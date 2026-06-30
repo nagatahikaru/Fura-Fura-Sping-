@@ -81,19 +81,14 @@ void Ball::Update()
 
         if (m_isMove)
         {
-            //float rotateSpeed = m_rotateSpeed;
-
-            if (m_hasHit)
-            {
-                m_currentRotationSpeed *= 0.98f;
-            }
+            float rotateSpeed = m_rotateSpeed;
 
             if (!m_hasHit)
             {
                 float accelerationZ = 100.0f;
                 m_velocity.z += accelerationZ * dt;
             }
-            float baseGravity = 25.5f; // 元々のベース重力
+            float baseGravity = 26.5f; // 元々のベース重力
 
             if (!m_hasHit && m_initialSpeedZ > 0.0f)
             {
