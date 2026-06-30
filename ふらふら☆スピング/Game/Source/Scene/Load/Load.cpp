@@ -59,6 +59,10 @@ void Load::Update()
             if (loadUI) DeleteGO(loadUI);
             NewGO<InGameUI>(0, "inGameUI");
             NewGO<Game>(0, "game");
+            Game* game = FindGO<Game>("game");
+            if (game) {
+                game->SetDifficulty(m_difficulty);
+            }
             DeleteGO(this);
         }
         return;
@@ -122,7 +126,6 @@ void Load::Update()
         return;
     }
 
-    // ★ 4. 安全にヒントを切り替える
     // m_loadStep が進む前に、存在しているか・壊れていないかを慎重にチェック
     auto ui = FindGO<LoadUI>("loadUI");
     if (ui != nullptr) {

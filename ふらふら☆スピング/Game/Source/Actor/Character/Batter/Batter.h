@@ -456,4 +456,9 @@ public:
     {
         return m_ball;
     }
+
+    Game* GetGame() const 
+    {
+        return m_game;
+    }
 };

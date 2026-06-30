@@ -154,8 +154,10 @@ void PauseUI::Update()
             }
 
             // ★ Load シーンを開始
-            NewGO<Load>(0, "load");
-
+            Load* load = NewGO<Load>(0, "load");
+            if (load) {
+                load->SetDifficulty(m_difficulty);
+            }
             DeleteGO(this);  // PauseUI を閉じる
         }
     }

@@ -53,8 +53,6 @@ void DebuffShakePattern::RandomShake(Batter* batter)
 	float shakeAmount = GetPower(); // k‚¦‚Ì‹­‚³
 	float shakeFrequency = GetSeismicIntensity(); // k‚¦‚Ì•p“x
 	UpdateTime();
-	float randomForceX = ((rand() % 101) - 50) / 50.0f; // -1.0f ` 1.0f
-	float randomForceY = ((rand() % 101) - 50) / 50.0f; // -1.0f ` 1.0f
 	float offsetX = CosWave(shakeFrequency) * shakeAmount;
 	float offsetY = SinWave(shakeFrequency) * shakeAmount;
 	batter->SetShakeCursorOffset(Vector3(offsetX, offsetY, 0.0f));

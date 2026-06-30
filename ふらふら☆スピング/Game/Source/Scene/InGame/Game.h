@@ -19,6 +19,12 @@ enum CameraMode
 	Camera_Kakutei
 };
 
+enum Difficulty {
+	Easy,
+	Normal,
+	Hard
+};
+
 class Game : public Source
 {
 public:
@@ -37,6 +43,8 @@ public:
 	bool m_isPaused = false;
 	GameCamera* GetGameCamera() const { return m_gameCamera; }
 	CameraMode GetCameraMode() const { return m_cameraMode; }
+	void SetDifficulty(Difficulty diff) { m_difficulty = diff; }
+	Difficulty GetDifficulty() const { return m_difficulty; }
 	int GetGuruguru()const{
 		return  m_guruguru;
 	}
@@ -180,6 +188,5 @@ private:
 	bool m_startFadeSE2 = false;
 	int m_prevGuruGuru = 0;
 	bool m_hasSwung[3] = { false, false, false };
-	
-};
+	Difficulty m_difficulty = Difficulty::Easy; };
 

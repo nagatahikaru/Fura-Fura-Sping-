@@ -243,7 +243,20 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 	double p = 2.5;
 
 	// 1 + 39 * t^p
-	double multiplier = 1.0 + 49.0 * pow(t, p);
+	double maxMultiplier = 50.0; // ハード（デフォルトは50倍マックス）
+
+	if (m_difficulty == Difficulty::Easy) {
+		maxMultiplier = 10.0;     // イージーは10倍マックス
+	}
+	else if (m_difficulty == Difficulty::Normal) {
+		maxMultiplier = 25.0;     // ノーマルは25倍マックス
+	}
+	else if (m_difficulty == Difficulty::Hard) {
+		maxMultiplier = 50.0;     // ノーマルは25倍マックス
+	}
+
+	// 各難易度に応じた倍率計算式 ( 1.0 + (マックス倍率 - 1.0) * t^p )
+	double multiplier = 1.0 + (maxMultiplier - 1.0) * pow(t, p);
 
 	// --- (倍率計算のロジックは変更なし) ---
 	m_km = (int)(bestKm * multiplier);

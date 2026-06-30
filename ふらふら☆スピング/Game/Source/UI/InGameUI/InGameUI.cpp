@@ -58,6 +58,9 @@ InGameUI::InGameUI() {
 	m_kakunin.Init("Assets/sprite/kakunin.DDS", 400.0f, 300.0f);
 	m_kakin.Init("Assets/sprite/kakin.DDS", 500.0f, 500.0f);
 	m_kiroku.Init("Assets/sprite/kiiro.DDS", 880.0f, 820.0f);
+	m_easySprite.Init("Assets/sprite/Difficulty_Easy.DDS", 350.0f, 350.0f);
+	m_normalSprite.Init("Assets/sprite/Difficulty_Normal.DDS", 350.0f, 350.0f);
+	m_hardSprite.Init("Assets/sprite/Difficulty_Hard.DDS", 300.0f, 200.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -389,7 +392,7 @@ void InGameUI::ShowPrediction(float prDistance)
 	m_predictionAlpha = 1.0f; // 必要に応じてフェードインの初期値など
 
 	// 🌟 距離が 80m 未満なら「ゴロ」として扱う
-	if (m_predictedDistance < 25000.0f)
+	if (m_predictedDistance < 24000.0f)
 	{
 		m_predictionType = Prediction_Goro;
 	}
@@ -652,39 +655,89 @@ void InGameUI::Render(RenderContext& rc) {
 				shouldShowStageUI = true;
 			}
 		}
-		// ★ 3回以上でスプライト表示
-		if (shouldShowStageUI && m_guruGuruCount >= 3) {
 
-			m_guruguruSprite.SetMulColor({ 1,1,1,1 }); // 表示
+		// 難易度別の回転数設定（1回だけ）
+		int rotationPerLevel = 3;
+		Difficulty diff = game->GetDifficulty();
+
+		if (diff == Difficulty::Easy) {
+			rotationPerLevel = 10;
+		}
+		else if (diff == Difficulty::Normal) {
+			rotationPerLevel = 5;
+		}
+		else {
+			rotationPerLevel = 3;
+		}
+
+		// ★ 警告スプライト表示（難易度別）
+		if (shouldShowStageUI && m_guruGuruCount >= rotationPerLevel)
+		{
+			m_guruguruSprite.SetMulColor({ 1,1,1,1 });
 			m_guruguruSprite.SetPosition(Vector3{ 0.0f,465.0f, 0.0f });
 			m_guruguruSprite.Update();
 			m_guruguruSprite.Draw(rc);
-
 		}
-		else {
-
-			// 3回未満は非表示
+		else
+		{
 			m_guruguruSprite.SetMulColor({ 1,1,1,0 });
 		}
 
-		// --- ぐるぐる段階（10段階） ---
-		int stage = clamp((m_guruGuruCount - 3) / 3, 0, 9);
-
-		// ★ 3回未満は何も表示しない
-		if (shouldShowStageUI && m_guruGuruCount >= 3)
+		// ★ ステージテキスト表示（同じ rotationPerLevel を使う）
+		if (shouldShowStageUI && m_guruGuruCount >= rotationPerLevel)
 		{
-			const wchar_t* stageText = m_stageTextList[stage];
+			const wchar_t** stageList = nullptr;
+			int maxStage = 0;
 
-			m_fontStage[stage].SetText(stageText);
+			if (diff == Difficulty::Easy) {
+				stageList = m_stageTextEasy;
+				maxStage = 3;
+			}
+			else if (diff == Difficulty::Normal) {
+				stageList = m_stageTextNormal;
+				maxStage = 7;
+			}
+			else {
+				stageList = m_stageTextHard;
+				maxStage = 15;
+			}
+
+			int stage = (m_guruGuruCount / rotationPerLevel) - 1;
+			stage = clamp(stage, 0, maxStage - 1);
+
+			m_fontStage[stage].SetText(stageList[stage]);
 			m_fontStage[stage].SetPosition(-270.0f, 500.0f, 0.0f);
 			m_fontStage[stage].SetScale(0.8f);
 			m_fontStage[stage].SetColor(0, 0, 0, 1);
 			m_fontStage[stage].Draw(rc);
 		}
-		
 	}
 
 	if (m_isFontVisible) {
+
+		if (game) {
+			Difficulty diff = game->GetDifficulty();
+			SpriteRender* pDiffSprite = nullptr;
+
+			// 現在の難易度に応じて描画するスプライトを決定
+			if (diff == Difficulty::Easy) {
+				pDiffSprite = &m_easySprite;
+			}
+			else if (diff == Difficulty::Normal) {
+				pDiffSprite = &m_normalSprite;
+			}
+			else if (diff == Difficulty::Hard) { // 必要に応じて異なるDifficulty列挙型に合わせてください
+				pDiffSprite = &m_hardSprite;
+			}
+
+			// スプライトが存在すれば位置を設定して描画
+			if (pDiffSprite) {
+				// 表示位置（画面左上あたり、バスカットや残り球数の邪魔にならない位置に調整してください）
+				pDiffSprite->SetPosition(Vector3{ -535.0f, 350.0f, 0.0f });
+				pDiffSprite->Update();
+				pDiffSprite->Draw(rc);
+			}
+		}
 
 		wchar_t kyu[64];
 		swprintf_s(kyu, 64, L"のこり%d球", m_ballCount);

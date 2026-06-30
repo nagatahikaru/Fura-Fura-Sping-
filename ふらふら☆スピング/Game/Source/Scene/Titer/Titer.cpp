@@ -31,11 +31,9 @@ bool Titer::Start()
 
 void Titer::Update()
 {
-	if (g_pad[0]->IsTrigger(enButtonA)) {
-		
+	if (m_titerUI == nullptr) {
 		DeleteGO(this);
 	}
-	
 }
 
 void Titer::Render(RenderContext& rc)

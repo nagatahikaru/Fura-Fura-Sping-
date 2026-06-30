@@ -48,7 +48,7 @@ class Ball :public Character
 	Vector3 m_position;  //ボールの位置
 	Vector3 m_velocity;  //ボールの速度
 	Vector3 m_targetPos; //目標位置
-	Vector3 m_rotation;
+	//Vector3 m_rotation;
 
 	float m_rotateSpeed = 7660.0f;
 	float m_rotationAngle = 0.0f;

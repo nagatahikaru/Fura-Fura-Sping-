@@ -70,7 +70,8 @@ public:
 	bool  m_isPerfectAnimActive = false;
 
 private:
-
+	enum class UIDifficulty { Easy, Normal, Hard };
+	UIDifficulty m_uiDifficulty = UIDifficulty::Normal;
 	FontRender m_fontRender;
 	FontRender m_fontBollRender1;
 	FontRender m_fontBollRender2;
@@ -169,19 +170,42 @@ private:
 	SpriteRender m_batu[3];
 	bool m_isMiss[3] = { false, false, false }; // 空振りフラグ
 	SpriteRender m_guruguruSprite; // 例：5段階
-	FontRender    m_fontStage[10];
-	const wchar_t* m_stageTextList[10] = {
-	L"揺れ(弱)",   // 0段階
-	L"360度揺れ(弱)",       // 1段階
-	L"ランダム揺れ(弱)",         // 2段階
-	L"ランダム誘導(弱)",       // 3段階
-	L"流され誘導(弱)",         // 4段階
-	L"流され誘導(強)",       // 5段階
-	L"誘導ノイズ(強)",          // 6段階
-	L"ディレイ",     // 7段階
-	L"操作反転",          // 8段階
-	L"ランダム誘導ノイズ(強)"   // 9段階
+	// デバフ段階表示用フォント（最大15段階）
+	FontRender m_fontStage[15];
+	const wchar_t* m_stageTextEasy[3] = {
+        L"揺れ(弱)",   // 0段階
+		L"360度揺れ(弱)",       // 1段階
+		L"ランダム揺れ(弱)"       // 2段階
 	};
+
+	const wchar_t* m_stageTextNormal[7] = {
+		L"揺れ(弱)",   // 0段階
+		L"360度揺れ(弱)",       // 1段階
+		L"ランダム揺れ(弱)",         // 2段階
+		L"ランダム誘導(弱)",       // 3段階
+		L"流され誘導(弱)",         // 4段階
+		L"流され誘導(強)",       // 5段階
+		L"誘導ノイズ(強)"        // 6段階
+	};
+
+	const wchar_t* m_stageTextHard[15] = {
+		L"揺れ(弱)",   // 0段階
+		L"360度揺れ(弱)",       // 1段階
+		L"ランダム揺れ(弱)",         // 2段階
+		L"ランダム誘導(弱)",       // 3段階
+		L"流され誘導(弱)",         // 4段階
+		L"流され誘導(強)",       // 5段階
+		L"誘導ノイズ(強)",          // 6段階
+		L"ディレイ",     // 7段階
+		L"操作反転",          // 8段階
+		L"ランダム誘導ノイズ" ,  // 9段階
+		L"ランダム誘導ノイズ(強)",
+		L"ランダム誘導ノイズ(強強)",
+		L"ランダム誘導ノイズ(超強)",
+		L"ランダム誘導ノイズ(極強)",
+		L"ランダム誘導ノイズ(MAX)"
+	};
+
 	Vector3 m_miniMapBasePos;
 	float   m_miniMapHeightY = 250.0f;
 	float   m_miniMapHeightX = 271.0f;    // メーター全体の高さ（ピクセル単位）
@@ -197,5 +221,8 @@ private:
 	float        m_animeTimer = 0.0f;
 	SpriteRender m_kakin;
 	SpriteRender m_kiroku;
+	SpriteRender m_easySprite;
+	SpriteRender m_normalSprite;
+	SpriteRender m_hardSprite;
 };
 
