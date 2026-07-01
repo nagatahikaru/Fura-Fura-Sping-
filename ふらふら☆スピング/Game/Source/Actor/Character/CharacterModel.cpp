@@ -132,7 +132,7 @@ namespace nsApp
 			}
 			
 			/* 武器を更新。*/
-			m_weaponModelRender->Update();
+			m_weaponModelRender->Update();			
 		}
 	}
 
@@ -189,6 +189,34 @@ namespace nsApp
 
 			if (boneID != -1)
 				return m_characterModelRender->GetBone(boneID)->GetWorldMatrix();
+		}
+		/* ボーンが見つからない場合。*/
+		return Matrix::Identity;
+	}
+
+	Matrix CharacterModel::GetLocalMatrix(const wchar_t* boneName)
+	{
+		if (m_characterModelRender)
+		{
+			/* ボーンIDを取得。*/
+			int boneID = m_characterModelRender->FindBoneID(boneName);
+
+			if (boneID != -1)
+				return m_characterModelRender->GetBone(boneID)->GetLocalMatrix();
+		}
+		/* ボーンが見つからない場合。*/
+		return Matrix::Identity;
+	}
+
+	Matrix CharacterModel::GetBindPoseMatrix(const wchar_t* boneName)
+	{
+		if (m_characterModelRender)
+		{
+			/* ボーンIDを取得。*/
+			int boneID = m_characterModelRender->FindBoneID(boneName);
+
+			if (boneID != -1)
+				return m_characterModelRender->GetBone(boneID)->GetBindPoseMatrix();
 		}
 		/* ボーンが見つからない場合。*/
 		return Matrix::Identity;

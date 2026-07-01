@@ -221,9 +221,6 @@ void BatterSwingState::Update()
 	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
 	batter->AnimationUpdate();
 
-	// ★★★ 【ここを変更】〇〇フレーム以降は打てない処理 ★★★
-	// スイング開始から「8フレーム」が経過するまでは打てる（HitBatを実行する）。
-	// 8フレームを超えたら（9フレーム目以降は）HitBatが呼ばれないため、フォロースルーとなり打てなくなります。s
 	batter->DownArrowEffect();
 	batter->BatHitBoxPosition();
 	batter->HitBat(); // ← ここで実際に打てる判定を行う

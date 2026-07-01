@@ -165,6 +165,8 @@ namespace nsApp
 		* @param boneName 取得したいボーンの名前を指定する。
 		*/
 	    Matrix GetWorldMatrix(const wchar_t* boneName);
+		Matrix GetLocalMatrix(const wchar_t* boneName);
+		Matrix GetBindPoseMatrix(const wchar_t* boneName);
 
 		float GetPlaySpeed() const {
 			return m_playSpeed;
