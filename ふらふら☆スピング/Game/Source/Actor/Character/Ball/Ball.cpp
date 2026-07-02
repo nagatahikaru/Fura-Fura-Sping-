@@ -24,9 +24,9 @@ bool Ball::Start()
 
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-	m_modelRender.SetScale({ 1.0f,1.0f,0.5f });
+	m_modelRender.SetScale({ 8.5f,8.5f,8.0f });
 
-	m_position = { -0.0f, 600.0f, 950.0f };
+	m_position = { -0.0f, 600.0f, 800.0f };
 	m_modelRender.SetPosition(m_position);
 
 
@@ -81,14 +81,12 @@ void Ball::Update()
 
         if (m_isMove)
         {
-            float rotateSpeed = m_rotateSpeed;
-
             if (!m_hasHit)
             {
                 float accelerationZ = 100.0f;
                 m_velocity.z += accelerationZ * dt;
             }
-            float baseGravity = 26.5f; // 元々のベース重力
+            float baseGravity = 15.5f; // 元々のベース重力
 
             if (!m_hasHit && m_initialSpeedZ > 0.0f)
             {
@@ -274,17 +272,20 @@ void Ball::Update()
             if (m_isRecording) {
                 m_replayPath.push_back(m_position);
             }
-            SetPosition(m_position);
-
-
-            m_rotationAngle += m_rotateSpeed * dt;
-
-
-            Quaternion rot;
-            rot.SetRotationDegX(m_rotationAngle);
-
-            m_modelRender.SetRotation(rot);
         }
+      
+     SetPosition(m_position);
+
+     m_rotationAngle += m_rotateSpeed * dt;
+
+     ////////
+     Quaternion rot;
+     rot.SetRotationDegX(m_rotationAngle);
+     ///////
+
+     m_modelRender.SetRotation(rot);
+     
+
 
      //距離に応じてスケール変更
      float minZ = 1000.0f;  // ピッチャーマウンド（スタート）
@@ -353,14 +354,12 @@ void Ball::Update()
 
 void Ball::Throw(const Vector3& targetPos)
 {
-    m_currentRotationSpeed = m_rotationSpeed;
-
     m_rotationAngle = 0.0f;
 
     Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
 
-    float m_speedRate = 2750.0f + (rand() % 250);
+    float speed = 2000.0f + (rand() % 250);
  
     // ★ 1. ゲーム側から現在の難易度を取得する
     Difficulty currentDifficulty = Normal; // デフォルト
@@ -422,7 +421,7 @@ void Ball::Throw(const Vector3& targetPos)
         m_curveDir = 0;
     }
 
-    m_velocity = dir * m_speedRate;
+    m_velocity = dir * speed;
     m_initialSpeedZ = m_velocity.z;
     m_isMove = true;
 
