@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Source/Source.h"
-
+class Game;
 class InGameUI :public Source
 {
 public:
@@ -68,7 +68,7 @@ public:
 	};
 	float m_perfectAnimTimer = 0.0f;
 	bool  m_isPerfectAnimActive = false;
-
+	void SetGameInstance(Game* game) { m_game = game; }
 private:
 	enum class UIDifficulty { Easy, Normal, Hard };
 	UIDifficulty m_uiDifficulty = UIDifficulty::Normal;
@@ -224,5 +224,5 @@ private:
 	SpriteRender m_easySprite;
 	SpriteRender m_normalSprite;
 	SpriteRender m_hardSprite;
+	Game* m_game = nullptr;
 };
-

@@ -555,8 +555,9 @@ void Batter::HitBat()
 		}
 
 		auto se2 = g_soundManager->PlaySE(Sound::enSound_SE2, 300.0f);
-		if (se2) se2->SetVolume(3.0f);
-		se2->SetName("SE2");
+		if (se2) {
+			se2->SetName("SE2");
+		}
 	}
 }
 

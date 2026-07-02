@@ -10,20 +10,20 @@ bool LoadUI::Start()
        "Assets/sprite/tip03.dds",
        "Assets/sprite/tip04.dds",
        "Assets/sprite/tip05.dds",
-       "Assets/sprite/tip06.dds",
+      // "Assets/sprite/tip06.dds",
     };
 
     for (auto& file : tipFiles) {
         auto tip = new SpriteRender();   // ★ new で生成（コピーしない）
-        tip->Init(file, 1000.0f, 600.0f);
-        tip->SetPosition({ 0.0f, 200.0f, 0.0f });
+        tip->Init(file, 1200.0f, 800.0f);
+        tip->SetPosition({ 0.0f, 100.0f, 0.0f });
         m_tips.push_back(tip);
     }
 
     m_sannkaku.Init("Assets/sprite/sankaku.dds", 200.0f, 230.0f);
-    m_sannkaku.SetPosition({ 600.0f, 200.0f, 0.0f });
+    m_sannkaku.SetPosition({ 700.0f, 100.0f, 0.0f });
     m_gyakusann.Init("Assets/sprite/gyakusan.dds", 200.0f, 270.0f);
-    m_gyakusann.SetPosition({ -600.0f, 200.0f, 0.0f });
+    m_gyakusann.SetPosition({ -700.0f, 100.0f, 0.0f });
 
     return true;
 }
@@ -101,12 +101,11 @@ void LoadUI::Update()
     case 1:
     case 2:
     case 3:
-    case 4:
         m_sannkaku.SetMulColor({ 1,1,1,1 });
         m_gyakusann.SetMulColor({ 1,1,1,1 }); // 両方
         break;
 
-    case 5:
+    case 4:
         m_gyakusann.SetMulColor({ 1,1,1,1 }); // 左だけ
         break;
     }

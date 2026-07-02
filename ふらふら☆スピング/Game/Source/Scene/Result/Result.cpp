@@ -178,8 +178,9 @@ void Result::Update()
 		if (ranking->AddScore(m_km, m_originalKm, m_guruguru)) {
 			m_isNewRecord = true;
 			m_newRecord.SetMulColor({ 1,1,1,1 });
-			auto se = g_soundManager->PlaySE(enSound_SE4);
-			if (se) se->SetVolume(1.5f);
+
+			g_soundManager->PlaySE(enSound_SE4);
+
 			m_isBlinking = true;
 			m_blinkCount = 0;
 			m_blinkTimer = 0.0f;
@@ -208,8 +209,8 @@ void Result::Update()
 			m_newRecord.SetMulColor({ 1,1,1,alpha });
 			if (alpha > 0.5f) {
 				m_blinkCount++;
-				auto se = g_soundManager->PlaySE(enSound_SE4);
-				if (se) se->SetVolume(1.5f);
+
+				g_soundManager->PlaySE(enSound_SE4);
 			}
 			if (m_blinkCount >= 3) {
 				m_isBlinking = false; m_newRecord.SetMulColor({ 1,1,1,1 });
