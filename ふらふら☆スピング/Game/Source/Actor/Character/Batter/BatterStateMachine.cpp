@@ -221,7 +221,30 @@ void BatterSwingState::Update()
 	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
 	batter->AnimationUpdate();
 
+	batter->DownArrowEffect();
+	batter->BatHitBoxPosition();
+	batter->HitBat(); // ← ここで実際に打てる判定を行う
+	// 1. スイング開始からの経過時間（秒）を計算
+	// 4.0倍速で再生されているため、実際の経過時間に4.0倍を掛けて累積します
+	m_swingTimer += g_gameTime->GetFrameDeltaTime() * 4.0f;
+
+	// 2. 経過秒数を「60fps換算のフレーム数」に変換
+	float elapsedFrames = m_swingTimer * 60.0f;
+
+	// ★★★ 【ここを変更】〇〇フレーム以降は打てない処理 ★★★
+	// スイング開始から「8フレーム」が経過するまでは打てる（HitBatを実行する）。
+	// 8フレームを超えたら（9フレーム目以降は）HitBatが呼ばれないため、フォロースルーとなり打てなくなります。
+	if (elapsedFrames <= 20.0f)
+	{
+		batter->DownArrowEffect();
+		batter->BatHitBoxPosition();
+		batter->HitBat(); // ← ここで実際に打てる判定を行う
+	}
+	else
+	{
+	}
 }
+
 void BatterSwingState::Exit()
 {
 	Batter* batter = GetBatter();

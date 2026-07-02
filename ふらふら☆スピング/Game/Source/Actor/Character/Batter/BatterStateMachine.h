@@ -62,7 +62,8 @@ public:
 class BatterSwingState :public BatterIStateBess
 {
 	appState(BatterSwingState);
-
+private:
+	float m_swingTimer = 0.0f;
 public:
 	BatterSwingState() :BatterIStateBess() {};
 	virtual ~BatterSwingState() {};
@@ -93,7 +94,7 @@ class BatterReplayState :public BatterIStateBess
 	
 private:
 	bool m_isReplayHitEffectPlayed = false; // リプレイ中のヒットエフェクト再生フラグ
-
+	
 public:
 	BatterReplayState() :BatterIStateBess() {};
 	virtual ~BatterReplayState() {};
