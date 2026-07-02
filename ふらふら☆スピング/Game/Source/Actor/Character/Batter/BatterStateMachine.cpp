@@ -221,9 +221,6 @@ void BatterSwingState::Update()
 	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
 	batter->AnimationUpdate();
 
-	batter->DownArrowEffect();
-	batter->BatHitBoxPosition();
-	batter->HitBat(); // ← ここで実際に打てる判定を行う
 }
 void BatterSwingState::Exit()
 {

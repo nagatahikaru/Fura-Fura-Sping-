@@ -73,11 +73,18 @@ namespace nsK2EngineLow {
 	void AnimationPlayController::SamplingBoneMatrixFromAnimationClip()
 	{
 		const auto& keyFramePtrListArray = m_animationClip->GetKeyFramePtrListArray();
-		for (const auto& keyFrameList : keyFramePtrListArray) {
+		int numBone = m_skeleton->GetNumBones();
+		for (int boneNo = 0; boneNo < numBone; boneNo++) {
+			const auto& keyFrameList = keyFramePtrListArray[boneNo];
 			if (keyFrameList.size() == 0) {
+				// キーフレームが無いボーンは、バインドポーズ由来のローカル行列にリセットする。
+				// これをやらないと、CalcBoneMatrixInRootBoneSpace()で
+				// 前フレームのワールド行列に対して再度親行列が掛け算され、
+				// 毎フレーム行列が膨張し続けてしまう（指が伸びるバグの原因）。
+				auto bone = m_skeleton->GetBone(boneNo);
+				m_boneMatrix[boneNo] = bone->GetLocalMatrix();
 				continue;
 			}
-			//現在再生中のキーフレームを取ってくる。
 			KeyFrame* keyframe = keyFrameList.at(m_currentKeyFrameNo);
 			m_boneMatrix[keyframe->boneIndex] = keyframe->transform;
 		}
