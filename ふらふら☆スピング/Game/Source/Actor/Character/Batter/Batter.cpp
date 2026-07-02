@@ -518,7 +518,28 @@ void Batter::HitBat()
 	float powerScale = 1.0f;
 
 	if (angleDeg > 60.0f) {
-
+		powerScale = 1.65f;
+		hitDir.y += 50.0f;
+	}
+	else if (angleDeg > 30.0f) {
+		powerScale = 1.85f;
+	}
+	else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
+		powerScale = 2.4f;
+	}
+	else if (angleDeg < 0.0f) {
+		powerScale = 1.8f;
+		powerScale = 0.65f;
+		hitDir.y += 50.0f;
+	}
+	else if (angleDeg > 30.0f) {
+		powerScale = 0.85f;
+	}
+	else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
+		powerScale = 1.4f;
+	}
+	else if (angleDeg < 0.0f) {
+		powerScale = 0.8f;
 	}
 
 	float finalPower = 935.0f * powerScale;
