@@ -524,7 +524,7 @@ void Batter::HitBat()
 		powerScale = 0.95f;
 	}
 	else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
-		powerScale = 1.5f;
+		powerScale = 1.42f;
 
 	}
 	else if (angleDeg < 0.0f) {

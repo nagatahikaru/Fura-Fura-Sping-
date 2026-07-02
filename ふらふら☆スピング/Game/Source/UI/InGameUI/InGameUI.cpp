@@ -277,11 +277,11 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 	t = clamp(t, 0.0f, 1.0f);
 
 	// ★ アルファ値の計算（0.5 = 半透明、0.0 = 完全透明）
-	float alpha = 0.7f;
+	float alpha = 0.5f;
 
 	if (t < 0.30f) {
 		// 最初の30%は 0.7f を維持
-		alpha = 0.7f;
+		alpha = 0.5f;
 	}
 	else {
 		// 0.30〜1.0 を 0〜1 に圧縮
@@ -289,7 +289,7 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 
 		// 二乗でゆっくり立ち上がり、最終的に 0.0f（完全透明）にする
 		// u=0 のとき alpha=0.7f、u=1 のとき alpha=0.0f
-		alpha = 0.7f * (1.0f - u);
+		alpha = 0.5f * (1.0f - u);
 	}
 
 	// 常に最新のアルファ値を適用（ifの外に出すことでバグを防止）
