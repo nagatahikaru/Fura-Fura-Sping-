@@ -47,6 +47,9 @@ bool Game::Start()
 	// ★ カウントダウンUIを表示
 	m_start1 = NewGO<Start1>(0, "start1");
 
+	if (m_InGameUI) {
+		m_InGameUI->SetGameInstance(this); 
+	}
 	// ボールをカメラにセット
 	if (m_gameCamera && m_ball) {
 		m_gameCamera->SetBall(m_ball);

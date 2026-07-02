@@ -18,12 +18,12 @@ bool Load::Start()
     m_guruguru.Init("Assets/sprite/guruguru.dds", 500.f, 500.0f);
     m_guruguru.SetPosition({ 790.0f, -450.0f, 0.0f });
     m_gaugeFrame.Init("Assets/sprite/gauge.dds", 1670.0f, 1100.0f);
-    m_gaugeFrame.SetPosition({ 0.0f, -349.0f, 0.0f });
+    m_gaugeFrame.SetPosition({ 0.0f, -399.0f, 0.0f });
     m_gaugeFill.Init("Assets/sprite/gauge2.dds", 1100.5f, 107.0f);
-    m_gaugeFill.SetPosition({ -549.8f, -323.5f, 0.0f });
+    m_gaugeFill.SetPosition({ -549.8f, -373.5f, 0.0f });
     m_gaugeFill.SetPivot({ 0.0f, 0.5f });   // 左端基準
-    m_B.Init("Assets/sprite/AA.dds", 320.0f, 270.0f);
-    m_B.SetPosition({ 0.0f, -400.0f, 0.0f });
+    m_B.Init("Assets/sprite/AA.dds", 350.0f, 300.0f);
+    m_B.SetPosition({ 0.0f, -430.0f, 0.0f });
     m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
     m_grobu.SetPosition({ 800.0f, -400.0f, 0.0f });
     m_guL.Init("Assets/sprite/guruguruL.dds", 250.0f, 250.0f);

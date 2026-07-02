@@ -123,11 +123,20 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 		float v = m_seVolume / 100.0f;
 		float curved = powf(v, 1.3f);
 
-		m_se2BaseVolume = curved;        // ★ 本来の音量を保存
-		m_se2->SetVolume(curved);        // ★ 実際の音量をセット
+		m_se2BaseVolume = curved * 3.0f;  // ★ 3倍した本来の音量を保存
+		m_se2->SetVolume(m_se2BaseVolume); // ★ 実際の音量も3倍に
 		m_se2->Play(false);
 
 		return m_se2;
+	}
+
+	if (number == enSound_SE4) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		// 現在の設定音量（curved）をベースに、1.5倍にする
+		se->SetVolume(curved * 1.5f);
+		se->Play(false);
+		return se;
 	}
 
 	// ★ SE14 だけは音量カーブを使わず、そのままの音量で再生
