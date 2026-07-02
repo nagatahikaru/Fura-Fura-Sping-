@@ -249,10 +249,10 @@ void Result::SetResultValues(int guruguru, int bestKm, int scores[3]) {
 		maxMultiplier = 10.0;     // イージーは10倍マックス
 	}
 	else if (m_difficulty == Difficulty::Normal) {
-		maxMultiplier = 25.0;     // ノーマルは25倍マックス
+		maxMultiplier = 45.0;     // ノーマルは25倍マックス
 	}
 	else if (m_difficulty == Difficulty::Hard) {
-		maxMultiplier = 50.0;     // ノーマルは25倍マックス
+		maxMultiplier = 100.0;     // ノーマルは25倍マックス
 	}
 
 	// 各難易度に応じた倍率計算式 ( 1.0 + (マックス倍率 - 1.0) * t^p )
