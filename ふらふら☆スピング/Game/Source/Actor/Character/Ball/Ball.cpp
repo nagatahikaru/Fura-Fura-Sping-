@@ -327,7 +327,7 @@ void Ball::Update()
        loweredPos.z -= 650.0f;
        // ★ バッターに近づくほど、徐々に指定の高さ（-280.0f）へ沈み込ませる
        // t=0(投げた瞬間) はそのままの高さ、t=1(打たれる場所) でジャスト -280.0f 下がります
-       loweredPos.y -= 290.0f * t;
+       loweredPos.y -= 200.0f * t;
 
        m_modelRender.SetPosition(loweredPos);
 
@@ -563,7 +563,7 @@ float Ball::PredictLandingDistance()
 
     while (pos.y > 0.0f) {
 
-        vel.y -= 13.5f * dt;   // 重力
+        vel.y -= 26.5f * dt;   // 重力
 
         pos += vel * dt;
     }
