@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include"LoadUI.h"
 #include"Source/Scene/Load/Load.h"
 #include "Source/Sound/SoundManager.h"
@@ -14,7 +14,7 @@ bool LoadUI::Start()
     };
 
     for (auto& file : tipFiles) {
-        auto tip = new SpriteRender();   // š new ‚Å¶¬iƒRƒs[‚µ‚È‚¢j
+        auto tip = new SpriteRender();   // â˜… new ã§ç”Ÿæˆï¼ˆã‚³ãƒ”ãƒ¼ã—ãªã„ï¼‰
         tip->Init(file, 1000.0f, 600.0f);
         tip->SetPosition({ 0.0f, 200.0f, 0.0f });
         m_tips.push_back(tip);
@@ -34,46 +34,43 @@ void LoadUI::Update()
 
     bool movedRight = false;
     bool movedLeft = false;
+    if (g_pad[0]->IsTrigger(enButtonRight) || m_timer >= 5.0f) {
 
-    // ‰E“ü—Í or ©“®Ø‚è‘Ö‚¦
-    if ((g_pad[0]->IsTrigger(enButtonRight) && m_currentTip < (int)m_tips.size() - 1)
-        || m_timer >= 5.0f) {
+        m_currentTip++; // ãƒšãƒ¼ã‚¸ã‚’1ã¤é€²ã‚ã‚‹
 
-        // š ÅŒãi4j‚Å‚Í‰E‚És‚¯‚È‚¢
-        if (m_currentTip < (int)m_tips.size() - 1) {
-            m_currentTip++;
-            movedRight = true;
+        if (m_currentTip >= (int)m_tips.size()) {
+            m_currentTip = 0;
         }
 
+        movedRight = true;
         m_timer = 0.0f;
     }
-    // ¶“ü—Í
     else if (g_pad[0]->IsTrigger(enButtonLeft)) {
 
-        // š Å‰i0j‚Å‚Í¶‚És‚¯‚È‚¢
-        if (m_currentTip > 0) {
-            m_currentTip--;
-            movedLeft = true;
+        m_currentTip--; // ãƒšãƒ¼ã‚¸ã‚’1ã¤æˆ»ã™
+
+        if (m_currentTip < 0) {
+            m_currentTip = (int)m_tips.size() - 1;
         }
 
+        movedLeft = true;
         m_timer = 0.0f;
     }
-
-    // ‰E‚É“®‚¢‚½uŠÔ
+    // å³ã«å‹•ã„ãŸç¬é–“
     if (movedRight) {
         g_soundManager->PlaySE(enSound_SE13);    
         m_scaleRight = 1.7f;
         m_scaleRightTimer = 0.15f;
     }
 
-    // ¶‚É“®‚¢‚½uŠÔ
+    // å·¦ã«å‹•ã„ãŸç¬é–“
     if (movedLeft) {
         g_soundManager->PlaySE(enSound_SE13);
         m_scaleLeft = 1.7f;
         m_scaleLeftTimer = 0.15f;
     }
 
-    // ‰EOŠp‚ÌƒXƒP[ƒ‹–ß‚µ
+    // å³ä¸‰è§’ã®ã‚¹ã‚±ãƒ¼ãƒ«æˆ»ã—
     if (m_scaleRightTimer > 0.0f) {
         m_scaleRightTimer -= g_gameTime->GetFrameDeltaTime();
         m_scaleRight += (1.0f - m_scaleRight) * 0.25f;
@@ -82,7 +79,7 @@ void LoadUI::Update()
         m_scaleRight = 1.0f;
     }
 
-    // ¶OŠp‚ÌƒXƒP[ƒ‹–ß‚µ
+    // å·¦ä¸‰è§’ã®ã‚¹ã‚±ãƒ¼ãƒ«æˆ»ã—
     if (m_scaleLeftTimer > 0.0f) {
         m_scaleLeftTimer -= g_gameTime->GetFrameDeltaTime();
         m_scaleLeft += (1.0f - m_scaleLeft) * 0.25f;
@@ -91,14 +88,14 @@ void LoadUI::Update()
         m_scaleLeft = 1.0f;
     }
 
-    // š •\¦§Œä
+    // â˜… è¡¨ç¤ºåˆ¶å¾¡
     m_sannkaku.SetMulColor({ 1,1,1,0 });
     m_gyakusann.SetMulColor({ 1,1,1,0 });
 
     switch (m_currentTip)
     {
     case 0:
-        m_sannkaku.SetMulColor({ 1,1,1,1 }); // ‰E‚¾‚¯
+        m_sannkaku.SetMulColor({ 1,1,1,1 }); // å³ã ã‘
         break;
 
     case 1:
@@ -106,15 +103,15 @@ void LoadUI::Update()
     case 3:
     case 4:
         m_sannkaku.SetMulColor({ 1,1,1,1 });
-        m_gyakusann.SetMulColor({ 1,1,1,1 }); // —¼•û
+        m_gyakusann.SetMulColor({ 1,1,1,1 }); // ä¸¡æ–¹
         break;
 
     case 5:
-        m_gyakusann.SetMulColor({ 1,1,1,1 }); // ¶‚¾‚¯
+        m_gyakusann.SetMulColor({ 1,1,1,1 }); // å·¦ã ã‘
         break;
     }
 
-    // ƒXƒP[ƒ‹“K—p
+    // ã‚¹ã‚±ãƒ¼ãƒ«é©ç”¨
     m_sannkaku.SetScale({ m_scaleRight, m_scaleRight, 1.0f });
     m_gyakusann.SetScale({ m_scaleLeft,  m_scaleLeft,  1.0f });
 }

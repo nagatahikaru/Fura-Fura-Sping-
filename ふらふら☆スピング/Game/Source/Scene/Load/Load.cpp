@@ -17,15 +17,19 @@ bool Load::Start()
     m_spriteRender.Init("Assets/sprite/siro.dds", 1920.0f, 1080.0f);
     m_guruguru.Init("Assets/sprite/guruguru.dds", 500.f, 500.0f);
     m_guruguru.SetPosition({ 790.0f, -450.0f, 0.0f });
-    m_gaugeFrame.Init("Assets/sprite/gauge.dds", 2450.0f, 1300.0f);
-    m_gaugeFrame.SetPosition({ 0.0f, -350.0f, 0.0f });
-    m_gaugeFill.Init("Assets/sprite/gauge2.dds", 1095.0f, 105.0f);
-    m_gaugeFill.SetPosition({ -554.0f, -318.5f, 0.0f });
+    m_gaugeFrame.Init("Assets/sprite/gauge.dds", 1670.0f, 1100.0f);
+    m_gaugeFrame.SetPosition({ 0.0f, -349.0f, 0.0f });
+    m_gaugeFill.Init("Assets/sprite/gauge2.dds", 1100.5f, 107.0f);
+    m_gaugeFill.SetPosition({ -549.8f, -323.5f, 0.0f });
     m_gaugeFill.SetPivot({ 0.0f, 0.5f });   // 左端基準
-    m_B.Init("Assets/sprite/AA.dds", 220.0f, 170.0f);
-    m_B.SetPosition({ 800.0f, -400.0f, 0.0f });
+    m_B.Init("Assets/sprite/AA.dds", 320.0f, 270.0f);
+    m_B.SetPosition({ 0.0f, -400.0f, 0.0f });
     m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
     m_grobu.SetPosition({ 800.0f, -400.0f, 0.0f });
+    m_guL.Init("Assets/sprite/guruguruL.dds", 250.0f, 250.0f);
+    m_guL.SetPosition({ 780.0f, -300.0f, 0.0f });
+    m_guR.Init("Assets/sprite/guruguruR.dds", 250.0f, 250.0f);
+    m_guR.SetPosition({ 780.0f, -300.0f, 0.0f });
     NewGO<LoadUI>(0, "loadUI");
     return true;
 }
@@ -37,11 +41,14 @@ void Load::Update()
         m_gaugeFill.SetMulColor({ 1,1,1,0 });
         m_grobu.SetMulColor({ 1,1,1,0 });
         m_B.SetMulColor({ 1,1,1,0 });
+        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guR.SetMulColor({ 1,1,1,0 });
         m_waitFrame++;
         return;
     }
 
-    // ★ ロード完了後の処理 (変更なし)
+    // ★ ロード完了後の処理
+   // ★ ロード完了後の処理
     if (m_loadFinished) {
         m_finishWait += g_gameTime->GetFrameDeltaTime();
         if (!m_bgmStarted && m_finishWait >= 1.0f) {
@@ -49,21 +56,65 @@ void Load::Update()
             g_soundManager->PlayingSound(enSound_GameBGM1, true, powf(v, 1.5f));
             m_bgmStarted = true;
         }
+
+        // 🌟 ボタン押し込み（一気に縮小 → 元に戻る）演出用の変数
+        static int clickState = 0;       // 0:通常, 1:縮小中, 2:元に戻り中
+        static float clickWaitTimer = 0.0f;
+
+        // --- 🌟 Aボタンを押した後の演出管理 ---
+        if (clickState == 1) {
+            // ステップ1: 小さい状態をキープ
+            clickWaitTimer -= g_gameTime->GetFrameDeltaTime();
+            if (clickWaitTimer <= 0.0f) {
+                // 🌟一気に元の大きさに戻す！
+                m_grobu.SetScale({ 1.0f, 1.0f, 1.0f });
+                m_B.SetScale({ 1.0f, 1.0f, 1.0f });
+
+                clickState = 2;          // 次のステップへ
+                clickWaitTimer = 0.08f;  // 元の大きさを見せる時間（0.08秒）
+            }
+            return;
+        }
+        else if (clickState == 2) {
+            // ステップ2: 元の大きさになったので、時間を待ってからゲームへ遷移
+            clickWaitTimer -= g_gameTime->GetFrameDeltaTime();
+            if (clickWaitTimer <= 0.0f) {
+                clickState = 0; // リセット
+
+                // UIを非表示にする
+                m_grobu.SetMulColor({ 1,1,1,0 });
+                m_B.SetMulColor({ 1,1,1,0 });
+             
+                // ゲームシーンへ遷移
+                auto loadUI = FindGO<LoadUI>("loadUI");
+                if (loadUI) DeleteGO(loadUI);
+                NewGO<InGameUI>(0, "inGameUI");
+                NewGO<Game>(0, "game");
+                Game* game = FindGO<Game>("game");
+                if (game) {
+                    game->SetDifficulty(m_difficulty);
+                }
+                DeleteGO(this);
+            }
+            return;
+        }
+
+        // --- 🌟 Aボタンを押した瞬間 ---
         if (g_pad[0]->IsTrigger(enButtonA)) {
             if (!m_bgmStarted) {
                 float v = g_soundManager->m_bgmVolume / 100.0f;
                 g_soundManager->PlayingSound(enSound_GameBGM1, true, powf(v, 1.5f));
                 m_bgmStarted = true;
             }
-            auto loadUI = FindGO<LoadUI>("loadUI");
-            if (loadUI) DeleteGO(loadUI);
-            NewGO<InGameUI>(0, "inGameUI");
-            NewGO<Game>(0, "game");
-            Game* game = FindGO<Game>("game");
-            if (game) {
-                game->SetDifficulty(m_difficulty);
-            }
-            DeleteGO(this);
+
+            // 🌟 1. 押した瞬間に一気に小さくする！
+            float scaleValue = 0.70f; // 押し込んだ時のサイズ（お好みで調整）
+            m_grobu.SetScale({ scaleValue, scaleValue, 1.0f });
+            m_B.SetScale({ scaleValue, scaleValue, 1.0f });
+
+            // 🌟 2. 状態を「縮小中」にして、0.08秒だけ待つ
+            clickState = 1;
+            clickWaitTimer = 0.08f; // 小さくなっている時間（0.08秒）
         }
         return;
     }
@@ -92,14 +143,20 @@ void Load::Update()
     case 0:
         NewGO<SkyCube>(0, "skyCube");
         m_gaugeFill.SetMulColor({ 1,1,1,1 });
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guR.SetMulColor({ 1,1,1,1 });
         m_realProgress = 0.2f;
         break;
     case 1:
         NewGO<Background>(0, "backGround");
+        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guR.SetMulColor({ 1,1,1,0 });
         m_realProgress = 0.4f;
         break;
     case 2:
         NewGO<GameCamera>(0, "gameCamera");
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guR.SetMulColor({ 1,1,1,1 });
         m_realProgress = 0.6f;
         break;
     case 3:
@@ -111,15 +168,23 @@ void Load::Update()
         if (batter && pitcher && catcher && ball) { // ★ ヌルチェックを追加して安全に
             batter->m_isPaused = pitcher->m_isPaused = catcher->m_isPaused = ball->m_isPaused = true;
         }
+        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guR.SetMulColor({ 1,1,1,0 });
         m_realProgress = 0.8f;
     }
     break;
     case 4:
         m_realProgress = 1.0f;
         g_soundManager->StopBGM();
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guR.SetMulColor({ 1,1,1,1 });
         break;
     case 5:
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guR.SetMulColor({ 1,1,1,0 });
         m_loadFinished = true;
+        m_gaugeFrame.SetMulColor({ 1,1,1,0 });
+        m_gaugeFill.SetMulColor({ 1,1,1,0 });
         m_guruguru.SetMulColor({ 1,1,1,0 });
         m_grobu.SetMulColor({ 1,1,1,1 });
         m_B.SetMulColor({ 1,1,1,1 });
@@ -151,8 +216,14 @@ void Load::Render(RenderContext& rc)
     m_guruguru.Update();
     m_guruguru.Draw(rc);
 
-    m_grobu.Update();
-    m_grobu.Draw(rc);
+    m_guL.Update();
+    m_guL.Draw(rc);
+
+    m_guR.Update();
+    m_guR.Draw(rc);
+
+   /* m_grobu.Update();
+    m_grobu.Draw(rc);*/
 
     m_B.Update();
     m_B.Draw(rc);

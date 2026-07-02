@@ -24,9 +24,11 @@ bool Ball::Start()
 
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-	m_modelRender.SetScale({ 1.0f,1.0f,0.5f });
+	m_modelRender.SetScale({ 8.5f,8.5f,8.0f });
 
-	m_position = { -0.0f, 600.0f, 950.0f };
+	m_position = { -0.0f, 600.0f, 800.0f };
+	m_throwStartPos = m_position;
+	m_throwEndPos = m_position;
 	m_modelRender.SetPosition(m_position);
 
 
@@ -81,14 +83,12 @@ void Ball::Update()
 
         if (m_isMove)
         {
-            float rotateSpeed = m_rotateSpeed;
-
             if (!m_hasHit)
             {
                 float accelerationZ = 100.0f;
                 m_velocity.z += accelerationZ * dt;
             }
-            float baseGravity = 26.5f; // 元々のベース重力
+            float baseGravity = 15.5f; // 元々のベース重力
 
             if (!m_hasHit && m_initialSpeedZ > 0.0f)
             {
@@ -123,7 +123,9 @@ void Ball::Update()
                 }
             }
             // 3. 安全に計算された currentFrameVelocity を使って座標を移動させる
+            m_prevPosition = m_position;
             m_position += currentFrameVelocity * dt;
+            m_throwEndPos = m_position;
 
             if (!m_hasHit)
             {
@@ -274,17 +276,20 @@ void Ball::Update()
             if (m_isRecording) {
                 m_replayPath.push_back(m_position);
             }
-            SetPosition(m_position);
-
-
-            m_rotationAngle += m_rotateSpeed * dt;
-
-
-            Quaternion rot;
-            rot.SetRotationDegX(m_rotationAngle);
-
-            m_modelRender.SetRotation(rot);
         }
+      
+     SetPosition(m_position);
+
+     m_rotationAngle += m_rotateSpeed * dt;
+
+     ////////
+     Quaternion rot;
+     rot.SetRotationDegX(m_rotationAngle);
+     ///////
+
+     m_modelRender.SetRotation(rot);
+     
+
 
      //距離に応じてスケール変更
      float minZ = 1000.0f;  // ピッチャーマウンド（スタート）
@@ -322,7 +327,7 @@ void Ball::Update()
        loweredPos.z -= 650.0f;
        // ★ バッターに近づくほど、徐々に指定の高さ（-280.0f）へ沈み込ませる
        // t=0(投げた瞬間) はそのままの高さ、t=1(打たれる場所) でジャスト -280.0f 下がります
-       loweredPos.y -= 290.0f * t;
+       loweredPos.y -= 200.0f * t;
 
        m_modelRender.SetPosition(loweredPos);
 
@@ -353,14 +358,15 @@ void Ball::Update()
 
 void Ball::Throw(const Vector3& targetPos)
 {
-    m_currentRotationSpeed = m_rotationSpeed;
-
     m_rotationAngle = 0.0f;
+	m_throwStartPos = m_position;
+	m_targetPos = targetPos;
+	m_throwEndPos = targetPos;
 
     Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
 
-    float m_speedRate = 2750.0f + (rand() % 250);
+    float speed = 2000.0f + (rand() % 250);
  
     // ★ 1. ゲーム側から現在の難易度を取得する
     Difficulty currentDifficulty = Normal; // デフォルト
@@ -422,7 +428,7 @@ void Ball::Throw(const Vector3& targetPos)
         m_curveDir = 0;
     }
 
-    m_velocity = dir * m_speedRate;
+    m_velocity = dir * speed;
     m_initialSpeedZ = m_velocity.z;
     m_isMove = true;
 
@@ -443,6 +449,7 @@ void Ball::Throw(const Vector3& targetPos)
 void Ball::SetPosition(const Vector3& pos)
 {
     m_position = pos;
+	m_throwEndPos = pos;
     m_modelRender.SetPosition(m_position);
 
     m_collisionObject->SetPosition(m_position);
@@ -452,6 +459,26 @@ void Ball::SetPosition(const Vector3& pos)
 bool Ball::IsMoving() const
 {
     return m_isMove;
+}
+
+void Ball::GetFlightRay(Vector3& startPos, Vector3& endPos) const
+{
+	startPos = m_throwStartPos;
+	endPos = m_throwEndPos;
+}
+
+Vector3 Ball::GetFlightDirection() const
+{
+	Vector3 dir = m_throwEndPos - m_throwStartPos;
+	if (dir.Length() > 0.0001f) {
+		dir.Normalize();
+	}
+	return dir;
+}
+
+float Ball::GetFlightLength() const
+{
+	return (m_throwEndPos - m_throwStartPos).Length();
 }
 
 // ボールと指定した位置・半径の球との衝突判定
@@ -536,7 +563,7 @@ float Ball::PredictLandingDistance()
 
     while (pos.y > 0.0f) {
 
-        vel.y -= 13.5f * dt;   // 重力
+        vel.y -= 26.5f * dt;   // 重力
 
         pos += vel * dt;
     }
