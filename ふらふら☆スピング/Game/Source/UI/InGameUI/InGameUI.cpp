@@ -529,16 +529,16 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spriteRenderMeet.Update();
 		m_spriteRenderMeet.Draw(rc);
 
-		m_kuro.SetPosition(Vector3{ 800.0f,-20.0f,0.0f });
+		m_kuro.SetPosition(Vector3{ -800.0f,-70.0f,0.0f });
 		m_kuro.SetMulColor({ 0,0,0,0.5 });
 		m_kuro.Update();
 		m_kuro.Draw(rc);
 
-		m_gurahu.SetPosition(Vector3{ 800.0f,-20.0f,0.0f });
+		m_gurahu.SetPosition(Vector3{ -800.0f,-70.0f,0.0f });
 		m_gurahu.Update();
 		m_gurahu.Draw(rc);
 
-		m_keisuu.SetPosition(Vector3{ 800.0f,170.0f,0.0f });
+		m_keisuu.SetPosition(Vector3{ -800.0f,120.0f,0.0f });
 		m_keisuu.Update();
 		m_keisuu.Draw(rc);
 
@@ -552,7 +552,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 		float progressRatioX = (float)t;
 
-		Vector3 graphBasePos = Vector3{ 670.0f, -140.0f, 0.0f };
+		Vector3 graphBasePos = Vector3{ -930.0f, -190.0f, 0.0f };
 
 		Vector3 ballMapPos;
 		ballMapPos.x = graphBasePos.x + (progressRatioX * m_miniMapHeightX);
@@ -590,24 +590,24 @@ void InGameUI::Render(RenderContext& rc) {
 		// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
 		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed && !isReadyPhase)
 		{
-			m_taimingu.SetPosition(Vector3{ -800.0f, 100.0f, 0.0f });
+			m_taimingu.SetPosition(Vector3{ 800.0f, 100.0f, 0.0f });
 			m_taimingu.Update();
 			m_taimingu.Draw(rc);
 
 			// ★ 0.5秒ごとに m_isAltUI が true / false になる
 			if (m_isAltUI) {
 				// 交互UI：Aボタン2
-				m_Abotan2.SetPosition(Vector3{ -800.0f, -130.0f, 0.0f });
+				m_Abotan2.SetPosition(Vector3{ 800.0f, -130.0f, 0.0f });
 				m_Abotan2.Update();
 				m_Abotan2.Draw(rc);
 
-				m_gizagiza.SetPosition(Vector3{ -800.0f, -30.0f, 0.0f });
+				m_gizagiza.SetPosition(Vector3{ 800.0f, -30.0f, 0.0f });
 				m_gizagiza.Update();
 				m_gizagiza.Draw(rc);
 			}
 			else {
 				// 交互UI：Aボタン
-				m_Abotan.SetPosition(Vector3{ -800.0f, -130.0f, 0.0f });
+				m_Abotan.SetPosition(Vector3{ 800.0f, -130.0f, 0.0f });
 				m_Abotan.Update();
 				m_Abotan.Draw(rc);
 			}
@@ -842,14 +842,14 @@ void InGameUI::Render(RenderContext& rc) {
 		m_Count.Draw(rc);
 
 		if (isReadyPhase) {
-			m_kakunin.SetPosition(Vector3{ -800.0f, 80.0f, 0.0f });
+			m_kakunin.SetPosition(Vector3{ 800.0f, 80.0f, 0.0f });
 			m_kakunin.SetScale(Vector3{ m_kakuninScale, m_kakuninScale, 1.0f }); // ← 追加
 			m_kakunin.Update();
 			m_kakunin.Draw(rc);
-			m_bbb.SetPosition(Vector3{ -800.0f, -30.0f, 0.0f });
+			m_bbb.SetPosition(Vector3{ 800.0f, -30.0f, 0.0f });
 			m_bbb.Update();
 			m_bbb.Draw(rc);
-			m_bsuki.SetPosition(Vector3{ -800.0f, -130.0f, 0.0f });
+			m_bsuki.SetPosition(Vector3{ 800.0f, -130.0f, 0.0f });
 			m_bsuki.Update();
 			m_bsuki.Draw(rc);
 		}
@@ -959,17 +959,17 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 
 		if (m_guruGuruTimer > 0.0 && !isReadyPhase) {
-			m_konto.SetPosition(Vector3{ -800.0f, 0.0f, 0.0f });
+			m_konto.SetPosition(Vector3{ 800.0f, 0.0f, 0.0f });
 			m_konto.Update();
 			m_konto.Draw(rc);
 
 			// ★ 矢印の回転描画
-			m_yazirusi.SetPosition(Vector3{ -800.0f, -5.0f, 0.0f }); // 位置はお好みで
+			m_yazirusi.SetPosition(Vector3{ 800.0f, -5.0f, 0.0f }); // 位置はお好みで
 			m_yazirusi.SetRotation(m_yazirusiRotation);               // ← Quaternion を渡す
 			m_yazirusi.Update();
 			m_yazirusi.Draw(rc);
 
-			m_mawase.SetPosition(Vector3{ -800.0f, -230.0f, 0.0f }); // 位置はお好みで
+			m_mawase.SetPosition(Vector3{ 800.0f, -230.0f, 0.0f }); // 位置はお好みで
 			m_mawase.Update();
 			m_mawase.Draw(rc);
 		}
