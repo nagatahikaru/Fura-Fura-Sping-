@@ -805,6 +805,8 @@ Vector3 Batter::RayToPlane(
 
 void Batter::Render(RenderContext& rc)
 {
+	
+
 	//モデルの描画
 	m_characterModel->DrawCharacterModel(rc);
 }
