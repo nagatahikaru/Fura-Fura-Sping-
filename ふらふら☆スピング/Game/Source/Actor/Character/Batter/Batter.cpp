@@ -529,19 +529,9 @@ void Batter::HitBat()
 	}
 	else if (angleDeg < 0.0f) {
 		powerScale = 1.8f;
-		powerScale = 0.65f;
-		hitDir.y += 50.0f;
-	}
-	else if (angleDeg > 30.0f) {
-		powerScale = 0.85f;
-	}
-	else if (angleDeg >= 10.0f && angleDeg <= 30.0f) {
-		powerScale = 1.4f;
-	}
-	else if (angleDeg < 0.0f) {
-		powerScale = 0.8f;
-	}
 
+	}
+	
 	float finalPower = 935.0f * powerScale;
 	m_ball->HitBall(hitDir, finalPower);
 
