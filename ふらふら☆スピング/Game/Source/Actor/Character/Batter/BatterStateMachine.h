@@ -72,8 +72,6 @@ public:
 	virtual void Exit()override;
 
 	virtual bool RequestState(uint32_t& request)override;
-private:
-	float m_swingTimer = 0.0f;
 };
 
 class BatterCursorSetState :public BatterIStateBess

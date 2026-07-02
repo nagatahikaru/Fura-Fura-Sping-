@@ -221,7 +221,6 @@ void BatterSwingState::Update()
 	// ★ スイングアニメを4.0倍速にする（見た目は最後まで振り切る）
 	batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
 	batter->AnimationUpdate();
-
 	// 1. スイング開始からの経過時間（秒）を計算
 	// 4.0倍速で再生されているため、実際の経過時間に4.0倍を掛けて累積します
 	m_swingTimer += g_gameTime->GetFrameDeltaTime() * 4.0f;

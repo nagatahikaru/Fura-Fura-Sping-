@@ -128,6 +128,7 @@ namespace nsK2EngineLow {
 					vGlobalScale[boneNo],
 					vBoneScale
 				);
+				vGlobalScale[boneNo] = Vector3::One;
 				//拡大成分を除去。
 				m.m[0][0] /= vBoneScale.x;
 				m.m[0][1] /= vBoneScale.x;
@@ -168,8 +169,7 @@ namespace nsK2EngineLow {
 			m_skeleton->SetBoneLocalMatrix(
 				boneNo,
 				boneMatrix
-			);
-
+			);						
 		}
 
 		//最終アニメーション以外は補間完了していたら除去していく。

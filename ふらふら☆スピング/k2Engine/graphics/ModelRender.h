@@ -104,6 +104,11 @@ namespace nsK2Engine {
 			m_animation.Play(animNo, interpolateTime);
 		}
 
+		Animation& GetAnimation()
+		{
+			return m_animation;
+		}
+
 		/// <summary>
 		/// アニメーションの再生中？
 		/// </summary>
@@ -288,6 +293,12 @@ namespace nsK2Engine {
 		void SetRaytracingWorld(bool flag) {
 			m_isRaytracingWorld = flag;
 		}
+
+		Skeleton& GetSkeleton()
+		{
+			return m_skeleton;
+		}
+
 	private:
 		/// <summary>
 		/// スケルトンの初期化。
@@ -423,6 +434,26 @@ namespace nsK2Engine {
 		/// </summary>
 		/// <param name="maxInstance">インスタンス数</param>
 		void InitGeometryDatas(int maxInstance);
+
+
+		void DebugLogMatrix(const char* name, const Matrix& m)
+		{
+			char buf[512];
+
+			sprintf_s(buf,
+				"%s\n"
+				"[%8.3f %8.3f %8.3f %8.3f]\n"
+				"[%8.3f %8.3f %8.3f %8.3f]\n"
+				"[%8.3f %8.3f %8.3f %8.3f]\n"
+				"[%8.3f %8.3f %8.3f %8.3f]\n",
+				name,
+				m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3],
+				m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3],
+				m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3],
+				m.m[3][0], m.m[3][1], m.m[3][2], m.m[3][3]);
+
+			OutputDebugStringA(buf);
+		}
 	public:
 		static const int NUM_SHADOW_LIGHT = 1;
 	private:
