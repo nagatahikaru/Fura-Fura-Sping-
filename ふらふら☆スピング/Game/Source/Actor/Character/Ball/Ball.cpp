@@ -88,7 +88,7 @@ void Ball::Update()
                 float accelerationZ = 100.0f;
                 m_velocity.z += accelerationZ * dt;
             }
-            float baseGravity = 15.5f; // 元々のベース重力
+            float baseGravity = 13.5f; // 元々のベース重力
 
             if (!m_hasHit && m_initialSpeedZ > 0.0f)
             {
@@ -563,7 +563,7 @@ float Ball::PredictLandingDistance()
 
     while (pos.y > 0.0f) {
 
-        vel.y -= 26.5f * dt;   // 重力
+        vel.y -= 13.5f * dt;   // 重力
 
         pos += vel * dt;
     }
@@ -573,7 +573,7 @@ float Ball::PredictLandingDistance()
 
 void Ball::ResetBall()
 {
-    m_position = { -0.0f, 650.0f, 1000.0f };
+    m_position = { -60.0f, 650.0f, 1000.0f };
     m_velocity = Vector3::Zero;
     m_isMove = false;
     m_hasHit = false;

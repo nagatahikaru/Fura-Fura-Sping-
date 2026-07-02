@@ -29,7 +29,7 @@ bool GameCamera::Start() {
 }
 
 void GameCamera::SetCatcherCamera() {
-    m_cameraPos = { 6.5f, 450.0f, 6600.0f };
+    m_cameraPos = { -50.5f, 450.0f, 6600.0f };
     m_target = { 0.0f, 300.0f, 0.0f };
 
     m_yaw = 0.0f;

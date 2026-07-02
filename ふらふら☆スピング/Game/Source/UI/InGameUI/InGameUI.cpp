@@ -273,32 +273,39 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 	float currentZ = pos3D.z;
 
 	// 0〜1 の線形 t
-	float t = (startZ - currentZ) / (startZ - 6000.0f);
+	float t = (startZ - currentZ) / (startZ - 6200.0f);
 	t = clamp(t, 0.0f, 1.0f);
 
-	// ★ 中盤から上がるイージング（後半だけ立ち上がる）
-	float eased = 0.0f;
+	// ★ アルファ値の計算（0.5 = 半透明、0.0 = 完全透明）
+	float alpha = 0.7f;
 
 	if (t < 0.30f) {
-		eased = 0.0f;               // 最初の45%は完全透明
+		// 最初の30%は 0.7f を維持
+		alpha = 0.7f;
 	}
 	else {
-		float u = (t - 0.30f) / 0.70f; // 0.45〜1.0 を 0〜1 に圧縮
-		eased = u * u;               // 二乗でゆっくり立ち上がる
+		// 0.30〜1.0 を 0〜1 に圧縮
+		float u = (t - 0.30f) / 0.70f;
 
-		m_ballAlpha = eased;
+		// 二乗でゆっくり立ち上がり、最終的に 0.0f（完全透明）にする
+		// u=0 のとき alpha=0.7f、u=1 のとき alpha=0.0f
+		alpha = 0.7f * (1.0f - u);
 	}
+
+	// 常に最新のアルファ値を適用（ifの外に出すことでバグを防止）
+	m_ballAlpha = alpha;
 }
+
 Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
 {
 	// Z の進み具合（0 = 手前、1 = 奥）
 	float minZ = 1000.0f;
-	float maxZ = 6050.0f;
+	float maxZ = 6500.0f;
 	float t = (ballPos3D.z - minZ) / (maxZ - minZ);
 	t = clamp(t, 0.0f, 1.0f);
 
 	// ★ 横移動 = X の動き + Z による中央寄り
-	float xFromX = -ballPos3D.x * 4.5f;       // ← X の動きを8倍（調整しやすい）
+	float xFromX = -ballPos3D.x * 0.22f;       // ← X の動きを8倍（調整しやすい）
 	float xFromZ = (0.5f - t) * 0.5f;
 
 	float uiX = xFromX + xFromZ;
@@ -504,7 +511,7 @@ void InGameUI::Render(RenderContext& rc) {
 	if (m_isUIVisible) {
 
 		//赤い枠
-		m_wakuModel.SetPosition(50.0f, 318.0f, 6000.0f);
+		m_wakuModel.SetPosition(-10.0f, 318.0f, 6000.0f);
 		m_wakuModel.SetScale(6.5f, 7.5f, 5.0f);
 		m_wakuModel.Update();
 		m_wakuModel.Draw(rc);
