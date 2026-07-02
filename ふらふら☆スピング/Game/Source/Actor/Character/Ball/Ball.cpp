@@ -27,6 +27,8 @@ bool Ball::Start()
 	m_modelRender.SetScale({ 8.5f,8.5f,8.0f });
 
 	m_position = { -0.0f, 600.0f, 800.0f };
+	m_throwStartPos = m_position;
+	m_throwEndPos = m_position;
 	m_modelRender.SetPosition(m_position);
 
 
@@ -121,7 +123,9 @@ void Ball::Update()
                 }
             }
             // 3. 安全に計算された currentFrameVelocity を使って座標を移動させる
+            m_prevPosition = m_position;
             m_position += currentFrameVelocity * dt;
+            m_throwEndPos = m_position;
 
             if (!m_hasHit)
             {
@@ -355,6 +359,9 @@ void Ball::Update()
 void Ball::Throw(const Vector3& targetPos)
 {
     m_rotationAngle = 0.0f;
+	m_throwStartPos = m_position;
+	m_targetPos = targetPos;
+	m_throwEndPos = targetPos;
 
     Vector3 dir = { 0.0f,-0.1f,3.0f };
     dir.Normalize();
@@ -442,6 +449,7 @@ void Ball::Throw(const Vector3& targetPos)
 void Ball::SetPosition(const Vector3& pos)
 {
     m_position = pos;
+	m_throwEndPos = pos;
     m_modelRender.SetPosition(m_position);
 
     m_collisionObject->SetPosition(m_position);
@@ -451,6 +459,26 @@ void Ball::SetPosition(const Vector3& pos)
 bool Ball::IsMoving() const
 {
     return m_isMove;
+}
+
+void Ball::GetFlightRay(Vector3& startPos, Vector3& endPos) const
+{
+	startPos = m_throwStartPos;
+	endPos = m_throwEndPos;
+}
+
+Vector3 Ball::GetFlightDirection() const
+{
+	Vector3 dir = m_throwEndPos - m_throwStartPos;
+	if (dir.Length() > 0.0001f) {
+		dir.Normalize();
+	}
+	return dir;
+}
+
+float Ball::GetFlightLength() const
+{
+	return (m_throwEndPos - m_throwStartPos).Length();
 }
 
 // ボールと指定した位置・半径の球との衝突判定

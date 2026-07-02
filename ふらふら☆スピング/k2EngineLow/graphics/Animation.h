@@ -89,6 +89,24 @@ namespace nsK2EngineLow {
 			return m_animationPlayController[lastIndex].IsPlaying();
 		}
 
+		bool IsInKeyFrameWindow(int centerFrame, int range) const
+		{
+			int lastIndex = GetLastAnimationControllerIndex();
+			return m_animationPlayController[lastIndex].IsInKeyFrameWindow(centerFrame, range);
+		}
+
+		int GetCurrentKeyFrameNo() const
+		{
+			int lastIndex = GetLastAnimationControllerIndex();
+			return m_animationPlayController[lastIndex].GetCurrentKeyFrameNo();
+		}
+
+		int GetLastKeyFrameNo() const
+		{
+			int lastIndex = GetLastAnimationControllerIndex();
+			return m_animationPlayController[lastIndex].GetLastKeyFrameNo();
+		}
+
 		/// <summary>
 		/// アニメーションを進める。
 		/// </summary>
