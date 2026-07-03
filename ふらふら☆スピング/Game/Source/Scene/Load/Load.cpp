@@ -45,10 +45,11 @@ void Load::Update()
         m_gaugeFill.SetMulColor({ 1,1,1,0 });
         m_grobu.SetMulColor({ 1,1,1,0 });
         m_B.SetMulColor({ 1,1,1,0 });
-        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guA.SetMulColor({ 1,1,1,0 });
         m_guR.SetMulColor({ 1,1,1,0 });
         m_guB.SetMulColor({ 1, 1, 1, 0 });
-        m_guA.SetMulColor({ 1,1,1,1 });
+       
         m_waitFrame++;
         return;
     }
@@ -147,28 +148,49 @@ void Load::Update()
         NewGO<SkyCube>(0, "skyCube");
         m_gaugeFill.SetMulColor({ 1,1,1,1 });
         m_guL.SetMulColor({ 1, 1, 1, 0 });
-        m_guR.SetMulColor({ 1,1,1,1 });
+        m_guA.SetMulColor({ 1,1,1,1 });
+        m_guR.SetMulColor({ 1,1,1,0 });
         m_guB.SetMulColor({ 1, 1, 1, 0 });
-        m_guA.SetMulColor({ 1,1,1,0 });
         m_realProgress = 0.2f;
         break;
     case 1:
-        NewGO<Background>(0, "backGround");
         m_guL.SetMulColor({ 1, 1, 1, 0 });
-        m_guR.SetMulColor({ 1,1,1,0 });
-        m_guB.SetMulColor({ 1, 1, 1, 1 });
         m_guA.SetMulColor({ 1,1,1,0 });
-        m_realProgress = 0.4f;
+        m_guR.SetMulColor({ 1,1,1,1 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.3f;
         break;
     case 2:
-        NewGO<GameCamera>(0, "gameCamera");
-        m_guL.SetMulColor({ 1, 1, 1, 1 });
-        m_guR.SetMulColor({ 1,1,1,0 });
-        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        NewGO<Background>(0, "backGround");
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guA.SetMulColor({ 1,1,1,0 });
-        m_realProgress = 0.6f;
+        m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 1});
+        m_realProgress = 0.4f;
         break;
     case 3:
+        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guA.SetMulColor({ 1,1,1,0 });
+        m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.5f;
+        break;
+    case 4:
+        NewGO<GameCamera>(0, "gameCamera");
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,1 });
+        m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.6f;
+        break;
+    case 5:
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,0 });
+        m_guR.SetMulColor({ 1,1,1,1 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.7f;
+        break;
+    case 6:
     {
         auto batter = NewGO<Batter>(0, "batter");
         auto pitcher = NewGO<Pitcher>(0, "pitcher");
@@ -178,21 +200,28 @@ void Load::Update()
             batter->m_isPaused = pitcher->m_isPaused = catcher->m_isPaused = ball->m_isPaused = true;
         }
         m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,0 });
         m_guR.SetMulColor({ 1,1,1,0 });
-        m_guB.SetMulColor({ 1, 1, 1, 0 });
-        m_guA.SetMulColor({ 1,1,1,1 });
+        m_guB.SetMulColor({ 1, 1, 1, 1 });
         m_realProgress = 0.8f;
     }
     break;
-    case 4:
+    case 7:
+        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guA.SetMulColor({ 1,1,1,0 });
+        m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.9f;
+        break;
+    case 8:
         m_realProgress = 1.0f;
         g_soundManager->StopBGM();
         m_guL.SetMulColor({ 1, 1, 1, 0 });
-        m_guR.SetMulColor({ 1,1,1,1 });
+        m_guA.SetMulColor({ 1,1,1,1 });
+        m_guR.SetMulColor({ 1,1,1,0 });
         m_guB.SetMulColor({ 1, 1, 1, 0 });
-        m_guA.SetMulColor({ 1,1,1,0 });
         break;
-    case 5:
+    case 9:
         m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guR.SetMulColor({ 1,1,1,0 });
         m_guB.SetMulColor({ 1, 1, 1, 0 });
