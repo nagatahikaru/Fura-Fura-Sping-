@@ -123,6 +123,24 @@ namespace nsK2EngineLow {
 		*/
 		void CalcWorldTRS(Vector3& trans, Quaternion& rot, Vector3& scale);
 
+		/// <summary>
+	/// バインドポーズ由来のデフォルトローカル行列を設定。
+	/// アニメーション再生では絶対に上書きしない。
+	/// </summary>
+		void SetDefaultLocalMatrix(const Matrix& m)
+		{
+			m_defaultLocalMatrix = m;
+		}
+		/// <summary>
+		/// バインドポーズ由来のデフォルトローカル行列を取得。
+		/// キーフレームを持たないボーンのフォールバックとして使用する。
+		/// </summary>
+		const Matrix& GetDefaultLocalMatrix() const
+		{
+			return m_defaultLocalMatrix;
+		}
+
+
 	private:
 
 		std::wstring	m_boneName;
@@ -133,6 +151,8 @@ namespace nsK2EngineLow {
 		Matrix			m_localMatrix;			//ローカル行列。
 		Matrix			m_worldMatrix;			//ワールド行列。
 		Matrix			m_offsetLocalMatrix;
+		Matrix			m_defaultLocalMatrix;	//バインドポーズ由来のデフォルトローカル行列。上書きされない。
+
 		Vector3			m_positoin;				//このボーンのワールド空間での位置。最後にCalcWorldTRSを実行したときの結果が格納されている。
 		Vector3			m_scale;				//このボーンの拡大率。最後にCalcWorldTRSを実行したときの結果が格納されている。
 		Quaternion		m_rotation;				//このボーンの回転。最後にCalcWorldTRSを実行したときの結果が格納されている。

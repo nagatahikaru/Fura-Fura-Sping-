@@ -113,14 +113,15 @@ namespace nsK2EngineLow {
 				if (bone->GetParentBoneNo() > m_bones.size())
 					continue;
 				m_bones.at(bone->GetParentBoneNo())->AddChild(bone.get());
-				// ローカルマトリクスを計算。
 				const Matrix& parentMatrix = m_bones.at(bone->GetParentBoneNo())->GetInvBindPoseMatrix();
 				Matrix localMatrix;
 				localMatrix = bone->GetBindPoseMatrix() * parentMatrix;
 				bone->SetLocalMatrix(localMatrix);
+				bone->SetDefaultLocalMatrix(localMatrix);   // ★追加：こちらは以後誰も上書きしない
 			}
 			else {
 				bone->SetLocalMatrix(bone->GetBindPoseMatrix());
+				bone->SetDefaultLocalMatrix(bone->GetBindPoseMatrix());  // ★追加
 			}
 		}
 		// ボーン行列を確保

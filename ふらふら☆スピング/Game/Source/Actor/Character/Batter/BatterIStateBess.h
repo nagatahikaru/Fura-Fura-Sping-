@@ -23,5 +23,6 @@ private:
 
 protected:
 	Batter* GetBatter() const;
+	float m_swingTimer = 0.0f;
 
 };
