@@ -436,7 +436,7 @@ void Batter::HitBat()
 	if (!IsSwingAnimationPlaying()) return;
 
 	// アニメーションの当たりフレーム
-	constexpr int HIT_CENTER_FRAME = 20;
+	constexpr int HIT_CENTER_FRAME = 34;
 	constexpr int HIT_FRAME_RANGE = 2;
 	if (m_characterModel == nullptr ||
 		!m_characterModel->IsInKeyFrameWindow(HIT_CENTER_FRAME, HIT_FRAME_RANGE))
