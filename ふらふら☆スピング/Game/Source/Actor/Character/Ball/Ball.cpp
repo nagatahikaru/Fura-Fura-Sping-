@@ -407,6 +407,16 @@ void Ball::Throw(const Vector3& targetPos)
         else if (rate < 68)   m_ballType = Curve;
         else if (rate < 90)   m_ballType = ShakeVertical;
         else                  m_ballType = SlowBall;
+
+        //////////////////////////////
+       //m_ballType = Straight;
+     //   m_ballType = ShakeHorizontal;
+       // m_ballType = Curve;
+       // m_ballType = ShakeVertical;
+       // m_ballType = SlowBall;
+       /* if (rand() % 1 == 0) {
+            m_isMagicBall = true;
+        }*/
     }
 
     //スローボールに魔球を追加しない
