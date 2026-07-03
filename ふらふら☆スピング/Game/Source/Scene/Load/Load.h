@@ -31,4 +31,5 @@ private:
     float m_displayProgress = 0.0f;  // ゲージに表示する進行
     float alpha = 0.0f;
     Difficulty m_difficulty;
+    float m_timer;
 };
