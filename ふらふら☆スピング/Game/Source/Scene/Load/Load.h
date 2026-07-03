@@ -17,6 +17,8 @@ private:
     SpriteRender m_grobu;
     SpriteRender m_guL;
     SpriteRender m_guR;
+    SpriteRender m_guB;
+    SpriteRender m_guA;
     float m_loadProgress = 0.0f; // 0.0 Å` 1.0
     float m_blinkTimer = 0.0f;
     SoundSource* m_bgm = nullptr;

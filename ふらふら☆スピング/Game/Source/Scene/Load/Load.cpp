@@ -27,9 +27,13 @@ bool Load::Start()
     m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
     m_grobu.SetPosition({ 800.0f, -400.0f, 0.0f });
     m_guL.Init("Assets/sprite/guruguruL.dds", 250.0f, 250.0f);
-    m_guL.SetPosition({ 780.0f, -300.0f, 0.0f });
+    m_guL.SetPosition({ 755.0f, -300.0f, 0.0f });
     m_guR.Init("Assets/sprite/guruguruR.dds", 250.0f, 250.0f);
-    m_guR.SetPosition({ 780.0f, -300.0f, 0.0f });
+    m_guR.SetPosition({ 800.0f, -300.0f, 0.0f });
+    m_guB.Init("Assets/sprite/guruguruB.dds", 250.0f, 250.0f);
+    m_guB.SetPosition({ 777.5f, -300.0f, 0.0f });
+    m_guA.Init("Assets/sprite/guruguruF.dds", 250.0f, 250.0f);
+    m_guA.SetPosition({ 777.5f, -300.0f, 0.0f });
     NewGO<LoadUI>(0, "loadUI");
     return true;
 }
@@ -41,14 +45,14 @@ void Load::Update()
         m_gaugeFill.SetMulColor({ 1,1,1,0 });
         m_grobu.SetMulColor({ 1,1,1,0 });
         m_B.SetMulColor({ 1,1,1,0 });
-        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,1 });
         m_waitFrame++;
         return;
     }
 
-    // ★ ロード完了後の処理
-   // ★ ロード完了後の処理
     if (m_loadFinished) {
         m_finishWait += g_gameTime->GetFrameDeltaTime();
         if (!m_bgmStarted && m_finishWait >= 1.0f) {
@@ -99,7 +103,6 @@ void Load::Update()
             return;
         }
 
-        // --- 🌟 Aボタンを押した瞬間 ---
         if (g_pad[0]->IsTrigger(enButtonA)) {
             if (!m_bgmStarted) {
                 float v = g_soundManager->m_bgmVolume / 100.0f;
@@ -114,7 +117,7 @@ void Load::Update()
 
             // 🌟 2. 状態を「縮小中」にして、0.08秒だけ待つ
             clickState = 1;
-            clickWaitTimer = 0.08f; // 小さくなっている時間（0.08秒）
+            clickWaitTimer = 0.12f; // 小さくなっている時間（0.08秒）
         }
         return;
     }
@@ -145,18 +148,24 @@ void Load::Update()
         m_gaugeFill.SetMulColor({ 1,1,1,1 });
         m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guR.SetMulColor({ 1,1,1,1 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,0 });
         m_realProgress = 0.2f;
         break;
     case 1:
         NewGO<Background>(0, "backGround");
-        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 1 });
+        m_guA.SetMulColor({ 1,1,1,0 });
         m_realProgress = 0.4f;
         break;
     case 2:
         NewGO<GameCamera>(0, "gameCamera");
-        m_guL.SetMulColor({ 1, 1, 1, 0 });
-        m_guR.SetMulColor({ 1,1,1,1 });
+        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,0 });
         m_realProgress = 0.6f;
         break;
     case 3:
@@ -168,8 +177,10 @@ void Load::Update()
         if (batter && pitcher && catcher && ball) { // ★ ヌルチェックを追加して安全に
             batter->m_isPaused = pitcher->m_isPaused = catcher->m_isPaused = ball->m_isPaused = true;
         }
-        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,1 });
         m_realProgress = 0.8f;
     }
     break;
@@ -178,10 +189,14 @@ void Load::Update()
         g_soundManager->StopBGM();
         m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guR.SetMulColor({ 1,1,1,1 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,0 });
         break;
     case 5:
         m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,0 });
         m_loadFinished = true;
         m_gaugeFrame.SetMulColor({ 1,1,1,0 });
         m_gaugeFill.SetMulColor({ 1,1,1,0 });
@@ -221,6 +236,12 @@ void Load::Render(RenderContext& rc)
 
     m_guR.Update();
     m_guR.Draw(rc);
+
+    m_guB.Update();
+    m_guB.Draw(rc);
+
+    m_guA.Update();
+    m_guA.Draw(rc);
 
    /* m_grobu.Update();
     m_grobu.Draw(rc);*/

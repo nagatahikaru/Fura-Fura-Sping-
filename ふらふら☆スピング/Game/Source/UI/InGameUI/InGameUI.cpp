@@ -26,9 +26,9 @@ InGameUI::InGameUI() {
 	m_imagesen.Init("Assets/sprite/imagesen.DDS", 1920.0f, 1080.0f);
 	m_imagesen.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
 	m_imagesen.SetMulColor({ 1,1,1,0 });
-	m_konto.Init("Assets/sprite/konto.DDS", 170.0f, 170.0f);
-	m_yazirusi.Init("Assets/sprite/yazirusi.DDS", 440.0f, 320.0f);
-	m_mawase.Init("Assets/sprite/mawase.DDS", 550.0f, 500.0f);
+	m_konto.Init("Assets/sprite/konto.DDS", 120.0f, 120.0f);
+	m_yazirusi.Init("Assets/sprite/yazirusi.DDS", 290.0f, 210.0f);
+	m_mawase.Init("Assets/sprite/mawase.DDS", 400.0f, 350.0f);
 	m_taimingu.Init("Assets/sprite/taimingu.DDS", 550.0f, 500.0f);
 	m_Abotan.Init("Assets/sprite/Abotann.DDS", 200.0f, 200.0f);
 	m_Abotan2.Init("Assets/sprite/abotann2.DDS", 200.0f, 200.0f);
@@ -971,12 +971,12 @@ void InGameUI::Render(RenderContext& rc) {
 			m_konto.Draw(rc);
 
 			// ★ 矢印の回転描画
-			m_yazirusi.SetPosition(Vector3{ 800.0f, -5.0f, 0.0f }); // 位置はお好みで
+			m_yazirusi.SetPosition(Vector3{ 800.0f, 0.0f, 0.0f }); // 位置はお好みで
 			m_yazirusi.SetRotation(m_yazirusiRotation);               // ← Quaternion を渡す
 			m_yazirusi.Update();
 			m_yazirusi.Draw(rc);
 
-			m_mawase.SetPosition(Vector3{ 800.0f, -230.0f, 0.0f }); // 位置はお好みで
+			m_mawase.SetPosition(Vector3{ 807.0f, -160.0f, 0.0f }); // 位置はお好みで
 			m_mawase.Update();
 			m_mawase.Draw(rc);
 		}
