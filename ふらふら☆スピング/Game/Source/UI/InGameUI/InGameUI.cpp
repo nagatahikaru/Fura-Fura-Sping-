@@ -60,7 +60,7 @@ InGameUI::InGameUI() {
 	m_kiroku.Init("Assets/sprite/kiiro.DDS", 880.0f, 820.0f);
 	m_easySprite.Init("Assets/sprite/Difficulty_Easy.DDS", 250.0f, 250.0f);
 	m_normalSprite.Init("Assets/sprite/Difficulty_Normal.DDS", 180.0f, 180.0f);
-	m_hardSprite.Init("Assets/sprite/Difficulty_Hard.DDS", 200.0f, 100.0f);
+	m_hardSprite.Init("Assets/sprite/Difficulty_Hard.DDS", 200.0f, 130.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -999,7 +999,7 @@ void InGameUI::Render(RenderContext& rc) {
 			// スプライトが存在すれば位置を設定して描画
 			if (pDiffSprite) {
 				// 表示位置（画面左上あたり、バスカットや残り球数の邪魔にならない位置に調整してください）
-				pDiffSprite->SetPosition(Vector3{ -770.0f, 280.0f, 0.0f });
+				pDiffSprite->SetPosition(Vector3{ -777.0f, 280.0f, 0.0f });
 				pDiffSprite->Update();
 				pDiffSprite->Draw(rc);
 			}

@@ -31,7 +31,7 @@ bool Load::Start()
     m_guR.Init("Assets/sprite/guruguruR.dds", 250.0f, 250.0f);
     m_guR.SetPosition({ 800.0f, -300.0f, 0.0f });
     m_guB.Init("Assets/sprite/guruguruB.dds", 250.0f, 250.0f);
-    m_guB.SetPosition({ 777.5f, -300.0f, 0.0f });
+    m_guB.SetPosition({ 757.5f, -300.0f, 0.0f });
     m_guA.Init("Assets/sprite/guruguruF.dds", 250.0f, 250.0f);
     m_guA.SetPosition({ 777.5f, -300.0f, 0.0f });
     NewGO<LoadUI>(0, "loadUI");
@@ -45,10 +45,11 @@ void Load::Update()
         m_gaugeFill.SetMulColor({ 1,1,1,0 });
         m_grobu.SetMulColor({ 1,1,1,0 });
         m_B.SetMulColor({ 1,1,1,0 });
-        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guA.SetMulColor({ 1,1,1,0 });
         m_guR.SetMulColor({ 1,1,1,0 });
         m_guB.SetMulColor({ 1, 1, 1, 0 });
-        m_guA.SetMulColor({ 1,1,1,1 });
+       
         m_waitFrame++;
         return;
     }
@@ -59,6 +60,20 @@ void Load::Update()
             float v = g_soundManager->m_bgmVolume / 100.0f;
             g_soundManager->PlayingSound(enSound_GameBGM1, true, powf(v, 1.5f));
             m_bgmStarted = true;
+        }
+        m_guL.SetPosition({ 785.0f, -400.0f, 0.0f });
+        m_guR.SetPosition({ 830.0f, -400.0f, 0.0f });
+        m_guB.SetPosition({ 787.5f, -400.0f, 0.0f });
+        m_guA.SetPosition({ 807.5f, -400.0f, 0.0f });
+        // --- 🌟 A・B・L・R のループ点滅処理 ---
+        m_timer++;
+        m_guL.SetMulColor({ 1, 1, 1, (m_timer >= 0 && m_timer < 5) ? 1.0f : 0.0f });
+        m_guA.SetMulColor({ 1, 1, 1, (m_timer >= 5 && m_timer < 10) ? 1.0f : 0.0f });
+        m_guR.SetMulColor({ 1, 1, 1, (m_timer >= 10 && m_timer < 15) ? 1.0f : 0.0f });
+        m_guB.SetMulColor({ 1, 1, 1, (m_timer >= 15 && m_timer < 20) ? 1.0f : 0.0f });
+
+        if (m_timer >= 20) {
+            m_timer = 0; // 80フレームでループリセット
         }
 
         // 🌟 ボタン押し込み（一気に縮小 → 元に戻る）演出用の変数
@@ -111,7 +126,7 @@ void Load::Update()
             }
 
             // 🌟 1. 押した瞬間に一気に小さくする！
-            float scaleValue = 0.70f; // 押し込んだ時のサイズ（お好みで調整）
+            float scaleValue = 0.40f; // 押し込んだ時のサイズ（お好みで調整）
             m_grobu.SetScale({ scaleValue, scaleValue, 1.0f });
             m_B.SetScale({ scaleValue, scaleValue, 1.0f });
 
@@ -147,28 +162,49 @@ void Load::Update()
         NewGO<SkyCube>(0, "skyCube");
         m_gaugeFill.SetMulColor({ 1,1,1,1 });
         m_guL.SetMulColor({ 1, 1, 1, 0 });
-        m_guR.SetMulColor({ 1,1,1,1 });
+        m_guA.SetMulColor({ 1,1,1,1 });
+        m_guR.SetMulColor({ 1,1,1,0 });
         m_guB.SetMulColor({ 1, 1, 1, 0 });
-        m_guA.SetMulColor({ 1,1,1,0 });
-        m_realProgress = 0.2f;
+        m_realProgress = 0.1f;
         break;
     case 1:
-        NewGO<Background>(0, "backGround");
         m_guL.SetMulColor({ 1, 1, 1, 0 });
-        m_guR.SetMulColor({ 1,1,1,0 });
-        m_guB.SetMulColor({ 1, 1, 1, 1 });
         m_guA.SetMulColor({ 1,1,1,0 });
-        m_realProgress = 0.4f;
+        m_guR.SetMulColor({ 1,1,1,1 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.2f;
         break;
     case 2:
-        NewGO<GameCamera>(0, "gameCamera");
-        m_guL.SetMulColor({ 1, 1, 1, 1 });
-        m_guR.SetMulColor({ 1,1,1,0 });
-        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        NewGO<Background>(0, "backGround");
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guA.SetMulColor({ 1,1,1,0 });
-        m_realProgress = 0.6f;
+        m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 1});
+        m_realProgress = 0.3f;
         break;
     case 3:
+        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guA.SetMulColor({ 1,1,1,0 });
+        m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.4f;
+        break;
+    case 4:
+        NewGO<GameCamera>(0, "gameCamera");
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,1 });
+        m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.5f;
+        break;
+    case 5:
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,0 });
+        m_guR.SetMulColor({ 1,1,1,1 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.6f;
+        break;
+    case 6:
     {
         auto batter = NewGO<Batter>(0, "batter");
         auto pitcher = NewGO<Pitcher>(0, "pitcher");
@@ -178,25 +214,39 @@ void Load::Update()
             batter->m_isPaused = pitcher->m_isPaused = catcher->m_isPaused = ball->m_isPaused = true;
         }
         m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,0 });
         m_guR.SetMulColor({ 1,1,1,0 });
-        m_guB.SetMulColor({ 1, 1, 1, 0 });
-        m_guA.SetMulColor({ 1,1,1,1 });
-        m_realProgress = 0.8f;
+        m_guB.SetMulColor({ 1, 1, 1, 1 });
+        m_realProgress = 0.7f;
     }
     break;
-    case 4:
+    case 7:
+        m_guL.SetMulColor({ 1, 1, 1, 1 });
+        m_guA.SetMulColor({ 1,1,1,0 });
+        m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.8f;
+        break;
+    case 8:
+        m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,1 });
+        m_guR.SetMulColor({ 1,1,1,0 });
+        m_guB.SetMulColor({ 1, 1, 1, 0 });
+        m_realProgress = 0.9f;
+        break;
+    case 9:
         m_realProgress = 1.0f;
         g_soundManager->StopBGM();
         m_guL.SetMulColor({ 1, 1, 1, 0 });
+        m_guA.SetMulColor({ 1,1,1,0 });
         m_guR.SetMulColor({ 1,1,1,1 });
         m_guB.SetMulColor({ 1, 1, 1, 0 });
-        m_guA.SetMulColor({ 1,1,1,0 });
         break;
-    case 5:
-        m_guL.SetMulColor({ 1, 1, 1, 0 });
+    case 10:
+       /* m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guR.SetMulColor({ 1,1,1,0 });
         m_guB.SetMulColor({ 1, 1, 1, 0 });
-        m_guA.SetMulColor({ 1,1,1,0 });
+        m_guA.SetMulColor({ 1,1,1,0 });*/
         m_loadFinished = true;
         m_gaugeFrame.SetMulColor({ 1,1,1,0 });
         m_gaugeFill.SetMulColor({ 1,1,1,0 });
