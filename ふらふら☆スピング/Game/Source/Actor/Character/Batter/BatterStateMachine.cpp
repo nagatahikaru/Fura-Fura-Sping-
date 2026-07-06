@@ -42,8 +42,7 @@ void BatterStateMachine::Update()
 
 void BatterIdleState::Enter()
 { 
-	Batter* batter = GetBatter();
-	batter->SetIdleAnimation();
+	Batter* batter = GetBatter();	
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());	
 }
 
