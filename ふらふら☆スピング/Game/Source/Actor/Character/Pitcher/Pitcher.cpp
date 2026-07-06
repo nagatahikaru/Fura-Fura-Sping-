@@ -101,7 +101,7 @@ bool Pitcher::Start()
 	rot.AddRotationY(Math::DegToRad(-90));
 	m_transform.m_rotation = rot;
 	
-	m_transform.m_position = Vector3(-0.0f, 0.0f, 500.0f);
+	m_transform.m_position = Vector3(-0.0f, -24.0f, 50.0f);
 
 	//初期位置の設定
 	PITCHER::InitModelRender(
