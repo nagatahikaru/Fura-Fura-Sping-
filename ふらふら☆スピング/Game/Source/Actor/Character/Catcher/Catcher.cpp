@@ -47,10 +47,12 @@ namespace CATCHER {
 		, int enAnimationClip_Num
 		, const Vector3& pos
 		, const Vector3& scl
+		, const Quaternion& rot
 		, std::string filePath) {
 		modelRender->Init(filePath.c_str(), m_animationClips, enAnimationClip_Num, enModelUpAxisZ);
 		modelRender->SetPosition(pos);
 		modelRender->SetScale(scl);
+		modelRender->SetRotation(rot);
 		modelRender->Update();
 	}
 
@@ -91,12 +93,17 @@ bool Catcher::Start()
 {
 	CATCHER::LoadAnimationClips(m_animationClips,enAnimationClip_Idle, enAnimationClip_Num);
 	
+	Quaternion rot = m_transform.m_rotation;
+	rot.AddRotationY(Math::DegToRad(180.0f));
+	m_transform.m_rotation = rot;	
+
 	CATCHER::InitModelRender(
 		&m_modelRender,
 		m_animationClips,
 		enAnimationClip_Num,
 		CATCHER::CatcherBasicSettings::INITIAL_COORDINATE,
 		CATCHER::CatcherBasicSettings::INITIAL_SCALE,
+		m_transform.m_rotation,
 		CATCHER::GetcatcherFilePath());
 	
 	CATCHER::InitCharacterController(&m_characterController,

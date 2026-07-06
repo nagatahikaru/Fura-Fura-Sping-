@@ -34,6 +34,7 @@ namespace PITCHER {
 	enAnimationClip_Num	 アニメーションクリップの数
 	pos					 モデルの位置
 	scl					 モデルのスケール
+	rot					 モデルの回転
 	filePath			 モデルデータのファイルパス
 	例:
 	InitModelRender(
@@ -44,17 +45,18 @@ namespace PITCHER {
 		PlayerVariable::Transform::INITIAL_SCALE,
 		GetModelFilePath(i));
 	*/
-
 	void InitModelRender(
 		ModelRender* modelRender
 		, AnimationClip* m_animationClips
 		, int enAnimationClip_Num
 		, const Vector3& pos
 		, const Vector3& scl
+		, const Quaternion& rot
 		, std::string filePath) {
 		modelRender->Init(filePath.c_str(), m_animationClips, enAnimationClip_Num, enModelUpAxisZ);
 		modelRender->SetPosition(pos);
 		modelRender->SetScale(scl);
+		modelRender->SetRotation(rot);
 		modelRender->Update();
 	}
 
@@ -95,19 +97,26 @@ bool Pitcher::Start()
 		}
 	}
 
+	Quaternion rot = m_transform.m_rotation;
+	rot.AddRotationY(Math::DegToRad(-90));
+	m_transform.m_rotation = rot;
+	
+	m_transform.m_position = Vector3(-0.0f, 0.0f, 500.0f);
+
 	//初期位置の設定
 	PITCHER::InitModelRender(
 		&m_modelRender,
 		m_animationClips,
 		enAnimationClip_Num,
-		Vector3(-0.0f, 140.0f, 1000.0f),
+		m_transform.m_position,
 		Vector3(10.0f, 10.0f, 10.0f),
+		m_transform.m_rotation,
 		PITCHER::GetPitcherFilePath());
 
 	PITCHER::InitCharacterController(
 		&m_collisionObject, 
 		Vector3(10.0f, 10.0f, 10.0f), 
-		Vector3(-0.0f, 140.0f, 1000.0f));
+		m_transform.m_position);
 
 
 	//アニメーション再生
@@ -116,8 +125,8 @@ bool Pitcher::Start()
 	m_timer = 0.0f;
 	m_isThrowing = false;
 
-	m_modelRender.SetPosition(Vector3{ 0.0f,-50.0f,250.0f });
-	m_position = Vector3{ 0.0f,-50.0f,250.0f };
+	
+	m_position = m_transform.m_position;
 	m_game = FindGO<Game>("game");
 	m_batter = FindGO<Batter>("batter");
 	return true;
@@ -205,7 +214,7 @@ void Pitcher::SetPlayAnimation(int enAnimationClip)
 }
 
 void Pitcher::AnimationUpdate()
-{
+{	
 	// Pitcher のアニメーション更新
 	m_modelRender.Update();
 }
@@ -221,7 +230,7 @@ void Pitcher::ResetThrow()
 
 void Pitcher::PlayPitchAnimation()
 {
-	// ★ 投球アニメーションを最初から再生
+	// ★ 投球アニメーションを最初から再生	
 	m_modelRender.PlayAnimation(enAnimationClip_Throw, 0.0f);
 }
 

@@ -16,6 +16,7 @@ BatterStateMachine::BatterStateMachine()
 	RegisterState<BatterSwingState>();
 	RegisterState<BatterCursorSetState>();
 	RegisterState<BatterReplayState>();
+	RegisterState<BatterReloadState>();
 	m_currentState = FindState(BatterIdleState::ID());
 	
 }
@@ -42,15 +43,14 @@ void BatterStateMachine::Update()
 void BatterIdleState::Enter()
 { 
 	Batter* batter = GetBatter();
-	batter->SetPlayAnimation(batter->GetEnAnimationClip());
-	
+	batter->SetIdleAnimation();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());	
 }
 
 void BatterIdleState::Update()
 {
-	Batter* batter = GetBatter();
+	Batter* batter = GetBatter();	
 	batter->AnimationUpdate();
-	
 }
 
 void BatterIdleState::Exit()
@@ -240,9 +240,6 @@ void BatterSwingState::Update()
 		batter->BatHitBoxPosition();
 		batter->HitBat(); // ← ここで実際に打てる判定を行う
 	}
-	else
-	{
-	}
 }
 
 void BatterSwingState::Exit()
@@ -259,6 +256,40 @@ bool BatterSwingState::RequestState(uint32_t& request)
 
 	// ★ スイングアニメが終わったら Idle に戻す
 	if (!batter->IsSwingAnimationPlaying())
+	{
+		request = BatterReloadState::ID();
+		return true;
+	}
+
+	return false;
+}
+
+void BatterReloadState::Enter()
+{
+	Batter* batter = GetBatter();
+	batter->SetSwingGoAnimation();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());
+}
+
+void BatterReloadState::Update()
+{
+	Batter* batter = GetBatter();
+	batter->AnimationUpdate();
+	batter->DownArrowEffect();
+}
+
+void BatterReloadState::Exit()
+{
+	Batter* batter = GetBatter();
+	batter->SetIdleAnimation();
+}
+
+bool BatterReloadState::RequestState(uint32_t& request)
+{
+	Batter* batter = GetBatter();
+
+	// ★ 構え直しアニメが終わったら Idle に戻す
+	if (!batter->IsSwingGoAnimationPlaying())
 	{
 		request = BatterIdleState::ID();
 		return true;

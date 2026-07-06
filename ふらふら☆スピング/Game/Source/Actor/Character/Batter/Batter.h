@@ -12,7 +12,7 @@
 namespace BATTER{
    extern std::string FILE_PATH_BATTER;
    extern std::string FILE_PATH_DDS;
-   extern std::string FILE_PATH_ANIMATION[3];
+   extern std::string FILE_PATH_ANIMATION[4];
 
     namespace BAT
     {
@@ -25,7 +25,7 @@ namespace BATTER{
         constexpr float HEIGHT_OFFSET = 200.0f; //バットの高さオフセット
     }
 
-    const Vector3 INITIAL_COORDINATE = Vector3(-420.0f, -50.0f, 5500.0f);//初期座標
+    const Vector3 INITIAL_COORDINATE = Vector3(-420.0f, -90.0f, 5500.0f);//初期座標
     const Vector3 INITIAL_SCALE = Vector3(10.0f, 10.0f, 10.0f); //初期スケール
     const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //当たり判定スケール
 
@@ -41,7 +41,7 @@ namespace BATTER{
     constexpr float HIT_ZONE_RADIUS = 50.0f;			// 真ん中から端までの最大距離 (6080 - 6075)
     constexpr float RAD_TO_DEG = 180.0f / 3.14159265f;	//ラジアンを度に変換するための定数
     constexpr float CURSOR_MOVE_SPEED = 500.0f;			// カーソルの移動速度（ピクセル/秒）
-	constexpr float ROTATION_RADIUS = 230.0f;			// 回転の半径
+	constexpr float ROTATION_RADIUS = 30.0f;			// 回転の半径
 	constexpr float LENGTH_EPSILON = 0.001f;            // 長さの比較に使用する小さな値
 	constexpr float READY_TIME = 5.0f;					// 準備時間
 }
@@ -56,6 +56,7 @@ private:
         enAnimationClip_Idle,       // 待機
         enAnimationClip_Rotation,   // 回転
         enAnimationClip_Swing,      // スイング
+		enAnimationClip_SwingGo,    // スイングゴー
         enAnimationClip_Num
     };
     std::unique_ptr<BatterStateMachine> m_stateMachine;                 // バッターステート管理   
@@ -73,7 +74,7 @@ private:
     Transform m_transform;                                              // トランスフォーム    
     Quaternion m_initialRotation;                                       // 初期回転
 
-    Vector3 m_facingDir = Vector3(0.0f, 0.0f, -1.0f);                   // プレイヤーの向き
+    Vector3 m_facingDir = Vector3(1.0f, 0.0f, 0.0f);                   // プレイヤーの向き
     Vector3 m_meetPosition;                                             // ミート位置    
     Vector3 m_meetCursorWorldPos;                                       // カーソルワールド座標    
     Vector3 m_cursorOffset;                                             // カーソルオフセット
@@ -180,6 +181,16 @@ public:
         m_setAnimation = enAnimationClip_Idle;
     }
 
+    void SetSwingGoAnimation()
+    {
+        m_setAnimation = enAnimationClip_SwingGo;
+	}
+
+    bool GetSwingGoAnimation() const
+    {
+        return m_setAnimation == enAnimationClip_SwingGo;
+	}
+
     // アニメーション再生中判定
     bool IsPlayAnimation()
     {
@@ -192,6 +203,12 @@ public:
         return m_characterModel->IsPlayAnimation()
             && m_setAnimation == enAnimationClip_Swing;
     }
+
+    bool IsSwingGoAnimationPlaying()
+    {
+        return m_characterModel->IsPlayAnimation()
+            && m_setAnimation == enAnimationClip_SwingGo;
+	}
 
     // カーソル座標更新
     void SetCursorPosition();
