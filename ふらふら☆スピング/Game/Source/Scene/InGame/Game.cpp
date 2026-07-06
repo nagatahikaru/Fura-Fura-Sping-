@@ -606,7 +606,7 @@ void Game::StartReplay(int index)
 	m_replayTimer = 0.0f;
 	m_hasAppliedHitMoment = false;
 	// ▼ 追加：タイマーとアキュムレータの初期化
-	m_replayDelayTimer = 1.1f;  // 1.5秒待機
+	m_replayDelayTimer = 2.0f;  // 1.5秒待機
 	m_replayAccumulator = 0.0f; // アキュムレータ初期化
 	m_cameraMode = Camera_Replay;
 	m_currentReplay = m_replayPaths[index];
