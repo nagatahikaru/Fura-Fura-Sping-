@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Source/Actor/Character/Character.h"
 #include "Source/UI/InGameUI/InGameUI.h"
 #include "BatterStateMachine.h"
@@ -16,103 +16,103 @@ namespace BATTER{
 
     namespace BAT
     {
-        const Vector3 OFFSET_BAT = Vector3(100.0f, 150.0f, 0.0f); //ƒoƒbƒg‚ÌƒIƒtƒZƒbƒg
+        const Vector3 OFFSET_BAT = Vector3(100.0f, 150.0f, 0.0f); //ãƒãƒƒãƒˆã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
         const Vector3 COLLISION_SCALE_BAT = Vector3(114.285714286f, 80.0f, 40.0f);
-        const Vector3 ROTATION_ANGLE = Vector3(0.0f, 0.0f, 1.0f); //ƒoƒbƒg‚Ì‰ñ“]Šp“x‚Æ‰ñ“]‘¬“x
-		constexpr float SPIN_TIME_LIMIT = 5.0f;             //‰ñ“]‚ÌŠÔ§ŒÀ
-		constexpr float HALF_ROTATION_ANGLE = 180.0f;   //‰ñ“]‚Ì”¼•ª‚ÌŠp“x
-		constexpr float FULL_ROTATION_ANGLE = 360.0f;   //‰ñ“]‚Ì‘S‘Ì‚ÌŠp“x		
-        constexpr float HEIGHT_OFFSET = 200.0f; //ƒoƒbƒg‚Ì‚‚³ƒIƒtƒZƒbƒg
+        const Vector3 ROTATION_ANGLE = Vector3(0.0f, 0.0f, 1.0f); //ãƒãƒƒãƒˆã®å›è»¢è§’åº¦ã¨å›è»¢é€Ÿåº¦
+		constexpr float SPIN_TIME_LIMIT = 5.0f;             //å›è»¢ã®æ™‚é–“åˆ¶é™
+		constexpr float HALF_ROTATION_ANGLE = 180.0f;   //å›è»¢ã®åŠåˆ†ã®è§’åº¦
+		constexpr float FULL_ROTATION_ANGLE = 360.0f;   //å›è»¢ã®å…¨ä½“ã®è§’åº¦		
+        constexpr float HEIGHT_OFFSET = 200.0f; //ãƒãƒƒãƒˆã®é«˜ã•ã‚ªãƒ•ã‚»ãƒƒãƒˆ
     }
 
-    const Vector3 INITIAL_COORDINATE = Vector3(-420.0f, -90.0f, 5500.0f);//‰ŠúÀ•W
-    const Vector3 INITIAL_SCALE = Vector3(10.0f, 10.0f, 10.0f); //‰ŠúƒXƒP[ƒ‹
-    const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //“–‚½‚è”»’èƒXƒP[ƒ‹
+    const Vector3 INITIAL_COORDINATE = Vector3(-420.0f, -95.0f, 5500.0f);//åˆæœŸåº§æ¨™
+    const Vector3 INITIAL_SCALE = Vector3(10.0f, 10.0f, 10.0f); //åˆæœŸã‚¹ã‚±ãƒ¼ãƒ«
+    const Vector3 COLLISION_SCALE = Vector3(50.0f, 35.0f, 50.0f); //å½“ãŸã‚Šåˆ¤å®šã‚¹ã‚±ãƒ¼ãƒ«
 
     constexpr float CURSOR_MIN_X = -300.0f;
     constexpr float CURSOR_MAX_X = 300.0f;
     constexpr float CURSOR_MIN_Y = -300.0f;
     constexpr float CURSOR_MAX_Y = 300.0f;
-    constexpr float SCREEN_WIDTH = 1920.0f;				// ‰æ–Ê•iƒsƒNƒZƒ‹j
-    constexpr float	SCREEN_HEIGHT = 1080.0f;			// ‰æ–Ê‚‚³iƒsƒNƒZƒ‹j
-    constexpr float HIT_ZONE_UPPER_LIMIT = 6500.0f;		// ƒqƒbƒgƒ][ƒ“‚ÌãŒÀiƒoƒbƒ^[‚ÌˆÊ’u‚©‚ç‚Ì‘Š‘Î‹——£j
-    constexpr float HIT_ZONE_LOWER_LIMIT = 6300.0f;		// ƒqƒbƒgƒ][ƒ“‚Ì‰ºŒÀiƒoƒbƒ^[‚ÌˆÊ’u‚©‚ç‚Ì‘Š‘Î‹——£j
-    constexpr float HIT_ZONE_CENTER = 6400.0f;			// ƒqƒbƒgƒ][ƒ“‚Ì’†Siƒoƒbƒ^[‚ÌˆÊ’u‚©‚ç‚Ì‘Š‘Î‹——£j
-    constexpr float HIT_ZONE_RADIUS = 50.0f;			// ^‚ñ’†‚©‚ç’[‚Ü‚Å‚ÌÅ‘å‹——£ (6080 - 6075)
-    constexpr float RAD_TO_DEG = 180.0f / 3.14159265f;	//ƒ‰ƒWƒAƒ“‚ğ“x‚É•ÏŠ·‚·‚é‚½‚ß‚Ì’è”
-    constexpr float CURSOR_MOVE_SPEED = 500.0f;			// ƒJ[ƒ\ƒ‹‚ÌˆÚ“®‘¬“xiƒsƒNƒZƒ‹/•bj
-	constexpr float ROTATION_RADIUS = 30.0f;			// ‰ñ“]‚Ì”¼Œa
-	constexpr float LENGTH_EPSILON = 0.001f;            // ’·‚³‚Ì”äŠr‚Ég—p‚·‚é¬‚³‚È’l
-	constexpr float READY_TIME = 5.0f;					// €”õŠÔ
+    constexpr float SCREEN_WIDTH = 1920.0f;				// ç”»é¢å¹…ï¼ˆãƒ”ã‚¯ã‚»ãƒ«ï¼‰
+    constexpr float	SCREEN_HEIGHT = 1080.0f;			// ç”»é¢é«˜ã•ï¼ˆãƒ”ã‚¯ã‚»ãƒ«ï¼‰
+    constexpr float HIT_ZONE_UPPER_LIMIT = 6500.0f;		// ãƒ’ãƒƒãƒˆã‚¾ãƒ¼ãƒ³ã®ä¸Šé™ï¼ˆãƒãƒƒã‚¿ãƒ¼ã®ä½ç½®ã‹ã‚‰ã®ç›¸å¯¾è·é›¢ï¼‰
+    constexpr float HIT_ZONE_LOWER_LIMIT = 6300.0f;		// ãƒ’ãƒƒãƒˆã‚¾ãƒ¼ãƒ³ã®ä¸‹é™ï¼ˆãƒãƒƒã‚¿ãƒ¼ã®ä½ç½®ã‹ã‚‰ã®ç›¸å¯¾è·é›¢ï¼‰
+    constexpr float HIT_ZONE_CENTER = 6400.0f;			// ãƒ’ãƒƒãƒˆã‚¾ãƒ¼ãƒ³ã®ä¸­å¿ƒï¼ˆãƒãƒƒã‚¿ãƒ¼ã®ä½ç½®ã‹ã‚‰ã®ç›¸å¯¾è·é›¢ï¼‰
+    constexpr float HIT_ZONE_RADIUS = 50.0f;			// çœŸã‚“ä¸­ã‹ã‚‰ç«¯ã¾ã§ã®æœ€å¤§è·é›¢ (6080 - 6075)
+    constexpr float RAD_TO_DEG = 180.0f / 3.14159265f;	//ãƒ©ã‚¸ã‚¢ãƒ³ã‚’åº¦ã«å¤‰æ›ã™ã‚‹ãŸã‚ã®å®šæ•°
+    constexpr float CURSOR_MOVE_SPEED = 500.0f;			// ã‚«ãƒ¼ã‚½ãƒ«ã®ç§»å‹•é€Ÿåº¦ï¼ˆãƒ”ã‚¯ã‚»ãƒ«/ç§’ï¼‰
+	constexpr float ROTATION_RADIUS = 30.0f;			// å›è»¢ã®åŠå¾„
+	constexpr float LENGTH_EPSILON = 0.001f;            // é•·ã•ã®æ¯”è¼ƒã«ä½¿ç”¨ã™ã‚‹å°ã•ãªå€¤
+	constexpr float READY_TIME = 5.0f;					// æº–å‚™æ™‚é–“
 }
 
 
 class Batter : public Character
 {
 private:
-    // ƒAƒjƒ[ƒVƒ‡ƒ“ID
+    // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ID
     enum EnAnimationClip
     {
-        enAnimationClip_Idle,       // ‘Ò‹@
-        enAnimationClip_Rotation,   // ‰ñ“]
-        enAnimationClip_Swing,      // ƒXƒCƒ“ƒO
-		enAnimationClip_SwingGo,    // ƒXƒCƒ“ƒOƒS[
+        enAnimationClip_Idle,       // å¾…æ©Ÿ
+        enAnimationClip_Rotation,   // å›è»¢
+        enAnimationClip_Swing,      // ã‚¹ã‚¤ãƒ³ã‚°
+		enAnimationClip_SwingGo,    // ã‚¹ã‚¤ãƒ³ã‚°ã‚´ãƒ¼
         enAnimationClip_Num
     };
-    std::unique_ptr<BatterStateMachine> m_stateMachine;                 // ƒoƒbƒ^[ƒXƒe[ƒgŠÇ—   
-    std::unique_ptr<DebuffStageStateMachine> m_debuffStageStateMachine; // ƒfƒoƒtƒXƒe[ƒgŠÇ—    
-    std::unique_ptr<nsApp::CharacterModel> m_characterModel;            // ƒLƒƒƒ‰ƒNƒ^[ƒ‚ƒfƒ‹
+    std::unique_ptr<BatterStateMachine> m_stateMachine;                 // ãƒãƒƒã‚¿ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆç®¡ç†   
+    std::unique_ptr<DebuffStageStateMachine> m_debuffStageStateMachine; // ãƒ‡ãƒãƒ•ã‚¹ãƒ†ãƒ¼ãƒˆç®¡ç†    
+    std::unique_ptr<nsApp::CharacterModel> m_characterModel;            // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãƒ¢ãƒ‡ãƒ«
 
-    Game* m_game = nullptr;                                             // ƒQ[ƒ€–{‘Ì    
+    Game* m_game = nullptr;                                             // ã‚²ãƒ¼ãƒ æœ¬ä½“    
     InGameUI* m_inGameUI = nullptr;                                     // UI   
-    Ball* m_ball = nullptr;                                             // ƒ{[ƒ‹
-    DebuffStage* m_debuffStage;                                         // ƒfƒoƒtƒXƒe[ƒW
-    CollisionObject* m_collisionObject = nullptr;                       // “–‚½‚è”»’è    
+    Ball* m_ball = nullptr;                                             // ãƒœãƒ¼ãƒ«
+    DebuffStage* m_debuffStage;                                         // ãƒ‡ãƒãƒ•ã‚¹ãƒ†ãƒ¼ã‚¸
+    CollisionObject* m_collisionObject = nullptr;                       // å½“ãŸã‚Šåˆ¤å®š    
 
-    AnimationClip m_animationClips[enAnimationClip_Num];                // ƒAƒjƒ[ƒVƒ‡ƒ“”z—ñ    
-    EnAnimationClip m_setAnimation = enAnimationClip_Idle;              // Œ»İƒAƒjƒ[ƒVƒ‡ƒ“    
-    Transform m_transform;                                              // ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€    
-    Quaternion m_initialRotation;                                       // ‰Šú‰ñ“]
+    AnimationClip m_animationClips[enAnimationClip_Num];                // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é…åˆ—    
+    EnAnimationClip m_setAnimation = enAnimationClip_Idle;              // ç¾åœ¨ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³    
+    Transform m_transform;                                              // ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ     
+    Quaternion m_initialRotation;                                       // åˆæœŸå›è»¢
 
-    Vector3 m_facingDir = Vector3(1.0f, 0.0f, 0.0f);                   // ƒvƒŒƒCƒ„[‚ÌŒü‚«
-    Vector3 m_meetPosition;                                             // ƒ~[ƒgˆÊ’u    
-    Vector3 m_meetCursorWorldPos;                                       // ƒJ[ƒ\ƒ‹ƒ[ƒ‹ƒhÀ•W    
-    Vector3 m_cursorOffset;                                             // ƒJ[ƒ\ƒ‹ƒIƒtƒZƒbƒg
-    Vector3 m_shakeCursorOffset = Vector3::Zero;                        // —h‚ê‚É‚æ‚éƒJ[ƒ\ƒ‹ƒIƒtƒZƒbƒg    
-    Vector3 m_assistCursorOffset = Vector3::Zero;                       // —h‚ê‚É‚æ‚éƒJ[ƒ\ƒ‹ƒIƒtƒZƒbƒg‚ÌŒ¸Š‘¬“x    
-    Vector3 m_magnetCursorOffset = Vector3::Zero;                       // ¥Î‚É‚æ‚éƒJ[ƒ\ƒ‹ƒIƒtƒZƒbƒg‚ÌŒ¸Š‘¬“x    
-    Vector3 m_noiseCursorOffset = Vector3::Zero;                        // ƒmƒCƒY‚É‚æ‚éƒJ[ƒ\ƒ‹ƒIƒtƒZƒbƒg‚ÌŒ¸Š‘¬“x    
-    Vector3 m_driftCursorOffset = Vector3::Zero;                        // ƒhƒŠƒtƒg‚É‚æ‚éƒJ[ƒ\ƒ‹ƒIƒtƒZƒbƒg‚ÌŒ¸Š‘¬“x
-    Vector2 m_inputdelayScale = Vector2(1.0f, 1.0f);                    // ƒJ[ƒ\ƒ‹ˆÚ“®‚Ì’x‰„ƒXƒP[ƒ‹
-    Vector3 m_bodyCenter;                                               // –{‘Ì’†S
-    Vector3 m_modelPos;                                                 // ƒ‚ƒfƒ‹‚Ì”¼Œa
-	Vector3 m_hitPosition;                                              // ƒqƒbƒgˆÊ’u
+    Vector3 m_facingDir = Vector3(1.0f, 0.0f, 0.0f);                   // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‘ã
+    Vector3 m_meetPosition;                                             // ãƒŸãƒ¼ãƒˆä½ç½®    
+    Vector3 m_meetCursorWorldPos;                                       // ã‚«ãƒ¼ã‚½ãƒ«ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™    
+    Vector3 m_cursorOffset;                                             // ã‚«ãƒ¼ã‚½ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+    Vector3 m_shakeCursorOffset = Vector3::Zero;                        // æºã‚Œã«ã‚ˆã‚‹ã‚«ãƒ¼ã‚½ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆ    
+    Vector3 m_assistCursorOffset = Vector3::Zero;                       // æºã‚Œã«ã‚ˆã‚‹ã‚«ãƒ¼ã‚½ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆã®æ¸›è¡°é€Ÿåº¦    
+    Vector3 m_magnetCursorOffset = Vector3::Zero;                       // ç£çŸ³ã«ã‚ˆã‚‹ã‚«ãƒ¼ã‚½ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆã®æ¸›è¡°é€Ÿåº¦    
+    Vector3 m_noiseCursorOffset = Vector3::Zero;                        // ãƒã‚¤ã‚ºã«ã‚ˆã‚‹ã‚«ãƒ¼ã‚½ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆã®æ¸›è¡°é€Ÿåº¦    
+    Vector3 m_driftCursorOffset = Vector3::Zero;                        // ãƒ‰ãƒªãƒ•ãƒˆã«ã‚ˆã‚‹ã‚«ãƒ¼ã‚½ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆã®æ¸›è¡°é€Ÿåº¦
+    Vector2 m_inputdelayScale = Vector2(1.0f, 1.0f);                    // ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•ã®é…å»¶ã‚¹ã‚±ãƒ¼ãƒ«
+    Vector3 m_bodyCenter;                                               // æœ¬ä½“ä¸­å¿ƒ
+    Vector3 m_modelPos;                                                 // ãƒ¢ãƒ‡ãƒ«ã®åŠå¾„
+	Vector3 m_hitPosition;                                              // ãƒ’ãƒƒãƒˆä½ç½®
 
-    Vector2 m_inputScale = Vector2(1.0f, 1.0f);                         // ƒJ[ƒ\ƒ‹“ü—ÍƒXƒP[ƒ‹   
-    Vector2 m_inversioninputScale = Vector2(1.0f, 1.0f);                // ”½“]ƒJ[ƒ\ƒ‹“ü—ÍƒXƒP[ƒ‹
+    Vector2 m_inputScale = Vector2(1.0f, 1.0f);                         // ã‚«ãƒ¼ã‚½ãƒ«å…¥åŠ›ã‚¹ã‚±ãƒ¼ãƒ«   
+    Vector2 m_inversioninputScale = Vector2(1.0f, 1.0f);                // åè»¢ã‚«ãƒ¼ã‚½ãƒ«å…¥åŠ›ã‚¹ã‚±ãƒ¼ãƒ«
 
-    bool m_isCursorMode = true;                                         // ƒJ[ƒ\ƒ‹ƒ‚[ƒh
-    bool m_isDelayFrag = false;                                         // ƒJ[ƒ\ƒ‹ˆÚ“®‚Ì’x‰„ƒtƒ‰ƒO    
-    bool m_isRotation = true;                                           // ‰ñ“]—LŒø
-    bool m_isReplay = false;                                            // ƒŠƒvƒŒƒC’†ƒtƒ‰ƒO
+    bool m_isCursorMode = true;                                         // ã‚«ãƒ¼ã‚½ãƒ«ãƒ¢ãƒ¼ãƒ‰
+    bool m_isDelayFrag = false;                                         // ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•ã®é…å»¶ãƒ•ãƒ©ã‚°    
+    bool m_isRotation = true;                                           // å›è»¢æœ‰åŠ¹
+    bool m_isReplay = false;                                            // ãƒªãƒ—ãƒ¬ã‚¤ä¸­ãƒ•ãƒ©ã‚°
 
-    float m_meatRange = 50.0f;                                         // ƒqƒbƒg”ÍˆÍ    
-    float m_cursorMoveScale = 1.0f;                                     // ƒJ[ƒ\ƒ‹ˆÚ“®‘¬“x”{—¦ 
-    float m_prevAngle = 0.0f;                                           // ‘O‰ñŠp“x    
-    float m_guruGuruBatTimer = 0.0f;                                    // ‰ñ“]ƒ^ƒCƒ}[    
-    float m_totalRotation = 0.0f;                                       // ‘‰ñ“]—Ê
+    float m_meatRange = 50.0f;                                         // ãƒ’ãƒƒãƒˆç¯„å›²    
+    float m_cursorMoveScale = 1.0f;                                     // ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•é€Ÿåº¦å€ç‡ 
+    float m_prevAngle = 0.0f;                                           // å‰å›è§’åº¦    
+    float m_guruGuruBatTimer = 0.0f;                                    // å›è»¢ã‚¿ã‚¤ãƒãƒ¼    
+    float m_totalRotation = 0.0f;                                       // ç·å›è»¢é‡
 
-    int m_guruGuruBatCount = 0;                                         // ‰ñ“]‰ñ”
+    int m_guruGuruBatCount = 0;                                         // å›è»¢å›æ•°
 
     struct EffectInfo
     {
-        // oŒ»ƒGƒtƒFƒNƒg
+        // å‡ºç¾ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
         uint32_t m_effectDawnID;
 
-        // ƒqƒbƒgƒGƒtƒFƒNƒg
+        // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
         uint32_t m_effectHitID;
     };
-    EffectInfo m_inro;                                                  // ƒGƒtƒFƒNƒgî•ñ
+    EffectInfo m_inro;                                                  // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆæƒ…å ±
 
 
 private:
@@ -120,62 +120,62 @@ private:
 
 
 public:
-    // ˆê’â~ƒtƒ‰ƒO
+    // ä¸€æ™‚åœæ­¢ãƒ•ãƒ©ã‚°
     bool m_isPaused = false;
 
     Batter();
     virtual ~Batter();
 
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     virtual bool Start();
 
-    // XVˆ—
+    // æ›´æ–°å‡¦ç†
     virtual void Update();
 
-    // •`‰æˆ—
+    // æç”»å‡¦ç†
     virtual void Render(RenderContext& rc);
 
-    // ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     void SetPlayAnimation(int enAnimationClip)
     {
         m_characterModel->PlayAnimation(enAnimationClip, 0.2f);
     }
 
-    // Œ»İ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“æ“¾
+    // ç¾åœ¨ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å–å¾—
     EnAnimationClip GetEnAnimationClip() const
     {
         return m_setAnimation;
     }
 
-    // ƒXƒCƒ“ƒOŠJn
+    // ã‚¹ã‚¤ãƒ³ã‚°é–‹å§‹
     void Swing()
     {
         m_setAnimation = enAnimationClip_Swing;
     }
 
-    // ƒXƒCƒ“ƒOƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+    // ã‚¹ã‚¤ãƒ³ã‚°ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
     void PlaySwingAnimation()
     {
-        // š ƒXƒCƒ“ƒOƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄ¶
+        // â˜… ã‚¹ã‚¤ãƒ³ã‚°ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’å†ç”Ÿ
         m_characterModel->PlayAnimation(enAnimationClip_Swing, 1.0f);
     }
 
-    // ƒXƒCƒ“ƒOó‘ÔƒŠƒZƒbƒg
+    // ã‚¹ã‚¤ãƒ³ã‚°çŠ¶æ…‹ãƒªã‚»ãƒƒãƒˆ
     void ResetSwing();
 
-    // ƒAƒjƒ[ƒVƒ‡ƒ“XV
+    // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°
     void AnimationUpdate()
     {
         m_characterModel->Update();
     }
 
-    // ‰ñ“]ƒAƒjƒ[ƒVƒ‡ƒ“İ’è
+    // å›è»¢ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³è¨­å®š
     void SetPlayRotation()
     {
         m_setAnimation = enAnimationClip_Rotation;
     }
 
-    // ‘Ò‹@ƒAƒjƒ[ƒVƒ‡ƒ“İ’è
+    // å¾…æ©Ÿã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³è¨­å®š
     void SetIdleAnimation()
     {
         m_setAnimation = enAnimationClip_Idle;
@@ -191,13 +191,13 @@ public:
         return m_setAnimation == enAnimationClip_SwingGo;
 	}
 
-    // ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶’†”»’è
+    // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿä¸­åˆ¤å®š
     bool IsPlayAnimation()
     {
         return m_characterModel->IsPlayAnimation();
     }
 
-    // ƒXƒCƒ“ƒOÄ¶’†”»’è
+    // ã‚¹ã‚¤ãƒ³ã‚°å†ç”Ÿä¸­åˆ¤å®š
     bool IsSwingAnimationPlaying()
     {
         return m_characterModel->IsPlayAnimation()
@@ -210,44 +210,44 @@ public:
             && m_setAnimation == enAnimationClip_SwingGo;
 	}
 
-    // ƒJ[ƒ\ƒ‹À•WXV
+    // ã‚«ãƒ¼ã‚½ãƒ«åº§æ¨™æ›´æ–°
     void SetCursorPosition();
 
-    // 3DƒJ[ƒ\ƒ‹XV
+    // 3Dã‚«ãƒ¼ã‚½ãƒ«æ›´æ–°
     void UpdateCursor3D()
     {
         SetCursorPosition();
         m_meetCursorWorldPos = CalcCursorWorldPos();
     }
 
-    // ƒJ[ƒ\ƒ‹ƒ‚[ƒhØ‚è‘Ö‚¦
+    // ã‚«ãƒ¼ã‚½ãƒ«ãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›¿ãˆ
     void SetCursorMode(bool flag)
     {
         m_isCursorMode = flag;
     }
 
-    // ƒ[ƒ‹ƒhÀ•W•ÏŠ·
+    // ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™å¤‰æ›
     Vector3 CalcCursorWorldPos();
 
-    // —h‚ê‚É‚æ‚éƒJ[ƒ\ƒ‹—h‚ê‚ÌƒIƒtƒZƒbƒg’Ç‰Á
+    // æºã‚Œã«ã‚ˆã‚‹ã‚«ãƒ¼ã‚½ãƒ«æºã‚Œã®ã‚ªãƒ•ã‚»ãƒƒãƒˆè¿½åŠ 
     void SetShakeCursorOffset(const Vector3& offset)
     {
         m_shakeCursorOffset = offset;
     }
 
-    // ƒmƒCƒY‚É‚æ‚éƒJ[ƒ\ƒ‹—h‚ê‚ÌƒIƒtƒZƒbƒg’Ç‰Á
+    // ãƒã‚¤ã‚ºã«ã‚ˆã‚‹ã‚«ãƒ¼ã‚½ãƒ«æºã‚Œã®ã‚ªãƒ•ã‚»ãƒƒãƒˆè¿½åŠ 
     void SetNoiseCursorOffset(const Vector3& offset)
     {
         m_noiseCursorOffset = offset;
     }
 
-    // ƒhƒŠƒtƒg‚É‚æ‚éƒJ[ƒ\ƒ‹—h‚ê‚ÌƒIƒtƒZƒbƒg’Ç‰Á
+    // ãƒ‰ãƒªãƒ•ãƒˆã«ã‚ˆã‚‹ã‚«ãƒ¼ã‚½ãƒ«æºã‚Œã®ã‚ªãƒ•ã‚»ãƒƒãƒˆè¿½åŠ 
     void SetDriftCursorOffset(const Vector3& offset)
     {
         m_driftCursorOffset = offset;
     }
 
-    //ˆø‚«Šñ‚¹‚É‚æ‚éƒJ[ƒ\ƒ‹—h‚ê‚ÌƒIƒtƒZƒbƒg’Ç‰Á
+    //å¼•ãå¯„ã›ã«ã‚ˆã‚‹ã‚«ãƒ¼ã‚½ãƒ«æºã‚Œã®ã‚ªãƒ•ã‚»ãƒƒãƒˆè¿½åŠ 
     void SetMagnetCursorOffset(const Vector3& offset)
     {
         m_magnetCursorOffset += offset;
@@ -258,13 +258,13 @@ public:
         return m_magnetCursorOffset;
     }
 
-    // ƒJ[ƒ\ƒ‹ˆÚ“®‘¬“x”{—¦
+    // ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•é€Ÿåº¦å€ç‡
     void AddCursorMoveScale(float scale)
     {
         m_cursorMoveScale *= scale;
     }
 
-    //@”½“]ƒJ[ƒ\ƒ‹“ü—ÍƒXƒP[ƒ‹
+    //ã€€åè»¢ã‚«ãƒ¼ã‚½ãƒ«å…¥åŠ›ã‚¹ã‚±ãƒ¼ãƒ«
     void SetInversionInputScale(float x, float y)
     {
         m_inversioninputScale = Vector2(x, y);
@@ -277,7 +277,7 @@ public:
         DebugLogFloat("m_meatRange", m_meatRange);
     }
 
-    // ƒJ[ƒ\ƒ‹ˆÚ“®‚Ì’x‰„
+    // ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•ã®é…å»¶
     void SetInputMoveScale(Vector2 scale)
     {
         m_inputdelayScale = scale;
@@ -302,7 +302,7 @@ public:
             m_magnetCursorOffset;
     }
 
-    // ƒJ[ƒ\ƒ‹ƒIƒtƒZƒbƒgƒŠƒZƒbƒg
+    // ã‚«ãƒ¼ã‚½ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆãƒªã‚»ãƒƒãƒˆ
     void ResetCursorOffset()
     {
         m_shakeCursorOffset = Vector3::Zero;
@@ -329,13 +329,13 @@ public:
     }
 
 
-    // ƒoƒbƒg‰ñ“]ŠJn
+    // ãƒãƒƒãƒˆå›è»¢é–‹å§‹
     void Rotation();
 
-    // ‰ñ“]XV
+    // å›è»¢æ›´æ–°
     void RotationUpdate();
 
-    // ƒoƒbƒgˆÊ’uXV
+    // ãƒãƒƒãƒˆä½ç½®æ›´æ–°
     void SetBatSwingPosition()
     {
         Vector3 meetCursorPosition =
@@ -345,13 +345,13 @@ public:
             meetCursorPosition - m_transform.m_position);
     }
 
-    // ƒoƒbƒg‚ÌŒü‚«XV
+    // ãƒãƒƒãƒˆã®å‘ãæ›´æ–°
     void UpdateBatAim();
 
-    // “–‚½‚è”»’èXV
+    // å½“ãŸã‚Šåˆ¤å®šæ›´æ–°
     void BatHitBoxPosition();
 
-    // ƒOƒ‹ƒOƒ‹ƒoƒbƒgXV
+    // ã‚°ãƒ«ã‚°ãƒ«ãƒãƒƒãƒˆæ›´æ–°
     void RoundAndRoundBat();
 
     void SetGuruGuruCount(int count)
@@ -359,28 +359,28 @@ public:
         m_guruGuruBatCount = 3 * count;
     }
 
-    // ‰ñ“]‰ñ”ƒJƒEƒ“ƒg
+    // å›è»¢å›æ•°ã‚«ã‚¦ãƒ³ãƒˆ
     void GuruGuruCountUP(float currentAngle);
 
-    // ‰ñ“]‰ñ”æ“¾
+    // å›è»¢å›æ•°å–å¾—
     int GetGuruGuru() const
     {
         return m_guruGuruBatCount;
     }
 
-    // ƒoƒbƒgÀ•Wæ“¾
+    // ãƒãƒƒãƒˆåº§æ¨™å–å¾—
     Vector3 GetBatPostion() const
     {
         return m_characterModel->GetWeaponWorldPosition();
     }
 
-    // ‘ÅŒ‚ˆ—
+    // æ‰“æ’ƒå‡¦ç†
     void HitBat();
 
-    // ƒqƒbƒgƒGƒtƒFƒNƒg
+    // ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
     void HitEffect(Vector3 pos);
 
-    // “_‚Æü•ª‹——£ŒvZ
+    // ç‚¹ã¨ç·šåˆ†è·é›¢è¨ˆç®—
     float DistancePointToSegment(
         const Vector3& ballpos,
         const Vector3& base,
@@ -405,7 +405,7 @@ public:
         return (ballpos - closestPoint).Length();
     }
 
-    // ƒXƒNƒŠ[ƒ“À•W ¨ ƒŒƒC•ÏŠ·
+    // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ â†’ ãƒ¬ã‚¤å¤‰æ›
     Vector3 ScreenToRay(
         float mouseX,
         float mouseY,
@@ -415,40 +415,40 @@ public:
         const Matrix& proj,
         const Vector3& cameraPos);
 
-    // s—ñ‹t•ÏŠ·
+    // è¡Œåˆ—é€†å¤‰æ›
     Vector4 InverseProjectionMatrix(
         const Vector4& v,
         const Matrix& m);
 
-    // ƒŒƒC‚Æ•½–Ê‚ÌŒğ“_æ“¾
+    // ãƒ¬ã‚¤ã¨å¹³é¢ã®äº¤ç‚¹å–å¾—
     Vector3 RayToPlane(
         const Vector3& rayOrigin,
         const Vector3& rayDir,
         const Vector3& planePoint,
         const Vector3& planeNormal);
 
-    // ƒGƒtƒFƒNƒgXV
+    // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆæ›´æ–°
     void DownArrowEffect();
 
-    // Ú’n”»’è
+    // æ¥åœ°åˆ¤å®š
     const bool GetIsOnGround() const
     {
         return m_characterController.IsOnGround();
     }
 
-    // ‰ñ“]ó‘Ôİ’è
+    // å›è»¢çŠ¶æ…‹è¨­å®š
     void SetRotationSeen(bool isRotation)
     {
         m_isRotation = isRotation;
     }
 
-    // ‰ñ“]ó‘Ôæ“¾
+    // å›è»¢çŠ¶æ…‹å–å¾—
     bool GetRotationSeen() const
     {
         return m_isRotation;
     }
 
-    // CharacterModelæ“¾
+    // CharacterModelå–å¾—
     nsApp::CharacterModel* GetCharacterModel() const
     {
         return m_characterModel.get();
