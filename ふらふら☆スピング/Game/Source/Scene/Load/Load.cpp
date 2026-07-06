@@ -259,7 +259,7 @@ void Load::Update()
     // m_loadStep が進む前に、存在しているか・壊れていないかを慎重にチェック
     auto ui = FindGO<LoadUI>("loadUI");
     if (ui != nullptr) {
-        if (m_loadStep == 1 || m_loadStep == 3) { // ステップ増加前に合わせる、または適切なタイミングに調整
+        if (m_loadStep == 3 || m_loadStep == 6) { // ステップ増加前に合わせる、または適切なタイミングに調整
             ui->AdvanceTip();
         }
     }
