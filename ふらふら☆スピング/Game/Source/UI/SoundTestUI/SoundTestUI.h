@@ -15,12 +15,16 @@ public:
 	ReturnType m_returnType = ReturnToTitle;
 private:
 	SpriteRender m_spriteRender;
+	SpriteRender m_spriteMaster;
 	SpriteRender m_spriteBGM;
 	SpriteRender m_spriteSE;
+	SpriteRender m_spriteBallMaster;
 	SpriteRender m_spriteBallBGM;
 	SpriteRender m_spriteBallSE;
+	SpriteRender m_spriteeFontMaster;
 	SpriteRender m_spriteFontBGM;
 	SpriteRender m_spriteFontSE;
+	SpriteRender m_Master;
 	SpriteRender m_BGM;
 	SpriteRender m_SE;
 	SpriteRender m_B;
@@ -28,7 +32,7 @@ private:
 	// スライダー位置
 	float m_bgmX = 0.0f;
 	float m_seX = 0.0f;
-
+	float m_masterX = 0.0f;
 	// スライダーの範囲
 	const float m_minX = -400.0f;
 	const float m_maxX = 400.0f;
@@ -38,6 +42,6 @@ private:
 
 	FontRender m_fontBGM;
 	FontRender m_fontSE;
-	
+	FontRender m_fontMaster;
 };
 
