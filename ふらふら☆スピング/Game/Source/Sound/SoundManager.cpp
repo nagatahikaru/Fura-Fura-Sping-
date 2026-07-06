@@ -108,10 +108,38 @@ SoundSource* SoundManager::PlayingSound(Sound number,bool isLoop,float volume)
 	return sound;
 }
 
+// ▼▼ 追加：マスターボリュームの設定関数 ▼▼
+void SoundManager::SetMasterVolume(float vol) {
+	m_masterVolume = vol;
+
+	// マスター音量が変わったら、現在流れているBGMの音量も再計算して反映する
+	if (g_bgm) {
+		SetBGMVolume(m_bgmVolume);
+	}
+}
+
+// ▼▼ 修正：BGM音量設定（マスター音量を掛け合わせる） ▼▼
+void SoundManager::SetBGMVolume(float vol) {
+	m_bgmVolume = vol;
+
+	if (g_bgm) {
+		float v = vol / 100.0f;
+		float curved = powf(v, 1.5f);
+
+		// ★ マスターボリュームの倍率（0.0〜1.0）を掛け合わせる
+		float masterScale = m_masterVolume / 100.0f;
+		g_bgm->SetVolume(curved * masterScale);
+	}
+}
+
+// ▼▼ 修正：SE再生（マスター音量を掛け合わせる） ▼▼
 SoundSource* SoundManager::PlaySE(Sound number, float volume)
 {
 	float v = m_seVolume / 100.0f;
 	float curved = powf(v, 1.3f);
+
+	// ★ マスターボリュームの倍率（0.0〜1.0）
+	float masterScale = m_masterVolume / 100.0f;
 
 	// ★ SE2 は 1 個だけにする
 	if (number == enSound_SE2) {
@@ -120,11 +148,8 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 			m_se2->Init(number);
 		}
 
-		float v = m_seVolume / 100.0f;
-		float curved = powf(v, 1.3f);
-
-		m_se2BaseVolume = curved * 3.0f;  // ★ 3倍した本来の音量を保存
-		m_se2->SetVolume(m_se2BaseVolume); // ★ 実際の音量も3倍に
+		m_se2BaseVolume = curved * 3.0f * masterScale;  // ★ マスターを掛ける
+		m_se2->SetVolume(m_se2BaseVolume);
 		m_se2->Play(false);
 
 		return m_se2;
@@ -133,28 +158,26 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 	if (number == enSound_SE4) {
 		SoundSource* se = NewGO<SoundSource>(0);
 		se->Init(number);
-		// 現在の設定音量（curved）をベースに、1.5倍にする
-		se->SetVolume(curved * 1.5f);
+		se->SetVolume(curved * 1.5f * masterScale);    // ★ マスターを掛ける
 		se->Play(false);
 		return se;
 	}
 
-	// ★ SE14 だけは音量カーブを使わず、そのままの音量で再生
 	if (number == enSound_SE14) {
 		SoundSource* se = NewGO<SoundSource>(0);
 		se->Init(number);
 
-		float raw = (m_seVolume / 100.0f) * 3.0f;  // 1.5倍
+		float raw = (m_seVolume / 100.0f) * 3.0f * masterScale; // ★ マスターを掛ける
 		se->SetVolume(raw);
 
 		se->Play(false);
 		return se;
 	}
 
-	// ★ 通常 SE は今まで通り
+	// ★ 通常 SE
 	SoundSource* se = NewGO<SoundSource>(0);
 	se->Init(number);
-	se->SetVolume(curved);
+	se->SetVolume(curved * masterScale);                // ★ マスターを掛ける
 	se->Play(false);
 	return se;
 }
@@ -168,18 +191,6 @@ void SoundManager::StopSE2()
 	}
 }
 
-void SoundManager::SetBGMVolume(float vol) {
-	m_bgmVolume = vol;
-
-	if (g_bgm) {
-		float v = vol / 100.0f;
-
-		// ★ 音量カーブを強調（2乗）
-		float curved = powf(v, 1.5f);
-
-		g_bgm->SetVolume(curved);
-	}
-}
 
 void SoundManager::SetSEVolume(float vol) {
 	m_seVolume = vol;
