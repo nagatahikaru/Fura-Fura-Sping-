@@ -21,11 +21,11 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
 namespace BATTER {
 	std::string FILE_PATH_BATTER = ("Assets/animData/batter/");
 	std::string FILE_PATH_DDS = (".tka");
-	std::string FILE_PATH_ANIMATION[3] = {
+	std::string FILE_PATH_ANIMATION[4] = {
 		"idle",
 		"guruguru",
-		"swing"
-
+		"swing",
+		"swingGo"
 	};
 
 	inline std::string GetAnimationFilePath(int number)
@@ -117,7 +117,7 @@ bool Batter::Start()
 	m_characterController.SetPosition(m_transform.m_position);
 	m_initialRotation = m_transform.m_rotation;
 
-	m_bodyCenter = BATTER::INITIAL_COORDINATE;
+	m_bodyCenter = BATTER::INITIAL_COORDINATE + Vector3(-30.0f,40.0f,0.0f);
 
 	m_guruGuruBatTimer = BATTER::BAT::SPIN_TIME_LIMIT;
 
@@ -187,6 +187,10 @@ void Batter::Update()
 		m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
 	}
 
+	if(enAnimationClip_Swing== m_setAnimation &&m_animationClips->GetAnimationEvent())
+	{
+		
+	}
 }
 
 /** ぐるぐるバット関連コード */
