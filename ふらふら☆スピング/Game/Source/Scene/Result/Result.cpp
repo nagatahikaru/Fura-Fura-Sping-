@@ -6,12 +6,26 @@
 
 bool Result::Start()
 {
-	// ▼ 保存された音量を取得
+	// ▼ BGM（マスターは PlayingSound 側で掛ける前提）
 	float v = g_soundManager->m_bgmVolume / 100.0f;
-
-	// ▼ カーブ適用（1.8乗など）
 	float curved = powf(v, 2.0f);
 	g_bgm = g_soundManager->PlayingSound(enSound_ResultBGM, false, curved);
+
+	// ▼ ここから歓声(SE2)の制御
+	m_se2Timer = 0.0f;
+
+	// ★ Master が 0 なら歓声は即止める
+	if (g_soundManager->m_masterVolume <= 0.0f) {
+		g_soundManager->StopSE2();      // ← ここで完全停止
+		m_isFadingSE2 = false;
+	}
+	else if (g_soundManager->m_seVolume <= 0.0f || !m_hasScore) {
+		m_isFadingSE2 = false;
+	}
+	else {
+		m_se2Volume = 3.0f;
+		m_isFadingSE2 = true;
+	}
 
 	m_spriteRender.Init("Assets/sprite/result2.dds", 1920.0f, 1080.0f);
 
@@ -19,7 +33,7 @@ bool Result::Start()
 	m_rezarut.SetPosition({ 0.0f, 400.0f, 0.0f });
 
 	m_B.Init("Assets/sprite/AAA.dds", 220.0f, 170.0f);
-	m_B.SetPosition({ 830.0f, -400.0f, 0.0f });
+	m_B.SetPosition({ 830.0f, -490.0f, 0.0f });
 
 	m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
 	m_grobu.SetPosition({ 830.0f, -400.0f, 0.0f});
@@ -292,8 +306,8 @@ void Result::Render(RenderContext& rc)
 {
 	m_spriteRender.Draw(rc);
 
-	m_grobu.Update();
-	m_grobu.Draw(rc);
+	/*m_grobu.Update();
+	m_grobu.Draw(rc);*/
 
 	/*m_burakku.Update();
 	m_burakku.Draw(rc);*/

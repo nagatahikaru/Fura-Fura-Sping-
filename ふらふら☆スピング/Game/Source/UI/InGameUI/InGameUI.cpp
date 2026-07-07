@@ -15,9 +15,9 @@ InGameUI::InGameUI() {
 	m_spriteRenderMeet.Init("Assets/sprite/mi-to.DDS", 45.0f, 45.0f);
 	m_spriteRenderReplay.Init("Assets/sprite/REPLAY.DDS", 300.0f, 300.0f);
 	m_spriteRenderBall.Init("Assets/sprite/ball.DDS", 30.0f, 30.0f);
-	m_kiiro1.Init("Assets/sprite/kiiro.DDS", 680.0f, 600.0f);
-	m_kiiro2.Init("Assets/sprite/kiiro.DDS", 680.0f, 600.0f);
-	m_kiiro3.Init("Assets/sprite/kiiro.DDS", 680.0f, 600.0f);
+	m_kiiro1.Init("Assets/sprite/kiiro.DDS",880.0f, 600.0f);
+	m_kiiro2.Init("Assets/sprite/kiiro.DDS", 880.0f, 600.0f);
+	m_kiiro3.Init("Assets/sprite/kiiro.DDS", 880.0f, 600.0f);
 	m_besu.Init("Assets/sprite/besu.DDS", 450.0f, 350.0f);
 	m_baisoku.Init("Assets/sprite/baisoku.DDS", 350.0f, 350.0f);
 	m_shuchusen.Init("Assets/sprite/shuchusen.DDS", 1920.0f, 1080.0f);
@@ -722,36 +722,42 @@ void InGameUI::Render(RenderContext& rc) {
 
 	if (m_isFontVisible) {
 
-		wchar_t kyu[64];
-		swprintf_s(kyu, 64, L"のこり%d球", m_ballCount);
+		//wchar_t kyu[64];
+		//swprintf_s(kyu, 64, L"のこり%d球", m_ballCount);
 
-		m_fontBallCount.SetText(kyu);
-		m_fontBallCount.SetPosition(-600.0f, 500.0f, 0.0f); // 位置は調整してOK
-		m_fontBallCount.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
-		m_fontBallCount.Draw(rc);
+		//m_fontBallCount.SetText(kyu);
+		//m_fontBallCount.SetPosition(-600.0f, 500.0f, 0.0f); // 位置は調整してOK
+		//m_fontBallCount.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
+		//m_fontBallCount.Draw(rc);
 
-		for (int i = 0; i < 3; i++) {
-			if (i < m_ballCount) {
-				m_ballIcon[i].SetMulColor({ 1,1,1,1 });   // 表示
-			}
-			else {
-				m_ballIcon[i].SetMulColor({ 1,1,1,0 });   // 非表示
-			}
-			m_ballIcon[i].Update();
-			m_ballIcon[i].Draw(rc);
-		}
+		//for (int i = 0; i < 3; i++) {
+		//	if (i < m_ballCount) {
+		//		m_ballIcon[i].SetMulColor({ 1,1,1,1 });   // 表示
+		//	}
+		//	else {
+		//		m_ballIcon[i].SetMulColor({ 1,1,1,0 });   // 非表示
+		//	}
+		//	m_ballIcon[i].Update();
+		//	m_ballIcon[i].Draw(rc);
+		//}
 
-		m_kiiro1.SetPosition(Vector3{ 905.0f, 470.0f, 0.0f });
+	// 左右反転：Xスケールをマイナスにする
+		m_kiiro1.SetScale({ -1.0f, 1.0f, 1.0f });
+		m_kiiro1.SetPosition(Vector3{ -1005.0f, 470.0f, 0.0f });
 		m_kiiro1.Update();
 		m_kiiro1.Draw(rc);
-		m_kiiro2.SetPosition(Vector3{ 905.0f, 370.0f, 0.0f });
+
+		m_kiiro2.SetScale({ -1.0f, 1.0f, 1.0f });
+		m_kiiro2.SetPosition(Vector3{ -1005.0f, 370.0f, 0.0f });
 		m_kiiro2.Update();
 		m_kiiro2.Draw(rc);
-		m_kiiro3.SetPosition(Vector3{ 905.0f, 270.0f, 0.0f });
+
+		m_kiiro3.SetScale({ -1.0f, 1.0f, 1.0f });
+		m_kiiro3.SetPosition(Vector3{ -1005.0f, 270.0f, 0.0f });
 		m_kiiro3.Update();
 		m_kiiro3.Draw(rc);
 
-		m_besu.SetPosition(Vector3{ -780.0f, 360.0f, 0.0f });
+		m_besu.SetPosition(Vector3{ 780.0f, 360.0f, 0.0f });
 		m_besu.Update();
 		m_besu.Draw(rc);
 
@@ -760,7 +766,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 			if (m_isMiss[i]) {
 				// 位置：左上あたりに縦並び（好きな位置に調整OK）
-				float baseX = 760.0f;
+				float baseX = -790.0f;
 				float baseY = 482.5f;
 
 				m_batu[i].SetPosition(Vector3{
@@ -812,7 +818,7 @@ void InGameUI::Render(RenderContext& rc) {
 		swprintf_s(text, 256, L"ぐるぐる:%d", (int)m_guruGuruCount);
 		m_fontRender.SetText(text);
 		m_fontRender.SetScale(0.9);
-		m_fontRender.SetPosition(-895.0f, 375.0f, 0.0f);
+		m_fontRender.SetPosition(665.0f, 375.0f, 0.0f);
 		m_fontRender.Draw(rc);
 
 		wchar_t timerText[256];
@@ -829,7 +835,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_Count.SetScale(0.7);
 		}
 		m_Count.SetText(timerText);
-		m_Count.SetPosition(-880.0f, 430.0f, 0.0f);
+		m_Count.SetPosition(685.0f, 430.0f, 0.0f);
 		// 🌟【重要：文字色の制御】
 		if (isReadyPhase) {
 			// 操作確認フェーズ中は点滅させず、黒色でハッキリ5秒間カウントダウンさせる
@@ -885,7 +891,7 @@ void InGameUI::Render(RenderContext& rc) {
 				else
 				{
 					double meter = (double)m_threeShots[i] / 100.0;
-					swprintf_s(buf, L"%d:%.2f m", i + 1, meter);
+					swprintf_s(buf, L"%d:%.2fm", i + 1, meter);
 				}
 			}
 
@@ -893,19 +899,19 @@ void InGameUI::Render(RenderContext& rc) {
 
 			if (i == 0) {
 				m_fontBollRender1.SetText(buf);
-				m_fontBollRender1.SetPosition(654.0f, y, 0.0f);
+				m_fontBollRender1.SetPosition(-924.0f, y, 0.0f);
 				m_fontBollRender1.SetColor(0, 0, 0, 1);
 				m_fontBollRender1.Draw(rc);
 			}
 			else if (i == 1) {
 				m_fontBollRender2.SetText(buf);
-				m_fontBollRender2.SetPosition(654.0f, y, 0.0f);
+				m_fontBollRender2.SetPosition(-924.0f, y, 0.0f);
 				m_fontBollRender2.SetColor(0, 0, 0, 1);
 				m_fontBollRender2.Draw(rc);
 			}
 			else {
 				m_fontBollRender3.SetText(buf);
-				m_fontBollRender3.SetPosition(654.0f, y, 0.0f);
+				m_fontBollRender3.SetPosition(-924.0f, y, 0.0f);
 				m_fontBollRender3.SetColor(0, 0, 0, 1);
 				m_fontBollRender3.Draw(rc);
 			}
@@ -966,17 +972,17 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 
 		if (m_guruGuruTimer > 0.0 && !isReadyPhase) {
-			m_konto.SetPosition(Vector3{ 800.0f, 0.0f, 0.0f });
+			m_konto.SetPosition(Vector3{ 650.0f, 150.0f, 0.0f });
 			m_konto.Update();
 			m_konto.Draw(rc);
 
 			// ★ 矢印の回転描画
-			m_yazirusi.SetPosition(Vector3{ 800.0f, 0.0f, 0.0f }); // 位置はお好みで
+			m_yazirusi.SetPosition(Vector3{ 650.0f, 150.0f, 0.0f }); // 位置はお好みで
 			m_yazirusi.SetRotation(m_yazirusiRotation);               // ← Quaternion を渡す
 			m_yazirusi.Update();
 			m_yazirusi.Draw(rc);
 
-			m_mawase.SetPosition(Vector3{ 807.0f, -160.0f, 0.0f }); // 位置はお好みで
+			m_mawase.SetPosition(Vector3{ 657.0f, -10.0f, 0.0f }); // 位置はお好みで
 			m_mawase.Update();
 			m_mawase.Draw(rc);
 		}
@@ -999,7 +1005,7 @@ void InGameUI::Render(RenderContext& rc) {
 			// スプライトが存在すれば位置を設定して描画
 			if (pDiffSprite) {
 				// 表示位置（画面左上あたり、バスカットや残り球数の邪魔にならない位置に調整してください）
-				pDiffSprite->SetPosition(Vector3{ -777.0f, 280.0f, 0.0f });
+				pDiffSprite->SetPosition(Vector3{ 787.0f, 280.0f, 0.0f });
 				pDiffSprite->Update();
 				pDiffSprite->Draw(rc);
 			}

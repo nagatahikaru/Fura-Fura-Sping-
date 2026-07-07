@@ -41,12 +41,9 @@ bool PauseUI::Start()
 
     // ★ ポーズ中は BGM を小さくする
     if (g_bgm) {
-        float v = g_soundManager->m_bgmVolume / 100.0f;
-        float curved = powf(v, 1.5f);
-
-        float pauseVolume = curved * 0.5f;   // ★ 50% に下げる（自由に調整可）
-
-        g_bgm->SetVolume(pauseVolume);
+        // 現在の音量設定(m_bgmVolume)から計算し、最後に 0.5f を掛ける
+        float vol = g_soundManager->GetCalculatedBGMVolume(g_soundManager->m_bgmVolume) * 0.5f;
+        g_bgm->SetVolume(vol);
     }
 
     // ★ ここを追加：ポーズに入った瞬間 SE2 を止める
@@ -76,10 +73,9 @@ void PauseUI::Update()
                 ui->SetPause(false);
             }
 
+            // 【修正箇所】マスターボリュームを適用した正しい音量設定に統一
             if (g_soundManager && g_bgm) {
-                float v = g_soundManager->m_bgmVolume / 100.0f;
-                float curved = powf(v, 1.5f);
-                g_bgm->SetVolume(curved);
+                g_bgm->SetVolume(g_soundManager->GetCalculatedBGMVolume(g_soundManager->m_bgmVolume));
             }
 
             if (g_soundManager) {
@@ -118,9 +114,8 @@ void PauseUI::Update()
                 ui->SetPause(false);
             }
             if (g_bgm) {
-                float v = g_soundManager->m_bgmVolume / 100.0f;
-                float curved = powf(v, 1.5f);
-                g_bgm->SetVolume(curved);
+                // 元の音量（マスター適用済み）に戻す
+                g_bgm->SetVolume(g_soundManager->GetCalculatedBGMVolume(g_soundManager->m_bgmVolume));
             }
             // ★ SE2 を再開
             g_soundManager->UnmuteSE2();
@@ -133,9 +128,8 @@ void PauseUI::Update()
             g_soundManager->StopSE2();
 
             if (g_bgm) {
-                float v = g_soundManager->m_bgmVolume / 100.0f;
-                float curved = powf(v, 1.5f);
-                g_bgm->SetVolume(curved);
+                // 現在の音量設定値に基づく正しいマスター計算値を取得
+                g_bgm->SetVolume(g_soundManager->GetCalculatedBGMVolume(g_soundManager->m_bgmVolume));
             }
 
             // ★ ゲームをやり直す（ロード画面から再開）
@@ -159,9 +153,8 @@ void PauseUI::Update()
             }
 
             if (g_bgm) {
-                float v = g_soundManager->m_bgmVolume / 100.0f;
-                float curved = powf(v, 1.5f);
-                g_bgm->SetVolume(curved);
+                // 現在の音量設定値に基づく正しいマスター計算値を取得
+                g_bgm->SetVolume(g_soundManager->GetCalculatedBGMVolume(g_soundManager->m_bgmVolume));
             }
 
 

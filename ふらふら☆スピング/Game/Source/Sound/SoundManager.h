@@ -48,8 +48,8 @@ public:
 	SoundSource* PlayingSound(Sound number, bool isLoop = true, float volume = 1.0f);
 	Sound m_nowPlayingBGM = enSound_Num; // 今流れているBGM
 	SoundSource* PlaySE(Sound number, float volume = 1.0f);
-	// ★ 追加
 	SoundSource* GetSE2() const { return m_se2; }
+	std::vector<SoundSource*> m_playingSEs;
 	void SetMasterVolume(float vol);
 	void ClearSE2() { m_se2 = nullptr; }
 	void SetBGMVolume(float vol);
@@ -66,6 +66,7 @@ public:
 	void MuteSE2();
 	void UnmuteSE2();
 	void FadeOutSE2(float durationSec);
+	float GetCalculatedBGMVolume(float volumePercent);
 	bool m_isFadingSE2 = false;
 	float m_se2FadeDuration = 0.0f;
 	float m_se2FadeTimer = 0.0f;

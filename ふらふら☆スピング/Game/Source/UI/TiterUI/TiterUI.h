@@ -35,6 +35,25 @@ private:
 	SpriteRender m_normalDetail;
 	SpriteRender m_hardDetail;
 	SpriteRender m_nanido3;
+	SpriteRender m_Ade;
+	/*SpriteRender m_10;
+	SpriteRender m_45;
+	SpriteRender m_100;
+	SpriteRender m_gurusai;
+	SpriteRender m_risuku;
+	SpriteRender m_hosi1;
+	SpriteRender m_hosi2;
+	SpriteRender m_hosi3;
+	SpriteRender m_hosikara1;
+	SpriteRender m_hosikara2;
+	SpriteRender m_henka;
+	SpriteRender m_ball1;
+	SpriteRender m_ball2;
+	SpriteRender m_ball3;
+	SpriteRender m_karaball1;
+	SpriteRender m_karaball2;
+	SpriteRender m_kuro;
+	SpriteRender m_kuro2;*/
 	int m_cursor = 0; // 0 = ゲーム, 1 = メニュー
 	int m_selectedDifficulty = 0; // 難易度選択のカーソル用
 	bool m_isDeciding = false;     // 決定演出中か

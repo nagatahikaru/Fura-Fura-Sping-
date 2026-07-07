@@ -19,6 +19,8 @@ private:
     SpriteRender m_guR;
     SpriteRender m_guB;
     SpriteRender m_guA;
+    SpriteRender m_koke;
+    SpriteRender m_siri;
     float m_loadProgress = 0.0f; // 0.0 ` 1.0
     float m_blinkTimer = 0.0f;
     SoundSource* m_bgm = nullptr;
@@ -32,4 +34,6 @@ private:
     float alpha = 0.0f;
     Difficulty m_difficulty;
     float m_timer;
+    bool m_isHappened = false; // ‰‰o‚ª”­¶‚µ‚½‚©‚Ç‚¤‚©‚ğ‹L˜^
+    int m_luckyImage = 0;      // 0:‚È‚µ, 1:‚±‚¯‰æ‘œ, 2:‚µ‚è‚à‚¿‰æ‘œ
 };
