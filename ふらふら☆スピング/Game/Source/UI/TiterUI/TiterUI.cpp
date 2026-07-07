@@ -24,7 +24,7 @@ bool TiterUI::Start()
     m_option.Init("Assets/sprite/Soundtest2.dds", 250.0f, 150.0f);
     m_option.SetPosition({ 0.0f, -450.0f, 0.0f });
 
-    m_Title.Init("Assets/sprite/hurahura.dds", 1700.0f, 1300.0f);
+    m_Title.Init("Assets/sprite/hurahura.dds", 1800.0f, 1400.0f);
     m_Title.SetPosition({ 0.0f, 180.0f, 0.0f });
 
     m_ranking.Init("Assets/sprite/RankingUI.dds", 250.0f, 150.0f);
@@ -39,6 +39,9 @@ bool TiterUI::Start()
     m_ranking2.Init("Assets/sprite/RankingUI2.dds", 250.0f, 150.0f);
     m_ranking2.SetPosition({ 0.0f, -300.0f, 0.0f });
 
+    m_Ade.Init("Assets/sprite/Ade.dds", 220.0f, 170.0f);
+    m_Ade.SetPosition({ 830.0f, -490.0f, 0.0f });
+
     // ▼ 難易度選択用UI（TransitionUIから引越し）
     m_easySprite.Init("Assets/sprite/Difficulty_Easy.dds", 400.0f, 400.0f);
     m_easySprite.SetPosition({ -480.0f, -320.0f, 0.0f });
@@ -46,17 +49,17 @@ bool TiterUI::Start()
     m_normalSprite.Init("Assets/sprite/Difficulty_Normal.dds", 360.0f, 360.0f);
     m_normalSprite.SetPosition({ 0.0f, -320.0f, 0.0f });
 
-    m_hardSprite.Init("Assets/sprite/Difficulty_Hard.dds", 355.0f, 355.0f);
+    m_hardSprite.Init("Assets/sprite/Difficulty_Hard.dds", 335.0f, 335.0f);
     m_hardSprite.SetPosition({ 480.0f, -320.0f, 0.0f });
 
-    m_easyDetail.Init("Assets/sprite/Detail_Easy.dds", 1608.0f, 1360.0f);
-    m_easyDetail.SetPosition({ 0.0f, 0.0f, 0.0f });
+    m_easyDetail.Init("Assets/sprite/Detail_Easy.dds", 1590.0f, 1180.0f);
+    m_easyDetail.SetPosition({ 0.0f, -5.0f, 0.0f });
 
-    m_normalDetail.Init("Assets/sprite/Detail_Normal.dds", 1590.0f, 1420.0f);
-    m_normalDetail.SetPosition({ 0.0f, 14.0f, 0.0f });
+    m_normalDetail.Init("Assets/sprite/Detail_Normal.dds", 1600.0f, 1250.0f);
+    m_normalDetail.SetPosition({ -3.0f, -10.0f, 0.0f });
 
-    m_hardDetail.Init("Assets/sprite/Detail_Hard.dds", 1590.0f, 1470.0f);
-    m_hardDetail.SetPosition({ 0.0f, 10.0f, 0.0f });
+    m_hardDetail.Init("Assets/sprite/Detail_Hard.dds", 1600.0f, 1280.0f);
+    m_hardDetail.SetPosition({ 0.0f, 0.0f, 0.0f });
 
     m_nanido.Init("Assets/sprite/nanido.dds", 600.0f, 600.0f);
     m_nanido.SetPosition({ 0.0f, 420.0f, 0.0f });
@@ -64,14 +67,68 @@ bool TiterUI::Start()
     m_nanido2.Init("Assets/sprite/nanido2.dds", 700.0f, 500.0f);
     m_nanido2.SetPosition({ 0.0f, 80.0f, 0.0f });
 
-    m_nanido3.Init("Assets/sprite/iaiaiaia.dds", 1400.0f, 1200.0f);
+    m_nanido3.Init("Assets/sprite/iaiaiaia.dds", 1300.0f, 1000.0f);
     m_nanido3.SetPosition({ 0.0f, 250.0f, 0.0f });
 
     m_B.Init("Assets/sprite/Bback.dds", 220.0f, 170.0f);
-    m_B.SetPosition({ 830.0f, -400.0f, 0.0f });
+    m_B.SetPosition({ 830.0f, -490.0f, 0.0f });
 
     m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
     m_grobu.SetPosition({ 830.0f, -400.0f, 0.0f });
+
+    //m_10.Init("Assets/sprite/10.dds", 1250.0f, 850.0f);
+    //m_10.SetPosition({ 500.0f, -50.0f, 0.0f });
+
+    //m_45.Init("Assets/sprite/45.dds", 1380.0f, 930.0f);
+    //m_45.SetPosition({ 490.0f, -50.0f, 0.0f });
+
+    //m_100.Init("Assets/sprite/100.dds", 1070.0f, 770.0f);
+    //m_100.SetPosition({ 500.0f, -50.0f, 0.0f });
+
+    //m_gurusai.Init("Assets/sprite/gurugurusaidai.dds", 1450.0f, 1050.0f);
+    //m_gurusai.SetPosition({ 130.0f,20.0f, 0.0f });
+
+    //m_risuku.Init("Assets/sprite/risuku.dds", 1350.0f, 1050.0f);
+    //m_risuku.SetPosition({ 5.0f,20.0f, 0.0f });
+
+    //m_hosi1.Init("Assets/sprite/hosi.dds", 1400.0f, 950.0f);
+    //m_hosi1.SetPosition({ -20.0f, 0.0f, 0.0f });
+
+    //m_hosi2.Init("Assets/sprite/hosi.dds", 1400.0f, 950.0f);
+    //m_hosi2.SetPosition({ 80.0f, 0.0f, 0.0f });
+
+    //m_hosi3.Init("Assets/sprite/hosi.dds", 1400.0f, 950.0f);
+    //m_hosi3.SetPosition({180.0f, 0.0f, 0.0f });
+
+    //m_hosikara1.Init("Assets/sprite/hosikara.dds", 1420.0f, 970.0f);
+    //m_hosikara1.SetPosition({ 10.0f, 0.0f, 0.0f });
+
+    //m_hosikara2.Init("Assets/sprite/hosikara.dds", 1420.0f, 970.0f);
+    //m_hosikara2.SetPosition({ 110.0f, 0.0f, 0.0f });
+
+    //m_henka.Init("Assets/sprite/hennkakyuu.dds", 1300.0f, 970.0f);
+    //m_henka.SetPosition({ -100.0f, 28.0f, 0.0f });
+
+    //m_ball1.Init("Assets/sprite/ballfull.dds", 470.0f, 350.0f);
+    //m_ball1.SetPosition({ -350.0f, -15.0f, 0.0f });
+
+    //m_ball2.Init("Assets/sprite/ballfull.dds", 470.0f, 350.0f);
+    //m_ball2.SetPosition({ -250.0f, -15.0f, 0.0f });
+
+    //m_ball3.Init("Assets/sprite/ballfull.dds", 470.0f,350.0f);
+    //m_ball3.SetPosition({ -150.0f, -15.0f, 0.0f });
+
+    //m_karaball1.Init("Assets/sprite/karaball.dds", 470.0f, 350.0f);
+    //m_karaball1.SetPosition({ -250.0f, -15.0f, 0.0f });
+
+    //m_karaball2.Init("Assets/sprite/karaball.dds", 470.0f, 350.0f);
+    //m_karaball2.SetPosition({ -150.0f, -15.0f, 0.0f });
+
+    //m_kuro.Init("Assets/sprite/kuro.dds", 3.0f, 300.0f);
+    //m_kuro.SetPosition({ -70.0f, 20.0f, 0.0f });
+
+    //m_kuro2.Init("Assets/sprite/kuro.dds", 3.0f, 300.0f);
+    //m_kuro2.SetPosition({ 300.0f, 20.0f, 0.0f });
 
     m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
 
@@ -220,6 +277,9 @@ void TiterUI::Render(RenderContext& rc)
 
         m_option2.Update();
         m_option2.Draw(rc);
+
+        m_Ade.Update();
+        m_Ade.Draw(rc);
     }
     else if (m_state == State_DifficultySelect) {
         m_nanido.Update();
@@ -238,19 +298,86 @@ void TiterUI::Render(RenderContext& rc)
         case 0: // Easy
             m_easyDetail.Update();
             m_easyDetail.Draw(rc);
+          /*  m_10.Update();
+            m_10.Draw(rc);
+            m_hosi1.Update();
+            m_hosi1.Draw(rc);
+
+            m_hosikara1.Update();
+            m_hosikara1.Draw(rc);
+
+            m_hosikara2.Update();
+            m_hosikara2.Draw(rc);
+
+            m_ball1.Update();
+            m_ball1.Draw(rc);
+
+            m_karaball1.Update();
+            m_karaball1.Draw(rc);
+
+            m_karaball2.Update();
+            m_karaball2.Draw(rc);*/
             break;
         case 1: // Normal
             m_normalDetail.Update();
             m_normalDetail.Draw(rc);
+          /*  m_45.Update();
+            m_45.Draw(rc);
+            m_hosi1.Update();
+            m_hosi1.Draw(rc);
+            m_hosi2.Update();
+            m_hosi2.Draw(rc);
+            m_hosikara2.Update();
+            m_hosikara2.Draw(rc);
+
+            m_ball1.Update();
+            m_ball1.Draw(rc);
+
+            m_ball2.Update();
+            m_ball2.Draw(rc);
+
+            m_karaball2.Update();
+            m_karaball2.Draw(rc);*/
             break;
         case 2: // Hard
             m_hardDetail.Update();
             m_hardDetail.Draw(rc);
+          /*  m_100.Update();
+            m_100.Draw(rc);
+            m_hosi1.Update();
+            m_hosi1.Draw(rc);
+            m_hosi2.Update();
+            m_hosi2.Draw(rc);
+            m_hosi3.Update();
+            m_hosi3.Draw(rc);
+            m_ball1.Update();
+            m_ball1.Draw(rc);
+
+            m_ball2.Update();
+            m_ball2.Draw(rc);
+
+            m_ball3.Update();
+            m_ball3.Draw(rc);*/
             break;
         }
 
         m_nanido3.Update();
         m_nanido3.Draw(rc);
+
+     /*   m_gurusai.Update();
+        m_gurusai.Draw(rc);
+
+        m_risuku.Update();
+        m_risuku.Draw(rc);
+
+        m_henka.Update();
+        m_henka.Draw(rc);*/
+
+      /*  m_kuro.Update();
+        m_kuro.Draw(rc);
+
+        m_kuro2.Update();
+        m_kuro2.Draw(rc);*/
 
        /* m_nanido2.Update();
         m_nanido2.Draw(rc);*/

@@ -78,7 +78,7 @@ void SoundManager::Update()
 	}
 }
 
-SoundSource* SoundManager::PlayingSound(Sound number,bool isLoop,float volume)
+SoundSource* SoundManager::PlayingSound(Sound number, bool isLoop, float volume)
 {
 	// すでに同じBGMが流れているなら再生しない（継続）
 	if (m_nowPlayingBGM == number && g_bgm != nullptr) {
@@ -91,34 +91,56 @@ SoundSource* SoundManager::PlayingSound(Sound number,bool isLoop,float volume)
 		g_bgm = nullptr;
 	}
 
+	float masterScale = m_masterVolume / 100.0f;
+	float finalVolume = volume * masterScale;   // ★ マスター音量を掛ける
 
 	SoundSource* sound = NewGO<SoundSource>(0);
-	//引数で受け取ったnumberはsoundFileNameListの要素番号に対応しています。
-	sound->Init(number);     //サウンドの初期化。
-	sound->SetVolume(volume);//音量の設定。
-	sound->Play(isLoop);     //サウンドの再生。
-	//戻り値にSoundSourceのインスタンスを設定。
-	//呼び出し元で、
-	//SoundSource* sound = sound->PlayingSound(Sound::enSound_TitleBGM);
-	//と書くとインスタンスのアドレスを受け取ることができます。
+	sound->Init(number);
+	sound->SetVolume(finalVolume);              // ★ 修正
+	sound->Play(isLoop);
 
-	   g_bgm = sound;
-    m_nowPlayingBGM = number;
+	g_bgm = sound;
+	m_nowPlayingBGM = number;
 
 	return sound;
 }
 
-// ▼▼ 追加：マスターボリュームの設定関数 ▼▼
+// SoundManager.cpp
+
 void SoundManager::SetMasterVolume(float vol) {
 	m_masterVolume = vol;
 
-	// マスター音量が変わったら、現在流れているBGMの音量も再計算して反映する
+	// ▼ BGM の再計算
+	SetBGMVolume(m_bgmVolume);
+
+	float v = m_seVolume / 100.0f;
+	float curved = powf(v, 1.3f);
+	float masterScale = m_masterVolume / 100.0f;
+
+	// ▼ SE2 の再計算
+	if (m_se2) {
+		if (m_masterVolume <= 0.0f) {
+			m_se2->SetVolume(0.0f);   // ★ 完全ミュート
+		}
+		else {
+			m_se2BaseVolume = curved * 3.0f * masterScale;
+			m_se2->SetVolume(m_se2BaseVolume);
+		}
+	}
+
+	// ▼ ★ 追加：再生中の BGM を完全ミュート
 	if (g_bgm) {
-		SetBGMVolume(m_bgmVolume);
+		if (m_masterVolume <= 0.0f) {
+			g_bgm->SetVolume(0.0f);   // ★ 完全ミュート
+		}
+		else {
+			float v2 = m_bgmVolume / 100.0f;
+			float curved2 = powf(v2, 1.5f);
+			g_bgm->SetVolume(curved2 * masterScale);
+		}
 	}
 }
 
-// ▼▼ 修正：BGM音量設定（マスター音量を掛け合わせる） ▼▼
 void SoundManager::SetBGMVolume(float vol) {
 	m_bgmVolume = vol;
 
@@ -229,5 +251,13 @@ void SoundManager::FadeOutSE2(float durationSec)
 	m_se2FadeTimer = 0.0f;
 
 	m_se2StartVolume = m_se2->GetVolume();
+}
+
+// SoundManager.cpp に追加
+float SoundManager::GetCalculatedBGMVolume(float volumePercent) {
+	float v = m_bgmVolume / 100.0f;
+	float curved = powf(v, 1.5f);
+	float masterScale = m_masterVolume / 100.0f;
+	return curved * masterScale;
 }
 
