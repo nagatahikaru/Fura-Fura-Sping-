@@ -26,7 +26,7 @@ bool Ball::Start()
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
 	m_modelRender.SetScale({ 8.5f,8.5f,8.5f });
 
-	m_position = { -60.0f, 600.0f, 500.0f };
+	m_position = { -60.0f, 650.0f, 1000.0f };
 	m_throwStartPos = m_position;
 	m_throwEndPos = m_position;
 	m_modelRender.SetPosition(m_position);
@@ -68,7 +68,7 @@ void Ball::Update()
 
         m_throwTimer += dt;
 
-        if (m_throwTimer >= 3.4f && !m_isMove)
+        if (m_throwTimer >= 3.5f && !m_isMove)
         {
             ResetBall();
 

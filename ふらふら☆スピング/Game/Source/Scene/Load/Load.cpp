@@ -34,6 +34,10 @@ bool Load::Start()
     m_guB.SetPosition({ 757.5f, -300.0f, 0.0f });
     m_guA.Init("Assets/sprite/guruguruF.dds", 250.0f, 250.0f);
     m_guA.SetPosition({ 777.5f, -300.0f, 0.0f });
+    m_koke.Init("Assets/sprite/gurugurukoke.dds", 250.0f, 250.0f);
+    m_koke.SetPosition({ 777.5f, -300.0f, 0.0f });
+    m_siri.Init("Assets/sprite/gurugurusiri.dds", 250.0f, 250.0f);
+    m_siri.SetPosition({ 777.5f, -300.0f, 0.0f });
     NewGO<LoadUI>(0, "loadUI");
     return true;
 }
@@ -44,6 +48,8 @@ void Load::Update()
     if (m_waitFrame < 1) {
         m_gaugeFill.SetMulColor({ 1,1,1,0 });
         m_grobu.SetMulColor({ 1,1,1,0 });
+        m_koke.SetMulColor({ 1, 1, 1,0});
+        m_siri.SetMulColor({ 1, 1, 1, 0});
         m_B.SetMulColor({ 1,1,1,0 });
         m_guL.SetMulColor({ 1, 1, 1, 1 });
         m_guA.SetMulColor({ 1,1,1,0 });
@@ -61,19 +67,41 @@ void Load::Update()
             g_soundManager->PlayingSound(enSound_GameBGM1, true, powf(v, 1.5f));
             m_bgmStarted = true;
         }
-        m_guL.SetPosition({ 785.0f, -400.0f, 0.0f });
-        m_guR.SetPosition({ 830.0f, -400.0f, 0.0f });
-        m_guB.SetPosition({ 787.5f, -400.0f, 0.0f });
-        m_guA.SetPosition({ 807.5f, -400.0f, 0.0f });
-        // --- 🌟 A・B・L・R のループ点滅処理 ---
-        m_timer++;
-        m_guL.SetMulColor({ 1, 1, 1, (m_timer >= 0 && m_timer < 5) ? 1.0f : 0.0f });
-        m_guA.SetMulColor({ 1, 1, 1, (m_timer >= 5 && m_timer < 10) ? 1.0f : 0.0f });
-        m_guR.SetMulColor({ 1, 1, 1, (m_timer >= 10 && m_timer < 15) ? 1.0f : 0.0f });
-        m_guB.SetMulColor({ 1, 1, 1, (m_timer >= 15 && m_timer < 20) ? 1.0f : 0.0f });
 
-        if (m_timer >= 20) {
-            m_timer = 0; // 80フレームでループリセット
+        if (m_isHappened) {
+            m_koke.SetMulColor({ 1, 1, 1, (m_luckyImage == 1) ? 1.0f : 0.0f });
+            m_siri.SetMulColor({ 1, 1, 1, (m_luckyImage == 2) ? 1.0f : 0.0f });
+            m_guL.SetPosition({ 755.0f, -400.0f, 0.0f });
+            m_guR.SetPosition({ 800.0f, -400.0f, 0.0f });
+            m_guB.SetPosition({ 757.5f, -400.0f, 0.0f });
+            m_guA.SetPosition({ 777.5f, -400.0f, 0.0f });
+            m_koke.SetPosition({ 777.5f, -400.0f, 0.0f });
+            m_siri.SetPosition({ 777.5f, -400.0f, 0.0f });
+            m_guL.SetMulColor({ 0, 0, 0, 0 });
+            m_guA.SetMulColor({ 0, 0, 0, 0 });
+            m_guR.SetMulColor({ 0, 0, 0, 0 });
+            m_guB.SetMulColor({ 0, 0, 0, 0 });
+            m_guruguru.SetMulColor({ 0, 0, 0, 0 });
+        }
+        else {
+            // --- 通常の点滅処理と抽選 ---
+            m_timer++;
+
+            // 切り替わりの瞬間に30%の抽選
+            if (m_timer == 0 || m_timer == 5 || m_timer == 10 || m_timer == 15) {
+                if ((rand() % 100) < 30) {
+                    m_isHappened = true;
+                    m_luckyImage = (rand() % 2) + 1; // 1:koke, 2:siri
+                }
+            }
+
+            // 通常の点滅
+            m_guL.SetMulColor({ 1, 1, 1, (m_timer >= 0 && m_timer < 5) ? 1.0f : 0.0f });
+            m_guA.SetMulColor({ 1, 1, 1, (m_timer >= 5 && m_timer < 10) ? 1.0f : 0.0f });
+            m_guR.SetMulColor({ 1, 1, 1, (m_timer >= 10 && m_timer < 15) ? 1.0f : 0.0f });
+            m_guB.SetMulColor({ 1, 1, 1, (m_timer >= 15 && m_timer < 20) ? 1.0f : 0.0f });
+
+            if (m_timer >= 20) m_timer = 0;
         }
 
         // 🌟 ボタン押し込み（一気に縮小 → 元に戻る）演出用の変数
@@ -121,7 +149,8 @@ void Load::Update()
         if (g_pad[0]->IsTrigger(enButtonA)) {
             if (!m_bgmStarted) {
                 float v = g_soundManager->m_bgmVolume / 100.0f;
-                g_soundManager->PlayingSound(enSound_GameBGM1, true, powf(v, 1.5f));
+                float curved = powf(v, 1.5f);
+                g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
                 m_bgmStarted = true;
             }
 
@@ -292,6 +321,12 @@ void Load::Render(RenderContext& rc)
 
     m_guA.Update();
     m_guA.Draw(rc);
+
+    m_koke.Update();
+    m_koke.Draw(rc);
+
+    m_siri.Update();
+    m_siri.Draw(rc);
 
    /* m_grobu.Update();
     m_grobu.Draw(rc);*/

@@ -224,5 +224,7 @@ private:
 	SpriteRender m_easySprite;
 	SpriteRender m_normalSprite;
 	SpriteRender m_hardSprite;
+	SpriteRender m_guruE;
+	SpriteRender m_guruN;
 	Game* m_game = nullptr;
 };

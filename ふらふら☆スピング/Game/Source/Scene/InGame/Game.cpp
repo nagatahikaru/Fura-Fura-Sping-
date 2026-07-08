@@ -428,7 +428,7 @@ void Game::Update()
 		}
 
 		// ★ リプレイのインデックスを毎フレーム1ずつ確実に進める
-		m_replayStartFrame++;
+		m_replayStartFrame ++;
 		m_replayTimer += g_gameTime->GetFrameDeltaTime();
 
 		if (m_replayTimer >= m_replayDuration || m_replayStartFrame >= path.size()) {
