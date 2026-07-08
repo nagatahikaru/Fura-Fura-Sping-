@@ -40,7 +40,7 @@ bool TiterUI::Start()
     m_ranking2.SetPosition({ 0.0f, -300.0f, 0.0f });
 
     m_Ade.Init("Assets/sprite/Ade.dds", 220.0f, 170.0f);
-    m_Ade.SetPosition({ 830.0f, -490.0f, 0.0f });
+    m_Ade.SetPosition({ 800.0f, -450.0f, 0.0f });
 
     // ▼ 難易度選択用UI（TransitionUIから引越し）
     m_easySprite.Init("Assets/sprite/Difficulty_Easy.dds", 400.0f, 400.0f);
@@ -49,16 +49,16 @@ bool TiterUI::Start()
     m_normalSprite.Init("Assets/sprite/Difficulty_Normal.dds", 360.0f, 360.0f);
     m_normalSprite.SetPosition({ 0.0f, -320.0f, 0.0f });
 
-    m_hardSprite.Init("Assets/sprite/Difficulty_Hard.dds", 335.0f, 335.0f);
+    m_hardSprite.Init("Assets/sprite/Difficulty_Hard.dds", 290.0f, 290.0f);
     m_hardSprite.SetPosition({ 480.0f, -320.0f, 0.0f });
 
-    m_easyDetail.Init("Assets/sprite/Detail_Easy.dds", 1590.0f, 1180.0f);
-    m_easyDetail.SetPosition({ 0.0f, -5.0f, 0.0f });
+    m_easyDetail.Init("Assets/sprite/Detail_Easy.dds", 2000.0f, 1200.0f);
+    m_easyDetail.SetPosition({ -11.5f, -3.5f, 0.0f });
 
-    m_normalDetail.Init("Assets/sprite/Detail_Normal.dds", 1600.0f, 1250.0f);
-    m_normalDetail.SetPosition({ -3.0f, -10.0f, 0.0f });
+    m_normalDetail.Init("Assets/sprite/Detail_Normal.dds", 2000.0f, 1270.0f);
+    m_normalDetail.SetPosition({ 0.0f, 0.0f, 0.0f });
 
-    m_hardDetail.Init("Assets/sprite/Detail_Hard.dds", 1600.0f, 1280.0f);
+    m_hardDetail.Init("Assets/sprite/Detail_Hard.dds", 2000.0f, 1270.0f);
     m_hardDetail.SetPosition({ 0.0f, 0.0f, 0.0f });
 
     m_nanido.Init("Assets/sprite/nanido.dds", 600.0f, 600.0f);
@@ -71,7 +71,7 @@ bool TiterUI::Start()
     m_nanido3.SetPosition({ 0.0f, 250.0f, 0.0f });
 
     m_B.Init("Assets/sprite/Bback.dds", 220.0f, 170.0f);
-    m_B.SetPosition({ 830.0f, -490.0f, 0.0f });
+    m_B.SetPosition({ 800.0f, -450.0f, 0.0f });
 
     m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
     m_grobu.SetPosition({ 830.0f, -400.0f, 0.0f });
