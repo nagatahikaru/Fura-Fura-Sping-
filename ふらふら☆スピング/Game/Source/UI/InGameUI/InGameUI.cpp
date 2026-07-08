@@ -18,7 +18,7 @@ InGameUI::InGameUI() {
 	m_kiiro1.Init("Assets/sprite/kiiro.DDS",880.0f, 600.0f);
 	m_kiiro2.Init("Assets/sprite/kiiro.DDS", 880.0f, 600.0f);
 	m_kiiro3.Init("Assets/sprite/kiiro.DDS", 880.0f, 600.0f);
-	m_besu.Init("Assets/sprite/besu.DDS", 450.0f, 350.0f);
+	m_besu.Init("Assets/sprite/besu.DDS", 550.0f, 450.0f);
 	m_baisoku.Init("Assets/sprite/baisoku.DDS", 350.0f, 350.0f);
 	m_shuchusen.Init("Assets/sprite/shuchusen.DDS", 1920.0f, 1080.0f);
 	m_shuchusen.SetPosition(Vector3{ 0.0f, 0.0f, 0.0f });
@@ -58,9 +58,11 @@ InGameUI::InGameUI() {
 	m_kakunin.Init("Assets/sprite/kakunin.DDS", 400.0f, 300.0f);
 	m_kakin.Init("Assets/sprite/kakin.DDS", 500.0f, 500.0f);
 	m_kiroku.Init("Assets/sprite/kiiro.DDS", 880.0f, 820.0f);
-	m_easySprite.Init("Assets/sprite/Difficulty_Easy.DDS", 250.0f, 250.0f);
-	m_normalSprite.Init("Assets/sprite/Difficulty_Normal.DDS", 180.0f, 180.0f);
-	m_hardSprite.Init("Assets/sprite/Difficulty_Hard.DDS", 200.0f, 130.0f);
+	m_easySprite.Init("Assets/sprite/Difficulty_Easy.DDS", 400.0f, 400.0f);
+	m_normalSprite.Init("Assets/sprite/Difficulty_Normal.DDS", 320.0f, 320.0f);
+	m_hardSprite.Init("Assets/sprite/Difficulty_Hard.DDS", 350.0f, 280.0f);
+	m_guruE.Init("Assets/sprite/guruguruE.DDS", 300.0f, 300.0f);
+	m_guruN.Init("Assets/sprite/guruguruN.DDS", 300.0f, 295.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -536,16 +538,54 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spriteRenderMeet.Update();
 		m_spriteRenderMeet.Draw(rc);
 
-		m_kuro.SetPosition(Vector3{ -800.0f,-70.0f,0.0f });
+		m_kuro.SetPosition(Vector3{ -800.0f,-280.0f,0.0f });
 		m_kuro.SetMulColor({ 0,0,0,0.5 });
 		m_kuro.Update();
 		m_kuro.Draw(rc);
 
-		m_gurahu.SetPosition(Vector3{ -800.0f,-70.0f,0.0f });
-		m_gurahu.Update();
-		m_gurahu.Draw(rc);
 
-		m_keisuu.SetPosition(Vector3{ -800.0f,120.0f,0.0f });
+		if (game) {
+			Difficulty diff = game->GetDifficulty();
+			SpriteRender* pDiffSprite = nullptr;
+			SpriteRender* pDiffSprite2 = nullptr;
+			// 現在の難易度に応じて描画するスプライトを決定
+			if (diff == Difficulty::Easy) {
+				pDiffSprite2 = &m_guruE;
+			}
+			else if (diff == Difficulty::Normal) {
+				pDiffSprite2 = &m_guruN;
+			}
+			else if (diff == Difficulty::Hard) { // 必要に応じて異なるDifficulty列挙型に合わせてください
+				pDiffSprite = &m_gurahu;
+			}
+
+			// スプライトが存在すれば位置を設定して描画
+			if (pDiffSprite) {
+				// 表示位置（画面左上あたり、バスカットや残り球数の邪魔にならない位置に調整してください）
+				pDiffSprite->SetPosition(Vector3{ -800.0f,-280.0f,0.0f });
+				pDiffSprite->Update();
+				pDiffSprite->Draw(rc);
+			}
+			if (pDiffSprite2) {
+				pDiffSprite2->SetPosition(Vector3{ -800.0f,-290.0f,0.0f });
+				pDiffSprite2->Update();
+				pDiffSprite2->Draw(rc);
+			}
+		}
+
+		//m_gurahu.SetPosition(Vector3{ -800.0f,-280.0f,0.0f });
+		//m_gurahu.Update();
+		//m_gurahu.Draw(rc);
+
+		//m_guruE.SetPosition(Vector3{ -800.0f,-280.0f,0.0f });
+		//m_guruE.Update();
+		//m_guruE.Draw(rc);
+
+		//m_guruN.SetPosition(Vector3{ -800.0f,-280.0f,0.0f });
+		//m_guruN.Update();
+		//m_guruN.Draw(rc);
+
+		m_keisuu.SetPosition(Vector3{ -800.0f,-480.0f,0.0f });
 		m_keisuu.Update();
 		m_keisuu.Draw(rc);
 
@@ -559,7 +599,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 		float progressRatioX = (float)t;
 
-		Vector3 graphBasePos = Vector3{ -930.0f, -190.0f, 0.0f };
+		Vector3 graphBasePos = Vector3{ -930.0f, -400.0f, 0.0f };
 
 		Vector3 ballMapPos;
 		ballMapPos.x = graphBasePos.x + (progressRatioX * m_miniMapHeightX);
@@ -597,24 +637,24 @@ void InGameUI::Render(RenderContext& rc) {
 		// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
 		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed && !isReadyPhase)
 		{
-			m_taimingu.SetPosition(Vector3{ 800.0f, 100.0f, 0.0f });
+			m_taimingu.SetPosition(Vector3{ 800.0f, -50.0f, 0.0f });
 			m_taimingu.Update();
 			m_taimingu.Draw(rc);
 
 			// ★ 0.5秒ごとに m_isAltUI が true / false になる
 			if (m_isAltUI) {
 				// 交互UI：Aボタン2
-				m_Abotan2.SetPosition(Vector3{ 800.0f, -130.0f, 0.0f });
+				m_Abotan2.SetPosition(Vector3{ 800.0f, -233.0f, 0.0f });
 				m_Abotan2.Update();
 				m_Abotan2.Draw(rc);
 
-				m_gizagiza.SetPosition(Vector3{ 800.0f, -30.0f, 0.0f });
+				m_gizagiza.SetPosition(Vector3{ 800.0f, -180.0f, 0.0f });
 				m_gizagiza.Update();
 				m_gizagiza.Draw(rc);
 			}
 			else {
 				// 交互UI：Aボタン
-				m_Abotan.SetPosition(Vector3{ 800.0f, -130.0f, 0.0f });
+				m_Abotan.SetPosition(Vector3{ 800.0f, -233.0f, 0.0f });
 				m_Abotan.Update();
 				m_Abotan.Draw(rc);
 			}
@@ -743,21 +783,21 @@ void InGameUI::Render(RenderContext& rc) {
 
 	// 左右反転：Xスケールをマイナスにする
 		m_kiiro1.SetScale({ -1.0f, 1.0f, 1.0f });
-		m_kiiro1.SetPosition(Vector3{ -1005.0f, 470.0f, 0.0f });
+		m_kiiro1.SetPosition(Vector3{ -1005.0f, 250.0f, 0.0f });
 		m_kiiro1.Update();
 		m_kiiro1.Draw(rc);
 
 		m_kiiro2.SetScale({ -1.0f, 1.0f, 1.0f });
-		m_kiiro2.SetPosition(Vector3{ -1005.0f, 370.0f, 0.0f });
+		m_kiiro2.SetPosition(Vector3{ -1005.0f, 150.0f, 0.0f });
 		m_kiiro2.Update();
 		m_kiiro2.Draw(rc);
 
 		m_kiiro3.SetScale({ -1.0f, 1.0f, 1.0f });
-		m_kiiro3.SetPosition(Vector3{ -1005.0f, 270.0f, 0.0f });
+		m_kiiro3.SetPosition(Vector3{ -1005.0f, 50.0f, 0.0f });
 		m_kiiro3.Update();
 		m_kiiro3.Draw(rc);
 
-		m_besu.SetPosition(Vector3{ 780.0f, 360.0f, 0.0f });
+		m_besu.SetPosition(Vector3{ 740.0f, 300.0f, 0.0f });
 		m_besu.Update();
 		m_besu.Draw(rc);
 
@@ -767,7 +807,7 @@ void InGameUI::Render(RenderContext& rc) {
 			if (m_isMiss[i]) {
 				// 位置：左上あたりに縦並び（好きな位置に調整OK）
 				float baseX = -790.0f;
-				float baseY = 482.5f;
+				float baseY = 262.5f;
 
 				m_batu[i].SetPosition(Vector3{
 					baseX,
@@ -817,8 +857,8 @@ void InGameUI::Render(RenderContext& rc) {
 		wchar_t text[256];
 		swprintf_s(text, 256, L"ぐるぐる:%d", (int)m_guruGuruCount);
 		m_fontRender.SetText(text);
-		m_fontRender.SetScale(0.9);
-		m_fontRender.SetPosition(665.0f, 375.0f, 0.0f);
+		m_fontRender.SetScale(1.1);
+		m_fontRender.SetPosition(600.0f, 325.0f, 0.0f);
 		m_fontRender.Draw(rc);
 
 		wchar_t timerText[256];
@@ -827,15 +867,15 @@ void InGameUI::Render(RenderContext& rc) {
 		float displayTime = max(0.0f, m_guruGuruTimer);
 		if (isReadyPhase) {
 			swprintf_s(timerText, 256, L"スタート:%.1f", displayTime);
-			m_Count.SetScale(0.7);
+			m_Count.SetScale(0.9);
 		}
 		else {
 			// ② 通常時（バットを回している最中など）
 			swprintf_s(timerText, 256, L"タイム: %.1f", displayTime);
-			m_Count.SetScale(0.7);
+			m_Count.SetScale(1.0);
 		}
 		m_Count.SetText(timerText);
-		m_Count.SetPosition(685.0f, 430.0f, 0.0f);
+		m_Count.SetPosition(605.0f, 380.0f, 0.0f);
 		// 🌟【重要：文字色の制御】
 		if (isReadyPhase) {
 			// 操作確認フェーズ中は点滅させず、黒色でハッキリ5秒間カウントダウンさせる
@@ -852,17 +892,19 @@ void InGameUI::Render(RenderContext& rc) {
 			float blink = fabsf(sinf(displayTime * 10.0f));
 			m_Count.SetColor(1.0f, 0.0f, 0.0f, blink);
 		}
-		m_Count.Draw(rc);
+		if (displayTime > 0.0f || isReadyPhase) {
+			m_Count.Draw(rc);
+		}
 
 		if (isReadyPhase) {
-			m_kakunin.SetPosition(Vector3{ 800.0f, 80.0f, 0.0f });
+			m_kakunin.SetPosition(Vector3{ 800.0f, -60.0f, 0.0f });
 			m_kakunin.SetScale(Vector3{ m_kakuninScale, m_kakuninScale, 1.0f }); // ← 追加
 			m_kakunin.Update();
 			m_kakunin.Draw(rc);
-			m_bbb.SetPosition(Vector3{ 800.0f, -30.0f, 0.0f });
+			m_bbb.SetPosition(Vector3{ 800.0f, -180.0f, 0.0f });
 			m_bbb.Update();
 			m_bbb.Draw(rc);
-			m_bsuki.SetPosition(Vector3{ 800.0f, -130.0f, 0.0f });
+			m_bsuki.SetPosition(Vector3{ 800.0f, -280.0f, 0.0f });
 			m_bsuki.Update();
 			m_bsuki.Draw(rc);
 		}
@@ -895,7 +937,7 @@ void InGameUI::Render(RenderContext& rc) {
 				}
 			}
 
-			float y = 505.0f - i * 100.0f;  // 縦位置をずらす
+			float y = 285.0f - i * 100.0f;  // 縦位置をずらす
 
 			if (i == 0) {
 				m_fontBollRender1.SetText(buf);
@@ -972,17 +1014,17 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 
 		if (m_guruGuruTimer > 0.0 && !isReadyPhase) {
-			m_konto.SetPosition(Vector3{ 650.0f, 150.0f, 0.0f });
+			m_konto.SetPosition(Vector3{ 505.0f, 150.0f, 0.0f });
 			m_konto.Update();
 			m_konto.Draw(rc);
 
 			// ★ 矢印の回転描画
-			m_yazirusi.SetPosition(Vector3{ 650.0f, 150.0f, 0.0f }); // 位置はお好みで
+			m_yazirusi.SetPosition(Vector3{ 505.0f, 150.0f, 0.0f }); // 位置はお好みで
 			m_yazirusi.SetRotation(m_yazirusiRotation);               // ← Quaternion を渡す
 			m_yazirusi.Update();
 			m_yazirusi.Draw(rc);
 
-			m_mawase.SetPosition(Vector3{ 657.0f, -10.0f, 0.0f }); // 位置はお好みで
+			m_mawase.SetPosition(Vector3{ 512.0f, -10.0f, 0.0f }); // 位置はお好みで
 			m_mawase.Update();
 			m_mawase.Draw(rc);
 		}
@@ -993,7 +1035,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 			// 現在の難易度に応じて描画するスプライトを決定
 			if (diff == Difficulty::Easy) {
-				pDiffSprite = &m_easySprite;
+				pDiffSprite = &m_easySprite; 
 			}
 			else if (diff == Difficulty::Normal) {
 				pDiffSprite = &m_normalSprite;
@@ -1005,7 +1047,7 @@ void InGameUI::Render(RenderContext& rc) {
 			// スプライトが存在すれば位置を設定して描画
 			if (pDiffSprite) {
 				// 表示位置（画面左上あたり、バスカットや残り球数の邪魔にならない位置に調整してください）
-				pDiffSprite->SetPosition(Vector3{ 787.0f, 280.0f, 0.0f });
+				pDiffSprite->SetPosition(Vector3{ -787.0f, 400.0f, 0.0f });
 				pDiffSprite->Update();
 				pDiffSprite->Draw(rc);
 			}
@@ -1013,7 +1055,7 @@ void InGameUI::Render(RenderContext& rc) {
 	}
 
 	if (m_isBaisokuVisible) {
-		m_baisoku.SetPosition(Vector3{ -800.0f, 0.0f, 0.0f });
+		m_baisoku.SetPosition(Vector3{ -800.0f, 400.0f, 0.0f });
 		m_baisoku.Update();
 		m_baisoku.Draw(rc);
 	}

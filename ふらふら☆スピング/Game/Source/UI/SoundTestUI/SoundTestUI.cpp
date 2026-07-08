@@ -55,7 +55,7 @@ bool SoundTestUI::Start() {
     m_SE.SetPosition({ -630.0f, -100.0f, 0.0f });
 
     m_B.Init("Assets/sprite/Bback.dds", 220.0f, 170.0f);
-    m_B.SetPosition({ 830.0f, -490.0f, 0.0f });
+    m_B.SetPosition({ 800.0f, -450.0f, 0.0f });
 
     m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
     m_grobu.SetPosition({ 730.0f, -400.0f, 0.0f });

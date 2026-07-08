@@ -33,7 +33,7 @@ bool Result::Start()
 	m_rezarut.SetPosition({ 0.0f, 400.0f, 0.0f });
 
 	m_B.Init("Assets/sprite/AAA.dds", 220.0f, 170.0f);
-	m_B.SetPosition({ 830.0f, -490.0f, 0.0f });
+	m_B.SetPosition({ 800.0f, -450.0f, 0.0f });
 
 	m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
 	m_grobu.SetPosition({ 830.0f, -400.0f, 0.0f});
@@ -42,7 +42,7 @@ bool Result::Start()
 	m_burakku.SetPosition({ 190.0f, -40.0f ,0.0f });*/
 
 	m_skip.Init("Assets/sprite/Askep.dds", 220.0f, 170.0f);
-	m_skip.SetPosition({ 830.0f, -400.0f, 0.0f });
+	m_skip.SetPosition({ 800.0f, -450.0f, 0.0f });
 
 	m_newRecord.Init("Assets/sprite/new.dds", 600.0f, 600.0f);
 	m_newRecord.SetPosition({ 450, 130, 0 });
