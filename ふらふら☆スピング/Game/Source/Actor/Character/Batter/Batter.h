@@ -36,7 +36,7 @@ namespace BATTER{
     constexpr float SCREEN_WIDTH = 1920.0f;				// 画面幅（ピクセル）
     constexpr float	SCREEN_HEIGHT = 1080.0f;			// 画面高さ（ピクセル）
     constexpr float HIT_ZONE_UPPER_LIMIT = 6500.0f;		// ヒットゾーンの上限（バッターの位置からの相対距離）
-    constexpr float HIT_ZONE_LOWER_LIMIT = 6300.0f;		// ヒットゾーンの下限（バッターの位置からの相対距離）
+    constexpr float HIT_ZONE_LOWER_LIMIT = 6200.0f;		// ヒットゾーンの下限（バッターの位置からの相対距離）
     constexpr float HIT_ZONE_CENTER = 6400.0f;			// ヒットゾーンの中心（バッターの位置からの相対距離）
     constexpr float HIT_ZONE_RADIUS = 50.0f;			// 真ん中から端までの最大距離 (6080 - 6075)
     constexpr float RAD_TO_DEG = 180.0f / 3.14159265f;	//ラジアンを度に変換するための定数
@@ -62,7 +62,10 @@ private:
     std::unique_ptr<BatterStateMachine> m_stateMachine;                 // バッターステート管理   
     std::unique_ptr<DebuffStageStateMachine> m_debuffStageStateMachine; // デバフステート管理    
     std::unique_ptr<nsApp::CharacterModel> m_characterModel;            // キャラクターモデル
-
+    Vector3 m_posIdle = Vector3(-420.0f, -90.0f, 5500.0f);
+    Vector3 m_posSwingGo = Vector3(-420.0f, -40.0f, 5500.0f);
+    Vector3 m_posSwing = Vector3(-420.0f, -40.0f, 5500.0f); 
+    void UpdateModelPosition();
     Game* m_game = nullptr;                                             // ゲーム本体    
     InGameUI* m_inGameUI = nullptr;                                     // UI   
     Ball* m_ball = nullptr;                                             // ボール

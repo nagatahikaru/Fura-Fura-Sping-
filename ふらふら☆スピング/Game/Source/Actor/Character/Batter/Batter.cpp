@@ -135,6 +135,22 @@ bool Batter::Start()
 	return true;
 }
 
+void Batter::UpdateModelPosition()
+{
+	// リプレイ中・ポーズ中はモデルの強制移動を行わない
+	if (m_game && (m_game->IsReplayPlaying() || m_game->m_isPaused)) {
+		return;
+	}
+	if (IsSwingAnimationPlaying()) {
+		m_characterModel->SetPosition(m_posSwing);
+	}
+	else if (IsSwingGoAnimationPlaying()) {
+		m_characterModel->SetPosition(m_posSwingGo);
+	}
+	else if (!m_isRotation) {
+		m_characterModel->SetPosition(m_posIdle);
+	}
+}
 void Batter::Update()
 {
 	if(m_isPaused)
@@ -173,7 +189,7 @@ void Batter::Update()
 		g_effectManager->AllStopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
-	
+	UpdateModelPosition();
 	// バッターのステートマシンを更新
 	m_stateMachine->Update();
 	// ★ フラグが切り替わったら、ぐるぐるバットの処理を行う
