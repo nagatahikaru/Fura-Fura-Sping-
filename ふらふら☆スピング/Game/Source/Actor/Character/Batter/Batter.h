@@ -273,8 +273,6 @@ public:
     void SetMeatRange(float range)
     {
         m_meatRange = range;
-        DebugLogFloat("range", range);
-        DebugLogFloat("m_meatRange", m_meatRange);
     }
 
     // カーソル移動の遅延

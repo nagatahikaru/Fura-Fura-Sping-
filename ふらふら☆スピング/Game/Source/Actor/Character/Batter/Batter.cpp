@@ -225,10 +225,10 @@ void Batter::Rotation()
 
 	//////////////////////////
 	//コントローラー操作
-	//左スティックの入力量を取得
+	//右スティックの入力量を取得
 	Vector3 stickL = Vector3::Zero;
-	stickL.x = g_pad[0]->GetLStickXF();
-	stickL.y = g_pad[0]->GetLStickYF();
+	stickL.x = g_pad[0]->GetRStickXF();
+	stickL.y = g_pad[0]->GetRStickYF();
 
 	float inputAngle = atan2f(stickL.y, stickL.x); // 入力角度を計算
 
