@@ -109,6 +109,7 @@ void LoadUI::Update()
     {
     case 0:
         m_sannkaku.SetMulColor({ 1,1,1,1 }); // 右だけ
+        m_gyakusann.SetMulColor({ 1,1,1,1 });
         break;
 
     case 1:
@@ -119,6 +120,7 @@ void LoadUI::Update()
         break;
 
     case 4:
+        m_sannkaku.SetMulColor({ 1,1,1,1 });
         m_gyakusann.SetMulColor({ 1,1,1,1 }); // 左だけ
         break;
     }
