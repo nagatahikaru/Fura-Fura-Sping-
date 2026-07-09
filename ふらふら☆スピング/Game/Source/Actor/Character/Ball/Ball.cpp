@@ -68,7 +68,7 @@ void Ball::Update()
 
         m_throwTimer += dt;
 
-        if (m_throwTimer >= 3.5f && !m_isMove)
+        if (m_throwTimer >= 3.4f && !m_isMove)
         {
             ResetBall();
 
