@@ -37,10 +37,11 @@ public:
         }
 	}
 
-    void RebuildStage(int level,int rotationCount)
+    void RebuildStage(int level,int rotationCount,Batter*batter)
     {
         if (m_stage)
         {
+            m_stage->SetInGameUI(batter);
             m_stage->ClearPatterns();
             m_stage->SetRotationCount(rotationCount);
             m_stage->BuildStage(level);

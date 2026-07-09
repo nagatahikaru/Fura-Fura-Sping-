@@ -65,7 +65,7 @@ void DebuffStageState::Enter()
 		return;
 	batter->ResetCursorOffset();
 	debuffStageManager->ClearPatterns();
-	debuffStageManager->RebuildStage(m_stageLevel, batter->GetGuruGuru());
+	debuffStageManager->RebuildStage(m_stageLevel, batter->GetGuruGuru(),batter);
 
 }
 
@@ -102,7 +102,7 @@ void DebuffStageState::Update()
 		m_stageLevel = level;
 		debuffStageManager->Initialize(batter);
 		debuffStageManager->ClearPatterns();
-		debuffStageManager->RebuildStage(m_stageLevel, batter->GetGuruGuru());
+		debuffStageManager->RebuildStage(m_stageLevel, batter->GetGuruGuru(), batter);
 	}
 
 	debuffStageManager->Update(batter);
