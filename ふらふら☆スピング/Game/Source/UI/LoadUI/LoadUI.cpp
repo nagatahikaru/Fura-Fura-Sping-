@@ -34,26 +34,39 @@ void LoadUI::Update()
 
     bool movedRight = false;
     bool movedLeft = false;
-    if (g_pad[0]->IsTrigger(enButtonRight) || m_timer >= 5.0f) {
+    static bool canMoveX = true;
 
-        m_currentTip++; // ページを1つ進める
+    float stickX = g_pad[0]->GetLStickXF();
+
+    if (fabsf(stickX) < 0.3f)
+    {
+        canMoveX = true;
+    }
+
+    // 右
+    if ((canMoveX && stickX > 0.5f) || m_timer >= 5.0f)
+    {
+        m_currentTip++;
 
         if (m_currentTip >= (int)m_tips.size()) {
             m_currentTip = 0;
         }
 
         movedRight = true;
+        canMoveX = false;
         m_timer = 0.0f;
     }
-    else if (g_pad[0]->IsTrigger(enButtonLeft)) {
-
-        m_currentTip--; // ページを1つ戻す
+    // 左
+    else if (canMoveX && stickX < -0.5f)
+    {
+        m_currentTip--;
 
         if (m_currentTip < 0) {
             m_currentTip = (int)m_tips.size() - 1;
         }
 
         movedLeft = true;
+        canMoveX = false;
         m_timer = 0.0f;
     }
     // 右に動いた瞬間
