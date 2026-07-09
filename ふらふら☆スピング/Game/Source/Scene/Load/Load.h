@@ -1,6 +1,7 @@
 #pragma once
+#include "Source/Source.h"
 #include "Source/Scene/InGame/Game.h"
-class Load : public IGameObject
+class Load : public Source
 {
 public:
     bool Start() override;
@@ -9,7 +10,6 @@ public:
     void SetDifficulty(Difficulty diff) { m_difficulty = diff; }
 private:
     SpriteRender m_spriteRender;
-
     SpriteRender m_gaugeFill;   // 中身（伸びる）
     SpriteRender m_gaugeFrame;  // 枠（固定）
     SpriteRender m_guruguru;

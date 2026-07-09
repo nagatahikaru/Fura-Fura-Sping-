@@ -7,7 +7,7 @@
 #include"Source/Sound/SoundManager.h"
 #include "Source/Effect/EffectManager.h"
 #include "Source/Actor/GameCamera/GameCamera.h"
-#include "Debuff/DebuffStage/DebuffStage.h"
+#include "Debuff/DebuffStage/DebuffStageManager.h"
 #include <algorithm> // 追加
 #include <deque>
 
@@ -58,7 +58,7 @@ Batter::~Batter()
 	
 	m_stateMachine->SetBatter(nullptr);
 	m_debuffStageStateMachine->SetBatter(nullptr);
-	delete m_debuffStage;
+	delete m_debuffStageManager;
 	if (g_effectManager) {
 		g_effectManager->AllStopEffect();
 	}
@@ -112,8 +112,8 @@ bool Batter::Start()
 
 	m_stateMachine->SetBatter(this);
 	m_debuffStageStateMachine->SetBatter(this);
-	m_debuffStage = new DebuffStage;
-	m_debuffStageStateMachine->SetDebuffStage(m_debuffStage->GetDebuffStage());
+	m_debuffStageManager = new DebuffStageManager();
+	m_debuffStageStateMachine->SetDebuffStageManager(m_debuffStageManager->GetDebuffStageManager());
 	m_characterController.SetPosition(m_transform.m_position);
 	m_initialRotation = m_transform.m_rotation;
 
@@ -281,11 +281,14 @@ void Batter::RoundAndRoundBat()
 	m_guruGuruBatTimer -= g_gameTime->GetFrameDeltaTime();
 	// ★ UI に残り時間を送る
 	if (m_inGameUI) {
+		m_inGameUI->SetIsScoreMagnificationChanged(true);
 		m_inGameUI->SetGuruGuruTimer(m_guruGuruBatTimer);
+		m_inGameUI->MagnificationCalculation();
 	}
 	// ★ タイマーが0以下になったら、回転をリセットしてカーソル操作を可能にする
 	if (m_guruGuruBatTimer <= 0.0f)
 	{
+		m_inGameUI->SetIsScoreMagnificationChanged(false);
 		m_guruGuruBatTimer = 0.0f;
 		SetRotationSeen(false);
 		m_game->SetRotationSeen(false);
