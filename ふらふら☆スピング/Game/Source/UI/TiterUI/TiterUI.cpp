@@ -61,7 +61,7 @@ bool TiterUI::Start()
     m_hardDetail.Init("Assets/sprite/Detail_Hard.dds", 2000.0f, 1270.0f);
     m_hardDetail.SetPosition({ 0.0f, 0.0f, 0.0f });
 
-    m_nanido.Init("Assets/sprite/nanido.dds", 600.0f, 600.0f);
+    m_nanido.Init("Assets/sprite/nanido.dds", 800.0f, 600.0f);
     m_nanido.SetPosition({ 0.0f, 420.0f, 0.0f });
 
     m_nanido2.Init("Assets/sprite/nanido2.dds", 700.0f, 500.0f);
