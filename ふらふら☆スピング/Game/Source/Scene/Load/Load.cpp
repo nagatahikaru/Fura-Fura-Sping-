@@ -71,12 +71,12 @@ void Load::Update()
         if (m_isHappened) {
             m_koke.SetMulColor({ 1, 1, 1, (m_luckyImage == 1) ? 1.0f : 0.0f });
             m_siri.SetMulColor({ 1, 1, 1, (m_luckyImage == 2) ? 1.0f : 0.0f });
-            m_guL.SetPosition({ 755.0f, -400.0f, 0.0f });
-            m_guR.SetPosition({ 800.0f, -400.0f, 0.0f });
-            m_guB.SetPosition({ 757.5f, -400.0f, 0.0f });
-            m_guA.SetPosition({ 777.5f, -400.0f, 0.0f });
-            m_koke.SetPosition({ 777.5f, -400.0f, 0.0f });
-            m_siri.SetPosition({ 777.5f, -400.0f, 0.0f });
+            m_guL.SetPosition({ 755.0f, -300.0f, 0.0f });
+            m_guR.SetPosition({ 800.0f, -300.0f, 0.0f });
+            m_guB.SetPosition({ 757.5f, -300.0f, 0.0f });
+            m_guA.SetPosition({ 777.5f, -300.0f, 0.0f });
+            m_koke.SetPosition({ 777.5f, -300.0f, 0.0f });
+            m_siri.SetPosition({ 777.5f, -300.0f, 0.0f });
             m_guL.SetMulColor({ 0, 0, 0, 0 });
             m_guA.SetMulColor({ 0, 0, 0, 0 });
             m_guR.SetMulColor({ 0, 0, 0, 0 });

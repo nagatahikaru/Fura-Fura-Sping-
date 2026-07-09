@@ -74,22 +74,22 @@ void DebuffNormalStage::BuildStage(int level)
 	}
 }
 
-// Normal難易度：Shake / Magnet / Noise / Drift の4種で構成した12段階
+// Easy難易度：Shake（揺れ）とMagnet（誘導）のみで構成した10段階
 // 回転数：3～5回転
-// Easyと同じ導入。揺れデバフのみ・弱め。
+// 揺れデバフのみ・弱め。まずは違和感を感じさせる程度。
 void DebuffNormalStage::DebuffStageOne()
 {
-	auto shake = AddPattern<DebuffShakePattern>();
-	shake->SetType(DebuffShakePattern::Shake_Vertical);
-	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 0.6f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 0.6f);
+	auto magnet = AddPattern<DebuffMagnetPattern>();
+	magnet->SetType(DebuffMagnetPattern::Horizontal);
+	magnet->Reset();
+	magnet->SetRandomSpotRadius(m_rotationCount * 0.8f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 0.8f);
 
-	m_inGameUI->SetDebuffComment(L"縦揺れ(弱)");
+	m_inGameUI->SetDebuffComment(L"横誘導(弱)");
 }
 
 // 回転数：6～8回転
-// 揺れデバフを強化。
+// 揺れデバフを強化し、方向もランダムに。
 void DebuffNormalStage::DebuffStageTwo()
 {
 	auto shake = AddPattern<DebuffShakePattern>();
@@ -102,46 +102,55 @@ void DebuffNormalStage::DebuffStageTwo()
 }
 
 // 回転数：9～11回転
-// ここでノイズデバフを初登場。揺れと組み合わせる。
+// ここで誘導デバフを初登場させ、揺れと組み合わせる。
 void DebuffNormalStage::DebuffStageThree()
+{
+	auto magnet = AddPattern<DebuffMagnetPattern>();
+	magnet->SetType(DebuffMagnetPattern::Horizontal);
+	magnet->Reset();
+	magnet->SetRandomSpotRadius(m_rotationCount * 2.0f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 2.0f);
+
+	m_inGameUI->SetDebuffComment(L"横誘導(中)");
+}
+
+// 回転数：12～14回転
+// 誘導デバフ単体を左右方向に切り替え、範囲を広げる。
+void DebuffNormalStage::DebuffStageFour()
 {
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 0.8f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 0.8f);
-
-	auto noise = AddPattern<DebuffNoisePattern>();
-	noise->SetType(DebuffNoisePattern::Noise_Vertical);
-	noise->Reset();
-	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 0.7f);
-	noise->SetNoiseTimer(0.05f);
-
-	m_inGameUI->SetDebuffComment(L"揺れノイズ(弱)");
-}
-
-// 回転数：12～14回転
-// ノイズを横方向に切り替えつつ、誘導デバフを初登場させる。
-void DebuffNormalStage::DebuffStageFour()
-{
-	auto noise = AddPattern<DebuffNoisePattern>();
-	noise->SetType(DebuffNoisePattern::Noise_Horizontal);
-	noise->Reset();
-	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 0.8f);
-	noise->SetNoiseTimer(0.05f);
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.0f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.0f);
 
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Vertical);
 	magnet->Reset();
-	magnet->SetRandomSpotRadius(m_rotationCount * 0.5f);
-	magnet->SetRandomMoveDuration(m_rotationCount * 0.5f);
+	magnet->SetRandomSpotRadius(m_rotationCount * 1.0f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 1.0f);
 
-	m_inGameUI->SetDebuffComment(L"ノイズ誘導(弱)");
+	m_inGameUI->SetDebuffComment(L"揺れ誘導(中)");
+
+
 }
 
 // 回転数：15～17回転
-// 揺れ + 誘導(横)の組み合わせ。
+// 揺れ + 誘導(横)の組み合わせで負荷を上げる。
 void DebuffNormalStage::DebuffStageFive()
+{
+	auto magnet = AddPattern<DebuffMagnetPattern>();
+	magnet->SetType(DebuffMagnetPattern::Random);
+	magnet->Reset();
+	magnet->SetRandomSpotRadius(m_rotationCount * 1.2f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 1.2f);
+
+	m_inGameUI->SetDebuffComment(L"ランダム誘導(中)");
+}
+
+// 回転数：18～20回転
+// 誘導をランダム方向にし、予測しづらくする。
+void DebuffNormalStage::DebuffStageSix()
 {
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
@@ -152,22 +161,34 @@ void DebuffNormalStage::DebuffStageFive()
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Horizontal);
 	magnet->Reset();
-	magnet->SetRandomSpotRadius(m_rotationCount * 0.8f);
-	magnet->SetRandomMoveDuration(m_rotationCount * 0.8f);
+	magnet->SetRandomSpotRadius(m_rotationCount * 1.2f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 1.2f);
 
-	m_inGameUI->SetDebuffComment(L"揺れ誘導(中)");
+	m_inGameUI->SetDebuffComment(L"揺れ横誘導(中)");
 }
 
-// 回転数：18～20回転
-// ここで流されデバフを初登場させ、誘導と組み合わせる。
-void DebuffNormalStage::DebuffStageSix()
+// 回転数：21～23回転
+// 揺れ(強) + 誘導(ランダム)の同時発動。
+void DebuffNormalStage::DebuffStageSeven()
 {
-	auto drift = AddPattern<DebuffDriftPattern>();
-	drift->SetType(DebuffDriftPattern::Random);
-	drift->Reset();
-	drift->SetSpeed(drift->GetRotationRate(m_rotationCount) * 0.8f);
-	drift->SetForce(drift->GetRotationRate(m_rotationCount) * 0.8f);
-	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount) * 0.8f);
+	auto magnet = AddPattern<DebuffMagnetPattern>();
+	magnet->SetType(DebuffMagnetPattern::Random);
+	magnet->Reset();
+	magnet->SetRandomSpotRadius(m_rotationCount * 10.0f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 10.0f);
+
+	m_inGameUI->SetDebuffComment(L"ランダム誘導(強)");
+}
+
+// 回転数：24～26回転
+// 誘導デバフの範囲・頻度を最大付近まで引き上げる。
+void DebuffNormalStage::DebuffStageEight()
+{
+	auto shake = AddPattern<DebuffShakePattern>();
+	shake->SetType(DebuffShakePattern::Shake_Random);
+	shake->Reset();
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.0f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.0f);
 
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
@@ -175,70 +196,20 @@ void DebuffNormalStage::DebuffStageSix()
 	magnet->SetRandomSpotRadius(m_rotationCount);
 	magnet->SetRandomMoveDuration(m_rotationCount);
 
-	m_inGameUI->SetDebuffComment(L"流され誘導(弱)");
+	m_inGameUI->SetDebuffComment(L"揺れランダム誘導(強)");
+
+
 }
 
-// 回転数：21～23回転
-// 揺れ + ノイズ + 誘導の3種同時発動。
-void DebuffNormalStage::DebuffStageSeven()
+// 回転数：27～29回転
+// 揺れ・誘導ともにほぼ最大値に近づける。
+void DebuffNormalStage::DebuffStageNine()
 {
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
 	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.1f);
 	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.1f);
-
-	auto noise = AddPattern<DebuffNoisePattern>();
-	noise->SetType(DebuffNoisePattern::Noise_Random);
-	noise->Reset();
-	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 0.9f);
-	noise->SetNoiseTimer(0.05f);
-
-	auto magnet = AddPattern<DebuffMagnetPattern>();
-	magnet->SetType(DebuffMagnetPattern::Random);
-	magnet->Reset();
-	magnet->SetRandomSpotRadius(m_rotationCount);
-	magnet->SetRandomMoveDuration(m_rotationCount);
-
-	m_inGameUI->SetDebuffComment(L"揺れノイズ誘導(中)");
-}
-
-// 回転数：24～26回転
-// 流されデバフを強化し、ノイズと組み合わせる。
-void DebuffNormalStage::DebuffStageEight()
-{
-	auto drift = AddPattern<DebuffDriftPattern>();
-	drift->SetType(DebuffDriftPattern::Random);
-	drift->Reset();
-	drift->SetSpeed(drift->GetRotationRate(m_rotationCount) * 1.1f);
-	drift->SetForce(drift->GetRotationRate(m_rotationCount) * 1.1f);
-	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount) * 1.1f);
-
-	auto noise = AddPattern<DebuffNoisePattern>();
-	noise->SetType(DebuffNoisePattern::Noise_Random);
-	noise->Reset();
-	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 1.0f);
-	noise->SetNoiseTimer(0.05f);
-
-	m_inGameUI->SetDebuffComment(L"流されノイズ(強)");
-}
-
-// 回転数：27～29回転
-// 揺れ(強) + 流され + 誘導の組み合わせ。
-void DebuffNormalStage::DebuffStageNine()
-{
-	auto shake = AddPattern<DebuffShakePattern>();
-	shake->SetType(DebuffShakePattern::Shake_Random);
-	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.2f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.2f);
-
-	auto drift = AddPattern<DebuffDriftPattern>();
-	drift->SetType(DebuffDriftPattern::Random);
-	drift->Reset();
-	drift->SetSpeed(drift->GetRotationRate(m_rotationCount) * 1.0f);
-	drift->SetForce(drift->GetRotationRate(m_rotationCount) * 1.0f);
-	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount) * 1.0f);
 
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
@@ -246,41 +217,27 @@ void DebuffNormalStage::DebuffStageNine()
 	magnet->SetRandomSpotRadius(m_rotationCount * 1.1f);
 	magnet->SetRandomMoveDuration(m_rotationCount * 1.1f);
 
-	m_inGameUI->SetDebuffComment(L"揺れ流され誘導(強)");
+	m_inGameUI->SetDebuffComment(L"揺れランダム誘導(最大)");
 }
 
-// 回転数：30～32回転
-// Shake / Noise / Drift / Magnet の4種を初めて同時に発動。
+// 回転数：30回転以上
+// Easy最終形態。揺れ・誘導ともに最大値で襲いかかる。
 void DebuffNormalStage::DebuffStageTen()
 {
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.1f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.1f);
-
-	auto noise = AddPattern<DebuffNoisePattern>();
-	noise->SetType(DebuffNoisePattern::Noise_Random);
-	noise->Reset();
-	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 0.9f);
-	noise->SetNoiseTimer(0.05f);
-
-	auto drift = AddPattern<DebuffDriftPattern>();
-	drift->SetType(DebuffDriftPattern::Random);
-	drift->Reset();
-	drift->SetSpeed(drift->GetRotationRate(m_rotationCount) * 0.9f);
-	drift->SetForce(drift->GetRotationRate(m_rotationCount) * 0.9f);
-	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount) * 0.9f);
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.2f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.2f);
 
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
 	magnet->Reset();
-	magnet->SetRandomSpotRadius(m_rotationCount);
-	magnet->SetRandomMoveDuration(m_rotationCount);
+	magnet->SetRandomSpotRadius(m_rotationCount * 1.2f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 1.2f);
 
-	m_inGameUI->SetDebuffComment(L"揺れノイズ流され誘導(強)");
+	m_inGameUI->SetDebuffComment(L"揺れランダム誘導(極)");
 }
-
 // 回転数：33～35回転
 // 4種全部をさらに強化。
 void DebuffNormalStage::DebuffStageEleven()

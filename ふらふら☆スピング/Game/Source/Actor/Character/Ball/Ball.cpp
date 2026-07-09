@@ -386,13 +386,13 @@ void Ball::Throw(const Vector3& targetPos)
     {
         int rate = rand() % 100;
         if (rate < 70) {
-            m_ballType = Straight;          // 40% ストレート
+            m_ballType = Straight;          // 70% ストレート
         }
         else if (rate < 90) {
-            m_ballType = Curve;             // 30% カーブ
+            m_ballType = Curve;             // 20% カーブ
         }
         else {
-            m_ballType = SlowBall;          // 30% スローボール
+            m_ballType = SlowBall;          // 10% スローボール
         }
     }
     else

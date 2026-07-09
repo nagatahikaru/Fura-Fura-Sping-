@@ -16,19 +16,19 @@ enum {enMaxScoreDigit = 5};
 namespace nsUI {
 	namespace nsMagnification {
 		const Vector3 POS[enMagnification_num]= {
-			{ 860.0f, 0.0f, 0.0f },
-			{ 760.0f, 0.0f, 0.0f },
-			{ 660.0f, 0.0f, 0.0f },
-			{ 560.0f, 0.0f, 0.0f },
-			{ 460.0f, 0.0f, 0.0f },
+			{ -620.0f, -100.0f, 0.0f },
+			{ -690.0f, -100.0f, 0.0f },
+			{ -760.0f, -100.0f, 0.0f },
+			{ -830.0f, -100.0f, 0.0f },
+			{ -900.0f, -100.0f, 0.0f },
 		};
 
 		const Vector3 POS2[enMagnification_num] = {
-			{ -460.0f, 0.0f, 0.0f },
-			{ -560.0f, 0.0f, 0.0f },
-			{ -660.0f, 0.0f, 0.0f },
-			{ -760.0f, 0.0f, 0.0f },
-			{ -860.0f, 0.0f, 0.0f },
+			{ -620.0f, -100.0f, 0.0f },
+			{ -690.0f, -100.0f, 0.0f },
+			{ -760.0f, -100.0f, 0.0f },
+			{ -830.0f, -100.0f, 0.0f },
+			{ -900.0f, -100.0f, 0.0f },
 		};
 
 		constexpr int DIGIT[enMaxScoreDigit] = {
@@ -39,7 +39,7 @@ namespace nsUI {
 		constexpr int MAX = 99999;
 
 		const Vector3 SCALE = {
-			Vector3(100.0f, 100.0f, 1.0f)
+			Vector3(0.0f, 0.0f, 0.0f)
 		};
 	}
 }
@@ -274,12 +274,7 @@ private:
 	/// <returns>四捨五入されたint値。</returns>
 	/// 
 	int Round(float value) {
-		if(value >= 0.0f) {
-			return static_cast<int>(value + 0.5f);
-		}
-		else {			
-			return static_cast<int>(value - 0.5f);
-		}		
+		
 	}
 
 	// ----------------------------------------

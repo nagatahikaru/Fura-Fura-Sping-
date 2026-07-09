@@ -12,8 +12,8 @@ struct DebuffMasterData {
 
 // 難易度 [Easy, Normal, Hard] の enum 順に対応したマスタデータテーブル
 static const DebuffMasterData g_DebuffMasterTable[] = {
-	{ 3, 10 }, // Easy:   3回転で1レベル上昇、最大レベル10
-	{ 3, 12 }, // Normal: 3回転で1レベル上昇、最大レベル12
+	{ 7, 10 }, // Easy:   3回転で1レベル上昇、最大レベル10
+	{ 5, 12 }, // Normal: 3回転で1レベル上昇、最大レベル12
 	{ 3, 15 }  // Hard:   3回転で1レベル上昇、最大レベル15
 };
 

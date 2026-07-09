@@ -60,6 +60,20 @@ bool Game::Start()
 	return true;
 }
 
+int Game::GetGuruguruSEInterval() const
+{
+	switch (m_difficulty)
+	{
+	case Easy:
+		return 7;
+	case Normal:
+		return 5;
+	case Hard:
+		return 3;
+	default:
+		return 3;
+	}
+}
 
 void Game::Update()
 {
@@ -72,9 +86,9 @@ void Game::Update()
 	}
 	// ★★★ ぐるぐる 5 回刻みで SE3 を鳴らす ★★★
 	int g = GetGuruguru();
+	int seInterval = GetGuruguruSEInterval();
 
-	// 5 の倍数になった瞬間だけ鳴らす
-	if (g > 0 && g % 3 == 0 && g != m_prevGuruGuru) {
+	if (g > 0 && seInterval > 0 && g % seInterval == 0 && g != m_prevGuruGuru) {
 
 		// ★ サウンドテストで SE 音量が 0 のときは鳴らさない
 		if (g_soundManager->m_seVolume > 0) {

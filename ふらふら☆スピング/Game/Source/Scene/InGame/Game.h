@@ -53,6 +53,8 @@ public:
 		m_guruguru = count;
 	}
 
+	int GetGuruguruSEInterval() const;
+
 	bool GetRotationSeen() const
 	{
 		return m_isRotationSeen;
