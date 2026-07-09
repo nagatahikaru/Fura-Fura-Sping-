@@ -6,7 +6,7 @@
 #include "Source/Scene/InGame/Game.h"
 #include "Source/Effect/EffectManager.h"
 #include "Debuff/DebuffStageStateMachine.h"
-#include "Debuff/DebuffStage/DebuffStage.h"
+#include "Debuff/DebuffStage/DebuffStageManager.h"
 
 
 namespace BATTER{
@@ -69,7 +69,7 @@ private:
     Game* m_game = nullptr;                                             // ゲーム本体    
     InGameUI* m_inGameUI = nullptr;                                     // UI   
     Ball* m_ball = nullptr;                                             // ボール
-    DebuffStage* m_debuffStage;                                         // デバフステージ
+    DebuffStageManager* m_debuffStageManager;                                         // デバフステージ
     CollisionObject* m_collisionObject = nullptr;                       // 当たり判定    
 
     AnimationClip m_animationClips[enAnimationClip_Num];                // アニメーション配列    
@@ -479,4 +479,9 @@ public:
     {
         return m_game;
     }
+
+    InGameUI* GetInGameUI() const
+    {
+        return m_inGameUI;
+	}
 };

@@ -1,6 +1,55 @@
 ﻿#pragma once
 #include "Source/Source.h"
 class Game;
+
+enum EnMagnification {
+	enMagnification_Hundredth,
+	enMagnification_Tenth,
+	enMagnification_Singledigit,
+	enMagnification_Doubledigit,
+	enMagnification_Tripledigit,
+	enMagnification_num
+};
+
+enum {enMaxScoreDigit = 5};
+
+namespace nsUI {
+	namespace nsMagnification {
+		const Vector3 POS[enMagnification_num]= {
+			{ 860.0f, 0.0f, 0.0f },
+			{ 760.0f, 0.0f, 0.0f },
+			{ 660.0f, 0.0f, 0.0f },
+			{ 560.0f, 0.0f, 0.0f },
+			{ 460.0f, 0.0f, 0.0f },
+		};
+
+		const Vector3 POS2[enMagnification_num] = {
+			{ -460.0f, 0.0f, 0.0f },
+			{ -560.0f, 0.0f, 0.0f },
+			{ -660.0f, 0.0f, 0.0f },
+			{ -760.0f, 0.0f, 0.0f },
+			{ -860.0f, 0.0f, 0.0f },
+		};
+
+		constexpr int DIGIT[enMaxScoreDigit] = {
+			1, 10, 100, 1000, 10000
+		};
+
+		constexpr int MIN = 0;
+		constexpr int MAX = 99999;
+
+		const Vector3 SCALE = {
+			Vector3(100.0f, 100.0f, 1.0f)
+		};
+	}
+}
+
+struct Magnifcation {
+	int nowScoreMagnifcation = 0;
+	SpriteRender sprite;
+};
+
+
 class InGameUI :public Source
 {
 public:
@@ -68,7 +117,13 @@ public:
 	};
 	float m_perfectAnimTimer = 0.0f;
 	bool  m_isPerfectAnimActive = false;
-	void SetGameInstance(Game* game) { m_game = game; }
+	void SetGameInstance(Game* game) { m_game = game; }	
+	void MagnificationCalculation();
+	void SetIsScoreMagnificationChanged(bool isChanged) { m_isScoreMagnificationChanged = isChanged; }
+	void SetDebuffComment(const wchar_t* comment)
+	{
+		m_debuffComment = comment;
+	}
 private:
 	enum class UIDifficulty { Easy, Normal, Hard };
 	UIDifficulty m_uiDifficulty = UIDifficulty::Normal;
@@ -171,40 +226,7 @@ private:
 	bool m_isMiss[3] = { false, false, false }; // 空振りフラグ
 	SpriteRender m_guruguruSprite; // 例：5段階
 	// デバフ段階表示用フォント（最大15段階）
-	FontRender m_fontStage[15];
-	const wchar_t* m_stageTextEasy[3] = {
-        L"揺れ(弱)",   // 0段階
-		L"360度揺れ(弱)",       // 1段階
-		L"ランダム揺れ(弱)"       // 2段階
-	};
-
-	const wchar_t* m_stageTextNormal[7] = {
-		L"揺れ(弱)",   // 0段階
-		L"360度揺れ(弱)",       // 1段階
-		L"ランダム揺れ(弱)",         // 2段階
-		L"ランダム誘導(弱)",       // 3段階
-		L"流され誘導(弱)",         // 4段階
-		L"流され誘導(強)",       // 5段階
-		L"誘導ノイズ(強)"        // 6段階
-	};
-
-	const wchar_t* m_stageTextHard[15] = {
-		L"揺れ(弱)",   // 0段階
-		L"360度揺れ(弱)",       // 1段階
-		L"ランダム揺れ(弱)",         // 2段階
-		L"ランダム誘導(弱)",       // 3段階
-		L"流され誘導(弱)",         // 4段階
-		L"流され誘導(強)",       // 5段階
-		L"誘導ノイズ(強)",          // 6段階
-		L"ディレイ",     // 7段階
-		L"操作反転",          // 8段階
-		L"ランダム誘導ノイズ" ,  // 9段階
-		L"ランダム誘導ノイズ(強)",
-		L"ランダム誘導ノイズ(強強)",
-		L"ランダム誘導ノイズ(超強)",
-		L"ランダム誘導ノイズ(極強)",
-		L"ランダム誘導ノイズ(MAX)"
-	};
+	FontRender m_fontStage;
 
 	Vector3 m_miniMapBasePos;
 	float   m_miniMapHeightY = 250.0f;
@@ -227,4 +249,56 @@ private:
 	SpriteRender m_guruE;
 	SpriteRender m_guruN;
 	Game* m_game = nullptr;
+
+	int m_nowScoreMagnification = 0;
+	int m_ScoreMagnification = 0;
+	std::array<Magnifcation, enMaxScoreDigit> m_scoreMagnificationUI;
+	int m_pastScoreMagnification = 0;
+	bool m_isScoreMagnificationChanged = true;
+	bool m_isScoreMagnificationCheck = false;
+	const wchar_t* m_debuffComment = nullptr;
+	
+
+	void InitializeScore();
+	void MagnificationInit();
+	
+	
+
+	// ----------------------------------------
+	// 便利関数
+	// ----------------------------------------
+	/// <summary>
+	/// floatを四捨五入してintに変換する。
+	/// </summary>
+	/// <param name="value">四捨五入するfloat値。</param>
+	/// <returns>四捨五入されたint値。</returns>
+	/// 
+	int Round(float value) {
+		if(value >= 0.0f) {
+			return static_cast<int>(value + 0.5f);
+		}
+		else {			
+			return static_cast<int>(value - 0.5f);
+		}		
+	}
+
+	// ----------------------------------------
+	// 便利関数
+	// ----------------------------------------
+	/// <summary>
+	/// floatを小数点第二位まで四捨五入する
+	/// </summary>
+	/// <param name="value">四捨五入するfloat値。</param>
+	///　<returns>四捨五入されたfloat値。</returns>
+	float RoundToInt(float value) {
+		if (value >= 0.0f) {
+			// 100倍して四捨五入し、100.0fで割る
+			return static_cast<int>(value * 100.0f + 0.5f) / 100.0f;
+		}
+		else {
+			// 負の数の場合は-0.5fする
+			return static_cast<int>(value * 100.0f - 0.5f) / 100.0f;
+		}
+	}
+
 };

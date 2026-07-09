@@ -21,18 +21,18 @@ public:
 	{
 		return m_batter;
 	}
-	void SetDebuffStage(DebuffStage* debuffStage)
+	void SetDebuffStageManager(DebuffStageManager* debuffStage)
 	{
 		m_debuffStage = debuffStage;
 	}
-	DebuffStage* GetDebuffStage()const
+	DebuffStageManager* GetDebuffStageManager()const
 	{
 		return m_debuffStage;
 	}
 
 private:
 	Batter* m_batter = nullptr;
-	DebuffStage* m_debuffStage = nullptr;
+	DebuffStageManager* m_debuffStage = nullptr;
 };
 
 class DebuffStageState :public BatterIStateBess, public DebuffIStateBess
