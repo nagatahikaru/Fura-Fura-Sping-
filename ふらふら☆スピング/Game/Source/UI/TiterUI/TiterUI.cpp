@@ -173,18 +173,36 @@ void TiterUI::Update()
     }
 
     if (m_state == State_MainMenu) {
-        // 上下カーソル移動（既存通り）
-        if (g_pad[0]->IsTrigger(enButtonUp)) {
-            m_cursor--;
-            if (m_cursor < 0) m_cursor = 2;
-            g_soundManager->PlaySE(enSound_SE12);
-        }
-        if (g_pad[0]->IsTrigger(enButtonDown)) {
-            m_cursor++;
-            if (m_cursor > 2) m_cursor = 0;
-            g_soundManager->PlaySE(enSound_SE12);
+        static bool canMoveY = true;
+
+        float y = g_pad[0]->GetLStickYF();
+
+        if (canMoveY)
+        {
+            if (y > 0.5f)
+            {
+                m_cursor--;
+                if (m_cursor < 0)
+                    m_cursor = 2;
+
+                g_soundManager->PlaySE(enSound_SE12);
+                canMoveY = false;
+            }
+            else if (y < -0.5f)
+            {
+                m_cursor++;
+                if (m_cursor > 2)
+                    m_cursor = 0;
+
+                g_soundManager->PlaySE(enSound_SE12);
+                canMoveY = false;
+            }
         }
 
+        if (fabsf(y) < 0.3f)
+        {
+            canMoveY = true;
+        }
         // カーソル拡縮演出（既存通り）
         if (m_cursor == 0) {
             m_start2.SetMulColor({ 1,1,1,0 }); m_start.SetMulColor({ 1,1,1,1 }); m_start.SetScale({ 2.0f, 2.0f, 1.0f });
@@ -217,16 +235,35 @@ void TiterUI::Update()
         }
     }
     else if (m_state == State_DifficultySelect) {
-        // 左右カーソル移動
-        if (g_pad[0]->IsTrigger(enButtonLeft)) {
-            m_selectedDifficulty--;
-            if (m_selectedDifficulty < 0) m_selectedDifficulty = 2;
-            g_soundManager->PlaySE(enSound_SE12);
+        static bool canMoveX = true;
+
+        float x = g_pad[0]->GetLStickXF();
+
+        if (canMoveX)
+        {
+            if (x < -0.5f)
+            {
+                m_selectedDifficulty--;
+                if (m_selectedDifficulty < 0)
+                    m_selectedDifficulty = 2;
+
+                g_soundManager->PlaySE(enSound_SE12);
+                canMoveX = false;
+            }
+            else if (x > 0.5f)
+            {
+                m_selectedDifficulty++;
+                if (m_selectedDifficulty > 2)
+                    m_selectedDifficulty = 0;
+
+                g_soundManager->PlaySE(enSound_SE12);
+                canMoveX = false;
+            }
         }
-        if (g_pad[0]->IsTrigger(enButtonRight)) {
-            m_selectedDifficulty++;
-            if (m_selectedDifficulty > 2) m_selectedDifficulty = 0;
-            g_soundManager->PlaySE(enSound_SE12);
+
+        if (fabsf(x) < 0.3f)
+        {
+            canMoveX = true;
         }
 
         // 下部の難易度ボタンアイコンの拡縮（既存通り）

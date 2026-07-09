@@ -77,29 +77,64 @@ void SoundTestUI::Update() {
     if (g_pad[0]->IsTrigger(enButtonStart)) {
         return;
     }
+    static bool canMoveY = true;
+    static bool canMoveX = true;
+    float stickY = g_pad[0]->GetLStickYF();
 
-    // ▼ 上下で BGM(0) / SE(1) / MASTER(2) の選択
-    if (g_pad[0]->IsTrigger(enButtonUp)) {
+    if (fabsf(stickY) < 0.3f)
+    {
+        canMoveY = true;
+    }
+
+    // 上
+    if ((canMoveY && stickY > 0.5f))
+    {
         m_select--;
-        if (m_select < 0) m_select = 2; // ループ処理
-        g_soundManager->PlaySE(enSound_SE12);   // ★ カーソル移動音
-    }
-    if (g_pad[0]->IsTrigger(enButtonDown)) {
-        m_select++;
-        if (m_select > 2) m_select = 0; // ループ処理
-        g_soundManager->PlaySE(enSound_SE12);   // ★ カーソル移動音
+        if (m_select < 0)
+            m_select = 2;
+
+        g_soundManager->PlaySE(enSound_SE12);
+        canMoveY = false;
     }
 
-    // ▼ 左右でボールを動かす
-    if (g_pad[0]->IsPress(enButtonRight)) {
-        if (m_select == 0)      m_bgmX += 5.0f;
-        else if (m_select == 1) m_seX += 5.0f;
-        else                    m_masterX += 5.0f;
+    // 下
+    if ( (canMoveY && stickY < -0.5f))
+    {
+        m_select++;
+        if (m_select > 2)
+            m_select = 0;
+
+        g_soundManager->PlaySE(enSound_SE12);
+        canMoveY = false;
     }
-    if (g_pad[0]->IsPress(enButtonLeft)) {
-        if (m_select == 0)      m_bgmX -= 5.0f;
-        else if (m_select == 1) m_seX -= 5.0f;
-        else                    m_masterX -= 5.0f;
+
+    float stickX = g_pad[0]->GetLStickXF();
+
+    if (fabsf(stickX) < 0.3f)
+    {
+        canMoveX = true;
+    }
+
+    // 右
+    if (stickX > 0.5f)
+    {
+        if (m_select == 0)
+            m_bgmX += 5.0f;
+        else if (m_select == 1)
+            m_seX += 5.0f;
+        else
+            m_masterX += 5.0f;
+    }
+
+    // 左
+    if (stickX < -0.5f)
+    {
+        if (m_select == 0)
+            m_bgmX -= 5.0f;
+        else if (m_select == 1)
+            m_seX -= 5.0f;
+        else
+            m_masterX -= 5.0f;
     }
 
     // ▼ Aボタンで SE を再生
