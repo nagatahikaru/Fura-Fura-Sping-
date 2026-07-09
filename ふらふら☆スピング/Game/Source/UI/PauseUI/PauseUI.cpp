@@ -87,18 +87,36 @@ void PauseUI::Update()
         return;
     }
 
-    // ▼ カーソル移動（上下）
-    if (g_pad[0]->IsTrigger(enButtonUp)) {
-        m_cursor--;
-        g_soundManager->PlaySE(enSound_SE12);
-        if (m_cursor < 0) m_cursor = 3;   // ← 3項目なので 0〜2
-    }
-    if (g_pad[0]->IsTrigger(enButtonDown)) {
-        m_cursor++;
-        g_soundManager->PlaySE(enSound_SE12);
-        if (m_cursor > 3) m_cursor = 0;   // ← 3項目なので 0〜2
+    static bool canMoveY = true;
+    // ▼ カーソル移動（十字キー＋左スティック）
+    float y = g_pad[0]->GetLStickYF();
+
+    if (fabsf(y) < 0.3f)
+    {
+        canMoveY = true;
     }
 
+    // 上
+    if ((canMoveY && y > 0.5f))
+    {
+        m_cursor--;
+        if (m_cursor < 0)
+            m_cursor = 3;
+
+        g_soundManager->PlaySE(enSound_SE12);
+        canMoveY = false;
+    }
+
+    // 下
+    if ((canMoveY && y < -0.5f))
+    {
+        m_cursor++;
+        if (m_cursor > 3)
+            m_cursor = 0;
+
+        g_soundManager->PlaySE(enSound_SE12);
+        canMoveY = false;
+    }
 
     if (g_pad[0]->IsTrigger(enButtonA)) {
 
