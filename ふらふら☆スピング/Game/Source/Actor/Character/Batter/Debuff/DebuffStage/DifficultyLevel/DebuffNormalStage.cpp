@@ -6,11 +6,8 @@
 #include "Source/Actor/Character/Batter/Debuff/Pattern/DebuffShakePattern.h"
 #include "Source/Actor/Character/Batter/Debuff/Pattern/DebuffDriftPattern.h"
 #include "Source/Actor/Character/Batter/Debuff/Pattern/DebuffNoisePattern.h"
-#include "Source/Actor/Character/Batter/Debuff/Pattern/DebuffReversePattern.h"
-#include "Source/Actor/Character/Batter/Debuff/Pattern/DebuffLagPattern.h"
-#include "Source/Actor/Character/Batter/Debuff/Pattern/DebuffAimPattern.h"
-#include "Source/Actor/Character/Batter/Debuff/Pattern/DebuffPatternBase.h"
 #include "Source/Actor/Character/Batter/Debuff/Pattern/DebuffMagnetPattern.h"
+#include "Source/Actor/Character/Batter/Debuff/Pattern/DebuffPatternBase.h"
 
 
 DebuffNormalStage::DebuffNormalStage()
@@ -38,11 +35,9 @@ void DebuffNormalStage::BuildStage(int level)
 	case 1:
 		DebuffStageOne();
 		break;
-
 	case 2:
 		DebuffStageTwo();
 		break;
-
 	case 3:
 		DebuffStageThree();
 		break;
@@ -67,181 +62,285 @@ void DebuffNormalStage::BuildStage(int level)
 	case 10:
 		DebuffStageTen();
 		break;
+	case 11:
+		DebuffStageEleven();
+		break;
+	case 12:
+		DebuffStageTwelve();
+		break;
 	default:
 		return;
 		break;
 	}
 }
 
-// ƒfƒoƒt’iŠK‚²‚Æ‚Ìˆ—‚ğÀ‘•
-
-//‰ñ“]”F3`5‰ñ“]
+// Normal“ïˆÕ“xFShake / Magnet / Noise / Drift ‚Ì4í‚Å\¬‚µ‚½12’iŠK
+// ‰ñ“]”F3`5‰ñ“]
+// Easy‚Æ“¯‚¶“±“üB—h‚êƒfƒoƒt‚Ì‚İEã‚ßB
 void DebuffNormalStage::DebuffStageOne()
 {
-	//—h‚êƒfƒoƒt
-	auto shake =AddPattern<DebuffShakePattern>();
-	DebuffShakePattern::ShakeType type = static_cast<DebuffShakePattern::ShakeType>(rand() % 2);
-	shake->SetType(type);
+	auto shake = AddPattern<DebuffShakePattern>();
+	shake->SetType(DebuffShakePattern::Shake_Vertical);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount));
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount));
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 0.6f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 0.6f);
+
+	m_inGameUI->SetDebuffComment(L"c—h‚ê(ã)");
 }
 
-//‰ñ“]”F6`8‰ñ“]
+// ‰ñ“]”F6`8‰ñ“]
+// —h‚êƒfƒoƒt‚ğ‹­‰»B
 void DebuffNormalStage::DebuffStageTwo()
 {
-	//—h‚êƒfƒoƒt
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount));
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount));
-	
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 0.8f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 0.8f);
+
+	m_inGameUI->SetDebuffComment(L"ƒ‰ƒ“ƒ_ƒ€—h‚ê(ã)");
 }
 
-//‰ñ“]”F9`11‰ñ“]
+// ‰ñ“]”F9`11‰ñ“]
+// ‚±‚±‚ÅƒmƒCƒYƒfƒoƒt‚ğ‰“oêB—h‚ê‚Æ‘g‚İ‡‚í‚¹‚éB
 void DebuffNormalStage::DebuffStageThree()
 {
-	//—h‚êƒfƒoƒt
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount));
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount));
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 0.8f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 0.8f);
 
-	//ƒmƒCƒYƒfƒoƒt
 	auto noise = AddPattern<DebuffNoisePattern>();
 	noise->SetType(DebuffNoisePattern::Noise_Vertical);
 	noise->Reset();
-	noise->SetPower(noise->GetRotationRate(m_rotationCount));
+	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 0.7f);
 	noise->SetNoiseTimer(0.05f);
+
+	m_inGameUI->SetDebuffComment(L"—h‚êƒmƒCƒY(ã)");
 }
 
-//‰ñ“]”F12`14‰ñ“]
+// ‰ñ“]”F12`14‰ñ“]
+// ƒmƒCƒY‚ğ‰¡•ûŒü‚ÉØ‚è‘Ö‚¦‚Â‚ÂA—U“±ƒfƒoƒt‚ğ‰“oê‚³‚¹‚éB
 void DebuffNormalStage::DebuffStageFour()
 {
-	//—U“±ƒfƒoƒt
+	auto noise = AddPattern<DebuffNoisePattern>();
+	noise->SetType(DebuffNoisePattern::Noise_Horizontal);
+	noise->Reset();
+	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 0.8f);
+	noise->SetNoiseTimer(0.05f);
+
 	auto magnet = AddPattern<DebuffMagnetPattern>();
-	magnet->SetType(DebuffMagnetPattern::Random);
+	magnet->SetType(DebuffMagnetPattern::Vertical);
 	magnet->Reset();
-	magnet->SetRandomSpotRadius(m_rotationCount);
-	magnet->SetRandomMoveDuration(m_rotationCount);
-	
+	magnet->SetRandomSpotRadius(m_rotationCount * 0.5f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 0.5f);
+
+	m_inGameUI->SetDebuffComment(L"ƒmƒCƒY—U“±(ã)");
 }
 
-//‰ñ“]”F15`17‰ñ“]
+// ‰ñ“]”F15`17‰ñ“]
+// —h‚ê + —U“±(‰¡)‚Ì‘g‚İ‡‚í‚¹B
 void DebuffNormalStage::DebuffStageFive()
 {
-	//—U“±ƒfƒoƒt
-	auto magnet = AddPattern<DebuffMagnetPattern>();
-	magnet->SetType(DebuffMagnetPattern::Random);
-	magnet->Reset();
-	magnet->SetRandomSpotRadius(m_rotationCount);
-	magnet->SetRandomMoveDuration(m_rotationCount);
-
-	//”»’èƒfƒoƒt
-	auto aim = AddPattern<DebuffAimPattern>();
-	aim->Reset();
-	aim->SetType(DebuffAimPattern::SmallCursor);
-	aim->SetMeatRange(m_rotationCount);
-
-	// y’Ç‰Áz—h‚êƒfƒoƒtFƒKƒ^ƒKƒ^‚Æ‚µ‚½•¨—“I‚È—h‚ê‚ğ’Ç‰Á
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.2f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.2f);
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.0f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.0f);
+
+	auto magnet = AddPattern<DebuffMagnetPattern>();
+	magnet->SetType(DebuffMagnetPattern::Horizontal);
+	magnet->Reset();
+	magnet->SetRandomSpotRadius(m_rotationCount * 0.8f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 0.8f);
+
+	m_inGameUI->SetDebuffComment(L"—h‚ê—U“±(’†)");
 }
 
-//‰ñ“]”F18`20‰ñ“]
+// ‰ñ“]”F18`20‰ñ“]
+// ‚±‚±‚Å—¬‚³‚êƒfƒoƒt‚ğ‰“oê‚³‚¹A—U“±‚Æ‘g‚İ‡‚í‚¹‚éB
 void DebuffNormalStage::DebuffStageSix()
 {
-	//—¬‚³‚êƒfƒoƒt
 	auto drift = AddPattern<DebuffDriftPattern>();
 	drift->SetType(DebuffDriftPattern::Random);
 	drift->Reset();
-	drift->SetSpeed(drift->GetRotationRate(m_rotationCount));
-	drift->SetForce(drift->GetRotationRate(m_rotationCount));
-	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount));
+	drift->SetSpeed(drift->GetRotationRate(m_rotationCount) * 0.8f);
+	drift->SetForce(drift->GetRotationRate(m_rotationCount) * 0.8f);
+	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount) * 0.8f);
 
-	//—U“±ƒfƒoƒt
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
 	magnet->Reset();
 	magnet->SetRandomSpotRadius(m_rotationCount);
 	magnet->SetRandomMoveDuration(m_rotationCount);
 
-	//ƒVƒFƒCƒNƒfƒoƒti’Ç‰Áj
-	auto shake = AddPattern<DebuffShakePattern>();
-	shake->SetType(DebuffShakePattern::Shake_Random);
-	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.5f);
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.5f);
+	m_inGameUI->SetDebuffComment(L"—¬‚³‚ê—U“±(ã)");
 }
 
-//‰ñ“]”F21`23‰ñ“]
+// ‰ñ“]”F21`23‰ñ“]
+// —h‚ê + ƒmƒCƒY + —U“±‚Ì3í“¯”­“®B
 void DebuffNormalStage::DebuffStageSeven()
 {
-	//—U“±ƒfƒoƒt
-	auto magnet = AddPattern<DebuffMagnetPattern>();
-	magnet->SetType(DebuffMagnetPattern::Random);
-	magnet->Reset();
-	magnet->SetRandomSpotRadius(m_rotationCount);
-	magnet->SetRandomMoveDuration(m_rotationCount);
-
-	//ƒmƒCƒYƒfƒoƒt
-	auto noise = AddPattern<DebuffNoisePattern>();
-	noise->SetType(DebuffNoisePattern::Noise_Random);
-	noise->Reset();
-	noise->SetPower(noise->GetRotationRate(m_rotationCount));
-	noise->SetNoiseTimer(0.05f);
-
-	//ƒVƒFƒCƒNƒfƒoƒti’Ç‰Áj
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
 	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.1f);
 	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.1f);
-}
 
-//‰ñ“]”F24`26‰ñ“]
-void DebuffNormalStage::DebuffStageEight()
-{
-	//’x‚êƒfƒoƒt
-	auto lag = AddPattern<DebuffLagPattern>();
-	lag->SetType(DebuffLagPattern::Delay);
-	lag->Reset();
-}
-
-//‰ñ“]”F27`29‰ñ“]
-void DebuffNormalStage::DebuffStageNine()
-{
-	//”½“]ƒfƒoƒt
-	auto reverse = AddPattern<DebuffReversePattern>();
-	reverse->SetType(DebuffReversePattern::Reverse_All);
-}
-
-//	‰ñ“]”F30‰ñ“]ˆÈã
-void DebuffNormalStage::DebuffStageTen()
-{
-	//ƒmƒCƒYƒfƒoƒt
 	auto noise = AddPattern<DebuffNoisePattern>();
 	noise->SetType(DebuffNoisePattern::Noise_Random);
 	noise->Reset();
-	noise->SetPower(noise->GetRotationRate(m_rotationCount));
+	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 0.9f);
 	noise->SetNoiseTimer(0.05f);
 
-	//—U“±ƒfƒoƒt
 	auto magnet = AddPattern<DebuffMagnetPattern>();
 	magnet->SetType(DebuffMagnetPattern::Random);
 	magnet->Reset();
 	magnet->SetRandomSpotRadius(m_rotationCount);
 	magnet->SetRandomMoveDuration(m_rotationCount);
 
-	//—h‚êƒfƒoƒt
+	m_inGameUI->SetDebuffComment(L"—h‚êƒmƒCƒY—U“±(’†)");
+}
+
+// ‰ñ“]”F24`26‰ñ“]
+// —¬‚³‚êƒfƒoƒt‚ğ‹­‰»‚µAƒmƒCƒY‚Æ‘g‚İ‡‚í‚¹‚éB
+void DebuffNormalStage::DebuffStageEight()
+{
+	auto drift = AddPattern<DebuffDriftPattern>();
+	drift->SetType(DebuffDriftPattern::Random);
+	drift->Reset();
+	drift->SetSpeed(drift->GetRotationRate(m_rotationCount) * 1.1f);
+	drift->SetForce(drift->GetRotationRate(m_rotationCount) * 1.1f);
+	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount) * 1.1f);
+
+	auto noise = AddPattern<DebuffNoisePattern>();
+	noise->SetType(DebuffNoisePattern::Noise_Random);
+	noise->Reset();
+	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 1.0f);
+	noise->SetNoiseTimer(0.05f);
+
+	m_inGameUI->SetDebuffComment(L"—¬‚³‚êƒmƒCƒY(‹­)");
+}
+
+// ‰ñ“]”F27`29‰ñ“]
+// —h‚ê(‹­) + —¬‚³‚ê + —U“±‚Ì‘g‚İ‡‚í‚¹B
+void DebuffNormalStage::DebuffStageNine()
+{
 	auto shake = AddPattern<DebuffShakePattern>();
 	shake->SetType(DebuffShakePattern::Shake_Random);
 	shake->Reset();
-	shake->SetPower(shake->GetRotationRate(m_rotationCount));
-	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount));
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.2f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.2f);
+
+	auto drift = AddPattern<DebuffDriftPattern>();
+	drift->SetType(DebuffDriftPattern::Random);
+	drift->Reset();
+	drift->SetSpeed(drift->GetRotationRate(m_rotationCount) * 1.0f);
+	drift->SetForce(drift->GetRotationRate(m_rotationCount) * 1.0f);
+	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount) * 1.0f);
+
+	auto magnet = AddPattern<DebuffMagnetPattern>();
+	magnet->SetType(DebuffMagnetPattern::Random);
+	magnet->Reset();
+	magnet->SetRandomSpotRadius(m_rotationCount * 1.1f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 1.1f);
+
+	m_inGameUI->SetDebuffComment(L"—h‚ê—¬‚³‚ê—U“±(‹­)");
+}
+
+// ‰ñ“]”F30`32‰ñ“]
+// Shake / Noise / Drift / Magnet ‚Ì4í‚ğ‰‚ß‚Ä“¯‚É”­“®B
+void DebuffNormalStage::DebuffStageTen()
+{
+	auto shake = AddPattern<DebuffShakePattern>();
+	shake->SetType(DebuffShakePattern::Shake_Random);
+	shake->Reset();
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.1f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.1f);
+
+	auto noise = AddPattern<DebuffNoisePattern>();
+	noise->SetType(DebuffNoisePattern::Noise_Random);
+	noise->Reset();
+	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 0.9f);
+	noise->SetNoiseTimer(0.05f);
+
+	auto drift = AddPattern<DebuffDriftPattern>();
+	drift->SetType(DebuffDriftPattern::Random);
+	drift->Reset();
+	drift->SetSpeed(drift->GetRotationRate(m_rotationCount) * 0.9f);
+	drift->SetForce(drift->GetRotationRate(m_rotationCount) * 0.9f);
+	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount) * 0.9f);
+
+	auto magnet = AddPattern<DebuffMagnetPattern>();
+	magnet->SetType(DebuffMagnetPattern::Random);
+	magnet->Reset();
+	magnet->SetRandomSpotRadius(m_rotationCount);
+	magnet->SetRandomMoveDuration(m_rotationCount);
+
+	m_inGameUI->SetDebuffComment(L"—h‚êƒmƒCƒY—¬‚³‚ê—U“±(‹­)");
+}
+
+// ‰ñ“]”F33`35‰ñ“]
+// 4í‘S•”‚ğ‚³‚ç‚É‹­‰»B
+void DebuffNormalStage::DebuffStageEleven()
+{
+	auto shake = AddPattern<DebuffShakePattern>();
+	shake->SetType(DebuffShakePattern::Shake_Random);
+	shake->Reset();
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.3f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.3f);
+
+	auto noise = AddPattern<DebuffNoisePattern>();
+	noise->SetType(DebuffNoisePattern::Noise_Random);
+	noise->Reset();
+	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 1.1f);
+	noise->SetNoiseTimer(0.04f);
+
+	auto drift = AddPattern<DebuffDriftPattern>();
+	drift->SetType(DebuffDriftPattern::Random);
+	drift->Reset();
+	drift->SetSpeed(drift->GetRotationRate(m_rotationCount) * 1.1f);
+	drift->SetForce(drift->GetRotationRate(m_rotationCount) * 1.1f);
+	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount) * 1.1f);
+
+	auto magnet = AddPattern<DebuffMagnetPattern>();
+	magnet->SetType(DebuffMagnetPattern::Random);
+	magnet->Reset();
+	magnet->SetRandomSpotRadius(m_rotationCount * 1.2f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 1.2f);
+
+	m_inGameUI->SetDebuffComment(L"—h‚êƒmƒCƒY—¬‚³‚ê—U“±(Å‘å)");
+}
+
+// ‰ñ“]”F36‰ñ“]ˆÈã
+// NormalÅIŒ`‘ÔB4í‚·‚×‚Ä‚ğÅ‘å’l•t‹ß‚Å’@‚«‚ŞB
+void DebuffNormalStage::DebuffStageTwelve()
+{
+	auto shake = AddPattern<DebuffShakePattern>();
+	shake->SetType(DebuffShakePattern::Shake_Random);
+	shake->Reset();
+	shake->SetPower(shake->GetRotationRate(m_rotationCount) * 1.5f);
+	shake->SetSeismicIntensity(shake->GetRotationRate(m_rotationCount) * 1.5f);
+
+	auto noise = AddPattern<DebuffNoisePattern>();
+	noise->SetType(DebuffNoisePattern::Noise_Random);
+	noise->Reset();
+	noise->SetPower(noise->GetRotationRate(m_rotationCount) * 1.3f);
+	noise->SetNoiseTimer(0.03f);
+
+	auto drift = AddPattern<DebuffDriftPattern>();
+	drift->SetType(DebuffDriftPattern::Random);
+	drift->Reset();
+	drift->SetSpeed(drift->GetRotationRate(m_rotationCount) * 1.3f);
+	drift->SetForce(drift->GetRotationRate(m_rotationCount) * 1.3f);
+	drift->SetWaveSpeed(drift->GetRotationRate(m_rotationCount) * 1.3f);
+
+	auto magnet = AddPattern<DebuffMagnetPattern>();
+	magnet->SetType(DebuffMagnetPattern::Random);
+	magnet->Reset();
+	magnet->SetRandomSpotRadius(m_rotationCount * 1.4f);
+	magnet->SetRandomMoveDuration(m_rotationCount * 1.4f);
+
+	m_inGameUI->SetDebuffComment(L"—h‚êƒmƒCƒY—¬‚³‚ê—U“±(‹É)");
 }

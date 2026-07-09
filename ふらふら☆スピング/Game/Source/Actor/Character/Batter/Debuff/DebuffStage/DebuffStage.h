@@ -1,5 +1,6 @@
 #pragma once
 #include "Source/Actor/Character/Batter/Debuff/Pattern/IDebuffPattern.h"
+#include "Source/UI/InGameUI/InGameUI.h"
 #include <vector>
 
 class Batter;
@@ -9,7 +10,7 @@ class DebuffStage
 protected:
     // デバフパターンのベクター
     std::vector<std::unique_ptr<IDebuffPattern>> m_patterns;
-
+	InGameUI* m_inGameUI = nullptr;
     // 回転数
     int m_rotationCount = 0;
 
@@ -18,6 +19,8 @@ protected:
     virtual ~DebuffStage() { ClearPatterns(); };
     
 	void Update(Batter* batter);
+    void SetInGameUI(Batter* batter);
+
 
     void ClearPatterns()
     {
