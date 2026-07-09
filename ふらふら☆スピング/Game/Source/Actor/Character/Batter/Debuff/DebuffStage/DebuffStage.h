@@ -4,16 +4,19 @@
 
 class Batter;
 
-class DebuffStage
+class DebuffStage 
 {
+protected:
+    // デバフパターンのベクター
+    std::vector<std::unique_ptr<IDebuffPattern>> m_patterns;
+
+    // 回転数
+    int m_rotationCount = 0;
+
 	public:
 	DebuffStage();
-	~DebuffStage();
-    DebuffStage*GetDebuffStage()
-    {
-        return this;
-    }
-
+    virtual ~DebuffStage() { ClearPatterns(); };
+    
 	void Update(Batter* batter);
 
     void ClearPatterns()
@@ -36,36 +39,12 @@ class DebuffStage
 
         return ptr;
     }
+	 virtual void BuildStage(int level) = 0;
 
-    void BuildStage(int level);
     void SetRotationCount(int count)
     {
         m_rotationCount = count;
 	}
 
-    // 各デバフ段階
-    void DebuffStageOne();
-    void DebuffStageTwo();
-    void DebuffStageThree();
-    void DebuffStageFour();
-    void DebuffStageFive();
-    void DebuffStageSix();
-    void DebuffStageSeven();
-    void DebuffStageEight();
-    void DebuffStageNine();
-    void DebuffStageTen();
-    void DebuffStageEleven();
-    void DebuffStageTwelve();
-    void DebuffStageThirteen();
-    void DebuffStageFourteen();
-    void DebuffStageFifteen();
-private:
-	// デバフパターンのベクター
-    std::vector<
-        std::unique_ptr<IDebuffPattern>
-    > m_patterns;
-
-	// 回転数
-	int m_rotationCount = 0;
 };
 

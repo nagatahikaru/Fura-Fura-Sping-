@@ -232,8 +232,14 @@
     <ClCompile Include="Source\Actor\Character\Batter\BatterIStateBess.cpp" />
     <ClCompile Include="Source\Actor\Character\Batter\BatterStateMachine.cpp" />
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffIStateBess.cpp" />
-    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStageStateMachine.cpp" />
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStageStateMachine.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DebuffStage.cpp" />
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DebuffStageManager.cpp" />
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffEasyStage.cpp" />
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffHardStage.cpp" />
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffNormalStage.cpp" />
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffAimPattern.cpp" />
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffDriftPattern.cpp" />
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffLagPattern.cpp" />
@@ -286,6 +292,10 @@
     <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffIStateBess.h" />
     <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStageStateMachine.h" />
     <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DebuffStage.h" />
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DebuffStageManager.h" />
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffEasyStage.h" />
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffHardStage.h" />
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffNormalStage.h" />
     <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffAimPattern.h" />
     <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffDriftPattern.h" />
     <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffLagPattern.h" />

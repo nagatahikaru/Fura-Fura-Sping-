@@ -12,9 +12,9 @@ struct DebuffMasterData {
 
 // 難易度 [Easy, Normal, Hard] の enum 順に対応したマスタデータテーブル
 static const DebuffMasterData g_DebuffMasterTable[] = {
-	{ 10, 3 }, // Easy:   5回転で1レベル上昇、最大レベル5
-	{ 5, 7 }, // Normal: 3回転で1レベル上昇、最大レベル10
-	{ 3, 15 }  // Hard:   1回転で1レベル上昇、最大レベル15
+	{ 3, 10 }, // Easy:   3回転で1レベル上昇、最大レベル10
+	{ 3, 12 }, // Normal: 3回転で1レベル上昇、最大レベル12
+	{ 3, 15 }  // Hard:   3回転で1レベル上昇、最大レベル15
 };
 
 // ぐるぐるバットの段階を管理するステートマシンの実装
@@ -55,16 +55,18 @@ void DebuffStageStateMachine::Update()
 // DebuffStageStateクラスの実装
 void DebuffStageState::Enter()
 {
-	auto debuffStage = GetDebuffStage();
+	auto debuffStageManager = GetDebuffStageManager();
 	auto batter = GetBatter();
 
-	_ASSERT(debuffStage != nullptr);
 
-	if (!debuffStage)
+	_ASSERT(debuffStageManager != nullptr);
+
+	if (!debuffStageManager)
 		return;
 	batter->ResetCursorOffset();
-	debuffStage->ClearPatterns();
-	debuffStage->BuildStage(m_stageLevel);
+	debuffStageManager->ClearPatterns();
+	debuffStageManager->RebuildStage(m_stageLevel, batter->GetGuruGuru());
+
 }
 
 // Update関数は、バッターのぐるぐるバットの回数に応じて、デバフステージの段階を更新します。
@@ -72,12 +74,12 @@ void DebuffStageState::Enter()
 void DebuffStageState::Update()
 {
 	Batter* batter = GetBatter();
-	auto debuffStage = GetDebuffStage();
+	auto debuffStageManager = GetDebuffStageManager();
 
 	_ASSERT(batter != nullptr);
-	_ASSERT(debuffStage != nullptr);
+	_ASSERT(debuffStageManager != nullptr);
 
-	if (!batter || !debuffStage)
+	if (!batter || !debuffStageManager)
 		return;
 
 	Difficulty currentDiff = Difficulty::Normal; // ヌルチェック落ちした際の安全用デフォルト
@@ -98,18 +100,18 @@ void DebuffStageState::Update()
 	if (level != m_stageLevel)
 	{
 		m_stageLevel = level;
-
-		debuffStage->ClearPatterns();
-		debuffStage->SetRotationCount(batter->GetGuruGuru());
-		debuffStage->BuildStage(m_stageLevel);
+		debuffStageManager->Initialize(batter);
+		debuffStageManager->ClearPatterns();
+		debuffStageManager->RebuildStage(m_stageLevel, batter->GetGuruGuru());
 	}
 
-	debuffStage->Update(batter);
+	debuffStageManager->Update(batter);
 }
 
 void DebuffStageState::Exit()
 {
-	GetDebuffStage()->ClearPatterns();
+	auto debuffStageManager = GetDebuffStageManager();
+	debuffStageManager->ClearPatterns();
 }
 
 

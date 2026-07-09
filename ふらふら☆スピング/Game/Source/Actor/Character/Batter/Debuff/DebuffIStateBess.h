@@ -1,7 +1,7 @@
 #pragma once
 #include "Source/Actor/ActorStateMachine.h"
 
-class DebuffStage;
+class DebuffStageManager;
 
 class DebuffIStateBess : public virtual IState
 {
@@ -19,5 +19,5 @@ private:
 	
 
 protected:	
-		DebuffStage* GetDebuffStage() const;
+	DebuffStageManager* GetDebuffStageManager() const;
 };

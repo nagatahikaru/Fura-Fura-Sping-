@@ -94,14 +94,14 @@
     <Filter Include="Source\Actor\Character\Batter\Debuff\DebuffStage">
       <UniqueIdentifier>{56b4eccf-0e68-46ef-8b85-67ccaf08af27}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Graphics">
-      <UniqueIdentifier>{725ce803-2098-4b15-930b-2d7d10aed9ed}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Scene\Transition">
       <UniqueIdentifier>{a940ba77-eb88-463a-9fc6-710ac96f5d79}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\UI\TransitionUI">
       <UniqueIdentifier>{9448cab0-8f71-4eee-bf96-6d728ef0209d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel">
+      <UniqueIdentifier>{17bc4808-08d9-4ecd-bfbf-999f3f21518c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -241,6 +241,18 @@
     </ClCompile>
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffIStateBess.cpp">
       <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffEasyStage.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffHardStage.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffNormalStage.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DebuffStageManager.cpp">
+      <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -382,6 +394,18 @@
     </ClInclude>
     <ClInclude Include="Source\Actor\Character\Batter\Debuff\Pattern\DebuffMagnetPattern.h">
       <Filter>Source\Actor\Character\Batter\Debuff\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffEasyStage.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffHardStage.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel\DebuffNormalStage.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DebuffStageManager.h">
+      <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
