@@ -7,6 +7,34 @@
 #include"Source/Sound/SoundManager.h"
 #include "Source/Actor/GameCamera/GameCamera.h"  
 
+namespace
+{
+    float RemapClamp(float value, float start, float end)
+    {
+        if (end <= start) return (value >= end) ? 1.0f : 0.0f;
+        float t = (value - start) / (end - start);
+        if (t < 0.0f) t = 0.0f;
+        if (t > 1.0f) t = 1.0f;
+        return t;
+    }
+
+    // 序盤に勢いよく外へ膨らませる（最初は速く、後半は減速）
+    float EaseOutCubic(float t)
+    {
+        float x = 1.0f - t;
+        return 1.0f - x * x * x;
+    }
+
+    // 中盤から終盤にかけて、ゆっくり始まりゆっくり終わる戻り
+    float EaseInOutCubic(float t)
+    {
+        return (t < 0.5f)
+            ? 4.0f * t * t * t
+            : 1.0f - powf(-2.0f * t + 2.0f, 3.0f) / 2.0f;
+    }
+}
+
+
 Ball::Ball()
 {
 }
@@ -133,7 +161,7 @@ void Ball::Update()
                 {
                 case ShakeHorizontal:
                     m_position.x += sinf(m_position.z * 0.01f) * 3.0f;
-                    break;
+                break;
 
                 case ShakeVertical:
                     m_position.y += sinf(m_position.z * 0.01f) * 3.0f;
@@ -143,6 +171,8 @@ void Ball::Update()
                     break;
 
                 case  Curve:
+                    Slider(dt);
+                    break;
                 default:
                     break;
                 }
@@ -355,6 +385,36 @@ void Ball::Update()
     m_modelRender.Update();
 }
 
+void Ball::Slider(float dt)
+{
+    float minZ = 1000.0f;
+    float maxZ = 6500.0f; // ★ 6200.0f → 6500.0f（ヒットゾーンの出口）に変更
+
+    float progress = RemapClamp(m_position.z, minZ, maxZ);
+    float peakRatio = 0.6f; // ★ 0.35f → 0.55f に変更（戻り始めを遅らせる）
+    float outwardAmount = 150.0f; // ★ 80.0f → 150.0f に変更
+
+    float startX = m_throwStartPos.x;
+    float targetX = m_throwStartPos.x;
+    float dir = (m_curveDir != 0) ? (float)m_curveDir : 1.0f;
+    float peakX = startX + outwardAmount * dir;
+
+    if (progress <= peakRatio)
+    {
+        float t = RemapClamp(progress, 0.0f, peakRatio);
+        m_position.x = startX + EaseOutCubic(t) * outwardAmount * dir;
+    }
+    else if (progress < 1.0f)
+    {
+        float t = RemapClamp(progress, peakRatio, 1.0f);
+        m_position.x = peakX + (targetX - peakX) * EaseInOutCubic(t);
+    }
+    else
+    {
+        float driftSpeed = 4.0f;
+        m_position.x += driftSpeed * dir * dt;
+    }
+}
 
 void Ball::Throw(const Vector3& targetPos)
 {
@@ -385,10 +445,10 @@ void Ball::Throw(const Vector3& targetPos)
     else if (currentDifficulty == Normal)
     {
         int rate = rand() % 100;
-        if (rate < 70) {
+        if (rate < 60) {
             m_ballType = Straight;          // 70% ストレート
         }
-        else if (rate < 90) {
+        else if (rate < 30) {
             m_ballType = Curve;             // 20% カーブ
         }
         else {
@@ -426,13 +486,13 @@ void Ball::Throw(const Vector3& targetPos)
     }
 
     //カーブ
-    if (m_ballType == Curve)
+    if (m_ballType == Curve || m_ballType == ShakeHorizontal)
     {
-            m_curveDir = 1;    
+        m_curveDir = (rand() % 2 == 0) ? -1.0f : 1.0f;
     }
     else
     {
-        m_curveDir = 0;
+        m_curveDir = 0.0f;
     }
 
     m_velocity = dir * speed;

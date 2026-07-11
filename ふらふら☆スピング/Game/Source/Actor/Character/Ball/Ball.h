@@ -49,10 +49,13 @@ class Ball :public Character
 		return m_prevPosition;
 	}
 
+	void Slider(float dt);
+
 	std::vector<Vector3> m_replayPath;
 	bool m_isRecording = false;
 	bool m_isMove = false;
 	bool m_hasHit = false;
+
  private:
 	Vector3 m_position;  //ボールの位置
 	Vector3 m_velocity;  //ボールの速度
@@ -90,5 +93,8 @@ class Ball :public Character
 	bool m_hasPlayedReappearEffect = false;   // 魔球が再出現した瞬間のエフェクト再生済みフラグ
 	float m_replayVelY = 0.0f;
 	float m_initialSpeedZ = 0.0f; // 投げた瞬間の初期Z速度を保存する変数
+	// スライダーの曲がり方を調整するパラメータ
+	float m_breakAmount = 80.0f;      // 最大横移動量（大きいほど鋭く曲がる）
+	float m_breakStartRatio = 0.55f;  // 投球の何割地点から曲がり始めるか(0〜1)
 };
 
