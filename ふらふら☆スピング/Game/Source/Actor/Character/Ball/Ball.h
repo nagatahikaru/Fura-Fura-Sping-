@@ -68,7 +68,7 @@ class Ball :public Character
 	float m_currentRotationSpeed = 2880.0f;
 	float m_speedRate = 1.0f;
 	float m_rotationSpeed = 0.0f;
-	int m_curveDir = 0;
+	float m_curveDir = 0;
 	float m_throwTimer = 0.0f;
 	float m_radius = 10.0f;
 	float m_baseScale = 50.0f;
