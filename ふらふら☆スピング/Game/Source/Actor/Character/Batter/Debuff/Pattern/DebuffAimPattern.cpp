@@ -13,7 +13,6 @@ void DebuffAimPattern::SetType(AimType type)
 	m_type = type;
 }
 
-// Update関数は、デバフの種類に応じて、バッターのカーソルを上下や左右に震わせる処理を実装します。
 void DebuffAimPattern::Update(Batter* batter)
 {
 	switch (m_type)
