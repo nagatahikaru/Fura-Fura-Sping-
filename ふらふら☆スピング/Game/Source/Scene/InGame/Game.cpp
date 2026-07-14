@@ -80,6 +80,20 @@ void Game::Update()
 	//当たり判定の表示
 	//PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
+	 // ★ 難易度ごとにリプレイ時間を変更
+	switch (m_difficulty)
+	{
+	case Difficulty::Easy:
+		m_replayDuration = 5.0f;   // 長め
+		break;
+	case Difficulty::Normal:
+		m_replayDuration = 4.0f;   // 標準
+		break;
+	case Difficulty::Hard:
+		m_replayDuration = 3.0f;   // 短め
+		break;
+	}
+
 	// ★ ぐるぐる値を毎フレーム Game に保存する
 	if (m_batter) {
 		SetGuruGuru(m_batter->GetGuruGuru());

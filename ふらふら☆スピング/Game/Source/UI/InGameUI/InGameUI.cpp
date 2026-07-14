@@ -920,7 +920,10 @@ void InGameUI::Render(RenderContext& rc) {
 			float blink = fabsf(sinf(displayTime * 10.0f));
 			m_Count.SetColor(1.0f, 0.0f, 0.0f, blink);
 		}
-		m_Count.Draw(rc);
+		if (displayTime > 0.0f) {
+			m_Count.Draw(rc);
+		}
+		
 
 		if (isReadyPhase) {
 			m_kakunin.SetPosition(Vector3{ 800.0f, -60.0f, 0.0f });
