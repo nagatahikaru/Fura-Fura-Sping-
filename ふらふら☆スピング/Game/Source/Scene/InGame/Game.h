@@ -425,9 +425,6 @@ public:
 	void StartReplayRecording();
 	int GetShots() const { return m_shots; }
 	bool IsRecording() const { return m_isRecording; }
-	void OnPitcherThrow();	
-	void SetBallLanded(bool flag) { m_isBallLanded = flag; }	
-};
 
 
 	

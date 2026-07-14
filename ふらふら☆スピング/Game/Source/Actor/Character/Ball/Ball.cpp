@@ -644,15 +644,33 @@ float Ball::PredictLandingDistance()
 
     int shot = game->GetShots();
 
-    // ★ 打った瞬間の位置と速度を使う
     Vector3 pos = m_hitStartPos;
     Vector3 vel = game->GetHitVelocity(shot);
 
     float dt = 1.0f / 60.0f;
+    Difficulty currentDifficulty = Normal; // デフォルト
+    if (game) {
+        currentDifficulty = game->GetDifficulty(); // ※Gameクラスにある難易度取得関数
+    }
+    // ★ 難易度ごとの重力を決定（ループ外）
+    float gravity = 0.0f;
+    switch (currentDifficulty)
+    {
+    case Easy:
+        gravity = 4.0f;
+        break;
+    case Normal:
+        gravity = 9.5f;
+        break;
+    default: // Hard
+        gravity = 25.0f;
+        break;
+    }
 
+    // ★ 着地まで予測
     while (pos.y > 0.0f) {
 
-        vel.y -= 13.5f * dt;   // 重力
+        vel.y -= gravity * dt;   // ← 難易度ごとの重力が反映される
 
         pos += vel * dt;
     }

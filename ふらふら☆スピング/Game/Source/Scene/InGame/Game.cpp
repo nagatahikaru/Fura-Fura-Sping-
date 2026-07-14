@@ -401,16 +401,16 @@ void Game::Update()
 		// 振りかぶりなどの遅延処理
 		if (m_replayDelayTimer > 0.0f) {
 			m_replayDelayTimer -= g_gameTime->GetFrameDeltaTime();
-			float swingSec = 0.0f;
-			if (m_bestShotIndex >= 0) {
-				swingSec = (m_swingFrame[m_bestShotIndex] - m_pitchFrame[m_bestShotIndex]) / 60.0f;
-			}
+			//float swingSec = 0.0f;
+			//if (m_bestShotIndex >= 0) {
+			//	swingSec = (m_pitchFrame[m_bestShotIndex] + m_swingFrame[m_bestShotIndex]) / 60.0f;
+			//}
 
-			// 記録フレーム情報が存在すれば、その時間で再生する（ランタイムフラグには依存しない）
-			if (m_bestShotIndex >= 0 && !m_hasPlayedReplaySwing && m_replaySwingTimer >= swingSec) {
-				m_batter->PlaySwingAnimation();
-				m_hasPlayedReplaySwing = true;
-			}
+			//// 記録フレーム情報が存在すれば、その時間で再生する（ランタイムフラグには依存しない）
+			//if (m_bestShotIndex >= 0 && !m_hasPlayedReplaySwing && m_replaySwingTimer >= swingSec) {
+			//	m_batter->PlaySwingAnimation();
+			//	m_hasPlayedReplaySwing = true;
+			//}
 			return;
 		}
 
@@ -428,17 +428,17 @@ void Game::Update()
 		}
 
 		// スイング（インパクト）の同期タイミング
-		int swingTiming = m_bestSwingFrame - m_bestPitchFrame;
+		int swingTiming = m_bestSwingFrame + m_replaySwingDelayFrames;
 
 		// 記録されたスイングフレーム情報がある場合は、必ずそのタイミングでアニメを再生する
-		if (m_bestShotIndex >= 0 && index == swingTiming) {
+		if (m_bestShotIndex >= 0 && !m_hasPlayedReplaySwing && index >= swingTiming) {
 			m_batter->PlaySwingAnimation();
-			m_batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
+			m_batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(2.0f);
 
-			// インパクトの瞬間だけ全体の時間を一瞬止める（ヒットストップ）
-			m_hitStopTimer = 0.05f; // 約5フレーム分ホールド
+			m_hitStopTimer = 0.05f;
 			m_isHitStop = true;
 			m_ball->m_hasHit = true;
+			m_hasPlayedReplaySwing = true; // ★ 二重発火防止
 		}
 
 		// ★ リプレイのインデックスを毎フレーム1ずつ確実に進める
@@ -591,7 +591,7 @@ void Game::OnOver100m()
 			}
 
 			// ★ フェードアウト完了 → ここで20倍速にする
-			m_timeScale = 100.0f;
+			m_timeScale = 300.0f;
 
 			if (m_shots == 2) {
 				m_fadeInDelayTimer = -1.0f;
