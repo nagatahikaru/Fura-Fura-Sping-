@@ -140,7 +140,7 @@ bool Batter::Start()
 void Batter::UpdateModelPosition()
 {
 	// リプレイ中・ポーズ中はモデルの強制移動を行わない
-	if (m_game && (m_game->IsReplayPlaying() || m_game->m_isPaused)) {
+	if (m_game && (m_game->IsReplayPlaying() || m_game->GetIsPaused())) {
 		return;
 	}
 	if (IsSwingAnimationPlaying()) {
@@ -202,7 +202,7 @@ void Batter::Update()
 	// ★ リプレイ中はバッターの通常処理を完全停止
 	if (m_game && m_game->IsReplayPlaying()) {
 		// ★ ポーズ中ならアニメーションも止める
-		if (m_game->m_isPaused) {
+		if (m_game->GetIsPaused()) {
 			return;   // ← これでスイングアニメも完全停止
 		}
 		// ★ リプレイ中にスイングアニメが再生されているなら速度を4.0に固定
@@ -217,7 +217,7 @@ void Batter::Update()
 		return; // ← 入力・ぐるぐる・カーソル・移動など全部止める
 	}
 	// ★ ポーズ中はキャッチャーのアニメーションを止める	
-	if (m_game && m_game->m_isPaused) {
+	if (m_game && m_game->GetIsPaused()) {
 		g_effectManager->AllStopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
@@ -324,8 +324,8 @@ void Batter::RoundAndRoundBat()
 		SetRotationSeen(false);
 		m_game->SetRotationSeen(false);
 		//m_game->SetGameStarted(true);
-		m_game->m_isReadyPhase = true;
-		m_game->m_readyTimer = BATTER::READY_TIME; // 5秒にセット
+		m_game->SetIsReadyPhase(true);
+		m_game->SetReadyTimer(BATTER::READY_TIME); // 5秒にセット
 		m_characterModel->Update();
 	}
 }
@@ -486,7 +486,7 @@ void Batter::HitBat()
 {
 	if (m_ball->m_hasHit) return;
 	if (m_game && m_game->IsReplayPlaying()) return;
-	if (m_game && m_game->m_isPaused) return;
+	if (m_game && m_game->GetIsPaused()) return;
 	if (!IsSwingAnimationPlaying()) return;
 
 	// アニメーションの当たりフレーム
@@ -542,10 +542,10 @@ void Batter::HitBat()
 	}
 
 	if (m_game) {
-		if (!m_game->m_isHitStop) {
-			m_game->m_hitStopTimer = 0.06f;
+		if (!m_game->GetIsHitStop()) {
+			m_game->SetHitStopTimer(0.06f);
 		}
-		m_game->m_canFastForward = true;
+		m_game->SetCanFastForward(true);
 	}
 
 	hitDir.y += 21.0f;
@@ -599,8 +599,8 @@ void Batter::HitBat()
 		m_inGameUI->m_shuchusenTimer = 0.5f;
 	}
 
-	if (m_game && !m_game->m_isPaused && g_soundManager) {
-		if (m_game->m_isKakutei) {
+	if (m_game && !m_game->GetIsPaused() && g_soundManager) {
+		if (m_game->GetIsKakutei()) {
 			g_soundManager->PlaySE(Sound::enSound_SE15, 100.0f);
 		}
 		else {

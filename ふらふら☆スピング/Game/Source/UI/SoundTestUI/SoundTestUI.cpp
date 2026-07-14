@@ -183,7 +183,7 @@ void SoundTestUI::Update() {
 
             Game* game = FindGO<Game>("game");
             if (game) {
-                game->m_isPaused = true;
+                game->SetIsPaused(true);
             }
 
             InGameUI* ui = FindGO<InGameUI>("inGameUI");

@@ -66,7 +66,7 @@ void PauseUI::Update()
 
         Game* game = FindGO<Game>("game");
         if (game) {
-            game->m_isPaused = false;
+            game->SetIsPaused(false);
 
             InGameUI* ui = FindGO<InGameUI>("inGameUI");
             if (ui) {
@@ -125,7 +125,7 @@ void PauseUI::Update()
         if (m_cursor == 0) {
             Game* game = FindGO<Game>("game");
             if (game) {
-                game->m_isPaused = false;
+                game->SetIsPaused(false);
             }
             InGameUI* ui = FindGO<InGameUI>("inGameUI");
             if (ui) {
@@ -167,7 +167,7 @@ void PauseUI::Update()
         else if (m_cursor == 2) {
             Game* game = FindGO<Game>("game");
             if (game) {
-                game->m_isPaused = true;  // ゲームを再開
+                game->SetIsPaused(true);  // ゲームを再開
             }
 
             if (g_bgm) {

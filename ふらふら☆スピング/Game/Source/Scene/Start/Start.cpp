@@ -11,7 +11,7 @@ bool Start1::Start()
     // ★ カウントダウン開始 → ゲーム全体を停止
     Game* game = FindGO<Game>("game");
     if (game) {
-        game->m_isPaused = true;
+        game->SetIsPaused(true);
     }
 
 	m_3.Init("Assets/sprite/3.dds", 400.0f, 300.0f);
@@ -33,7 +33,7 @@ void Start1::Update()
         // ★ カウントダウン終了 → ゲーム再開
         Game* game = FindGO<Game>("game");
         if (game) {
-            game->m_isPaused = false;
+            game->SetIsPaused(false);
         }
 
         DeleteGO(this);
