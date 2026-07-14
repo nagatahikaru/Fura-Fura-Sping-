@@ -128,6 +128,8 @@ bool Batter::Start()
 		BATTER::BAT::COLLISION_SCALE_BAT);
 	m_characterModel->Update();	
 
+	
+
 	m_inGameUI = FindGO<InGameUI>("inGameUI");
 	m_game = FindGO<Game>("game");
 	m_ball = FindGO<Ball>("ball");
@@ -151,6 +153,36 @@ void Batter::UpdateModelPosition()
 		m_characterModel->SetPosition(m_posIdle);
 	}
 }
+
+void Batter::setDifficultyVariables()
+{
+	if(m_isDifficultyConfigured)
+	{
+		return; // 難易度設定済みなら何もしない
+	}
+
+	// 難易度に応じて変数を設定
+	switch (m_game->GetDifficulty()) {
+	case Difficulty::Easy:
+		m_meatRange = m_meatRange*3.0f;
+		m_adjacentFrames = 8;
+		m_isDifficultyConfigured = true;
+		break;
+	case Difficulty::Normal:
+		m_meatRange = m_meatRange*2.0f;
+		m_adjacentFrames = 5;
+		m_isDifficultyConfigured = true;
+		break;
+	case Difficulty::Hard:
+		m_meatRange = m_meatRange;
+		m_adjacentFrames = 2;
+		m_isDifficultyConfigured = true;
+		break;
+	default:
+		break;
+	}
+}
+
 void Batter::Update()
 {
 	if(m_isPaused)
@@ -189,6 +221,7 @@ void Batter::Update()
 		g_effectManager->AllStopEffect(); // エフェクトも停止
 		return;   // ← これでキャッチャーの動きが完全停止
 	}
+	setDifficultyVariables();
 	UpdateModelPosition();
 	// バッターのステートマシンを更新
 	m_stateMachine->Update();
@@ -460,9 +493,8 @@ void Batter::HitBat()
 
 	// アニメーションの当たりフレーム
 	constexpr int HIT_CENTER_FRAME = 34;
-	constexpr int HIT_FRAME_RANGE = 2;
 	if (m_characterModel == nullptr ||
-		!m_characterModel->IsInKeyFrameWindow(HIT_CENTER_FRAME, HIT_FRAME_RANGE))
+		!m_characterModel->IsInKeyFrameWindow(HIT_CENTER_FRAME, m_adjacentFrames))
 	{
 		return;
 	}

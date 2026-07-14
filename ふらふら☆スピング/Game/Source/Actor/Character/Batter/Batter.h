@@ -77,7 +77,7 @@ private:
     Transform m_transform;                                              // トランスフォーム    
     Quaternion m_initialRotation;                                       // 初期回転
 
-    Vector3 m_facingDir = Vector3(1.0f, 0.0f, 0.0f);                   // プレイヤーの向き
+    Vector3 m_facingDir = Vector3(1.0f, 0.0f, 0.0f);                    // プレイヤーの向き
     Vector3 m_meetPosition;                                             // ミート位置    
     Vector3 m_meetCursorWorldPos;                                       // カーソルワールド座標    
     Vector3 m_cursorOffset;                                             // カーソルオフセット
@@ -98,14 +98,16 @@ private:
     bool m_isDelayFrag = false;                                         // カーソル移動の遅延フラグ    
     bool m_isRotation = true;                                           // 回転有効
     bool m_isReplay = false;                                            // リプレイ中フラグ
+	bool m_isDifficultyConfigured = false;                              // 難易度設定済みフラグ
 
-    float m_meatRange = 50.0f;                                         // ヒット範囲    
+    float m_meatRange = 50.0f;                                          // ヒット範囲    
     float m_cursorMoveScale = 1.0f;                                     // カーソル移動速度倍率 
     float m_prevAngle = 0.0f;                                           // 前回角度    
     float m_guruGuruBatTimer = 0.0f;                                    // 回転タイマー    
     float m_totalRotation = 0.0f;                                       // 総回転量
 
     int m_guruGuruBatCount = 0;                                         // 回転回数
+	int m_adjacentFrames = 0;                                           // 前後フレームの値
 
     struct EffectInfo
     {
@@ -484,4 +486,8 @@ public:
     {
         return m_inGameUI;
 	}
+
+    //難易度ごとに打ちやすさを変更する関数
+    void setDifficultyVariables();
+
 };
