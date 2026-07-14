@@ -657,7 +657,31 @@ void InGameUI::Render(RenderContext& rc) {
 			m_ballMapIcon.Update();
 			m_ballMapIcon.Draw(rc);
 		
+			// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
+			if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed && !isReadyPhase)
+			{
+				m_taimingu.SetPosition(Vector3{ 800.0f, -50.0f, 0.0f });
+				m_taimingu.Update();
+				m_taimingu.Draw(rc);
 
+				// ★ 0.5秒ごとに m_isAltUI が true / false になる
+				if (m_isAltUI) {
+					// 交互UI：Aボタン2
+					m_Abotan2.SetPosition(Vector3{ 800.0f, -233.0f, 0.0f });
+					m_Abotan2.Update();
+					m_Abotan2.Draw(rc);
+
+					m_gizagiza.SetPosition(Vector3{ 800.0f,-180.0f, 0.0f });
+					m_gizagiza.Update();
+					m_gizagiza.Draw(rc);
+				}
+				else {
+					// 交互UI：Aボタン
+					m_Abotan.SetPosition(Vector3{ 800.0f, -233.0f, 0.0f });
+					m_Abotan.Update();
+					m_Abotan.Draw(rc);
+				}
+			}
 		
 		}
 	
@@ -684,31 +708,7 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 
 
-		// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
-		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed && !isReadyPhase)
-		{
-			m_taimingu.SetPosition(Vector3{ 800.0f, -50.0f, 0.0f });
-			m_taimingu.Update();
-			m_taimingu.Draw(rc);
-
-			// ★ 0.5秒ごとに m_isAltUI が true / false になる
-			if (m_isAltUI) {
-				// 交互UI：Aボタン2
-				m_Abotan2.SetPosition(Vector3{ 800.0f, -233.0f, 0.0f });
-				m_Abotan2.Update();
-				m_Abotan2.Draw(rc);
-
-				m_gizagiza.SetPosition(Vector3{ 800.0f,-180.0f, 0.0f });
-				m_gizagiza.Update();
-				m_gizagiza.Draw(rc);
-			}
-			else {
-				// 交互UI：Aボタン
-				m_Abotan.SetPosition(Vector3{ 800.0f, -233.0f, 0.0f });
-				m_Abotan.Update();
-				m_Abotan.Draw(rc);
-			}
-		}
+	
 		if (m_isStrikeAnim) {
 
 			// ① 拡大アニメ（0.4秒）

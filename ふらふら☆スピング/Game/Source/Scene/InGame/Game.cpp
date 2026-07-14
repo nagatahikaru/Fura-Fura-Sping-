@@ -428,17 +428,17 @@ void Game::Update()
 		}
 
 		// スイング（インパクト）の同期タイミング
-		int swingTiming = m_bestSwingFrame;
+		int swingTiming = m_bestSwingFrame + m_replaySwingDelayFrames;
 
 		// 記録されたスイングフレーム情報がある場合は、必ずそのタイミングでアニメを再生する
-		if (m_bestShotIndex >= 0 && index == swingTiming) {
+		if (m_bestShotIndex >= 0 && !m_hasPlayedReplaySwing && index >= swingTiming) {
 			m_batter->PlaySwingAnimation();
-			m_batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(4.0f);
+			m_batter->GetCharacterModel()->GetModelRender()->SetAnimationSpeed(2.0f);
 
-			// インパクトの瞬間だけ全体の時間を一瞬止める（ヒットストップ）
-			m_hitStopTimer = 0.05f; // 約5フレーム分ホールド
+			m_hitStopTimer = 0.05f;
 			m_isHitStop = true;
 			m_ball->m_hasHit = true;
+			m_hasPlayedReplaySwing = true; // ★ 二重発火防止
 		}
 
 		// ★ リプレイのインデックスを毎フレーム1ずつ確実に進める

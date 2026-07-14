@@ -140,7 +140,8 @@ public:
 	float m_timeScale = 1.0f;
 	bool m_isInputLocked = false;
 	void SetBallLanded(bool flag) { m_isBallLanded = flag; }
-
+	void SetReplaySwingDelayFrames(int frames) { m_replaySwingDelayFrames = frames; }
+	int GetReplaySwingDelayFrames() const { return m_replaySwingDelayFrames; }
 private:
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。
@@ -190,5 +191,7 @@ private:
 	bool m_startFadeSE2 = false;
 	int m_prevGuruGuru = 0;
 	bool m_hasSwung[3] = { false, false, false };
-	Difficulty m_difficulty = Difficulty::Easy; };
+	Difficulty m_difficulty = Difficulty::Easy;
+	int m_replaySwingDelayFrames = 0;
+ };
 
