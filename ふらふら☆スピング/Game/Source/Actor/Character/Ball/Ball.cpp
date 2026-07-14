@@ -84,13 +84,13 @@ void Ball::Update()
 {
     Game* game = FindGO<Game>("game");
     if (!game) return;  // ← 最重要
-    bool isReplay = (game && game->m_isReplayPlaying);
+    bool isReplay = (game && game->GetIsReplayPlaying());
     if (!isReplay) {
 
         if (m_isPaused) return;
         if (!game->IsGameStarted()) return;
-        if (game->m_isHitStop) return;
-        if (game->m_isPaused) return;
+        if (game->GetIsHitStop()) return;
+        if (game->GetIsPaused()) return;
 
         float dt = (1.0f / 60.0f) * game->GetTimeScale();
 
@@ -210,9 +210,9 @@ void Ball::Update()
                     }
 
                     // ★ 空中で100m超えた瞬間にイベント発火
-                    if (!game->m_hasTriggered100m && distance >= 25000.0f&&m_position.y>=250.0f) {
+                    if (!game->GetHasTriggered100m() && distance >= 25000.0f && m_position.y >= 250.0f) {
                         game->OnOver100m();
-                        game->m_hasTriggered100m = true;
+                        game->SetHasTriggered100m(true);
                     }
                 }
             }
@@ -253,10 +253,10 @@ void Ball::Update()
             if (!m_hasHit && m_position.z > 9000.0f) {
                 Game* game = FindGO<Game>("game");
                 if (game) {
-                    game->m_isInputLocked = true;
+                    game->SetIsInputLocked(true);
                     InGameUI* ui = game->GetInGameUI();
                     if (ui) {
-                        ui->OnStrike(game->m_shots);   // 今の球にバツを付ける
+                        ui->OnStrike(game->GetShots());   // 今の球にバツを付ける
                         ui->ResetBatAndMeetOnly();     // ★ 追加：空振りした瞬間にバットとミートをリセット
                     }
                     game->SetKmValue(0);   // 空振りは距離0
@@ -364,7 +364,7 @@ void Ball::Update()
        float replayScale = 14.0f;
        m_modelRender.SetScale({ replayScale, replayScale, replayScale });
 
-       float dt = game->m_isHitStop ? 0.0f : g_gameTime->GetFrameDeltaTime();
+       float dt = game->GetIsHitStop() ? 0.0f : g_gameTime->GetFrameDeltaTime();
 
        m_rotationAngle += m_rotateSpeed * dt;
 
@@ -527,7 +527,7 @@ void Ball::Throw(const Vector3& targetPos)
 
     // ★ 投げた瞬間の Z を UI に送る（必須）
     if (game) {
-        game->m_isKakutei = false;
+        game->SetIsKakutei(false);
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
             ui->SetStartZ(m_position.z);
@@ -592,15 +592,15 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     m_hasHit = true;
     Game* game = FindGO<Game>("game");
     if (game) {
-        int shot = game->m_shots;
-        game->m_hitStartZ = m_position.z;   // ★ 追加
-        game->m_hasStartedDistance = true;   // ★ 追加
+        int shot = game->GetShots();
+        game->SetHitStartZ(m_position.z);   // ★ 追加
+        game->SetHasStartedDistance(true);   // ★ 追加
         // ★ 打った瞬間のフレームを保存
-        game->m_hitFrame[shot] = game->GetReplayFrameCount();
-        game->m_hitVelocities[game->m_shots] = m_velocity;     // ← 速度
-        game->m_hitDirections[game->m_shots] = dir;            // ← 方向
-        game->m_hitStartPos[game->m_shots] = m_position;       // ← 位置
-        game->m_hitPower[game->m_shots] = hitPower;            // ← パワー
+        game->SetHitFrame(shot,game->GetReplayFrameCount());
+        game->SetHitVelocity(game->GetShots(), m_velocity);     // ← 速度
+        game->SetHitDirection(game->GetShots(),dir);            // ← 方向
+        game->SetHitStartPos(game->GetShots(), m_position);       // ← 位置
+        game->SetHitPower(game->GetShots(), hitPower);            // ← パワー
     }
     if (game) {
         InGameUI* ui = game->GetInGameUI();
@@ -612,16 +612,16 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     // ★ 打った瞬間の予測距離を計算
     float predicted = PredictLandingDistance();
     if (game) {
-        bool isReplay = game->m_isReplayPlaying;
+        bool isReplay = game->GetIsReplayPlaying();
         // ★ パーフェクト閾値（あなたのUIと合わせる）
         bool isPerfect = (predicted >= 99500.0f);
 
         if (isPerfect&& !isReplay) {
 
             // ★ 確定演出フラグON
-            game->m_isKakutei = true;
-            game->m_kakuteiTimer = 1.0f;
-            game->m_timeScale = 7.0f;
+            game->SetIsKakutei(true);
+            game->SetKakuteiTimer(1.0f);
+            game->SetTimeScale(7.0f);
             GameCamera* cam = game->GetGameCamera();
             if (cam) {
                 cam->SetkakuteiCamera();
@@ -642,10 +642,10 @@ float Ball::PredictLandingDistance()
     Game* game = FindGO<Game>("game");
     if (!game) return 0.0f;
 
-    int shot = game->m_shots;
+    int shot = game->GetShots();
 
     Vector3 pos = m_hitStartPos;
-    Vector3 vel = game->m_hitVelocities[shot];
+    Vector3 vel = game->GetHitVelocity(shot);
 
     float dt = 1.0f / 60.0f;
     Difficulty currentDifficulty = Normal; // デフォルト
@@ -714,7 +714,7 @@ void Ball::Render(RenderContext& rc)
     Game* game = FindGO<Game>("game");
 
     // 【追加】リプレイ中の特殊な非表示・表示ルール
-    if (game && game->m_isReplayPlaying)
+    if (game && game->GetIsReplayPlaying())
     {
         // 打った後は無条件で必ず描画する
         if (m_hasHit)
@@ -723,7 +723,7 @@ void Ball::Render(RenderContext& rc)
             return;
         }
 
-        if (game->m_replayDelayTimer > 0.0f)
+        if (game->GetReplayDelayTimer() > 0.0f)
         {
             return;
         }
@@ -779,7 +779,7 @@ void Ball::Render(RenderContext& rc)
         }
 
         // 一定距離で消す（通常プレイ中のバッター手前での消失処理など）
-        if (game && game->m_isReplayPlaying &&m_position.z > 6900.0f)
+        if (game && game->GetIsReplayPlaying() && m_position.z > 6900.0f)
         {
             return;
         }

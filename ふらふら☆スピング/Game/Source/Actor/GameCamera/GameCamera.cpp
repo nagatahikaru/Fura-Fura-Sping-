@@ -94,7 +94,7 @@ void GameCamera::Update() {
 
     // ★ ポーズ中はカメラを止める
     Game* game = FindGO<Game>("game");
-    if (game && game->m_isPaused) {
+    if (game && game->GetIsPaused()) {
         return;   // ← これでカメラが完全停止
     }
 

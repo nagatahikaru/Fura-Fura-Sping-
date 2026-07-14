@@ -132,7 +132,7 @@ void Catcher::Update()
 		return;
 	}
 
-	if (m_game && m_game->m_isPaused) return;
+	if (m_game && m_game->GetIsPaused()) return;
 	if (!m_game->IsGameStarted())return;
 
 	Catch();

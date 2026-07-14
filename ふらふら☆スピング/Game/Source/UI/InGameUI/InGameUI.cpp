@@ -237,7 +237,7 @@ void InGameUI::Update() {
 		}
 	}
 	Game* game = FindGO<Game>("game");
-	bool isKakutei = (game && game->m_isKakutei);
+	bool isKakutei = (game && game->GetIsKakutei());
 
 	// ★ 集中線用のアニメーションタイマーを進める
 	m_animeTimer += g_gameTime->GetFrameDeltaTime();
@@ -541,11 +541,11 @@ void InGameUI::Render(RenderContext& rc) {
 	Game* game = FindGO <Game>("game");
 	bool isReadyPhase = false;
 	if (game) {
-		isReadyPhase = game->m_isReadyPhase; 
+		isReadyPhase = game->GetIsReadyPhase(); 
 	}
 
 	bool isKakuteiMode = (game && game->GetCameraMode() == Camera_Kakutei);
-	bool showShuchusen = (game && game->m_isKakutei) || isKakuteiMode || (m_shuchusenTimer > 0.0f);
+	bool showShuchusen = (game && game->GetIsKakutei()) || isKakuteiMode || (m_shuchusenTimer > 0.0f);
 	if (showShuchusen) {
 
 		// 2. 上に白い集中線（m_imagesen）を重ねて描画
@@ -745,7 +745,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 		bool shouldShowStageUI = false;
 		if (game) {
-			bool isReadyPhase = game->m_isReadyPhase; // 操作確認フラグを取得
+			bool isReadyPhase = game->GetIsReadyPhase(); // 操作確認フラグを取得
 			bool isCatcherAndNotGuruGuru = (game->GetCameraMode() == Camera_Catcher && m_guruGuruTimer <= 0.0f);
 
 			if (isReadyPhase || isCatcherAndNotGuruGuru) {
