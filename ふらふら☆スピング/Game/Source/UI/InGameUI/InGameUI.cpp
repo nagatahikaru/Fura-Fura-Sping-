@@ -19,16 +19,7 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
 //UpdateSpriteInfo:スプライト情報更新
 namespace {
 	std::string FILE_PATH = ("Assets/sprite/");
-	std::string FILE_PATH_NUMBER = ("Number/");
 	std::string FILE_PATH_DDS = (".DDS");
-	std::string NUMBER_FILE_PATH[10] = {
-		"0","1","2","3","4","5","6","7","8","9"
-	};
-
-	inline std::string GetNumberFilePath(const int number)
-	{
-		return FILE_PATH + FILE_PATH_NUMBER + NUMBER_FILE_PATH[number] + FILE_PATH_DDS;
-	}
 
 	inline std::string GetSpriteFilePath(const std::string& name)
 	{
@@ -136,25 +127,6 @@ InGameUI::InGameUI() {
 	InitSprite(m_guruN, "guruguruN", 300.0f, 295.0f);
 }
 
-//スコア初期化
-void InGameUI::InitializeScore()
-{
-	m_nowScoreMagnification = nsUI::nsMagnification::MIN;
-
-	for (int i = 0; i < enMaxScoreDigit; i++)
-	{
-		m_scoreMagnificationUI[i].nowScoreMagnifcation = 0;
-
-		UpdateSpriteInfo(
-			&m_scoreMagnificationUI[i].sprite,
-			nsUI::nsMagnification::POS[i],
-			nsUI::nsMagnification::SCALE,
-			GetNumberFilePath(0)
-		);
-	}
-}
-
-
 InGameUI::~InGameUI() {
 
 }
@@ -165,8 +137,6 @@ bool InGameUI::Start() {
 	m_meetPositionRight = Vector3{ 39.0f, 5.0f, 0.0f };
 	m_meetPositionLeft = Vector3{ -46.0f,7.0f,0.0f };
 	m_ballCount = 3;
-
-	InitializeScore();
 	return true;
 }
 
@@ -190,11 +160,6 @@ void InGameUI::Update() {
 		if (m_buttonPressTimer <= 0.0f) {
 			m_isButtonPressed = false;
 		}
-	}
-
-	if (m_ScoreMagnification != m_pastScoreMagnification)
-	{
-		MagnificationInit();
 	}
 
 	m_uiToggleTimer += g_gameTime->GetFrameDeltaTime();
@@ -567,74 +532,6 @@ void InGameUI::OnStrike(int ballIndex)
 	m_isMiss[ballIndex] = true;  // ← この球は空振り
 }
 
-void InGameUI::MagnificationInit()
-{
-	m_nowScoreMagnification = m_ScoreMagnification;
-	m_nowScoreMagnification = std::min<int>(m_nowScoreMagnification, 50000);
-	int harderDigit = 0;
-
-	bool useLeftSide = (m_guruGuruTimer > 0.0f && m_isScoreMagnificationChanged == true);
-	const Vector3* posTable = useLeftSide ? nsUI::nsMagnification::POS : nsUI::nsMagnification::POS2;
-
-	// ★ ループ方向は常に「高い桁→低い桁」で固定
-	for (int i = enMaxScoreDigit - 1; i >= 0; i--)
-	{
-		int oldScore = m_scoreMagnificationUI[i].nowScoreMagnifcation;
-		m_scoreMagnificationUI[i].nowScoreMagnifcation =
-			(m_nowScoreMagnification - harderDigit) /
-			nsUI::nsMagnification::DIGIT[i];
-
-		m_scoreMagnificationUI[i].nowScoreMagnifcation =clamp(
-				m_scoreMagnificationUI[i].nowScoreMagnifcation,
-				0,
-				9
-			);
-		harderDigit += m_scoreMagnificationUI[i].nowScoreMagnifcation * nsUI::nsMagnification::DIGIT[i];
-
-		// 位置・スケールは値が変わってなくても必ず更新
-		m_scoreMagnificationUI[i].sprite.SetPosition(posTable[i]);
-		m_scoreMagnificationUI[i].sprite.SetScale(nsUI::nsMagnification::SCALE);
-
-		if (oldScore != m_scoreMagnificationUI[i].nowScoreMagnifcation)
-		{
-			int fileNum = m_scoreMagnificationUI[i].nowScoreMagnifcation;
-			m_scoreMagnificationUI[i].sprite.Init(GetNumberFilePath(fileNum).c_str(), 1.0f, 1.0f);
-		}
-		m_scoreMagnificationUI[i].sprite.Update();
-	}
-
-	if (m_nowScoreMagnification >= m_pastScoreMagnification)
-		m_pastScoreMagnification = m_nowScoreMagnification;
-}
-
-void InGameUI::MagnificationCalculation(){
-	// ★ 0回＝1倍、40回＝40倍 の反比例カーブ
-	float t = m_guruGuruCount / 50.0;
-	if (t < 0.0) t = 0.0;
-	if (t > 1.0) t = 1.0;
-
-	// カーブの急さ（2.0〜3.0で調整可能）
-	float p = 2.5;
-
-	// 1 + 39 * t^p
-	float maxMultiplier = 50.0; // ハード（デフォルトは50倍マックス）
-
-	if (m_game->GetDifficulty() == Difficulty::Easy) {
-		maxMultiplier = 10.0;     // イージーは10倍マックス
-	}
-	else if (m_game->GetDifficulty() == Difficulty::Normal) {
-		maxMultiplier = 45.0;     // ノーマルは25倍マックス
-	}
-	else if (m_game->GetDifficulty() == Difficulty::Hard) {
-		maxMultiplier = 100.0;     // ノーマルは25倍マックス
-	}
-
-	// 各難易度に応じた倍率計算式 ( 1.0 + (マックス倍率 - 1.0) * t^p )
-	float multiplier = 1.0 + (maxMultiplier - 1.0) * pow(t, p);
-	// 先に100倍してから丸めることで、小数点第二位までの変化を保持する
-	m_ScoreMagnification = static_cast<int>(multiplier * 100.0f + 0.5f); // 四捨五入
-}
-
 void InGameUI::Render(RenderContext& rc) {
 
 	if (m_isPaused) {
@@ -761,20 +658,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_ballMapIcon.Draw(rc);
 		
 
-		if (m_guruGuruTimer > 0.0f && m_isScoreMagnificationChanged == true ||
-			m_guruGuruTimer <= 0.0f && m_isScoreMagnificationChanged == false)
-		{
-			//フラグが切り替わる時に事前に位置の入れ替えを行う
-			if (m_isScoreMagnificationChanged != m_isScoreMagnificationCheck)
-			{
-				MagnificationInit();
-				m_isScoreMagnificationCheck = m_isScoreMagnificationChanged;
-			}
-			// スコア表示
-			for (int i = 0; i < enMaxScoreDigit; ++i)
-			{
-				m_scoreMagnificationUI[i].sprite.Draw(rc);
-			}
+		
 		}
 	
 
@@ -905,7 +789,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_fontStage.SetColor(0, 0, 0, 1);
 			m_fontStage.Draw(rc);
 		}
-	}
+	
 
 	if (m_isFontVisible) {
 
