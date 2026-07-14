@@ -2,54 +2,6 @@
 #include "Source/Source.h"
 class Game;
 
-enum EnMagnification {
-	enMagnification_Hundredth,
-	enMagnification_Tenth,
-	enMagnification_Singledigit,
-	enMagnification_Doubledigit,
-	enMagnification_Tripledigit,
-	enMagnification_num
-};
-
-enum {enMaxScoreDigit = 5};
-
-namespace nsUI {
-	namespace nsMagnification {
-		const Vector3 POS[enMagnification_num]= {
-			{ -620.0f, -100.0f, 0.0f },
-			{ -690.0f, -100.0f, 0.0f },
-			{ -760.0f, -100.0f, 0.0f },
-			{ -830.0f, -100.0f, 0.0f },
-			{ -900.0f, -100.0f, 0.0f },
-		};
-
-		const Vector3 POS2[enMagnification_num] = {
-			{ -620.0f, -100.0f, 0.0f },
-			{ -690.0f, -100.0f, 0.0f },
-			{ -760.0f, -100.0f, 0.0f },
-			{ -830.0f, -100.0f, 0.0f },
-			{ -900.0f, -100.0f, 0.0f },
-		};
-
-		constexpr int DIGIT[enMaxScoreDigit] = {
-			1, 10, 100, 1000, 10000
-		};
-
-		constexpr int MIN = 0;
-		constexpr int MAX = 99999;
-
-		const Vector3 SCALE = {
-			Vector3(0.0f, 0.0f, 0.0f)
-		};
-	}
-}
-
-struct Magnifcation {
-	int nowScoreMagnifcation = 0;
-	SpriteRender sprite;
-};
-
-
 class InGameUI :public Source
 {
 public:
@@ -118,8 +70,6 @@ public:
 	float m_perfectAnimTimer = 0.0f;
 	bool  m_isPerfectAnimActive = false;
 	void SetGameInstance(Game* game) { m_game = game; }	
-	void MagnificationCalculation();
-	void SetIsScoreMagnificationChanged(bool isChanged) { m_isScoreMagnificationChanged = isChanged; }
 	void SetDebuffComment(const wchar_t* comment)
 	{
 		m_debuffComment = comment;
@@ -249,21 +199,8 @@ private:
 	SpriteRender m_guruE;
 	SpriteRender m_guruN;
 	Game* m_game = nullptr;
-
-	int m_nowScoreMagnification = 0;
-	int m_ScoreMagnification = 0;
-	std::array<Magnifcation, enMaxScoreDigit> m_scoreMagnificationUI;
-	int m_pastScoreMagnification = 0;
-	bool m_isScoreMagnificationChanged = true;
-	bool m_isScoreMagnificationCheck = false;
 	const wchar_t* m_debuffComment = nullptr;
 	
-
-	void InitializeScore();
-	void MagnificationInit();
-	
-	
-
 	// ----------------------------------------
 	// 便利関数
 	// ----------------------------------------
