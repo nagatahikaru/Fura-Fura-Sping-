@@ -744,6 +744,7 @@ void Game::StartEndFade()
 int Game::GetReplayFrameCount() const {
 	return m_replayFrameCounter;
 }
+
 void Game::OnPitcherThrow()
 {
 	int shot = m_shots;

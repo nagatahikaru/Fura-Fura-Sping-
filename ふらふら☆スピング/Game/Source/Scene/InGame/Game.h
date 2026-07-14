@@ -60,7 +60,7 @@ private:
 	int   m_bestShotIndex = -1;
 	std::vector<Vector3> m_currentReplay; // 再生中の軌道
 	bool m_shouldStartReplay = false;
-	float m_replayDuration = 3.0f;   // リプレイは3秒で打ち切り
+	float m_replayDuration = 5.0f;   // リプレイは3秒で打ち切り
 	Vector3 m_initialVelocities[3];   // 1球目〜3球目の投球直後の速度
 	int m_replayStartFrame = 0;
 	int m_replayPitchFrame = 0;
@@ -104,15 +104,15 @@ private:
 	struct ReplayFrame {
 		Vector3 ballPos;
 		Vector3 ballVel;
-	
+
 		float batterAnimTime;
 		float pitcherAnimTime;
-	
+
 		bool swingTriggered; // Aボタン押した瞬間
 	};
 	std::vector<ReplayFrame> m_replayFrames[3]; // 3球分
 	bool m_isPaused = false;
-
+	int m_replaySwingDelayFrames = 0;
 public:
 	Game() {}
 	~Game();
@@ -126,6 +126,7 @@ public:
 	void DecideBestReplay();
 	void GoToResult();
 	void OnBallLanded();
+	void OnPitcherThrow();
 	bool GetIsPaused()
 	{
 		return m_isPaused;
@@ -328,9 +329,9 @@ public:
 	{
 		return m_replayDelayTimer;
 	}
-	void SetReplayDelayTimer(float timer) 
+	void SetReplayDelayTimer(float timer)
 	{
-		m_replayDelayTimer=timer;
+		m_replayDelayTimer = timer;
 	}
 	std::vector<ReplayFrame> GetReplayFrames(int shotIndex) const
 	{
@@ -364,7 +365,7 @@ public:
 	CameraMode GetCameraMode() const { return m_cameraMode; }
 	void SetDifficulty(Difficulty diff) { m_difficulty = diff; }
 	Difficulty GetDifficulty() const { return m_difficulty; }
-	int GetGuruguru()const{
+	int GetGuruguru()const {
 		return  m_guruguru;
 	}
 	void SetGuruGuru(int count)
@@ -425,6 +426,6 @@ public:
 	void StartReplayRecording();
 	int GetShots() const { return m_shots; }
 	bool IsRecording() const { return m_isRecording; }
-
-
-	
+	void SetReplaySwingDelayFrames(int frames) { m_replaySwingDelayFrames = frames; }
+	int GetReplaySwingDelayFrames() const { return m_replaySwingDelayFrames; }
+};
