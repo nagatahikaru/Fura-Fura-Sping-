@@ -54,7 +54,7 @@ bool Ball::Start()
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
 	m_modelRender.SetScale({ 8.5f,8.5f,8.5f });
 
-	m_position = { -60.0f, 625.0f, 1900.0f };
+	m_position = { -60.0f, 650.0f, 1900.0f };
 	m_throwStartPos = m_position;
 	m_throwEndPos = m_position;
 	m_modelRender.SetPosition(m_position);
@@ -116,7 +116,6 @@ void Ball::Update()
                 float accelerationZ = 100.0f;
                 m_velocity.z += accelerationZ * dt;
             }
-            float baseGravity = 13.5f; // 元々のベース重力
 
             if (!m_hasHit && m_initialSpeedZ > 0.0f)
             {
@@ -125,12 +124,12 @@ void Ball::Update()
 
                 // 前に進む勢いが強まった分だけ、下への重力もその2乗に比例して強める
                 // これにより、速度が上がっても不自然に浮き上がらなくなります
-                m_velocity.y -= baseGravity * (speedMultiplier * speedMultiplier) * dt;
+                m_velocity.y -= m_baseGravity * (speedMultiplier * speedMultiplier) * dt;
             }
             else
             {
                 // 打撃後や加速前は通常の重力処理
-                m_velocity.y -= baseGravity * dt;
+                m_velocity.y -= m_baseGravity * dt;
             }
 
             //  1. 元の m_velocity を破壊しないよう、このフレーム専用の速度変数を作る
@@ -422,11 +421,6 @@ void Ball::Throw(const Vector3& targetPos)
 	m_throwStartPos = m_position;
 	m_targetPos = targetPos;
 	m_throwEndPos = targetPos;
-
-    Vector3 dir = { 0.0f,-0.1f,3.0f };
-    dir.Normalize();
-
-    float speed = 2000.0f + (rand() % 250);
  
     // ★ 1. ゲーム側から現在の難易度を取得する
     Difficulty currentDifficulty = Normal; // デフォルト
@@ -434,6 +428,38 @@ void Ball::Throw(const Vector3& targetPos)
     if (game) {
         currentDifficulty = game->GetDifficulty(); // ※Gameクラスにある難易度取得関数
     }
+
+    //難易度ごとの球速のベース値を変える
+    float baseSpeed = 2000.0f;
+
+    switch (currentDifficulty)
+    {
+    case Easy:
+        baseSpeed = 1300.0f;
+        m_baseGravity = 4.0f; 
+        break;
+    case Normal:
+        baseSpeed = 1500.0f;
+        m_baseGravity = 9.5f;
+        break;
+    default: //Hard
+        baseSpeed = 2000.0f;
+        m_baseGravity = 25.0f;
+        break;
+    }
+
+    float speed = baseSpeed;
+
+    const float KReferenceSpeed = 2000.0f; //KReferenceSpeed:基準となる球速(Y方向の初速を計算するときに基準として使う球速の値)
+    const float KInitialVYRatio = -0.1 / 4.0f; //KInitialVYRatio:傾きの比率(Z方向に対してY方向がどのくらいの割合)
+    const float KFixedInitialVY = KInitialVYRatio * KReferenceSpeed; //常に同じ値
+
+    m_velocity.x = 0.0f;
+    m_velocity.y = KFixedInitialVY;
+    m_velocity.z = speed;
+
+    m_initialSpeedZ = m_velocity.z;
+    m_isMove = true;
 
     // ★ 2. 難易度に応じた球種の確率調整
     m_isMagicBall = false; // 初期化
@@ -494,10 +520,6 @@ void Ball::Throw(const Vector3& targetPos)
     {
         m_curveDir = 0.0f;
     }
-
-    m_velocity = dir * speed;
-    m_initialSpeedZ = m_velocity.z;
-    m_isMove = true;
 
     // ★ リプレイ記録開始（投球開始時）
     m_replayPath.clear();
