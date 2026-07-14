@@ -75,6 +75,7 @@ class Ball :public Character
 	float m_throwTimer = 0.0f;
 	float m_radius = 10.0f;
 	float m_baseScale = 50.0f;
+	float m_baseGravity = 0.0f; // 元々のベース重力
 	ModelRender m_modelRender;
 	bool m_hasReached5500 = false;
 	bool m_hasFixed = false;
