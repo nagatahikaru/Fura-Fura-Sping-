@@ -81,9 +81,9 @@ bool BatterIdleState::RequestState(uint32_t& request)
 	if (g_pad[0]->IsTrigger(enButtonA))
 	{
 		
-		if (game && game->m_isInputLocked)
+		if (game && game->GetIsInputLocked())
 		{
-			if (game->GetCurrentShotIndex() == 2 && game->m_isInputLocked)
+			if (game->GetCurrentShotIndex() == 2 && game->GetIsInputLocked())
 			{
 				return false; // 完全に無視して待機状態を維持
 			}
@@ -93,8 +93,8 @@ bool BatterIdleState::RequestState(uint32_t& request)
 			int frame = game->GetCurrentReplayRecordFrame();
 
 			// ★ このフレームの swingTriggered を true にする
-			if (frame < game->m_replayFrames[shot].size()) {
-				game->m_replayFrames[shot][frame].swingTriggered = true;
+			if (frame < game->GetReplayFrames(shot).size()) {
+				game->GetReplayFrames(shot)[frame].swingTriggered = true;
 			}
 		}
 
@@ -177,9 +177,9 @@ bool BatterCursorSetState::RequestState(uint32_t& request)
 	Game* game = FindGO<Game>("game");
 		if (g_pad[0]->IsTrigger(enButtonA))
 	{
-			if (game && game->m_isInputLocked)
+			if (game && game->GetIsInputLocked())
 			{
-				if (game->GetCurrentShotIndex() == 2 && game->m_isInputLocked)
+				if (game->GetCurrentShotIndex() == 2 && game->GetIsInputLocked())
 				{
 					return false; // 遷移を拒否
 				}

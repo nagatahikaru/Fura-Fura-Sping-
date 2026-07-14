@@ -147,7 +147,7 @@ void Pitcher::Update()
 
 	// ★ ポーズ中はアニメーションを止める
 
-	if (m_game && m_game->m_isPaused) {
+	if (m_game && m_game->GetIsPaused()) {
 		return;   // ← これで投球アニメが途中で停止する
 	}
 
@@ -188,7 +188,7 @@ void Pitcher::Update()
 			m_game->SetGameStarted(true);   // ★ これを足す
 			// ★ 投球開始フレームを記録
 			int shotIndex = m_game->GetShots();
-			m_game->m_pitchFrame[shotIndex] = m_game->GetReplayFrameCount();
+			m_game->SetPitchFrame(shotIndex,m_game->GetReplayFrameCount());
 		}
 	}
 

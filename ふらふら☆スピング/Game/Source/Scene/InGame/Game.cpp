@@ -128,7 +128,7 @@ void Game::Update()
 		if (g_soundManager && g_soundManager->m_seVolume > 0) {
 			g_soundManager->PlaySE(enSound_SE);   // 好きなSEに
 		}
-		m_isPaused = true;
+		SetIsPaused(true);
 
 		if (m_InGameUI) {
 			m_InGameUI->SetPause(true);
@@ -140,7 +140,7 @@ void Game::Update()
 	}
 
 	// ★ ポーズ中はゲーム停止
-	if (m_isPaused) {
+	if (GetIsPaused()) {
 		return;
 	}
 
