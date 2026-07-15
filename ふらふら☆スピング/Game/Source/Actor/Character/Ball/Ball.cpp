@@ -54,7 +54,7 @@ bool Ball::Start()
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
 	m_modelRender.SetScale({ 8.5f,8.5f,8.5f });
 
-	m_position = { -60.0f, 650.0f, 1900.0f };
+    m_position = { -60.0f, 780.0f, 1900.0f };
 	m_throwStartPos = m_position;
 	m_throwEndPos = m_position;
 	m_modelRender.SetPosition(m_position);
@@ -107,6 +107,40 @@ void Ball::Update()
         if (!m_hasHit)
         {
             m_velocity.x += m_curveDir * 2.0f * dt;
+            if (m_ballType == Straight)
+            {
+                float minZ = 1000.0f;
+                float maxZ = 6500.0f;
+                float progress = RemapClamp(m_position.z, minZ, maxZ);
+
+                float dropStartRatio = m_dropStartRatioOverride;
+
+                float gravityScale;
+                if (progress <= dropStartRatio)
+                {
+                    //序盤～中盤:重力はほぼ無効化→水平に伸びて見える
+                    gravityScale = 0.15f;
+                }
+                else
+                {
+                    //終盤:一気に重力を強める
+                    float t = RemapClamp(progress, dropStartRatio, 1.0f);
+                    float easedT = t * t * t;
+                    gravityScale = 0.15f + easedT * 6.0f;
+                }
+
+                m_velocity.y -= m_baseGravity * gravityScale * dt;
+            }
+            else if (m_initialSpeedZ > 0.0f)
+            {
+                float speedMultiplier = m_velocity.z / m_initialSpeedZ;
+                float clamped = fminf(speedMultiplier, 1.6f);
+                m_velocity.y -= m_baseGravity * (clamped * clamped) * dt;
+            }
+            else
+            {
+                m_velocity.y -= m_baseGravity * dt;
+            }
         }
 
         if (m_isMove)
@@ -415,9 +449,34 @@ void Ball::Slider(float dt)
     }
 }
 
+void Ball::ApplyProSpiritsDrop(float dt)
+{
+    float minZ = 1000.0f;  //リリース地点
+    float maxZ = 6500.0f;  //バッター手前(ヒットゾーン出口)
+
+    float progress = RemapClamp(m_position.z, minZ, maxZ);
+
+    float dropStartRatio = 0.72f;
+    float totalDrop = 90.0f;
+
+    float dropOffset = 0.0f;
+
+    if (progress > dropStartRatio)
+    {
+        float t = RemapClamp(progress, dropStartRatio, 1.0f);
+
+        float easedT = t * t * t;
+
+        dropOffset = easedT * totalDrop;
+    }
+
+    m_position.y = m_pitchStartY - dropOffset;
+}
+
 void Ball::Throw(const Vector3& targetPos)
 {
     m_rotationAngle = 0.0f;
+    m_pitchStartY = m_position.y;
 	m_throwStartPos = m_position;
 	m_targetPos = targetPos;
 	m_throwEndPos = targetPos;
