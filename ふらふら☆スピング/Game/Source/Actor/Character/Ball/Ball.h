@@ -30,6 +30,12 @@ class Ball :public Character
 	Vector3 GetFlightDirection() const;
 	float GetFlightLength() const;
 
+	//メンバ関数
+	void ApplyProSpiritsDrop(float dt);
+	//メンバ変数
+	float m_pitchStartY = 0.0f;
+	float m_dropStartRatioOverride;
+
 	bool IsMoving() const;
 	bool CheckCollision(const Vector3& pos, float radius);
 	//const Vector3& GetPosition() const { return m_position; }
