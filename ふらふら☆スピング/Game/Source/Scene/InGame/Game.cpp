@@ -84,7 +84,7 @@ void Game::Update()
 	switch (m_difficulty)
 	{
 	case Difficulty::Easy:
-		m_replayDuration = 5.0f;   // 長め
+		m_replayDuration = 5.5f;   // 長め
 		break;
 	case Difficulty::Normal:
 		m_replayDuration = 4.0f;   // 標準
@@ -657,6 +657,7 @@ void Game::StartReplay(int index)
 		m_ball->SetVelocity(Vector3::Zero); // ← 速度ゼロ
 		m_ball->m_isMove = false;           // ← 動作停止
 		m_ball->m_hasHit = false;           // ← ヒットフラグ解除
+		m_ball->SetIsMagicBall(m_isMagicBallShot[index]);
 	}
 
 
@@ -678,7 +679,8 @@ void Game::DecideBestReplay()
 	float best = -1.0f;
 
 	for (int i = 0; i < 3; i++) {
-		if (m_scores[i] > best && m_replayPaths[i].size() > 0) {
+		// ★ スコアが0（空振り）は対象外にする
+		if (m_scores[i] > 0.0f && m_scores[i] > best && m_replayPaths[i].size() > 0) {
 			best = m_scores[i];
 			m_bestShotIndex = i;
 		}
