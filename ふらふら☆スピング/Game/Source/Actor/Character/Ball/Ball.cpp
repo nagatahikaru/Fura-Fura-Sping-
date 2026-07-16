@@ -96,11 +96,11 @@ void Ball::Update()
 
         m_throwTimer += dt;
 
-        if (m_throwTimer >= 3.3f && !m_isMove)
+        if (m_throwTimer >= 3.7f && !m_isMove)
         {
             ResetBall();
 
-            Throw({ 0.0f, -20.0f, 0.0f });
+            Throw({ 0.0f, -15.0f, 0.0f });
             m_throwTimer = 0.0f;
         }
 
@@ -110,7 +110,7 @@ void Ball::Update()
             if (m_ballType == Straight)
             {
                 float minZ = 1000.0f;
-                float maxZ = 6500.0f;
+                float maxZ = 4500.0f;
                 float progress = RemapClamp(m_position.z, minZ, maxZ);
 
                 float dropStartRatio = m_dropStartRatioOverride;
@@ -119,14 +119,14 @@ void Ball::Update()
                 if (progress <= dropStartRatio)
                 {
                     //序盤～中盤:重力はほぼ無効化→水平に伸びて見える
-                    gravityScale = 0.15f;
+                    gravityScale = 0.5f;
                 }
                 else
                 {
                     //終盤:一気に重力を強める
                     float t = RemapClamp(progress, dropStartRatio, 1.0f);
                     float easedT = t * t * t;
-                    gravityScale = 0.15f + easedT * 6.0f;
+                    gravityScale = 0.15f + easedT * 8.0f;
                 }
 
                 m_velocity.y -= m_baseGravity * gravityScale * dt;
