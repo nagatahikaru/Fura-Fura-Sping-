@@ -114,6 +114,8 @@ private:
 	bool m_isPaused = false;
 	int m_replaySwingDelayFrames = 0;
 	bool m_isMagicBallShot[3] = { false, false, false };
+	float m_hitGlanceTimer = 0.0f;
+	bool  m_isHitGlancing = false;
 public:
 	Game() {}
 	~Game();
@@ -435,4 +437,7 @@ public:
 	bool GetIsMagicBallShot(int shot) const {
 		return (shot >= 0 && shot < 3) ? m_isMagicBallShot[shot] : false;
 	}
+
+	void StartHitGlance(float duration);
+
 };

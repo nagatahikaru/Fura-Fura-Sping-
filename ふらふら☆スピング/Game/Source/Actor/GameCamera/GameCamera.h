@@ -3,7 +3,8 @@ class Ball;
 enum FollowMode {
 	Follow_None,   // 追尾しない（横カメラ）
 	Follow_Back,   // 後ろから追尾
-	Follow_Side    // 横から見る（固定）
+	Follow_Side,    // 横から見る（固定）
+	Follow_ImpactGlance
 };
 class GameCamera:public IGameObject
 {
@@ -17,6 +18,7 @@ public:
 	void SetFollowBallCamera();
 	void SetFollowBallBackCamera();
 	void SetkakuteiCamera();
+	void SetImpactGlanceCamera();
 	// ★ ボールをセットする関数
 	void SetBall(Ball* ball) { m_ball = ball; }
 	void StartHitMomentCamera();

@@ -273,6 +273,27 @@ void Game::Update()
 		}
 	}
 
+	if (m_isHitGlancing) {
+		m_hitGlanceTimer -= g_gameTime->GetFrameDeltaTime();
+		if (m_hitGlanceTimer <= 0.0f) {
+			m_isHitGlancing = false;
+
+			if (m_isKakutei) {
+				// パーフェクト時は確定カメラへ
+				GameCamera* cam = GetGameCamera();
+				if (cam) {
+					cam->SetkakuteiCamera();
+					cam->FreezeCamera();
+				}
+			}
+			else {
+				// ★ 通常ヒット時はここで初めて打球追尾カメラへ切り替える
+				m_cameraMode = Camera_BackBall;
+			}
+		}
+		return; // 注視中は他のカメラ切り替えロジックを止める
+	}
+
 	switch (m_cameraMode) {
 	case Camera_Catcher:
 		m_gameCamera->SetCatcherCamera();
@@ -415,16 +436,6 @@ void Game::Update()
 		// 振りかぶりなどの遅延処理
 		if (m_replayDelayTimer > 0.0f) {
 			m_replayDelayTimer -= g_gameTime->GetFrameDeltaTime();
-			//float swingSec = 0.0f;
-			//if (m_bestShotIndex >= 0) {
-			//	swingSec = (m_pitchFrame[m_bestShotIndex] + m_swingFrame[m_bestShotIndex]) / 60.0f;
-			//}
-
-			//// 記録フレーム情報が存在すれば、その時間で再生する（ランタイムフラグには依存しない）
-			//if (m_bestShotIndex >= 0 && !m_hasPlayedReplaySwing && m_replaySwingTimer >= swingSec) {
-			//	m_batter->PlaySwingAnimation();
-			//	m_hasPlayedReplaySwing = true;
-			//}
 			return;
 		}
 
@@ -775,6 +786,15 @@ void Game::OnPitcherThrow()
 	// ★ ボールを飛ばす
 	if (m_ball) {
 		m_ball->Throw({ 0, -20, 0 });
+	}
+}
+
+void Game::StartHitGlance(float duration)
+{
+	m_hitGlanceTimer = duration;
+	m_isHitGlancing = true;
+	if (m_gameCamera) {
+		m_gameCamera->SetImpactGlanceCamera();
 	}
 }
 

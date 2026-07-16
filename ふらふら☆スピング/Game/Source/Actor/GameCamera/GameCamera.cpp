@@ -58,6 +58,12 @@ void GameCamera::SetReplayCamera() {
     m_followMode = Follow_None;   // ★ 追加
 }
 
+void GameCamera::SetImpactGlanceCamera() {
+    // 現在のカメラ位置は据え置いたまま、ターゲットだけボールに向ける
+    // 位置は今のカメラ位置を維持したいので変更しない
+    m_followMode = Follow_ImpactGlance;
+}
+
 //void GameCamera::SetReplayCamera() {
 //    m_cameraPos = { 6.5f, 300.0f, 6500.0f };
 //    m_target = { 0.0f, 2000.0f, 0.0f };
@@ -145,10 +151,10 @@ void GameCamera::Update() {
         m_cameraPos = LerpVec3(m_cameraPos, targetCamPos, 0.97f);
         m_target = ballPos;
     }
-    else if (m_followMode == Follow_Side && m_ball != nullptr) {
-
-        // 横カメラは固定向き
-        m_target = m_ball->GetPosition();
+    else if (m_followMode == Follow_ImpactGlance && m_ball != nullptr) {
+        // ボールの方向を軽く見るだけ。位置は動かさずターゲットだけ寄せる
+        Vector3 ballPos = m_ball->GetPosition();
+        m_target = LerpVec3(m_target, ballPos, 0.01f); // ゆっくり視線が寄る
     }
     else {
         m_target = m_cameraPos - m_forward * 100.0f;
