@@ -49,6 +49,9 @@ class Ball :public Character
 		return m_prevPosition;
 	}
 
+	bool GetIsMagicBall() const { return m_isMagicBall; }
+	void SetIsMagicBall(bool isMagicBall) { m_isMagicBall = isMagicBall; }
+
 	void Slider(float dt);
 
 	std::vector<Vector3> m_replayPath;

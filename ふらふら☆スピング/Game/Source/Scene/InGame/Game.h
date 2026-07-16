@@ -113,6 +113,7 @@ private:
 	std::vector<ReplayFrame> m_replayFrames[3]; // 3球分
 	bool m_isPaused = false;
 	int m_replaySwingDelayFrames = 0;
+	bool m_isMagicBallShot[3] = { false, false, false };
 public:
 	Game() {}
 	~Game();
@@ -428,4 +429,10 @@ public:
 	bool IsRecording() const { return m_isRecording; }
 	void SetReplaySwingDelayFrames(int frames) { m_replaySwingDelayFrames = frames; }
 	int GetReplaySwingDelayFrames() const { return m_replaySwingDelayFrames; }
+	void SetIsMagicBallShot(int shot, bool isMagic) {
+		if (shot >= 0 && shot < 3) m_isMagicBallShot[shot] = isMagic;
+	}
+	bool GetIsMagicBallShot(int shot) const {
+		return (shot >= 0 && shot < 3) ? m_isMagicBallShot[shot] : false;
+	}
 };

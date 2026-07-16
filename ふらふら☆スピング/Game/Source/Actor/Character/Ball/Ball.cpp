@@ -163,7 +163,7 @@ void Ball::Update()
                 break;
 
                 case ShakeVertical:
-                    m_position.y += sinf(m_position.z * 0.01f) * 3.0f;
+                    m_position.y += sinf(m_position.z * 0.008f) * 8.0f;
                     break;
 
                 case Straight:
@@ -351,8 +351,16 @@ void Ball::Update()
        float t = (m_position.z - minZ) / (maxZ - minZ);
        t = fmaxf(0.0f, fminf(t, 1.0f)); // 0.0〜1.0にクランプ
 
+       if (!m_hasHit) {
+           // 投球スタート位置からの X座標の差分（曲がり幅）を計算
+           float diffX = m_position.x - m_throwStartPos.x;
+
+           // その差分を5倍（お好みで調整）にして描画位置に適用
+           loweredPos.x = m_throwStartPos.x + (diffX * 5.0f);
+       }
+
        // いつでも左に寄せる処理（必要なければ 0.0f にしてください）
-       loweredPos.x -= 100.0f;
+      // loweredPos.x -= 100.0f;
        loweredPos.z -= 650.0f;
        // ★ バッターに近づくほど、徐々に指定の高さ（-280.0f）へ沈み込ませる
        // t=0(投げた瞬間) はそのままの高さ、t=1(打たれる場所) でジャスト -280.0f 下がります
@@ -496,9 +504,9 @@ void Ball::Throw(const Vector3& targetPos)
 
         //////////////////////////////
        //m_ballType = Straight;
-     //   m_ballType = ShakeHorizontal;
+        //m_ballType = ShakeHorizontal;
        // m_ballType = Curve;
-       // m_ballType = ShakeVertical;
+        //m_ballType = ShakeVertical;
        // m_ballType = SlowBall;
        /* if (rand() % 1 == 0) {
             m_isMagicBall = true;
@@ -509,6 +517,10 @@ void Ball::Throw(const Vector3& targetPos)
     if (m_ballType == SlowBall)
     {
         m_isMagicBall = false;
+    }
+
+    if (game) {
+        game->SetIsMagicBallShot(game->GetShots(), m_isMagicBall);
     }
 
     //カーブ
@@ -716,7 +728,6 @@ void Ball::Render(RenderContext& rc)
     // 【追加】リプレイ中の特殊な非表示・表示ルール
     if (game && game->GetIsReplayPlaying())
     {
-        // 打った後は無条件で必ず描画する
         if (m_hasHit)
         {
             m_modelRender.Draw(rc);
@@ -728,14 +739,32 @@ void Ball::Render(RenderContext& rc)
             return;
         }
 
-        // 2. 打撃ゾーン（Z=7000）に到達するまでは消す（消える魔球演出の再現など）
-        if (m_position.z > 6500.0f)
+        // ★ 魔球の消える演出をリプレイでも再現
+        if (m_isMagicBall)
+        {
+            if (!m_hasPlayedDisappearEffect && m_position.z >= 4600.0f)
+            {
+                g_effectManager->PlayEffect(
+                    enEffect_kemuri,
+                    m_position,
+                    Vector3(50.0f, 50.0f, 50.0f)
+                );
+                g_soundManager->PlaySE(enSound_SE14);
+                m_hasPlayedDisappearEffect = true;
+            }
+
+            if (m_position.z >= 4600.0f && m_position.z < 6000.0f)
+            {
+                return;
+            }
+        }
+
+        // ★ 空振り球（打っていない）がキャッチャーミットに到達したら瞬時に消す
+        if (!m_hasHit && m_position.z >= 6500.0f)
         {
             return;
         }
-        // --- ここまで ---
 
-        // 上記の非表示条件を抜けたら描画する（打つ直前の僅かな瞬間など）
         m_modelRender.Draw(rc);
         return;
     }
@@ -744,7 +773,7 @@ void Ball::Render(RenderContext& rc)
     if (m_isMagicBall && !m_hasHit)
     {
         if (!m_hasPlayedDisappearEffect &&
-            m_position.z >= 5200.0f)
+            m_position.z >= 4600.0f)
         {
             g_effectManager->PlayEffect(
                 enEffect_kemuri,
@@ -765,7 +794,7 @@ void Ball::Render(RenderContext& rc)
             {
                 return;
             }
-            if (m_position.z >= 5200.0f && m_position.z < 6000.0f)
+            if (m_position.z >= 4600.0f && m_position.z < 6000.0f)
             {
                 return;
             }
@@ -778,11 +807,6 @@ void Ball::Render(RenderContext& rc)
             }
         }
 
-        // 一定距離で消す（通常プレイ中のバッター手前での消失処理など）
-        if (game && game->GetIsReplayPlaying() && m_position.z > 6900.0f)
-        {
-            return;
-        }
     }
 
     // モデルの描画（通常プレイで打った後は無条件でここに来る）
