@@ -686,7 +686,7 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 	
 
-		if (m_hasPredictedBall&& m_game && m_game->GetDifficulty() != Difficulty::Hard) {
+		if (m_hasPredictedBall) {
 
 			Vector3 uiPos;
 
