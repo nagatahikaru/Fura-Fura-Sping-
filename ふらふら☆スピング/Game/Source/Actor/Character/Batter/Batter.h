@@ -108,7 +108,7 @@ private:
 
     int m_guruGuruBatCount = 0;                                         // 回転回数
 	int m_adjacentFrames = 0;                                           // 前後フレームの値
-
+    float m_difficultyPowerScale = 1.0f; // 難易度ごとの威力倍率
     struct EffectInfo
     {
         // 出現エフェクト

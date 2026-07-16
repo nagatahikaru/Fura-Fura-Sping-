@@ -166,16 +166,19 @@ void Batter::setDifficultyVariables()
 	case Difficulty::Easy:
 		m_meatRange = m_meatRange*3.0f;
 		m_adjacentFrames = 8;
+		m_difficultyPowerScale = 0.55f;
 		m_isDifficultyConfigured = true;
 		break;
 	case Difficulty::Normal:
 		m_meatRange = m_meatRange*2.0f;
 		m_adjacentFrames = 5;
+		m_difficultyPowerScale = 0.9f;
 		m_isDifficultyConfigured = true;
 		break;
 	case Difficulty::Hard:
 		m_meatRange = m_meatRange;
 		m_adjacentFrames = 2;
+		m_difficultyPowerScale = 1.3f;
 		m_isDifficultyConfigured = true;
 		break;
 	default:
@@ -585,7 +588,7 @@ void Batter::HitBat()
 
 	}
 	
-	float finalPower = 935.0f * powerScale;
+	float finalPower = 935.0f * powerScale * m_difficultyPowerScale;
 	m_ball->HitBall(hitDir, finalPower);
 
 	if (m_game) {
