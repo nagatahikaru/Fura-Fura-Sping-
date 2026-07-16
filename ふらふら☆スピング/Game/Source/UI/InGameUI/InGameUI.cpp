@@ -575,8 +575,8 @@ void InGameUI::Render(RenderContext& rc) {
 	if (m_isUIVisible) {
 
 			//赤い枠
-			m_wakuModel.SetPosition(-10.0f, 318.0f, 6000.0f);
-			m_wakuModel.SetScale(6.5f, 7.5f, 5.0f);
+			m_wakuModel.SetPosition(-18.0f, 320.0f, 6000.0f);
+			m_wakuModel.SetScale(5.5f, 5.5f, 3.0f);
 			m_wakuModel.Update();
 			m_wakuModel.Draw(rc);
 

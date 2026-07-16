@@ -54,7 +54,7 @@ bool Ball::Start()
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
 	m_modelRender.SetScale({ 20.0f,20.0f,20.0f });
 
-    m_position = { -60.0f, 780.0f, 1900.0f };
+    m_position = { -60.0f, 780.0f, 2000.0f };
 	m_throwStartPos = m_position;
 	m_throwEndPos = m_position;
 	m_modelRender.SetPosition(m_position);
@@ -96,7 +96,7 @@ void Ball::Update()
 
         m_throwTimer += dt;
 
-        if (m_throwTimer >= 3.7f && !m_isMove)
+        if (m_throwTimer >= 3.8f && !m_isMove)
         {
             ResetBall();
 
@@ -513,7 +513,7 @@ void Ball::Throw(const Vector3& targetPos)
         break;
     default: //Hard
         baseSpeed = 2000.0f;
-        m_baseGravity = 12.0f;
+        m_baseGravity = 16.0f;
         break;
     }
 
@@ -740,7 +740,7 @@ float Ball::PredictLandingDistance()
         gravity = 9.5f;
         break;
     default: // Hard
-        gravity = 12.0f;
+        gravity = 16.0f;
         break;
     }
 
