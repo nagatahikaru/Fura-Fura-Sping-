@@ -426,6 +426,8 @@ void Ball::Update()
     m_modelRender.Update();
 }
 
+
+
 void Ball::Slider(float dt)
 {
     float minZ = 1000.0f;
@@ -704,6 +706,10 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
             if (ui) {
                 ui->m_shuchusenTimer = 9999.0f;
             }
+        }
+        else if (!isReplay) {
+            // ★ 通常ヒット時にも軽い間を入れる
+            game->StartHitGlance(0.5f);
         }
     }
 }
