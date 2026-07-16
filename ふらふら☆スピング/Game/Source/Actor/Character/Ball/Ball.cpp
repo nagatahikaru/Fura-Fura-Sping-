@@ -52,7 +52,7 @@ bool Ball::Start()
 
 	//モデルの読み込み
 	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-	m_modelRender.SetScale({ 8.5f,8.5f,8.5f });
+	m_modelRender.SetScale({ 20.0f,20.0f,20.0f });
 
     m_position = { -60.0f, 780.0f, 1900.0f };
 	m_throwStartPos = m_position;
@@ -106,11 +106,11 @@ void Ball::Update()
 
         if (!m_hasHit)
         {
-            m_velocity.x += m_curveDir * 2.0f * dt;
+            //m_velocity.x += m_curveDir * 2.0f * dt;
             if (m_ballType == Straight)
             {
                 float minZ = 1000.0f;
-                float maxZ = 4500.0f;
+                float maxZ = 5500.0f;
                 float progress = RemapClamp(m_position.z, minZ, maxZ);
 
                 float dropStartRatio = m_dropStartRatioOverride;
@@ -126,7 +126,7 @@ void Ball::Update()
                     //終盤:一気に重力を強める
                     float t = RemapClamp(progress, dropStartRatio, 1.0f);
                     float easedT = t * t * t;
-                    gravityScale = 0.15f + easedT * 8.0f;
+                    gravityScale = 0.5f + easedT * 7.0f;
                 }
 
                 m_velocity.y -= m_baseGravity * gravityScale * dt;
@@ -494,16 +494,16 @@ void Ball::Throw(const Vector3& targetPos)
     switch (currentDifficulty)
     {
     case Easy:
-        baseSpeed = 1300.0f;
-        m_baseGravity = 4.0f; 
+        baseSpeed = 1500.0f;
+        m_baseGravity = 5.5f; 
         break;
     case Normal:
-        baseSpeed = 1500.0f;
+        baseSpeed = 1750.0f;
         m_baseGravity = 9.5f;
         break;
     default: //Hard
         baseSpeed = 2000.0f;
-        m_baseGravity = 25.0f;
+        m_baseGravity = 12.0f;
         break;
     }
 

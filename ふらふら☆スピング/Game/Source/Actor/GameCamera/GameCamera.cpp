@@ -29,11 +29,11 @@ bool GameCamera::Start() {
 }
 
 void GameCamera::SetCatcherCamera() {
-    m_cameraPos = { -50.5f, 375.0f, 6400.0f };
+    m_cameraPos = { -50.0f, 475.0f, 6500.0f };
     m_target = { 0.0f, 300.0f, 0.0f };
 
     m_yaw = 0.0f;
-    m_pitch = 1.0f;
+    m_pitch = -6.0f;
 
     g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
     m_followMode = Follow_None;   // ★ 追加
