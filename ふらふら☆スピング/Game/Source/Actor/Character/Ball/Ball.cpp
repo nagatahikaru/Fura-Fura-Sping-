@@ -365,8 +365,8 @@ void Ball::Update()
      t = fmaxf(0.0f, fminf(t, 1.0f));
 
      // --- スケール計算 ---
-     float startScale = 5.5f; // ピッチャーリリース時の視認用サイズ（大きい）
-     float finalScale = 2.5f;  // バッター手前での本来のサイズ（小さい）
+     float startScale = 8.0f; // ピッチャーリリース時の視認用サイズ（大きい）
+     float finalScale = 5.0f;  // バッター手前での本来のサイズ（小さい）
 
      // t=0.0(ピッチャー) のときは startScale、t=1.0(バッター) のときは finalScale になる線形補間
      float scale = startScale + (finalScale - startScale) * t;
@@ -734,13 +734,13 @@ float Ball::PredictLandingDistance()
     switch (currentDifficulty)
     {
     case Easy:
-        gravity = 4.0f;
+        gravity = 5.5f;
         break;
     case Normal:
         gravity = 9.5f;
         break;
     default: // Hard
-        gravity = 25.0f;
+        gravity = 12.0f;
         break;
     }
 

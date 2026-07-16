@@ -166,7 +166,7 @@ void Batter::setDifficultyVariables()
 	case Difficulty::Easy:
 		m_meatRange = m_meatRange*3.0f;
 		m_adjacentFrames = 8;
-		m_difficultyPowerScale = 0.55f;
+		m_difficultyPowerScale = 0.70f;
 		m_isDifficultyConfigured = true;
 		break;
 	case Difficulty::Normal:
