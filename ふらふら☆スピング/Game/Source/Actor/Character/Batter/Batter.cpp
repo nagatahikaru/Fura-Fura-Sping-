@@ -167,18 +167,24 @@ void Batter::setDifficultyVariables()
 		m_meatRange = m_meatRange*3.0f;
 		m_adjacentFrames = 8;
 		m_difficultyPowerScale = 0.70f;
+		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_EASY;
+		m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_EASY;
 		m_isDifficultyConfigured = true;
 		break;
 	case Difficulty::Normal:
-		m_meatRange = m_meatRange*2.0f;
-		m_adjacentFrames = 5;
+		m_meatRange = m_meatRange*2.5f;
+		m_adjacentFrames = 7;
 		m_difficultyPowerScale = 0.9f;
+		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_NORMAL;
+		m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_NORMAL;
 		m_isDifficultyConfigured = true;
 		break;
 	case Difficulty::Hard:
-		m_meatRange = m_meatRange;
-		m_adjacentFrames = 2;
-		m_difficultyPowerScale = 1.3f;
+		m_meatRange = m_meatRange*2.0f;
+		m_adjacentFrames = 6;
+		m_difficultyPowerScale = 1.10f;
+		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_HARD;
+		m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_HARD;
 		m_isDifficultyConfigured = true;
 		break;
 	default:
@@ -502,8 +508,8 @@ void Batter::HitBat()
 
 	// Z制限
 	Vector3 ballPos = m_ball->GetPosition();
-	if (ballPos.z < BATTER::HIT_ZONE_LOWER_LIMIT ||
-		ballPos.z > BATTER::HIT_ZONE_UPPER_LIMIT)
+	if (ballPos.z < m_hitZoneLowerLimit ||
+		ballPos.z > m_hitZoneUpperLimit)
 	{
 		return;
 	}

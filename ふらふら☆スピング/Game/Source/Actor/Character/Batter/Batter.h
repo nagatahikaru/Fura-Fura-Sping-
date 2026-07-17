@@ -35,9 +35,15 @@ namespace BATTER{
     constexpr float CURSOR_MAX_Y = 300.0f;
     constexpr float SCREEN_WIDTH = 1920.0f;				// 画面幅（ピクセル）
     constexpr float	SCREEN_HEIGHT = 1080.0f;			// 画面高さ（ピクセル）
-    constexpr float HIT_ZONE_UPPER_LIMIT = 6500.0f;		// ヒットゾーンの上限（バッターの位置からの相対距離）
-    constexpr float HIT_ZONE_LOWER_LIMIT = 6200.0f;		// ヒットゾーンの下限（バッターの位置からの相対距離）
-    constexpr float HIT_ZONE_CENTER = 6400.0f;			// ヒットゾーンの中心（バッターの位置からの相対距離）
+    constexpr float HIT_ZONE_UPPER_OFFSET_EASY = 200.0f;  // Easy: 早振りへの許容（広い）
+    constexpr float HIT_ZONE_LOWER_OFFSET_EASY = 100.0f;  // Easy: 遅振りへの許容（狭い）
+
+    constexpr float HIT_ZONE_UPPER_OFFSET_NORMAL = 300.0f;  // Normal: 早振りへの許容
+    constexpr float HIT_ZONE_LOWER_OFFSET_NORMAL = 150.0f;   // Normal: 遅振りへの許容
+
+    constexpr float HIT_ZONE_UPPER_OFFSET_HARD = 500.0f;  // Hard: 早振りへの許容
+    constexpr float HIT_ZONE_LOWER_OFFSET_HARD = 300.0f;   // Hard: 遅振りへの許容
+    constexpr float HIT_ZONE_CENTER = 6000.0f;			// ヒットゾーンの中心（バッターの位置からの相対距離）
     constexpr float HIT_ZONE_RADIUS = 50.0f;			// 真ん中から端までの最大距離 (6080 - 6075)
     constexpr float RAD_TO_DEG = 180.0f / 3.14159265f;	//ラジアンを度に変換するための定数
     constexpr float CURSOR_MOVE_SPEED = 500.0f;			// カーソルの移動速度（ピクセル/秒）
@@ -118,7 +124,8 @@ private:
         uint32_t m_effectHitID;
     };
     EffectInfo m_inro;                                                  // エフェクト情報
-
+    float m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_NORMAL;
+    float m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_NORMAL;
 
 private:
 
