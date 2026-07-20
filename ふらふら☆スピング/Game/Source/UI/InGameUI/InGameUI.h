@@ -31,6 +31,7 @@ public:
 	void SetBatterSide(bool isLeft);
 	void SetPause(bool isPaused);
 	void SetPredictedBallPos(const Vector3& pos3D);
+	void HitBallUI();
 	Vector3 ConvertBall3DToUI(const Vector3& pos3D);
 	void FixBallUI(const Vector3& pos3D);
 	void SetMeetCursorPosition(Vector3 m_inputOffset);
@@ -81,7 +82,7 @@ private:
 	FontRender m_fontBollRender1;
 	FontRender m_fontBollRender2;
 	FontRender m_fontBollRender3;
-	ModelRender m_wakuModel;
+	SpriteRender m_wakuModel;
 	SpriteRender m_spriteRenderBat;
 	SpriteRender m_spriteRenderMeet;
 	SpriteRender m_spriteRenderReplay;

@@ -680,6 +680,7 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
         if (ui) {
             ui->SetStartZ(m_position.z);
             ui->ResetBatAndMeetOnly();
+            ui->HitBallUI();
         }
     }
     // ★ 打った瞬間の予測距離を計算
