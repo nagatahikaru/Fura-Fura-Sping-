@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Source/Source.h"
 class Game;
-
+class Ball;
 class InGameUI :public Source
 {
 public:

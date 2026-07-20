@@ -2,7 +2,7 @@
 #include "InGameUI.h"
 #include"Source/Sound/SoundManager.h"
 #include"Source/Scene/InGame/Game.h"
-
+#include "Source/Actor/Character/Ball/Ball.h"
 
 template <typename T>
 constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
@@ -720,12 +720,28 @@ void InGameUI::Render(RenderContext& rc) {
 				}
 			}
 		
-		}
-	
-
-		
+			if (m_hasPredictedBall) {
 
 
+				Vector3 uiPos;
+
+				if (m_isBallUIFixed) {
+					uiPos = m_fixedBallUIPos;   // ← 変換しない
+				}
+				else {
+					uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
+				}
+
+				m_spriteRenderBall.SetPosition(uiPos);
+
+				// ★ 距離に応じた透明度を適用！
+				Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
+				m_spriteRenderBall.SetMulColor(color);
+				m_spriteRenderBall.Update();
+				m_spriteRenderBall.Draw(rc);
+			}
+
+	}
 	
 		if (m_isStrikeAnim) {
 
@@ -1117,6 +1133,22 @@ void InGameUI::Render(RenderContext& rc) {
 		m_bsuki.SetPosition(Vector3{ 700.0f, -400.0f, 0.0f });
 		m_bsuki.Update();
 		m_bsuki.Draw(rc);
+	}
+
+	Ball* ball = FindGO<Ball>("ball");
+	if (ball) {
+		Vector3 ballPos = ball->GetPosition();
+
+		wchar_t ballPosText[128];
+		swprintf_s(ballPosText, 128,
+			L"Ball X:%.1f Y:%.1f Z:%.1f",
+			ballPos.x, ballPos.y, ballPos.z);
+
+		m_fontDebug1.SetText(ballPosText);
+		m_fontDebug1.SetPosition(0.0f, 450.0f, 0.0f); // 画面左下あたり。お好みで調整
+		m_fontDebug1.SetScale(0.8f);
+		m_fontDebug1.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+		m_fontDebug1.Draw(rc);
 	}
 
 	// ★ 黒フェード描画（常に最前面）
