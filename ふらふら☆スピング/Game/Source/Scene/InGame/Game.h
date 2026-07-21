@@ -116,6 +116,10 @@ private:
 	bool m_isMagicBallShot[3] = { false, false, false };
 	float m_hitGlanceTimer = 0.0f;
 	bool  m_isHitGlancing = false;
+	bool m_hasStartedReplayZoom = false;
+	float m_replayZoomDelayTimer = 0.0f;   // ★ 投球フレーム到達後の経過時間
+	float m_replayZoomDelaySeconds = 0.0f; // ★ 何秒待ってからズーム開始するか
+	bool  m_hasReachedPitchFrame = false;  // ★ 投球フレームに到達済みか
 public:
 	Game() {}
 	~Game();

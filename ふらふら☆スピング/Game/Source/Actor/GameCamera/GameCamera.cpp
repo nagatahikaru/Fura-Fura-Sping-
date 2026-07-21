@@ -2,7 +2,7 @@
 #include "GameCamera.h"
 #include"Source/Scene/InGame/Game.h"
 #include"Source/Actor/Character/Ball/Ball.h"
-
+#include "Source/Actor/Character/Catcher/Catcher.h"
 
 inline Vector3 LerpVec3(const Vector3& a, const Vector3& b, float t)
 {
@@ -36,7 +36,7 @@ void GameCamera::SetCatcherCamera() {
     m_pitch = -6.0f;
 
     g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
-    m_followMode = Follow_None;   // ★ 追加
+    m_followMode = Follow_None;  
 }
 
 void GameCamera::SetkakuteiCamera() {
@@ -47,15 +47,37 @@ void GameCamera::SetkakuteiCamera() {
     m_pitch = 0.0f;
 
     g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
-    m_followMode = Follow_None;   // ★ 追加
+    m_followMode = Follow_None;  
 }
 
 void GameCamera::SetReplayCamera() {
     m_cameraPos = { 1080.0f, 630.0f, -1000.0f };  // 斜め上から
-    m_target = { 0.0f, 300.0f, 0.0f };        // 固定ターゲット（例）
+    Vector3 catcherPos = CATCHER::CatcherBasicSettings::INITIAL_COORDINATE;
+    m_target = catcherPos;   // ★ 最初からキャッチャー方向を向かせる
+
     m_yaw = 165.0f;
     m_pitch = 3.0f;
-    m_followMode = Follow_None;   // ★ 追加
+
+    // ズーム用の状態もここで初期化
+    m_replayZoomStartPos = m_cameraPos;
+    m_replayZoomStartTarget = m_target;
+    m_replayZoomActive = true;
+    m_replayZoomTimer = 0.0f;
+
+    // Follow_None を経由せず最初から ReplayZoom にする
+    m_followMode = Follow_ReplayZoom;
+}
+
+void GameCamera::StartReplayZoomToBall() {
+    m_replayZoomStartPos = m_cameraPos;
+
+    Vector3 catcherPos = CATCHER::CatcherBasicSettings::INITIAL_COORDINATE;
+    m_target = catcherPos;   // ★ ズレの原因だった固定値をキャッチャーの実座標に変更
+
+    m_replayZoomStartTarget = m_target;
+    m_replayZoomActive = true;
+    m_replayZoomTimer = 0.0f;
+    m_followMode = Follow_ReplayZoom;
 }
 
 void GameCamera::SetImpactGlanceCamera() {
@@ -155,6 +177,43 @@ void GameCamera::Update() {
         // ボールの方向を軽く見るだけ。位置は動かさずターゲットだけ寄せる
         Vector3 ballPos = m_ball->GetPosition();
         m_target = LerpVec3(m_target, ballPos, 0.01f); // ゆっくり視線が寄る
+    }
+    else if (m_followMode == Follow_ReplayZoom)
+    {
+        m_replayZoomTimer += g_gameTime->GetFrameDeltaTime();
+
+        if (m_replayZoomTimer < m_replayZoomDuration) {
+            Vector3 catcherPos = CATCHER::CatcherBasicSettings::INITIAL_COORDINATE;  
+
+            // キャッチャー方向へ最小距離まで寄った位置を目標とする
+            Vector3 dirToCatcher = catcherPos - m_replayZoomStartPos;
+            float distToCatcher = dirToCatcher.Length();
+
+            float minDistance = 400.0f;
+            Vector3 desiredPos = m_replayZoomStartPos;
+            if (distToCatcher > minDistance) {
+                Vector3 dirNorm = dirToCatcher;
+                dirNorm.Normalize();
+                desiredPos = catcherPos - dirNorm * minDistance;
+            }
+
+            // 最大移動速度でクランプしてカメラ位置を近づける
+            Vector3 toDesired = desiredPos - m_cameraPos;
+            float distToDesired = toDesired.Length();
+
+            float maxSpeed = 13.0f; // 1フレームあたりの最大移動量
+            if (distToDesired > 0.001f) {
+                Vector3 dirNorm = toDesired;
+                dirNorm.Normalize();
+
+                float moveAmount = (distToDesired < maxSpeed) ? distToDesired : maxSpeed;
+                m_cameraPos = m_cameraPos + dirNorm * moveAmount;
+            }
+
+            float zoomProgress = m_replayZoomTimer / m_replayZoomDuration;
+            if (zoomProgress > 1.0f) zoomProgress = 1.0f;
+            m_target = LerpVec3(m_replayZoomStartTarget, catcherPos, zoomProgress);
+        }
     }
     else {
         m_target = m_cameraPos - m_forward * 100.0f;
