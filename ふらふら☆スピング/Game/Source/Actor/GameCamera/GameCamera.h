@@ -1,10 +1,12 @@
 #pragma once
 class Ball;
+class  Catcher;
 enum FollowMode {
 	Follow_None,   // 追尾しない（横カメラ）
 	Follow_Back,   // 後ろから追尾
 	Follow_Side,    // 横から見る（固定）
-	Follow_ImpactGlance
+	Follow_ImpactGlance,
+	Follow_ReplayZoom
 };
 class GameCamera:public IGameObject
 {
@@ -21,9 +23,11 @@ public:
 	void SetImpactGlanceCamera();
 	// ★ ボールをセットする関数
 	void SetBall(Ball* ball) { m_ball = ball; }
+	void SetCatcher(Catcher* catcher) { m_catcher = catcher; }
 	void StartHitMomentCamera();
 	void FreezeCamera();
-	void UnfreezeCamera();   // ★ 追加
+	void UnfreezeCamera();   
+	void StartReplayZoomToBall();
 private:
 	/*Vector3 m_cameraPos;
 	float m_angle;*/
@@ -42,6 +46,7 @@ private:
 	float m_viewAngle = Math::DegToRad(0.0f);
 	// ★★★ これが無いからエラーになっていた ★★★
 	Ball* m_ball = nullptr;        // ボールへのポインタ
+	Catcher* m_catcher = nullptr;
 	bool m_isFollowBall = false;   // 追尾モードフラグ
 	FollowMode m_followMode = Follow_None;
 	bool m_isHitMoment = false;
@@ -49,5 +54,11 @@ private:
 	Vector3 m_frozenPos = Vector3::Zero;
 	Vector3 m_frozenTarget = Vector3::Zero;
 	bool m_isFrozen = false;
+	Vector3 m_replayZoomStartPos;   // ズーム開始時のカメラ位置
+	bool    m_replayZoomActive = false;
+	float   m_replayZoomTimer = 0.0f;
+	float   m_replayZoomDuration = 5.0f;
+	Vector3 m_replayZoomStartTarget;   // ★ ズーム開始時点のtarget保存用
+
 };
 

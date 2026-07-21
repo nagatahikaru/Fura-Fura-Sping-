@@ -84,7 +84,7 @@ void Game::Update()
 	switch (m_difficulty)
 	{
 	case Difficulty::Easy:
-		m_replayDuration = 5.5f;   // 長め
+		m_replayDuration = 5.0f;   // 長め
 		break;
 	case Difficulty::Normal:
 		m_replayDuration = 4.0f;   // 標準
@@ -300,7 +300,9 @@ void Game::Update()
 		break;
 
 	case Camera_Replay:
-		m_gameCamera->SetReplayCamera();
+		if (!m_hasStartedReplayZoom) {
+			m_gameCamera->SetReplayCamera();
+		}
 		break;
 
 	case Camera_Ball:
@@ -464,6 +466,23 @@ void Game::Update()
 			m_isHitStop = true;
 			m_ball->m_hasHit = true;
 			m_hasPlayedReplaySwing = true; // ★ 二重発火防止
+		}
+
+		// ★ 投球フレームに到達したかチェック
+		if (!m_hasReachedPitchFrame && index >= m_replayPitchFrame) {
+			m_hasReachedPitchFrame = true;
+		}
+
+		// ★ 到達済みなら秒数をカウントし、指定秒数経過でズーム開始
+		if (m_hasReachedPitchFrame && !m_hasStartedReplayZoom) {
+			m_replayZoomDelayTimer += g_gameTime->GetFrameDeltaTime();
+
+			if (m_replayZoomDelayTimer >= m_replayZoomDelaySeconds) {
+				if (m_gameCamera) {
+					m_gameCamera->StartReplayZoomToBall();
+				}
+				m_hasStartedReplayZoom = true;
+			}
 		}
 
 		// ★ リプレイのインデックスを毎フレーム1ずつ確実に進める
@@ -644,6 +663,9 @@ void Game::StartReplay(int index)
 	m_isReplayPlaying = true;
 	m_replayTimer = 0.0f;
 	m_hasAppliedHitMoment = false;
+	m_hasStartedReplayZoom = false;
+	m_hasReachedPitchFrame = false;   
+	m_replayZoomDelayTimer = 0.0f;    
 	// ▼ 追加：タイマーとアキュムレータの初期化
 	m_replayDelayTimer = 2.0f;  // 2秒待機
 	m_replayAccumulator = 0.0f; // アキュムレータ初期化
