@@ -77,9 +77,7 @@ namespace {
 }
 
 InGameUI::InGameUI() {
-	m_wakuModel.Init("Assets/stage/hurahura.tkm");
-	InitSprite(m_spriteRenderBat, "batto", 330, 430);
-	InitSprite(m_spriteRenderMeet, "mi-to", 45.0f, 45.0f);	
+	InitSprite(m_wakuModel, "waku", 800.0f, 600.0f);
 	InitSprite(m_spriteRenderReplay, "REPLAY", 300.0f, 300.0f);
 	InitSprite(m_spriteRenderBall, "ball", 30.0f, 30.0f);
 	InitSprite(m_kiiro1, "kiiro", 880.0f, 600.0f);
@@ -125,6 +123,8 @@ InGameUI::InGameUI() {
 	InitSprite(m_hardSprite, "Difficulty_Hard", 350.0f, 280.0f);
 	InitSprite(m_guruE,"guruguruE", 300.0f, 300.0f);
 	InitSprite(m_guruN, "guruguruN", 300.0f, 295.0f);
+	InitSprite(m_spriteRenderBat, "batto", 330, 430);
+	InitSprite(m_spriteRenderMeet, "mi-to", 45.0f, 45.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -137,6 +137,7 @@ bool InGameUI::Start() {
 	m_meetPositionRight = Vector3{ 39.0f, 5.0f, 0.0f };
 	m_meetPositionLeft = Vector3{ -46.0f,7.0f,0.0f };
 	m_ballCount = 3;
+	m_guruGuruTimer = 0.01f;
 	return true;
 }
 
@@ -341,23 +342,31 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 	t = clamp(t, 0.0f, 1.0f);
 
 	// ★ アルファ値の計算（0.5 = 半透明、0.0 = 完全透明）
-	float alpha = 0.5f;
+	float alpha = 1.0f;
 
-	if (t < 0.30f) {
-		// 最初の30%は 0.7f を維持
-		alpha = 0.5f;
-	}
-	else {
-		// 0.30〜1.0 を 0〜1 に圧縮
-		float u = (t - 0.30f) / 0.70f;
+	//if (t < 0.30f) {
+	//	// 最初の30%は 0.7f を維持
+	//	alpha = 0.5f;
+	//}
+	//else {
+	//	// 0.30〜1.0 を 0〜1 に圧縮
+	//	float u = (t - 0.30f) / 0.70f;
 
-		// 二乗でゆっくり立ち上がり、最終的に 0.0f（完全透明）にする
-		// u=0 のとき alpha=0.7f、u=1 のとき alpha=0.0f
-		alpha = 0.5f * (1.0f - u);
-	}
+	//	// 二乗でゆっくり立ち上がり、最終的に 0.0f（完全透明）にする
+	//	// u=0 のとき alpha=0.7f、u=1 のとき alpha=0.0f
+	//	alpha = 0.5f * (1.0f - u);
+	//}
 
 	// 常に最新のアルファ値を適用（ifの外に出すことでバグを防止）
 	m_ballAlpha = alpha;
+}
+
+//打った後に呼び出してボールUIを消す
+void InGameUI::HitBallUI() {
+	m_hasPredictedBall = false;
+	m_isBallUIFixed = true;    //固定状態も解除(次の予測に備えるため)
+	m_isError = false;          //エラー表示もリセット
+	m_ballAlpha = 0.0f;         //透明にしておく
 }
 
 Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
@@ -574,9 +583,35 @@ void InGameUI::Render(RenderContext& rc) {
 
 	if (m_isUIVisible) {
 
+		if (m_hasPredictedBall) {
+
+			Vector3 uiPos;
+
+			if (m_isBallUIFixed) {
+				uiPos = m_fixedBallUIPos;   // ← 変換しない
+			}
+			else {
+				uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
+			}
+
+			m_spriteRenderBall.SetPosition(uiPos);
+
+			// ★ 距離に応じた透明度を適用！
+			Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
+			m_spriteRenderBall.SetMulColor(color);
+
+			m_spriteRenderBall.Update();
+			m_spriteRenderBall.Draw(rc);
+		}
+
+		//開始カウントダウン中とぐるぐる回転中は枠、バット、ミートカーソルを隠す
+		bool isSpinning = (m_guruGuruTimer > 0.0f) && !isReadyPhase;
+
+		if (!isSpinning) {
+
 			//赤い枠
-			m_wakuModel.SetPosition(-18.0f, 320.0f, 6000.0f);
-			m_wakuModel.SetScale(5.5f, 5.5f, 3.0f);
+			m_wakuModel.SetPosition(Vector3{ 10.0f, -150.0f, 0.0f });
+			m_wakuModel.SetMulColor({ 1.0f,1.0f,1.0f,0.5f });
 			m_wakuModel.Update();
 			m_wakuModel.Draw(rc);
 
@@ -599,6 +634,8 @@ void InGameUI::Render(RenderContext& rc) {
 			m_spriteRenderMeet.SetScale({ m_meetScaleX * m_meetCursorScale,m_meetCursorScale,1.0f });
 			m_spriteRenderMeet.Update();
 			m_spriteRenderMeet.Draw(rc);
+		}
+
 			m_kuro.SetPosition(Vector3{ -800.0f,-280.0f,0.0f });
 			m_kuro.SetMulColor({ 0,0,0,0.5 });
 			m_kuro.Update();
@@ -685,6 +722,7 @@ void InGameUI::Render(RenderContext& rc) {
 		
 			if (m_hasPredictedBall) {
 
+
 				Vector3 uiPos;
 
 				if (m_isBallUIFixed) {
@@ -699,7 +737,6 @@ void InGameUI::Render(RenderContext& rc) {
 				// ★ 距離に応じた透明度を適用！
 				Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
 				m_spriteRenderBall.SetMulColor(color);
-
 				m_spriteRenderBall.Update();
 				m_spriteRenderBall.Draw(rc);
 			}
