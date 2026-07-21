@@ -610,7 +610,7 @@ void InGameUI::Render(RenderContext& rc) {
 		if (!isSpinning) {
 
 			//赤い枠
-			m_wakuModel.SetPosition(Vector3{ 10.0f, -150.0f, 0.0f });
+			m_wakuModel.SetPosition(Vector3{ 10.0f, -70.0f, 0.0f });
 			m_wakuModel.SetMulColor({ 1.0f,1.0f,1.0f,0.5f });
 			m_wakuModel.Update();
 			m_wakuModel.Draw(rc);
