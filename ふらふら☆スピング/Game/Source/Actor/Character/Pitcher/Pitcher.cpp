@@ -134,8 +134,15 @@ bool Pitcher::Start()
 
 void Pitcher::Update()
 {
+
+
 	if (m_isPaused) {
 		return; // 完全停止
+	}
+	if (m_game && m_game->GetIsInputLocked()) {
+		SetPlayAnimation(enAnimationClip_Idle);
+		AnimationUpdate();
+		return;
 	}
 	if(m_game==nullptr)
 	{

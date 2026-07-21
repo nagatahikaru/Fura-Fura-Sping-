@@ -2,6 +2,7 @@
 #include "Source/Actor/Character/Character.h"
 #include "Source/Actor/Character/Batter/Batter.h"
 #include "Source/Scene/InGame/Game.h"
+#include "StrikeZone.h"
 
 namespace PITCHER {
 	extern std::string FILE_PATH_PITCHER_AIM;
@@ -38,7 +39,7 @@ private:
 	bool m_isThrowing = false;
 	bool m_hasReleasedBall = false;
 	bool m_hasNotifiedThrow = false;
-
+	bool m_isPaused = true;
 
 public:
 	Pitcher();
@@ -47,14 +48,21 @@ public:
 	virtual void Update();
 	virtual void Render(RenderContext& rc);
 	void SetPlayAnimation(int enAnimationClip);
-	void RotationUpdate();
-	bool m_isPaused = true;
+	void RotationUpdate();	
 	void AnimationUpdate();
 	void ResetThrow();
 	void PlayPitchAnimation();
 	ModelRender* GetModelRender()
 	{
 		return &m_modelRender;
+	};
+	void SetIsPaused(bool isPaused)
+	{
+		m_isPaused = isPaused;
+	};
+	bool GetIsPaused() const
+	{
+		return m_isPaused;
 	};
 };
 

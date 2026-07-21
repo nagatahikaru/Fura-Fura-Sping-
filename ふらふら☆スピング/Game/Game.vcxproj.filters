@@ -254,6 +254,9 @@
     <ClCompile Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DebuffStageManager.cpp">
       <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DifficultyParams.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -406,6 +409,15 @@
     </ClInclude>
     <ClInclude Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DebuffStageManager.h">
       <Filter>Source\Actor\Character\Batter\Debuff\DebuffStage</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Difficulty.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DifficultyParams.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Character\Pitcher\StrikeZone.h">
+      <Filter>Source\Actor\Character\Pitcher</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

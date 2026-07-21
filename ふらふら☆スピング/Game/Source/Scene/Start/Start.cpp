@@ -121,13 +121,12 @@ void Start1::Update()
         auto pitcher = FindGO<Pitcher>("pitcher");
         auto ball = FindGO<Ball>("ball");
 
-        if (batter) batter->m_isPaused = false;
-        if (pitcher) pitcher->m_isPaused = false;
-        if (ball) ball->m_isPaused = false;
+        if (batter) batter->SetIsPaused(false);
+        if (pitcher) pitcher->SetIsPaused(false);
+        if (ball) ball->SetIsPaused(false);
 
         DeleteGO(this);
     }
-
 }
 
 void Start1::Render(RenderContext& rc)
