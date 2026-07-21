@@ -14,7 +14,8 @@ struct DebuffMasterData {
 static const DebuffMasterData g_DebuffMasterTable[] = {
 	{ 7, 10 }, // Easy:   3回転で1レベル上昇、最大レベル10
 	{ 5, 12 }, // Normal: 3回転で1レベル上昇、最大レベル12
-	{ 3, 15 }  // Hard:   3回転で1レベル上昇、最大レベル15
+	{ 3, 15 }, // Hard:   3回転で1レベル上昇、最大レベル15
+	{ 7, 10 }  // Tutorial: Easyと同じ設定
 };
 
 // ぐるぐるバットの段階を管理するステートマシンの実装

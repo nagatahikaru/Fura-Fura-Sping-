@@ -240,7 +240,10 @@ void Load::Update()
         auto catcher = NewGO<Catcher>(0, "catcher");
         auto ball = NewGO<Ball>(0, "ball");
         if (batter && pitcher && catcher && ball) { // ★ ヌルチェックを追加して安全に
-            batter->m_isPaused = pitcher->m_isPaused = catcher->m_isPaused = ball->m_isPaused = true;
+            batter-> SetIsPaused(true);
+            pitcher->SetIsPaused(true);
+            catcher->SetIsPaused(true);
+            ball->   SetIsPaused(true);
         }
         m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guA.SetMulColor({ 1,1,1,0 });

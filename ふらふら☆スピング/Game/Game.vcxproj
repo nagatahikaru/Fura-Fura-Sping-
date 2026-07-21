@@ -256,6 +256,7 @@
     <ClCompile Include="Source\Actor\GameCamera\GameCamera.cpp" />
     <ClCompile Include="Source\Actor\Stage\Background.cpp" />
     <ClCompile Include="Source\Actor\Transform.cpp" />
+    <ClCompile Include="Source\DifficultyParams.cpp" />
     <ClCompile Include="Source\Effect\EffectManager.cpp" />
     <ClCompile Include="Source\MasterData.cpp" />
     <ClCompile Include="Source\Scene\InGame\Game.cpp" />
@@ -309,9 +310,12 @@
     <ClInclude Include="Source\Actor\Character\Character.h" />
     <ClInclude Include="Source\Actor\Character\CharacterModel.h" />
     <ClInclude Include="Source\Actor\Character\Pitcher\Pitcher.h" />
+    <ClInclude Include="Source\Actor\Character\Pitcher\StrikeZone.h" />
     <ClInclude Include="Source\Actor\GameCamera\GameCamera.h" />
     <ClInclude Include="Source\Actor\Stage\Background.h" />
     <ClInclude Include="Source\Actor\Transform.h" />
+    <ClInclude Include="Source\Difficulty.h" />
+    <ClInclude Include="Source\DifficultyParams.h" />
     <ClInclude Include="Source\Effect\EffectManager.h" />
     <ClInclude Include="Source\MasterData.h" />
     <ClInclude Include="Source\Scene\InGame\Game.h" />

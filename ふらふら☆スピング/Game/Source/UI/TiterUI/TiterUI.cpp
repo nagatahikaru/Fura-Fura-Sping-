@@ -74,61 +74,7 @@ bool TiterUI::Start()
     m_B.SetPosition({ 800.0f, -450.0f, 0.0f });
 
     m_grobu.Init("Assets/sprite/guro-bu.dds", 450.0f, 430.0f);
-    m_grobu.SetPosition({ 830.0f, -400.0f, 0.0f });
-
-    //m_10.Init("Assets/sprite/10.dds", 1250.0f, 850.0f);
-    //m_10.SetPosition({ 500.0f, -50.0f, 0.0f });
-
-    //m_45.Init("Assets/sprite/45.dds", 1380.0f, 930.0f);
-    //m_45.SetPosition({ 490.0f, -50.0f, 0.0f });
-
-    //m_100.Init("Assets/sprite/100.dds", 1070.0f, 770.0f);
-    //m_100.SetPosition({ 500.0f, -50.0f, 0.0f });
-
-    //m_gurusai.Init("Assets/sprite/gurugurusaidai.dds", 1450.0f, 1050.0f);
-    //m_gurusai.SetPosition({ 130.0f,20.0f, 0.0f });
-
-    //m_risuku.Init("Assets/sprite/risuku.dds", 1350.0f, 1050.0f);
-    //m_risuku.SetPosition({ 5.0f,20.0f, 0.0f });
-
-    //m_hosi1.Init("Assets/sprite/hosi.dds", 1400.0f, 950.0f);
-    //m_hosi1.SetPosition({ -20.0f, 0.0f, 0.0f });
-
-    //m_hosi2.Init("Assets/sprite/hosi.dds", 1400.0f, 950.0f);
-    //m_hosi2.SetPosition({ 80.0f, 0.0f, 0.0f });
-
-    //m_hosi3.Init("Assets/sprite/hosi.dds", 1400.0f, 950.0f);
-    //m_hosi3.SetPosition({180.0f, 0.0f, 0.0f });
-
-    //m_hosikara1.Init("Assets/sprite/hosikara.dds", 1420.0f, 970.0f);
-    //m_hosikara1.SetPosition({ 10.0f, 0.0f, 0.0f });
-
-    //m_hosikara2.Init("Assets/sprite/hosikara.dds", 1420.0f, 970.0f);
-    //m_hosikara2.SetPosition({ 110.0f, 0.0f, 0.0f });
-
-    //m_henka.Init("Assets/sprite/hennkakyuu.dds", 1300.0f, 970.0f);
-    //m_henka.SetPosition({ -100.0f, 28.0f, 0.0f });
-
-    //m_ball1.Init("Assets/sprite/ballfull.dds", 470.0f, 350.0f);
-    //m_ball1.SetPosition({ -350.0f, -15.0f, 0.0f });
-
-    //m_ball2.Init("Assets/sprite/ballfull.dds", 470.0f, 350.0f);
-    //m_ball2.SetPosition({ -250.0f, -15.0f, 0.0f });
-
-    //m_ball3.Init("Assets/sprite/ballfull.dds", 470.0f,350.0f);
-    //m_ball3.SetPosition({ -150.0f, -15.0f, 0.0f });
-
-    //m_karaball1.Init("Assets/sprite/karaball.dds", 470.0f, 350.0f);
-    //m_karaball1.SetPosition({ -250.0f, -15.0f, 0.0f });
-
-    //m_karaball2.Init("Assets/sprite/karaball.dds", 470.0f, 350.0f);
-    //m_karaball2.SetPosition({ -150.0f, -15.0f, 0.0f });
-
-    //m_kuro.Init("Assets/sprite/kuro.dds", 3.0f, 300.0f);
-    //m_kuro.SetPosition({ -70.0f, 20.0f, 0.0f });
-
-    //m_kuro2.Init("Assets/sprite/kuro.dds", 3.0f, 300.0f);
-    //m_kuro2.SetPosition({ 300.0f, 20.0f, 0.0f });
+    m_grobu.SetPosition({ 830.0f, -400.0f, 0.0f });   
 
     m_spritekuro.Init("Assets/sprite/kuro.DDS", 1920.0f, 1080.0f);
 
@@ -245,7 +191,7 @@ void TiterUI::Update()
             {
                 m_selectedDifficulty--;
                 if (m_selectedDifficulty < 0)
-                    m_selectedDifficulty = 2;
+                    m_selectedDifficulty = 3;
 
                 g_soundManager->PlaySE(enSound_SE12);
                 canMoveX = false;
@@ -253,7 +199,7 @@ void TiterUI::Update()
             else if (x > 0.5f)
             {
                 m_selectedDifficulty++;
-                if (m_selectedDifficulty > 2)
+                if (m_selectedDifficulty > 3)
                     m_selectedDifficulty = 0;
 
                 g_soundManager->PlaySE(enSound_SE12);
