@@ -572,6 +572,12 @@ void InGameUI::Render(RenderContext& rc) {
 		return; // ← ここでリターンしてUI全部消す
 	}
 
+	if (game->GetShouldContinueTutorial())
+	{
+
+		return; // ← チュートリアル中はUI全部消す
+	}
+
 	if (m_isUIVisible) {
 
 			//赤い枠
@@ -1071,6 +1077,9 @@ void InGameUI::Render(RenderContext& rc) {
 			}
 			else if (diff == Difficulty::Hard) { // 必要に応じて異なるDifficulty列挙型に合わせてください
 				pDiffSprite = &m_hardSprite;
+			}
+			else if( diff == Difficulty::Tutorial) { // ★ 追加
+				/*pDiffSprite = &m_tutorialSprite;*/
 			}
 
 			// スプライトが存在すれば位置を設定して描画

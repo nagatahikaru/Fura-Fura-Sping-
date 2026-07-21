@@ -1,0 +1,30 @@
+// DifficultyParams.h
+#pragma once
+#include "Source/Scene/InGame/Game.h" // Difficulty enum を使うため
+
+struct DifficultyParams
+{
+    // Ball
+	float ballBaseSpeed;// 投球の基本速度
+	float ballGravity;// 投球の重力
+	int   magicBallChancePercent;// 魔球の出現確率（％）
+	float controlAccuracy; // コントロール精度（ランダムターゲット生成用）
+	int   pitchCount; // 投球数
+    // Game
+	float replayDuration;// リプレイの再生時間（秒）
+	int   guruguruSEInterval;// ぐるぐるSEを鳴らす間隔（ぐるぐるの回数）
+    // Batter
+    float meatRangeMultiplier; // ミート範囲の倍率
+    int   adjacentFrames;      // 前後判定フレーム
+};
+
+inline const DifficultyParams& GetDifficultyParams(Difficulty diff)
+{
+    static const DifficultyParams table[4] = {		
+        /* Easy    */ { 1300.0f, 4.0f,  0, 0.3f,3, 5.0f, 7, 3.0f, 8 },
+        /* Normal  */ { 1500.0f, 9.5f,  0, 0.5f,3, 4.0f, 5, 2.0f, 5 },
+        /* Hard    */ { 2000.0f, 25.0f, 10,1.0f,3, 3.0f, 3, 1.0f, 2 },
+        /* Tutorial*/ { 1300.0f, 4.0f,  0, 0.1f,5, 5.0f, 7, 3.0f, 8 },
+    };
+    return table[diff];
+}

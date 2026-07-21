@@ -94,6 +94,7 @@ private:
     Vector2 m_inputScale = Vector2(1.0f, 1.0f);                         // カーソル入力スケール   
     Vector2 m_inversioninputScale = Vector2(1.0f, 1.0f);                // 反転カーソル入力スケール
 
+    bool m_isPaused = false;                                            // 一時停止フラグ
     bool m_isCursorMode = true;                                         // カーソルモード
     bool m_isDelayFrag = false;                                         // カーソル移動の遅延フラグ    
     bool m_isRotation = true;                                           // 回転有効
@@ -125,8 +126,7 @@ private:
 
 
 public:
-    // 一時停止フラグ
-    bool m_isPaused = false;
+
 
     Batter();
     virtual ~Batter();
@@ -489,5 +489,14 @@ public:
 
     //難易度ごとに打ちやすさを変更する関数
     void setDifficultyVariables();
+
+    void SetIsPaused(bool isPaused)
+    {
+        m_isPaused = isPaused;
+	}
+    bool GetIsPaused() const
+    {
+        return m_isPaused;
+    }
 
 };

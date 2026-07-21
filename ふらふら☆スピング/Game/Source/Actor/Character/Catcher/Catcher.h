@@ -33,7 +33,7 @@ private:
 	AnimationClip m_animationClips[enAnimationClip_Num];
 	CharacterController m_characterController;
 	CollisionObject* m_collisionObject = nullptr; // 衝突オブジェクト
-
+	bool m_isPaused = false; // アニメーションの一時停止フラグ
 
 public:
 	Catcher() {};
@@ -52,6 +52,14 @@ public:
 		return &m_modelRender;
 	}
 	virtual void Render(RenderContext& rc);
-	bool m_isPaused = false; // アニメーションの一時停止フラグ
+	void SetIsPaused(bool isPaused)
+	{
+		m_isPaused = isPaused;
+	}
+	bool GetIsPaused() const
+	{
+		return m_isPaused;
+	}
+	
 };
 

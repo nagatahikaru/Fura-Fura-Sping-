@@ -8,6 +8,7 @@
 #include "Source/Effect/EffectManager.h"
 #include "Source/Actor/GameCamera/GameCamera.h"
 #include "Debuff/DebuffStage/DebuffStageManager.h"
+#include "Source/DifficultyParams.h"
 #include <algorithm> // 追加
 #include <deque>
 
@@ -181,6 +182,13 @@ void Batter::setDifficultyVariables()
 	default:
 		break;
 	}
+	if (m_isDifficultyConfigured) return;
+
+	const DifficultyParams& p = GetDifficultyParams(m_game->GetDifficulty());
+	m_meatRange *= p.meatRangeMultiplier;
+	m_adjacentFrames = p.adjacentFrames;
+
+	m_isDifficultyConfigured = true;
 }
 
 void Batter::Update()
@@ -276,8 +284,8 @@ void Batter::Rotation()
 	//コントローラー操作
 	//右スティックの入力量を取得
 	Vector3 stickL = Vector3::Zero;
-	stickL.x = g_pad[0]->GetRStickXF();
-	stickL.y = g_pad[0]->GetRStickYF();
+	stickL.x = g_pad[0]->GetLStickXF();
+	stickL.y = g_pad[0]->GetLStickYF();
 
 	float inputAngle = atan2f(stickL.y, stickL.x); // 入力角度を計算
 
@@ -484,7 +492,7 @@ Vector3 Batter::CalcCursorWorldPos()
 
 void Batter::HitBat()
 {
-	if (m_ball->m_hasHit) return;
+	if (m_ball->GetHasHit()) return;
 	if (m_game && m_game->IsReplayPlaying()) return;
 	if (m_game && m_game->GetIsPaused()) return;
 	if (!IsSwingAnimationPlaying()) return;

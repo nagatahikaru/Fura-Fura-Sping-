@@ -32,5 +32,7 @@ void DebuffStageManager::Initialize(Batter* batter)
     case Hard:
         m_stage = std::make_unique<DebuffHardStage>();
         break;
+	case Tutorial:
+		m_stage = std::make_unique<DebuffEasyStage>();
     }
 }

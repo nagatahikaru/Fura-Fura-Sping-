@@ -6,6 +6,7 @@
 #include "Source/Effect/EffectManager.h"
 #include"Source/Sound/SoundManager.h"
 #include "Source/Actor/GameCamera/GameCamera.h"  
+#include "Source/DifficultyParams.h"
 
 namespace
 {
@@ -50,14 +51,14 @@ Ball::~Ball()
 bool Ball::Start()
 {
 
-	//モデルの読み込み
-	m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-	m_modelRender.SetScale({ 8.5f,8.5f,8.5f });
+    //モデルの読み込み
+    m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
+    m_modelRender.SetScale({ 8.5f,8.5f,8.5f });
 
-	m_position = { -60.0f, 650.0f, 1900.0f };
-	m_throwStartPos = m_position;
-	m_throwEndPos = m_position;
-	m_modelRender.SetPosition(m_position);
+    m_position = { -60.0f, 650.0f, 1900.0f };
+    m_throwStartPos = m_position;
+    m_throwEndPos = m_position;
+    m_modelRender.SetPosition(m_position);
 
 
     // ★ UI に初期位置を送る（これが重要）
@@ -160,7 +161,7 @@ void Ball::Update()
                 {
                 case ShakeHorizontal:
                     m_position.x += sinf(m_position.z * 0.01f) * 3.0f;
-                break;
+                    break;
 
                 case ShakeVertical:
                     m_position.y += sinf(m_position.z * 0.01f) * 3.0f;
@@ -306,71 +307,71 @@ void Ball::Update()
                 m_replayPath.push_back(m_position);
             }
         }
-      
-     SetPosition(m_position);
 
-     m_rotationAngle += m_rotateSpeed * dt;
+        SetPosition(m_position);
 
-     ////////
-     Quaternion rot;
-     rot.SetRotationDegX(m_rotationAngle);
-     ///////
+        m_rotationAngle += m_rotateSpeed * dt;
 
-     m_modelRender.SetRotation(rot);
-     
+        ////////
+        Quaternion rot;
+        rot.SetRotationDegX(m_rotationAngle);
+        ///////
+
+        m_modelRender.SetRotation(rot);
 
 
-     //距離に応じてスケール変更
-     float minZ = 1000.0f;  // ピッチャーマウンド（スタート）
-     float maxZ = 6200.0f;  // キャッチャー・バッター付近（最小になる位置）
 
-     // Z座標から 0.0 〜 1.0 の割合(t)を計算
-     float t = (m_position.z - minZ) / (maxZ - minZ);
+        //距離に応じてスケール変更
+        float minZ = 1000.0f;  // ピッチャーマウンド（スタート）
+        float maxZ = 6200.0f;  // キャッチャー・バッター付近（最小になる位置）
 
-     // 範囲外を安全にクランプ（0.0未満なら0.0、1.0より大きければ1.0に固定）
-     t = fmaxf(0.0f, fminf(t, 1.0f));
+        // Z座標から 0.0 〜 1.0 の割合(t)を計算
+        float t = (m_position.z - minZ) / (maxZ - minZ);
 
-     // --- スケール計算 ---
-     float startScale = 5.5f; // ピッチャーリリース時の視認用サイズ（大きい）
-     float finalScale = 2.5f;  // バッター手前での本来のサイズ（小さい）
+        // 範囲外を安全にクランプ（0.0未満なら0.0、1.0より大きければ1.0に固定）
+        t = fmaxf(0.0f, fminf(t, 1.0f));
 
-     // t=0.0(ピッチャー) のときは startScale、t=1.0(バッター) のときは finalScale になる線形補間
-     float scale = startScale + (finalScale - startScale) * t;
+        // --- スケール計算 ---
+        float startScale = 5.5f; // ピッチャーリリース時の視認用サイズ（大きい）
+        float finalScale = 2.5f;  // バッター手前での本来のサイズ（小さい）
 
-     // 計算したスケールを適用
-     m_modelRender.SetScale({ scale, scale, scale });
+        // t=0.0(ピッチャー) のときは startScale、t=1.0(バッター) のときは finalScale になる線形補間
+        float scale = startScale + (finalScale - startScale) * t;
+
+        // 計算したスケールを適用
+        m_modelRender.SetScale({ scale, scale, scale });
     }
-   else {
+    else {
 
-       // ★ リプレイ中の位置・高さ調整
-       Vector3 loweredPos = m_position;
+        // ★ リプレイ中の位置・高さ調整
+        Vector3 loweredPos = m_position;
 
-       // ピッチャーマウンド(1000)からバッターボックス(6200)までの進捗率(0.0 〜 1.0)を計算
-       float minZ = 1000.0f;
-       float maxZ = 6200.0f;
-       float t = (m_position.z - minZ) / (maxZ - minZ);
-       t = fmaxf(0.0f, fminf(t, 1.0f)); // 0.0〜1.0にクランプ
+        // ピッチャーマウンド(1000)からバッターボックス(6200)までの進捗率(0.0 〜 1.0)を計算
+        float minZ = 1000.0f;
+        float maxZ = 6200.0f;
+        float t = (m_position.z - minZ) / (maxZ - minZ);
+        t = fmaxf(0.0f, fminf(t, 1.0f)); // 0.0〜1.0にクランプ
 
-       // いつでも左に寄せる処理（必要なければ 0.0f にしてください）
-       loweredPos.x -= 100.0f;
-       loweredPos.z -= 650.0f;
-       // ★ バッターに近づくほど、徐々に指定の高さ（-280.0f）へ沈み込ませる
-       // t=0(投げた瞬間) はそのままの高さ、t=1(打たれる場所) でジャスト -280.0f 下がります
-       loweredPos.y -= 200.0f * t;
+        // いつでも左に寄せる処理（必要なければ 0.0f にしてください）
+        loweredPos.x -= 100.0f;
+        loweredPos.z -= 650.0f;
+        // ★ バッターに近づくほど、徐々に指定の高さ（-280.0f）へ沈み込ませる
+        // t=0(投げた瞬間) はそのままの高さ、t=1(打たれる場所) でジャスト -280.0f 下がります
+        loweredPos.y -= 200.0f * t;
 
-       m_modelRender.SetPosition(loweredPos);
+        m_modelRender.SetPosition(loweredPos);
 
-       // 2. リプレイ中のボール拡大処理
-       float replayScale = 14.0f;
-       m_modelRender.SetScale({ replayScale, replayScale, replayScale });
+        // 2. リプレイ中のボール拡大処理
+        float replayScale = 14.0f;
+        m_modelRender.SetScale({ replayScale, replayScale, replayScale });
 
-       float dt = game->GetIsHitStop() ? 0.0f : g_gameTime->GetFrameDeltaTime();
+        float dt = game->GetIsHitStop() ? 0.0f : g_gameTime->GetFrameDeltaTime();
 
-       m_rotationAngle += m_rotateSpeed * dt;
+        m_rotationAngle += m_rotateSpeed * dt;
 
-       Quaternion rot;
-       rot.SetRotationDegX(m_rotationAngle);
-       m_modelRender.SetRotation(rot);
+        Quaternion rot;
+        rot.SetRotationDegX(m_rotationAngle);
+        m_modelRender.SetRotation(rot);
     }
 
     // ★ UI に毎フレーム位置を送る（必須）
@@ -390,22 +391,22 @@ void Ball::Slider(float dt)
     float maxZ = 6500.0f; // ★ 6200.0f → 6500.0f（ヒットゾーンの出口）に変更
 
     float progress = RemapClamp(m_position.z, minZ, maxZ);
-    float peakRatio = 0.6f; // ★ 0.35f → 0.55f に変更（戻り始めを遅らせる）
-    float outwardAmount = 150.0f; // ★ 80.0f → 150.0f に変更
+    m_breakStartRatio = 0.6f; // ★ 0.35f → 0.55f に変更（戻り始めを遅らせる）
+    m_outwardAmount = 150.0f; // ★ 80.0f → 150.0f に変更
 
     float startX = m_throwStartPos.x;
     float targetX = m_throwStartPos.x;
     float dir = (m_curveDir != 0) ? (float)m_curveDir : 1.0f;
-    float peakX = startX + outwardAmount * dir;
+    float peakX = startX + m_outwardAmount * dir;
 
-    if (progress <= peakRatio)
+    if (progress <= m_breakStartRatio)
     {
-        float t = RemapClamp(progress, 0.0f, peakRatio);
-        m_position.x = startX + EaseOutCubic(t) * outwardAmount * dir;
+        float t = RemapClamp(progress, 0.0f, m_breakStartRatio);
+        m_position.x = startX + EaseOutCubic(t) * m_outwardAmount * dir;
     }
     else if (progress < 1.0f)
     {
-        float t = RemapClamp(progress, peakRatio, 1.0f);
+        float t = RemapClamp(progress, m_breakStartRatio, 1.0f);
         m_position.x = peakX + (targetX - peakX) * EaseInOutCubic(t);
     }
     else
@@ -418,64 +419,59 @@ void Ball::Slider(float dt)
 void Ball::Throw(const Vector3& targetPos)
 {
     m_rotationAngle = 0.0f;
-	m_throwStartPos = m_position;
-	m_targetPos = targetPos;
-	m_throwEndPos = targetPos;
- 
-    // ★ 1. ゲーム側から現在の難易度を取得する
-    Difficulty currentDifficulty = Normal; // デフォルト
+    m_throwStartPos = m_position;
+    m_throwEndPos = targetPos;
+
+    Difficulty currentDifficulty = Normal;
     Game* game = FindGO<Game>("game");
-    if (game) {
-        currentDifficulty = game->GetDifficulty(); // ※Gameクラスにある難易度取得関数
-    }
+    if (game) currentDifficulty = game->GetDifficulty();
 
-    //難易度ごとの球速のベース値を変える
-    float baseSpeed = 2000.0f;
-
-    switch (currentDifficulty)
+    if (!m_isDifficultyConfigured)
     {
-    case Easy:
-        baseSpeed = 1300.0f;
-        m_baseGravity = 4.0f; 
-        break;
-    case Normal:
-        baseSpeed = 1500.0f;
-        m_baseGravity = 9.5f;
-        break;
-    default: //Hard
-        baseSpeed = 2000.0f;
-        m_baseGravity = 25.0f;
-        break;
-    }
-
-    float speed = baseSpeed;
-
+        const DifficultyParams& p = GetDifficultyParams(currentDifficulty);
+        m_baseBallSpeed = p.ballBaseSpeed;
+        m_baseGravity = p.ballGravity;
+        m_isDifficultyConfigured = true;
+    }    
+    SelectBallType(currentDifficulty);
     const float KReferenceSpeed = 2000.0f; //KReferenceSpeed:基準となる球速(Y方向の初速を計算するときに基準として使う球速の値)
     const float KInitialVYRatio = -0.1 / 4.0f; //KInitialVYRatio:傾きの比率(Z方向に対してY方向がどのくらいの割合)
     const float KFixedInitialVY = KInitialVYRatio * KReferenceSpeed; //常に同じ値
 
     m_velocity.x = 0.0f;
     m_velocity.y = KFixedInitialVY;
-    m_velocity.z = speed;
+    m_velocity.z = m_baseBallSpeed;
 
     m_initialSpeedZ = m_velocity.z;
     m_isMove = true;
 
+    m_replayPath.clear();
+    m_isRecording = true;
+
+    if (game) {
+        game->SetIsKakutei(false);
+        InGameUI* ui = game->GetInGameUI();
+        if (ui) ui->SetStartZ(m_position.z);
+    }
+}
+
+void Ball::SelectBallType(Difficulty diff)
+{
     // ★ 2. 難易度に応じた球種の確率調整
     m_isMagicBall = false; // 初期化
 
-    if (currentDifficulty == Easy)
+    if (diff == Easy||diff == Tutorial)
     {
         m_ballType = Straight;
     }
-    else if (currentDifficulty == Normal)
+    else if (diff == Normal)
     {
         int rate = rand() % 100;
-        if (rate < 60) {
-            m_ballType = Straight;          // 70% ストレート
+        if (rate < 90 && rate>30) {
+            m_ballType = Straight;          // 60% ストレート
         }
         else if (rate < 30) {
-            m_ballType = Curve;             // 20% カーブ
+            m_ballType = Curve;             // 30% カーブ
         }
         else {
             m_ballType = SlowBall;          // 10% スローボール
@@ -488,11 +484,11 @@ void Ball::Throw(const Vector3& targetPos)
         }
 
         int rate = rand() % 100;
-        if (rate < 24)        m_ballType = Straight;
-        else if (rate < 46)   m_ballType = ShakeHorizontal;
-        else if (rate < 68)   m_ballType = Curve;
-        else if (rate < 90)   m_ballType = ShakeVertical;
-        else                  m_ballType = SlowBall;
+		if (rate < 24 && rate >= 0)         m_ballType = Straight;          // 24% ストレート
+		else if (rate < 46 && rate >= 24)   m_ballType = ShakeHorizontal;   // 22% 横揺れ
+		else if (rate < 68 && rate >= 46)   m_ballType = Curve;             // 22% カーブ
+		else if (rate < 90 && rate >= 68)   m_ballType = ShakeVertical;     // 22% 縦揺れ
+		else                                m_ballType = SlowBall;          // 10% スローボール
 
         //////////////////////////////
        //m_ballType = Straight;
@@ -504,6 +500,7 @@ void Ball::Throw(const Vector3& targetPos)
             m_isMagicBall = true;
         }*/
     }
+
 
     //スローボールに魔球を追加しない
     if (m_ballType == SlowBall)
@@ -520,54 +517,31 @@ void Ball::Throw(const Vector3& targetPos)
     {
         m_curveDir = 0.0f;
     }
-
-    // ★ リプレイ記録開始（投球開始時）
-    m_replayPath.clear();
-    m_isRecording = true;
-
-    // ★ 投げた瞬間の Z を UI に送る（必須）
-    if (game) {
-        game->SetIsKakutei(false);
-        InGameUI* ui = game->GetInGameUI();
-        if (ui) {
-            ui->SetStartZ(m_position.z);
-        }
-    }
 }
 
 void Ball::SetPosition(const Vector3& pos)
 {
     m_position = pos;
-	m_throwEndPos = pos;
+    m_throwEndPos = pos;
     m_modelRender.SetPosition(m_position);
 
     m_collisionObject->SetPosition(m_position);
     m_collisionObject->Update();
 }
 
-bool Ball::IsMoving() const
-{
-    return m_isMove;
-}
-
 void Ball::GetFlightRay(Vector3& startPos, Vector3& endPos) const
 {
-	startPos = m_throwStartPos;
-	endPos = m_throwEndPos;
+    startPos = m_throwStartPos;
+    endPos = m_throwEndPos;
 }
 
 Vector3 Ball::GetFlightDirection() const
 {
-	Vector3 dir = m_throwEndPos - m_throwStartPos;
-	if (dir.Length() > 0.0001f) {
-		dir.Normalize();
-	}
-	return dir;
-}
-
-float Ball::GetFlightLength() const
-{
-	return (m_throwEndPos - m_throwStartPos).Length();
+    Vector3 dir = m_throwEndPos - m_throwStartPos;
+    if (dir.Length() > 0.0001f) {
+        dir.Normalize();
+    }
+    return dir;
 }
 
 // ボールと指定した位置・半径の球との衝突判定
@@ -596,9 +570,9 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
         game->SetHitStartZ(m_position.z);   // ★ 追加
         game->SetHasStartedDistance(true);   // ★ 追加
         // ★ 打った瞬間のフレームを保存
-        game->SetHitFrame(shot,game->GetReplayFrameCount());
+        game->SetHitFrame(shot, game->GetReplayFrameCount());
         game->SetHitVelocity(game->GetShots(), m_velocity);     // ← 速度
-        game->SetHitDirection(game->GetShots(),dir);            // ← 方向
+        game->SetHitDirection(game->GetShots(), dir);            // ← 方向
         game->SetHitStartPos(game->GetShots(), m_position);       // ← 位置
         game->SetHitPower(game->GetShots(), hitPower);            // ← パワー
     }
@@ -616,7 +590,7 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
         // ★ パーフェクト閾値（あなたのUIと合わせる）
         bool isPerfect = (predicted >= 99500.0f);
 
-        if (isPerfect&& !isReplay) {
+        if (isPerfect && !isReplay) {
 
             // ★ 確定演出フラグON
             game->SetIsKakutei(true);
@@ -653,24 +627,13 @@ float Ball::PredictLandingDistance()
         currentDifficulty = game->GetDifficulty(); // ※Gameクラスにある難易度取得関数
     }
     // ★ 難易度ごとの重力を決定（ループ外）
-    float gravity = 0.0f;
-    switch (currentDifficulty)
-    {
-    case Easy:
-        gravity = 4.0f;
-        break;
-    case Normal:
-        gravity = 9.5f;
-        break;
-    default: // Hard
-        gravity = 25.0f;
-        break;
-    }
+
+    m_baseBallGravity = GetDifficultyParams(currentDifficulty).ballGravity;
 
     // ★ 着地まで予測
     while (pos.y > 0.0f) {
 
-        vel.y -= gravity * dt;   // ← 難易度ごとの重力が反映される
+        vel.y -= m_baseBallGravity * dt;   // ← 難易度ごとの重力が反映される
 
         pos += vel * dt;
     }
@@ -702,11 +665,6 @@ void Ball::ResetBall()
             ui->ResetBatAndMeetOnly();
         }
     }
-}
-// 追加: 着地など外部から投球タイマーをリセットするための関数
-void Ball::ResetThrowTimer()
-{
-     m_throwTimer = 0.0f;
 }
 
 void Ball::Render(RenderContext& rc)
@@ -761,7 +719,7 @@ void Ball::Render(RenderContext& rc)
     {
         if (m_isMagicBall)
         {
-            if (m_throwTimer < 0.9f&&m_position.z>1100.0f)
+            if (m_throwTimer < 0.9f && m_position.z>1100.0f)
             {
                 return;
             }
@@ -772,7 +730,7 @@ void Ball::Render(RenderContext& rc)
         }
         else
         {
-            if (m_throwTimer < 0.9f&&m_position.z>1100.0f)
+            if (m_throwTimer < 0.9f && m_position.z>1100.0f)
             {
                 return;
             }

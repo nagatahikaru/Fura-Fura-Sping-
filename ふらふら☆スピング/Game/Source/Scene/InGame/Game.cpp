@@ -12,6 +12,8 @@
 #include"Source/UI/PauseUI/PauseUI.h"
 #include"Source/UI/SoundTestUI/SoundTestUI.h"
 #include"Source/Scene/Start/Start.h"
+#include "Source/DifficultyParams.h"
+#include "Source/Scene/Titer/Titer.h"
 
 
 Game::~Game()
@@ -54,7 +56,8 @@ bool Game::Start()
 	if (m_gameCamera && m_ball) {
 		m_gameCamera->SetBall(m_ball);
 	}
-
+	const DifficultyParams& p = GetDifficultyParams(m_difficulty);
+	m_maxShots = p.pitchCount;
 	m_replayPaths.resize(3);
 
 	return true;
@@ -64,6 +67,8 @@ int Game::GetGuruguruSEInterval() const
 {
 	switch (m_difficulty)
 	{
+	case Tutorial:
+		return 7;
 	case Easy:
 		return 7;
 	case Normal:
@@ -81,18 +86,7 @@ void Game::Update()
 	//PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
 	 // ★ 難易度ごとにリプレイ時間を変更
-	switch (m_difficulty)
-	{
-	case Difficulty::Easy:
-		m_replayDuration = 5.0f;   // 長め
-		break;
-	case Difficulty::Normal:
-		m_replayDuration = 4.0f;   // 標準
-		break;
-	case Difficulty::Hard:
-		m_replayDuration = 3.0f;   // 短め
-		break;
-	}
+	m_replayDuration = GetDifficultyParams(m_difficulty).replayDuration;
 
 	// ★ ぐるぐる値を毎フレーム Game に保存する
 	if (m_batter) {
@@ -114,7 +108,7 @@ void Game::Update()
 	m_prevGuruGuru = g;
 
 	if (m_InGameUI) {
-		m_InGameUI->SetBallCount(3 - m_shots);
+		m_InGameUI->SetBallCount(m_maxShots - m_shots);
 	}
 
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止
@@ -192,6 +186,75 @@ void Game::Update()
 			}
 		}
 		return; // ⭕ 5秒間はここでUpdateを抜けることで、後続の「投球開始処理」へ進ませない
+	}
+
+	// ★ チュートリアル最終球後の「続ける/タイトルへ戻る」選択待ち
+	if (m_shouldContinueTutorial) {
+
+		float stickX = g_pad[0]->GetLStickXF(); // ← API名は実際の環境に合わせて修正してください
+		const float STICK_THRESHOLD = 0.7f;
+		const float STICK_NEUTRAL = 0.3f;
+
+		// --- スティックでカーソル移動（ニュートラルに戻ってから次を受け付ける） ---
+		if (m_tutorialStickNeutral) {
+			if (stickX > STICK_THRESHOLD) {
+				m_isTutorialSelectTitle = false; // 右 → 続ける
+				m_tutorialStickNeutral = false;
+			}
+			else if (stickX < -STICK_THRESHOLD) {
+				m_isTutorialSelectTitle = true;  // 左 → タイトルへ戻る
+				m_tutorialStickNeutral = false;
+			}
+		}
+		else {
+			if (fabsf(stickX) < STICK_NEUTRAL) {
+				m_tutorialStickNeutral = true; // 中央付近に戻ったら次の入力を許可
+			}
+		}
+
+		// --- Aボタンで確定 ---
+		if (g_pad[0]->IsTrigger(enButtonA)) {
+
+			if (!m_isTutorialSelectTitle) {
+				// --- 続ける確定 ---
+				m_shouldContinueTutorial = false;
+				m_isInputLocked = false;
+				m_shots = 0;
+
+				for (int i = 0; i < 3; i++) {
+					m_hasSwung[i] = false;
+					m_swingFrame[i] = -1;
+					m_pitchFrame[i] = 0;
+					m_replayPaths[i].clear();
+					if (m_InGameUI) {
+						m_InGameUI->m_threeShots[i] = 0;
+						m_InGameUI->m_shotDone[i] = false;
+					}
+				}
+
+				ResetForNextShot();
+
+				if (m_InGameUI) {
+					m_InGameUI->SetUIVisible(true);
+					m_InGameUI->SetFontVisble(true);
+					m_InGameUI->SetReplayVisible(false);
+				}
+
+				Pitcher* pitcher = FindGO<Pitcher>("pitcher");
+				if (pitcher) {
+					pitcher->ResetThrow();
+				}
+
+				SetGameStarted(true);
+			}
+			else {
+				// --- タイトルへ戻る確定 ---
+				GoToTiter();
+			}
+			return;
+		}
+
+		return; // 確定するまで他の処理には進ませない
 	}
 
 	// ★ ヒットストップ処理（ゲーム全体を一瞬停止）
@@ -334,22 +397,30 @@ void Game::Update()
 		m_afterLandingTimer += (1.0f / 60.0f) * m_timeScale;
 
 		if (m_afterLandingTimer >= 1.5f) {
-
+	
+	
 			// ★ 3球目の着地から1秒経ったら、ここで初めて入力をロックしてフェードアウトを開始する
-			if (m_shots == 2) {
+			if (m_shots == m_maxShots - 1) {
 				m_isInputLocked = true; // ★リプレイ直前のここでロック！
-				DecideBestReplay();
-				if (m_bestShotIndex != -1) {
-					m_shouldStartReplay = true;
+				if (m_difficulty == Difficulty::Tutorial) {
+					//　tutorialモードでは、リプレイを再生せずに続けるか、タイトルに戻るかを選択するUIを表示する
+					m_shouldContinueTutorial = true;
 				}
 				else {
-					GoToResult();
+					DecideBestReplay();
+					if (m_bestShotIndex != -1) {
+						m_shouldStartReplay = true;
+					}
+					else {
+						GoToResult();
+						return;
+					}
+					StartEndFade(); // フェードアウトしてリプレイへ
 					return;
 				}
-				StartEndFade(); // フェードアウトしてリプレイへ
-				return;
 			}
-
+		
+	
 			// ★ 1球目・2球目の着地後1秒経ったときの処理
 			if (!m_hasTriggered100m) {
 				m_cameraMode = Camera_Catcher;
@@ -375,7 +446,7 @@ void Game::Update()
 
 	// ★ ボールが飛んでいる間は距離をリアルタイム更新
 	// ★ ボールを打った後だけ距離をリアルタイム更新
-	if (m_ball && m_ball->m_isMove && m_hasStartedDistance && !m_isBallLanded) {
+	if (m_ball && m_ball->GetIsMove() && m_hasStartedDistance && !m_isBallLanded) {
 
 		float dist = m_hitStartZ - m_ball->GetPosition().z;
 		if (dist < 0) dist = 0;
@@ -392,7 +463,7 @@ void Game::Update()
 
 	// ★ フェードイン遅延処理
 	if (m_fadeInDelayTimer >= 0.0f) {
-		if (m_shots == 2) {
+		if (m_shots == m_maxShots - 1) {
 			m_fadeInDelayTimer = -1.0f;
 			return;
 		}
@@ -451,7 +522,7 @@ void Game::Update()
 
 			m_hitStopTimer = 0.05f;
 			m_isHitStop = true;
-			m_ball->m_hasHit = true;
+			m_ball->SetHasHit(true);
 			m_hasPlayedReplaySwing = true; // ★ 二重発火防止
 		}
 
@@ -479,6 +550,20 @@ void Game::Update()
 	if (m_isRecording) {
 		m_replayFrameCounter++;
 	}
+}
+
+void Game::GoToTiter()
+{
+	auto start1 = FindGO<Start1>("start1");
+	if (start1) DeleteGO(start1);
+
+	auto pause = FindGO<PauseUI>("pause");
+	if (pause) DeleteGO(pause);
+
+	// ★ タイトルシーンへ遷移（クラス名は実際のものに合わせてください）
+	NewGO<Titer>(0);
+
+	DeleteGO(this);
 }
 
 void Game::ResetForNextShot()
@@ -517,7 +602,7 @@ void Game::ResetForNextShot()
 	m_isInputLocked = false;
 
 	// 次のショット用のフラグ初期化（既存）
-	if (m_shots < 3) {
+	if (m_shots < m_maxShots) {
 		m_hasSwung[m_shots] = false;
 	}
 }
@@ -528,6 +613,8 @@ void Game::OnBallLanded()
 	m_canFastForward = false;
 	m_timeScale = 1.0f;
 	m_hasStartedDistance = false;   // ★ ここでもリセット
+	m_isTutorialSelectTitle = false;   // ★ 追加：初期カーソルは「続ける」
+	m_tutorialStickNeutral = true;     // ★ 追加
 	Pitcher* pitcher = FindGO<Pitcher>("pitcher");
 	if (pitcher) {
 		pitcher->ResetThrow();
@@ -536,6 +623,14 @@ void Game::OnBallLanded()
 	if (m_ball) {
 		m_ball->ResetThrowTimer();
 	}
+	if (m_difficulty == Difficulty::Tutorial) {
+		if (m_shots == m_maxShots - 1) {   // ★ 修正：他の難易度と同じ判定式に合わせる
+			m_isInputLocked = true;        // ★ 追加：ピッチャー側で見る共通フラグ
+			m_shouldContinueTutorial = true;
+		}
+		return;
+	}
+
 	// スコア保存
 	m_scores[m_shots] = m_km;
 
@@ -546,17 +641,22 @@ void Game::OnBallLanded()
 	}
 
 	// ボール軌道保存（ヒットした時だけ）
-	if (m_ball->m_replayPath.size() > 0) {
-		m_replayPaths[m_shots] = m_ball->m_replayPath;
+	if (m_ball && m_ball->GetReplayPath().size() > 0) {
+		m_replayPaths[m_shots] = m_ball->GetReplayPath();
 	}
 	else {
 		m_replayPaths[m_shots].clear();
 	}
-
+	
 	// 3球目が終わった？
-	if (m_shots == 2) {
+	if (m_shots == m_maxShots-1) {
 		DecideBestReplay();
 		m_isInputLocked = true;
+		if(m_difficulty == Difficulty::Tutorial) {
+			// ★ 5球目の着地後は、リプレイを再生せずに続けるか、タイトルに戻るかを選択するUIを表示する
+			m_shouldContinueTutorial = true;
+			return; // ★ ここでリターンする事で、記録を残さずに次の球へ進む
+		}
 		if (m_bestShotIndex != -1) {
 			// ベストショットがある → リプレイ開始を予約
 			m_shouldStartReplay = true;
@@ -607,7 +707,7 @@ void Game::OnOver100m()
 			// ★ フェードアウト完了 → ここで20倍速にする
 			m_timeScale = 300.0f;
 
-			if (m_shots == 2) {
+			if (m_shots == m_maxShots - 1) {
 				m_fadeInDelayTimer = -1.0f;
 				return;
 			}
@@ -624,7 +724,7 @@ void Game::StartReplay(int index)
 {
 	m_isRecording = false;
 	if (m_ball) {
-		m_ball->m_isRecording = false;
+		m_ball->SetIsRecording(false);
 	}
 	m_replaySwingTimer = 0.0f;  // ★ スイング用タイマー
 	m_hasPlayedReplaySwing = false;
@@ -655,8 +755,8 @@ void Game::StartReplay(int index)
 	if (m_ball) {
 		m_ball->ResetBall();              // ← 初期位置へ
 		m_ball->SetVelocity(Vector3::Zero); // ← 速度ゼロ
-		m_ball->m_isMove = false;           // ← 動作停止
-		m_ball->m_hasHit = false;           // ← ヒットフラグ解除
+		m_ball->SetIsMove(false);           // ← 動作停止
+		m_ball->SetHasHit(false);           // ← ヒットフラグ解除
 	}
 
 
@@ -759,20 +859,21 @@ int Game::GetReplayFrameCount() const {
 	return m_replayFrameCounter;
 }
 
+// Game::OnPitcherThrow() を修正
 void Game::OnPitcherThrow()
 {
 	int shot = m_shots;
-
-	// ★ ピッチャーが投げた瞬間のフレームを保存
 	m_pitchFrame[shot] = m_replayFrameCounter;
 
 	if (m_batter) {
-		m_batter->SetCursorMode(true); // これで2球目・3球目もスティックで動くようになります！
+		m_batter->SetCursorMode(true);
 	}
 
-	// ★ ボールを飛ばす
 	if (m_ball) {
-		m_ball->Throw({ 0, -20, 0 });
+		StrikeZone zone; // ★ どこかに保持
+		float controlNoise = GetDifficultyParams(m_difficulty).controlAccuracy; // ★ 新規フィールド
+		Vector3 target = Vector3(0.0f,-20.0f,0.0f);
+		m_ball->Throw(target);
 	}
 }
 
