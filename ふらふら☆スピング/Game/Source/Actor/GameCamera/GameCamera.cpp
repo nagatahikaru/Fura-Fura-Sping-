@@ -36,7 +36,7 @@ void GameCamera::SetCatcherCamera() {
     m_pitch = -6.0f;
 
     g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
-    m_followMode = Follow_None;  
+    m_followMode = Follow_None;
 }
 
 void GameCamera::SetkakuteiCamera() {
@@ -47,7 +47,7 @@ void GameCamera::SetkakuteiCamera() {
     m_pitch = 0.0f;
 
     g_camera3D->SetViewAngle(Math::DegToRad(50.0f));
-    m_followMode = Follow_None;  
+    m_followMode = Follow_None;
 }
 
 void GameCamera::SetReplayCamera() {
@@ -183,7 +183,7 @@ void GameCamera::Update() {
         m_replayZoomTimer += g_gameTime->GetFrameDeltaTime();
 
         if (m_replayZoomTimer < m_replayZoomDuration) {
-            Vector3 catcherPos = CATCHER::CatcherBasicSettings::INITIAL_COORDINATE;  
+            Vector3 catcherPos = CATCHER::CatcherBasicSettings::INITIAL_COORDINATE;
 
             // キャッチャー方向へ最小距離まで寄った位置を目標とする
             Vector3 dirToCatcher = catcherPos - m_replayZoomStartPos;

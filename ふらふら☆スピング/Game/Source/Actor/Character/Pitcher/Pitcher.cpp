@@ -159,9 +159,11 @@ void Pitcher::Update()
 	}
 
 	// 🌟【ここを追加】5秒間の操作確認フェーズ中は、ピッチャーの処理を完全にストップさせる
-	if (m_game && m_game->IsReplayPlaying()) {
-		// アニメーションの更新（Idle）だけは行い、タイマー更新や投球判定には進ませない
-		m_modelRender.Update();
+	if (m_game->IsReplayPlaying()) {
+		if (m_game->GetIsPaused()) {
+			return;
+		}
+		m_characterModel->Update();   // ← アニメーションを進める
 		return;
 	}
 
