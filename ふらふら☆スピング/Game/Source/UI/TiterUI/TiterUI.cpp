@@ -61,6 +61,9 @@ bool TiterUI::Start()
     m_hardDetail.Init("Assets/sprite/Detail_Hard.dds", 2000.0f, 1270.0f);
     m_hardDetail.SetPosition({ 0.0f, 0.0f, 0.0f });
 
+    m_tutorial.Init("Assets/sprite/tutorial.dds", 2000.0f, 1270.0f);
+    m_tutorial.SetPosition({ 600.0f, 0.0f, 0.0f });
+
     m_nanido.Init("Assets/sprite/nanido.dds", 800.0f, 600.0f);
     m_nanido.SetPosition({ 0.0f, 420.0f, 0.0f });
 
@@ -214,13 +217,16 @@ void TiterUI::Update()
 
         // 下部の難易度ボタンアイコンの拡縮（既存通り）
         if (m_selectedDifficulty == 0) {
-            m_easySprite.SetScale({ 2.0f, 2.0f, 1.0f }); m_normalSprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_hardSprite.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_easySprite.SetScale({ 2.0f, 2.0f, 1.0f }); m_normalSprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_hardSprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_tutorial.SetScale({ 1.0f,1.0f,1.0f });
         }
         else if (m_selectedDifficulty == 1) {
-            m_easySprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_normalSprite.SetScale({ 2.0f, 2.0f, 1.0f }); m_hardSprite.SetScale({ 1.0f, 1.0f, 1.0f });
+            m_easySprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_normalSprite.SetScale({ 2.0f, 2.0f, 1.0f }); m_hardSprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_tutorial.SetScale({ 1.0f,1.0f,1.0f });
         }
         else if (m_selectedDifficulty == 2) {
-            m_easySprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_normalSprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_hardSprite.SetScale({ 2.0f, 2.0f, 1.0f });
+            m_easySprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_normalSprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_hardSprite.SetScale({ 2.0f, 2.0f, 1.0f }); m_tutorial.SetScale({ 1.0f,1.0f,1.0f });
+        }
+        else if (m_selectedDifficulty == 3) {
+            m_easySprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_normalSprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_hardSprite.SetScale({ 1.0f, 1.0f, 1.0f }); m_tutorial.SetScale({ 2.0f,2.0f,1.0f });
         }
 
         if (g_pad[0]->IsTrigger(enButtonA)) {
@@ -281,92 +287,26 @@ void TiterUI::Render(RenderContext& rc)
         case 0: // Easy
             m_easyDetail.Update();
             m_easyDetail.Draw(rc);
-          /*  m_10.Update();
-            m_10.Draw(rc);
-            m_hosi1.Update();
-            m_hosi1.Draw(rc);
-
-            m_hosikara1.Update();
-            m_hosikara1.Draw(rc);
-
-            m_hosikara2.Update();
-            m_hosikara2.Draw(rc);
-
-            m_ball1.Update();
-            m_ball1.Draw(rc);
-
-            m_karaball1.Update();
-            m_karaball1.Draw(rc);
-
-            m_karaball2.Update();
-            m_karaball2.Draw(rc);*/
+         
             break;
         case 1: // Normal
             m_normalDetail.Update();
             m_normalDetail.Draw(rc);
-          /*  m_45.Update();
-            m_45.Draw(rc);
-            m_hosi1.Update();
-            m_hosi1.Draw(rc);
-            m_hosi2.Update();
-            m_hosi2.Draw(rc);
-            m_hosikara2.Update();
-            m_hosikara2.Draw(rc);
-
-            m_ball1.Update();
-            m_ball1.Draw(rc);
-
-            m_ball2.Update();
-            m_ball2.Draw(rc);
-
-            m_karaball2.Update();
-            m_karaball2.Draw(rc);*/
+     
             break;
         case 2: // Hard
             m_hardDetail.Update();
             m_hardDetail.Draw(rc);
-          /*  m_100.Update();
-            m_100.Draw(rc);
-            m_hosi1.Update();
-            m_hosi1.Draw(rc);
-            m_hosi2.Update();
-            m_hosi2.Draw(rc);
-            m_hosi3.Update();
-            m_hosi3.Draw(rc);
-            m_ball1.Update();
-            m_ball1.Draw(rc);
-
-            m_ball2.Update();
-            m_ball2.Draw(rc);
-
-            m_ball3.Update();
-            m_ball3.Draw(rc);*/
+        
             break;
         }
+        m_tutorial.Update();
+        m_tutorial.Draw(rc);
 
         m_nanido3.Update();
         m_nanido3.Draw(rc);
 
-     /*   m_gurusai.Update();
-        m_gurusai.Draw(rc);
-
-        m_risuku.Update();
-        m_risuku.Draw(rc);
-
-        m_henka.Update();
-        m_henka.Draw(rc);*/
-
-      /*  m_kuro.Update();
-        m_kuro.Draw(rc);
-
-        m_kuro2.Update();
-        m_kuro2.Draw(rc);*/
-
-       /* m_nanido2.Update();
-        m_nanido2.Draw(rc);*/
-
-     /*   m_grobu.Update();
-        m_grobu.Draw(rc);*/
+  
         m_B.Update();
         m_B.Draw(rc);
 
