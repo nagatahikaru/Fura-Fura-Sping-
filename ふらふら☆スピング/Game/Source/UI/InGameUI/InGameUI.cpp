@@ -3,6 +3,7 @@
 #include"Source/Sound/SoundManager.h"
 #include"Source/Scene/InGame/Game.h"
 #include "Source/Actor/Character/Ball/Ball.h"
+#include "Source/DifficultyParams.h"
 
 template <typename T>
 constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
@@ -342,20 +343,20 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 	t = clamp(t, 0.0f, 1.0f);
 
 	// ★ アルファ値の計算（0.5 = 半透明、0.0 = 完全透明）
-	float alpha = 1.0f;
+	float alpha = 0.5f;
 
-	//if (t < 0.30f) {
-	//	// 最初の30%は 0.7f を維持
-	//	alpha = 0.5f;
-	//}
-	//else {
-	//	// 0.30〜1.0 を 0〜1 に圧縮
-	//	float u = (t - 0.30f) / 0.70f;
+	if (t < 0.30f) {
+		// 最初の30%は 0.7f を維持
+		alpha = 0.5f;
+	}
+	else {
+		// 0.30〜1.0 を 0〜1 に圧縮
+		float u = (t - 0.30f) / 0.70f;
 
-	//	// 二乗でゆっくり立ち上がり、最終的に 0.0f（完全透明）にする
-	//	// u=0 のとき alpha=0.7f、u=1 のとき alpha=0.0f
-	//	alpha = 0.5f * (1.0f - u);
-	//}
+		// 二乗でゆっくり立ち上がり、最終的に 0.0f（完全透明）にする
+		// u=0 のとき alpha=0.7f、u=1 のとき alpha=0.0f
+		alpha = 0.5f * (1.0f - u);
+	}
 
 	// 常に最新のアルファ値を適用（ifの外に出すことでバグを防止）
 	m_ballAlpha = alpha;
@@ -726,28 +727,31 @@ void InGameUI::Render(RenderContext& rc) {
 				}
 			}
 		
-			if (m_hasPredictedBall) {
+		}
+	
 
+		if (m_hasPredictedBall&& m_game && m_game->GetDifficulty() != Difficulty::Hard) {
 
-				Vector3 uiPos;
+			Vector3 uiPos;
 
-				if (m_isBallUIFixed) {
-					uiPos = m_fixedBallUIPos;   // ← 変換しない
-				}
-				else {
-					uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
-				}
-
-				m_spriteRenderBall.SetPosition(uiPos);
-
-				// ★ 距離に応じた透明度を適用！
-				Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
-				m_spriteRenderBall.SetMulColor(color);
-				m_spriteRenderBall.Update();
-				m_spriteRenderBall.Draw(rc);
+			if (m_isBallUIFixed) {
+				uiPos = m_fixedBallUIPos;   // ← 変換しない
+			}
+			else {
+				uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
 			}
 
-	}
+			m_spriteRenderBall.SetPosition(uiPos);
+
+			// ★ 距離に応じた透明度を適用！
+			Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
+			m_spriteRenderBall.SetMulColor(color);
+
+			m_spriteRenderBall.Update();
+			m_spriteRenderBall.Draw(rc);
+		}
+
+
 	
 		if (m_isStrikeAnim) {
 
@@ -796,16 +800,9 @@ void InGameUI::Render(RenderContext& rc) {
 		// 難易度別の回転数設定（1回だけ）
 		int rotationPerLevel = 3;
 		Difficulty diff = game->GetDifficulty();
+		const DifficultyParams& p = GetDifficultyParams(diff);
+		rotationPerLevel = p.guruguruSEInterval;
 
-		if (diff == Difficulty::Easy) {
-			rotationPerLevel = 7;
-		}
-		else if (diff == Difficulty::Normal) {
-			rotationPerLevel = 5;
-		}
-		else {
-			rotationPerLevel = 3;
-		}
 
 		// ★ 警告スプライト表示（難易度別）
 		if (shouldShowStageUI && m_guruGuruCount >= rotationPerLevel)
