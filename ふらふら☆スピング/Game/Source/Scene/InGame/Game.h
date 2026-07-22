@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Source/Source.h"
 #include "Source/Actor/Character/Ball/Ball.h"
+#include "Source/Difficulty.h"
 class GameCamera;
 class Background;
 class InGameUI;
@@ -18,16 +19,10 @@ enum CameraMode
 	Camera_BackBall,
 	Camera_Kakutei
 };
-
-enum Difficulty {
-	Easy,
-	Normal,
-	Hard
-};
-
 class Game : public Source
 {
 private:
+	// === 主要オブジェクト参照 ===
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。
 	Batter* m_batter;			//バッター。
@@ -36,83 +31,125 @@ private:
 	Ball* m_ball;				//ボール。
 	SkyCube* m_skyCube;			//スカイキューブ。
 	InGameUI* m_InGameUI;		//インゲームUI。
-	CameraMode m_cameraMode = Camera_Catcher;//初期カメラ
-	Start1* m_start1;
-	int m_guruguru = 0;
-	float m_km = 0;
-	bool m_bgmStarted = false;
-	float m_afterLandingTimer = 0.0f;
-	bool  m_isBallLanded = false;
-	float m_zeroDistanceTimer = 0.0f;
-	bool m_isRotationSeen = true;
-	bool m_isGameStarted = false;
-	int m_cameraType = 0;
+	Start1* m_start1;			// タイトル/開始演出オブジェクト
 
-	int m_scores[3] = { 0,0,0 }; // 各回のスコア保存
-	// Game.h など
-	bool  m_isMissWait = false;
-	float m_missWaitTimer = 0.0f;
-	float m_fadeInDelayTimer = -1.0f;
-	std::vector<std::vector<Vector3>> m_replayPaths; // 3球分の軌道
+	// === カメラ・進行状態 ===
+	CameraMode m_cameraMode = Camera_Catcher;	// 現在のカメラモード（初期はキャッチャー視点）
+	int m_cameraType = 0;						// カメラの種別切り替え用フラグ
 
-	float m_replayTimer = 0.0f;
-	float m_replaySpeed = 1.0f;   // 1.0f 固定でOK
-	int   m_bestShotIndex = -1;
-	std::vector<Vector3> m_currentReplay; // 再生中の軌道
-	bool m_shouldStartReplay = false;
-	float m_replayDuration = 5.0f;   // リプレイは3秒で打ち切り
-	Vector3 m_initialVelocities[3];   // 1球目〜3球目の投球直後の速度
-	int m_replayStartFrame = 0;
-	int m_replayPitchFrame = 0;
-	bool m_isRecording = false;
-	int m_replayDelayFrames = 0;
-	float m_replayAccumulator = 0.0f;   // 再生速度制御用のアキュムレータ
-	float m_replaySwingTimer = 0.0f;
-	bool m_hasPlayedReplaySwing = false;  // ★ リプレイ中にスイングを1回だけ再生するためのフラグ
-	int m_bestSwingFrame = 0;
-	int m_bestPitchFrame = 0;
-	float m_replaySkipHoldTime = 0.0f;  // B長押し時間
-	bool m_hasAppliedHitMoment = false;
-	bool m_startFadeSE2 = false;
-	int m_prevGuruGuru = 0;
-	bool m_hasSwung[3] = { false, false, false };
-	Difficulty m_difficulty = Difficulty::Easy;
-	int m_replayFrameCounter = 0;
-	int m_swingFrame[3] = { -1, -1, -1 };
-	int m_pitchFrame[3] = { 0,0,0 };
-	bool  m_isReplayPlaying = false;
-	int     m_hitFrame[3];
-	Vector3 m_hitVelocities[3];
-	Vector3 m_hitDirections[3];
-	Vector3 m_hitStartPos[3];
-	float   m_hitPower[3];
-	int m_shots = 0;          // 何回打ったか
-	float m_hitStartZ = 0.0f;
-	bool m_hasStartedDistance = false;
-	bool m_isHomeRun = false;
-	float m_replayDelayTimer = 0.0f;    // リプレイ開始までの遅延タイマー
-	float m_readyTimer = 5.0f;
-	bool m_isReadyPhase = false;
-	bool m_isKakutei = false;
-	float m_kakuteiTimer = 0.0f;
-	float m_timeScale = 1.0f;
-	bool m_isInputLocked = false;
-	bool m_canFastForward = false;
-	float m_hitStopTimer = 0.0f;
-	bool m_isHitStop = false;
-	bool m_hasTriggered100m = false;
+	// === 打撃/演出系カウンタ ===
+	int m_guruguru = 0;			// デバフ「グルグル」の現在段階
+	int m_prevGuruGuru = 0;		// 直前フレームのグルグル段階（変化検知用）
+	float m_km = 0;				// 表示用の球速(km/h)
+
+	// === BGM/開始フラグ ===
+	bool m_bgmStarted = false;			// BGMを再生開始したかどうか
+	bool m_isGameStarted = false;		// ゲーム本編が開始したかどうか
+
+	// === 着弾関連 ===
+	float m_afterLandingTimer = 0.0f;	// ボール着弾後の経過時間
+	bool  m_isBallLanded = false;		// ボールが着弾したかどうか
+	float m_zeroDistanceTimer = 0.0f;	// 飛距離0（空振り/ファウル等）判定用タイマー
+
+	bool m_isRotationSeen = true;		// 回転（グルグル演出）を見せたかどうか
+
+	// === スコア管理 ===
+	int m_scores[3] = { 0,0,0 };	// 各回（1〜3球目）のスコア保存
+
+	// === ミス演出待機 ===
+	bool  m_isMissWait = false;		// 空振り後の待機演出中かどうか
+	float m_missWaitTimer = 0.0f;		// 空振り待機の経過時間
+	float m_fadeInDelayTimer = -1.0f;	// フェードイン開始までの遅延タイマー（-1は未使用状態）
+
+	// === リプレイ軌道データ ===
+	std::vector<std::vector<Vector3>> m_replayPaths;	// 3球分のボール軌道データ
+
+	// === リプレイ再生制御 ===
+	float m_replayTimer = 0.0f;			// リプレイ再生の経過時間
+	float m_replaySpeed = 1.0f;			// リプレイ再生速度（1.0f固定でOK）
+	int   m_bestShotIndex = -1;			// ベストショット（リプレイ対象）のインデックス
+	std::vector<Vector3> m_currentReplay;	// 現在再生中の軌道データ
+	bool m_shouldStartReplay = false;		// リプレイを開始すべきかどうかのフラグ
+	float m_replayDuration = 5.0f;			// リプレイの最大再生時間（3秒で打ち切り、とコメントあり）
+	Vector3 m_initialVelocities[3];		// 各球（1〜3球目）投球直後の初速度
+	int m_replayStartFrame = 0;			// リプレイ開始フレーム番号
+	int m_replayPitchFrame = 0;			// リプレイ中の投球フレーム番号
+	bool m_isRecording = false;			// リプレイ用に軌道を記録中かどうか
+	int m_replayDelayFrames = 0;			// リプレイ開始までの遅延フレーム数
+	float m_replayAccumulator = 0.0f;		// 再生速度制御用のアキュムレータ
+	float m_replaySwingTimer = 0.0f;		// リプレイ中のスイング演出タイマー
+	bool m_hasPlayedReplaySwing = false;	// リプレイ中にスイングを1回だけ再生するためのフラグ
+	int m_bestSwingFrame = 0;				// ベストショットのスイングフレーム番号
+	int m_bestPitchFrame = 0;				// ベストショットの投球フレーム番号
+	float m_replaySkipHoldTime = 0.0f;		// リプレイスキップ用のBボタン長押し時間
+	bool m_hasAppliedHitMoment = false;	// ヒット瞬間の演出（ヒットストップ等）を適用済みかどうか
+	bool m_startFadeSE2 = false;			// フェード用SE2を再生開始したかどうか
+	bool m_hasSwung[3] = { false, false, false };	// 各球（1〜3球目）でスイングしたかどうか
+
+	// === 難易度 ===
+	Difficulty m_difficulty = Difficulty::Easy;	// 現在の難易度設定
+
+	// === リプレイ用フレーム記録 ===
+	int m_replayFrameCounter = 0;			// リプレイ記録用フレームカウンタ
+	int m_swingFrame[3] = { -1, -1, -1 };	// 各球のスイング発生フレーム番号
+	int m_pitchFrame[3] = { 0,0,0 };		// 各球の投球発生フレーム番号
+	bool  m_isReplayPlaying = false;		// リプレイ再生中かどうか
+
+	// === 打球データ（各球ごと） ===
+	int     m_hitFrame[3];			// 各球のヒット発生フレーム番号
+	Vector3 m_hitVelocities[3];	// 各球のヒット時の速度ベクトル
+	Vector3 m_hitDirections[3];	// 各球のヒット時の方向ベクトル
+	Vector3 m_hitStartPos[3];		// 各球のヒット開始位置
+	float   m_hitPower[3];			// 各球のヒットパワー
+
+	// === ショット進行管理 ===
+	int m_shots = 0;				// 何回打ったか（現在の球数カウンタ）
+	float m_hitStartZ = 0.0f;		// ヒット開始時のZ座標（飛距離計測基準）
+	bool m_hasStartedDistance = false;	// 飛距離計測を開始したかどうか
+	bool m_isHomeRun = false;		// ホームランになったかどうか
+
+	// === リプレイ開始遅延・準備フェーズ ===
+	float m_replayDelayTimer = 0.0f;	// リプレイ開始までの遅延タイマー
+	float m_readyTimer = 5.0f;			// 準備フェーズの残り時間
+	bool m_isReadyPhase = false;		// 準備フェーズ中かどうか
+
+	// === 確定演出 ===
+	bool m_isKakutei = false;		// 確定演出中かどうか
+	float m_kakuteiTimer = 0.0f;	// 確定演出の経過時間
+
+	// === 時間制御・入力制御 ===
+	float m_timeScale = 1.0f;			// ゲーム内時間の進行倍率（スローモーション等）
+	bool m_isInputLocked = false;		// 入力をロックしているかどうか
+	bool m_canFastForward = false;		// 早送り可能かどうか
+
+	// === ヒットストップ ===
+	float m_hitStopTimer = 0.0f;	// ヒットストップの経過時間
+	bool m_isHitStop = false;		// ヒットストップ中かどうか
+
+	bool m_hasTriggered100m = false;			// 100m到達演出をすでに発火したかどうか
+	bool m_shouldContinueTutorial = false;		// チュートリアルを続けるかどうか
+	bool m_isTutorialSelectTitle = false;       // ★ 追加：false=続ける選択中, true=タイトルへ戻る選択中
+	bool m_tutorialStickNeutral = true;         // ★ 追加：スティックがニュートラルに戻ったか（連続入力防止）
+
+	// === リプレイフレーム構造体 ===
 	struct ReplayFrame {
-		Vector3 ballPos;
-		Vector3 ballVel;
+		Vector3 ballPos;			// そのフレームでのボール位置
+		Vector3 ballVel;			// そのフレームでのボール速度
 
-		float batterAnimTime;
-		float pitcherAnimTime;
+		float batterAnimTime;		// バッターのアニメーション再生時間
+		float pitcherAnimTime;		// ピッチャーのアニメーション再生時間
 
-		bool swingTriggered; // Aボタン押した瞬間
+		bool swingTriggered;		// Aボタンを押した瞬間かどうか
 	};
-	std::vector<ReplayFrame> m_replayFrames[3]; // 3球分
-	bool m_isPaused = false;
-	int m_replaySwingDelayFrames = 0;
+	std::vector<ReplayFrame> m_replayFrames[3];	// 3球分のリプレイフレーム記録
+
+	// === ポーズ・スイング遅延 ===
+	bool m_isPaused = false;				// ゲームが一時停止中かどうか
+	int m_replaySwingDelayFrames = 0;		// リプレイ中のスイング再生遅延フレーム数
+
+	// === 難易度依存の球数 ===
+	int m_maxShots = 3;	// 難易度によって変わる球数（デフォルト3球）
+
 	bool m_isMagicBallShot[3] = { false, false, false };
 	float m_hitGlanceTimer = 0.0f;
 	bool  m_isHitGlancing = false;
@@ -419,7 +456,7 @@ public:
 
 	// ★ ボール録画フレーム数を返す（スイング記録用）
 	int GetCurrentReplayRecordFrame() const {
-		return (int)m_ball->m_replayPath.size();
+		return (int)m_ball->GetReplayPath().size();
 	}
 	void SetSwingFrame(int shotIndex, int frame)
 	{
@@ -435,6 +472,9 @@ public:
 	bool IsRecording() const { return m_isRecording; }
 	void SetReplaySwingDelayFrames(int frames) { m_replaySwingDelayFrames = frames; }
 	int GetReplaySwingDelayFrames() const { return m_replaySwingDelayFrames; }
+	bool GetShouldContinueTutorial() const { return m_shouldContinueTutorial; }
+	void GoToTiter();          // ★ 追加：タイトルへ戻る
+	bool GetIsTutorialSelectTitle() const { return m_isTutorialSelectTitle; } // ★ 追加
 	void SetIsMagicBallShot(int shot, bool isMagic) {
 		if (shot >= 0 && shot < 3) m_isMagicBallShot[shot] = isMagic;
 	}
@@ -443,5 +483,4 @@ public:
 	}
 
 	void StartHitGlance(float duration);
-
 };
