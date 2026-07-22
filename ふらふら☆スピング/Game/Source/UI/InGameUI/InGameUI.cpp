@@ -343,19 +343,19 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 	t = clamp(t, 0.0f, 1.0f);
 
 	// ★ アルファ値の計算（0.5 = 半透明、0.0 = 完全透明）
-	float alpha = 0.5f;
+	float alpha = 0.0f;
 
 	if (t < 0.30f) {
 		// 最初の30%は 0.7f を維持
-		alpha = 0.5f;
+		alpha = 0.0f;
 	}
 	else {
 		// 0.30〜1.0 を 0〜1 に圧縮
-		float u = (t - 0.30f) / 0.70f;
+		float u = (t - 0.15f) / 0.85f;
 
 		// 二乗でゆっくり立ち上がり、最終的に 0.0f（完全透明）にする
 		// u=0 のとき alpha=0.7f、u=1 のとき alpha=0.0f
-		alpha = 0.5f * (1.0f - u);
+		alpha = u * u;
 	}
 
 	// 常に最新のアルファ値を適用（ifの外に出すことでバグを防止）
@@ -379,13 +379,13 @@ Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
 	t = clamp(t, 0.0f, 1.0f);
 
 	// ★ 横移動 = X の動き + Z による中央寄り
-	float xFromX = -ballPos3D.x * 0.22f;       // ← X の動きを8倍（調整しやすい）
-	float xFromZ = (0.5f - t) * 0.5f;
+	float xFromX = -ballPos3D.x * -0.5f;       // ← X の動きを8倍（調整しやすい）
+    //float xFromZ = (0.5f - t) * 200.0f;
 
-	float uiX = xFromX + xFromZ;
+	float uiX = xFromX;// + xFromZ;
 
 	// 縦はそのまま
-	float uiY = (ballPos3D.y - 750.0f) * 0.15f - 80.0f;
+	float uiY = (ballPos3D.y - 750.0f) * 0.15f - 80.0f - t * 20.0f;
 
 	return Vector3{ uiX, uiY, 0.0f };
 }
