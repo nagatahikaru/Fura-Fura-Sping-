@@ -1080,17 +1080,17 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 
 		if (m_guruGuruTimer > 0.0 && !isReadyPhase) {
-			m_konto.SetPosition(Vector3{ 505, 150, 0 });
+			m_konto.SetPosition(Vector3{ 750, -100, 0 });
 			m_konto.Update();
 			m_konto.Draw(rc);
 
 			// ★ 矢印の回転描画
-			m_yazirusi.SetPosition(Vector3{ 505, 150, 0 }); // 位置はお好みで
+			m_yazirusi.SetPosition(Vector3{ 750, -100, 0 }); // 位置はお好みで
 			m_yazirusi.SetRotation(m_yazirusiRotation);               // ← Quaternion を渡す
 			m_yazirusi.Update();
 			m_yazirusi.Draw(rc);
 
-			m_mawase.SetPosition(Vector3{ 512, -10, 0 }); // 位置はお好みで
+			m_mawase.SetPosition(Vector3{ 750, -300, 0 }); // 位置はお好みで
 			m_mawase.Update();
 			m_mawase.Draw(rc);
 		}
