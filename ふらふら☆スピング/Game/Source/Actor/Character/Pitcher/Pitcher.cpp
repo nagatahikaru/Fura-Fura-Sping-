@@ -139,6 +139,11 @@ void Pitcher::Update()
 	if (m_isPaused) {
 		return; // 完全停止
 	}
+	if (m_game && m_game->GetShouldContinueTutorial()) {
+		SetPlayAnimation(enAnimationClip_Idle);
+		AnimationUpdate();
+		return;
+	}
 	if (m_game && m_game->GetIsInputLocked() && !m_game->IsReplayPlaying()) {
 		SetPlayAnimation(enAnimationClip_Idle);
 		AnimationUpdate();

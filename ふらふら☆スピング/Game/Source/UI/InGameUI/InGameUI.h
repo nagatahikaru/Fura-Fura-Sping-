@@ -143,6 +143,9 @@ private:
 	SpriteRender m_guruE;
 	SpriteRender m_guruN;
 	SpriteRender m_wakuModel;
+	SpriteRender m_continueSprite;  
+	SpriteRender m_titleSprite;    
+	SpriteRender m_tutorial;
 
 	// === SpriteRender (配列) ===
 	SpriteRender m_ballIcon[3];
@@ -219,7 +222,7 @@ public:
 		m_debuffComment = comment;
 	}
 	void HitBallUI();
-
+	void ResetMissFlags();
 
 	private:
 	// ----------------------------------------
