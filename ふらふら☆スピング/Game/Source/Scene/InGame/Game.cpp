@@ -213,11 +213,11 @@ void Game::Update()
 
 		// --- スティックでカーソル移動（ニュートラルに戻ってから次を受け付ける） ---
 		if (m_tutorialStickNeutral) {
-			if (stickX > STICK_THRESHOLD) {
+			if (stickX < -STICK_THRESHOLD) {
 				m_isTutorialSelectTitle = false; // 右 → 続ける
 				m_tutorialStickNeutral = false;
 			}
-			else if (stickX < -STICK_THRESHOLD) {
+			else if (stickX > STICK_THRESHOLD) {
 				m_isTutorialSelectTitle = true;  // 左 → タイトルへ戻る
 				m_tutorialStickNeutral = false;
 			}
@@ -248,6 +248,10 @@ void Game::Update()
 					}
 				}
 
+				if (m_InGameUI) {
+					m_InGameUI->ResetMissFlags(); 
+				}
+
 				ResetForNextShot();
 
 				if (m_InGameUI) {
@@ -260,7 +264,9 @@ void Game::Update()
 				if (pitcher) {
 					pitcher->ResetThrow();
 				}
-
+				if (m_ball) {
+					m_ball->ResetThrowTimer();  
+				}
 				SetGameStarted(true);
 			}
 			else {
@@ -685,6 +691,12 @@ void Game::OnBallLanded()
 	}
 
 	if (m_difficulty == Difficulty::Tutorial) {
+		m_scores[m_shots] = m_km;
+		if (m_InGameUI) {
+			m_InGameUI->m_threeShots[m_shots] = m_km;
+			m_InGameUI->m_shotDone[m_shots] = true;
+		}
+
 		if (m_shots == m_maxShots - 1) {   // ★ 修正：他の難易度と同じ判定式に合わせる
 			m_isInputLocked = true;        // ★ 追加：ピッチャー側で見る共通フラグ
 			m_shouldContinueTutorial = true;

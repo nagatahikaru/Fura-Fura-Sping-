@@ -481,6 +481,5 @@ public:
 	bool GetIsMagicBallShot(int shot) const {
 		return (shot >= 0 && shot < 3) ? m_isMagicBallShot[shot] : false;
 	}
-
 	void StartHitGlance(float duration);
 };

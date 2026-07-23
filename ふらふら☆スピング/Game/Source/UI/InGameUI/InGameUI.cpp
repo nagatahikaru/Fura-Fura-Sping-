@@ -126,6 +126,9 @@ InGameUI::InGameUI() {
 	InitSprite(m_guruN, "guruguruN", 300.0f, 295.0f);
 	InitSprite(m_spriteRenderBat, "batto", 330, 430);
 	InitSprite(m_spriteRenderMeet, "mi-to", 45.0f, 45.0f);
+	InitSprite(m_continueSprite, "tudukeru", 200.0f, 200.0f);
+	InitSprite(m_titleSprite, "yameru", 200.0f, 200.0f);
+	InitSprite(m_tutorial,"tutorial", 300.0f, 300.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -542,6 +545,13 @@ void InGameUI::OnStrike(int ballIndex)
 	m_isMiss[ballIndex] = true;  // ← この球は空振り
 }
 
+void InGameUI::ResetMissFlags()
+{
+	for (int i = 0; i < 3; i++) {
+		m_isMiss[i] = false;
+	}
+}
+
 void InGameUI::Render(RenderContext& rc) {
 
 	if (m_isPaused) {
@@ -582,11 +592,29 @@ void InGameUI::Render(RenderContext& rc) {
 		return; // ← ここでリターンしてUI全部消す
 	}
 
-	if (game->GetShouldContinueTutorial())
-	{
+	if (game->GetShouldContinueTutorial()) {
+		bool selectTitle = game->GetIsTutorialSelectTitle();
 
-		return; // ← チュートリアル中はUI全部消す
+		const float baseScale = 1.0f;
+		const float selectedScale = 2.0f; // ★ 選択中はこの倍率まで拡大
+
+		// 「つづける」ボタン
+		float continueScale = selectTitle ? baseScale : selectedScale;
+		m_continueSprite.SetPosition(Vector3{ -200.0f, -50.0f, 0.0f });
+		m_continueSprite.SetScale(Vector3{ continueScale, continueScale, 1.0f });
+		m_continueSprite.Update();
+		m_continueSprite.Draw(rc);
+
+		// 「タイトルへ戻る」ボタン
+		float titleScale = selectTitle ? selectedScale : baseScale;
+		m_titleSprite.SetPosition(Vector3{ 200.0f, -50.0f, 0.0f });
+		m_titleSprite.SetScale(Vector3{ titleScale, titleScale, 1.0f });
+		m_titleSprite.Update();
+		m_titleSprite.Draw(rc);
+
+		return; // ← UI全部消してこれだけ出す
 	}
+
 
 	if (m_isUIVisible) {
 
@@ -661,6 +689,9 @@ void InGameUI::Render(RenderContext& rc) {
 				}
 				else if (diff == Difficulty::Hard) { // 必要に応じて異なるDifficulty列挙型に合わせてください
 					pDiffSprite = &m_gurahu;
+				}
+				else if (diff == Difficulty::Tutorial) {
+					pDiffSprite2 = &m_guruE;
 				}
 
 				// スプライトが存在すれば位置を設定して描画
@@ -1110,7 +1141,7 @@ void InGameUI::Render(RenderContext& rc) {
 				pDiffSprite = &m_hardSprite;
 			}
 			else if( diff == Difficulty::Tutorial) { // ★ 追加
-				/*pDiffSprite = &m_tutorialSprite;*/
+				pDiffSprite = &m_tutorial;
 			}
 
 			// スプライトが存在すれば位置を設定して描画

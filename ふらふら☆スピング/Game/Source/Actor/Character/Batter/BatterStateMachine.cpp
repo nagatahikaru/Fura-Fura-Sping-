@@ -80,7 +80,11 @@ bool BatterIdleState::RequestState(uint32_t& request)
 
 	if (g_pad[0]->IsTrigger(enButtonA))
 	{
-		
+		if (game && game->GetShouldContinueTutorial())
+		{
+			return false;
+		}
+
 		if (game && game->GetIsInputLocked())
 		{
 			if (game->GetCurrentShotIndex() == 2 && game->GetIsInputLocked())
@@ -176,7 +180,11 @@ bool BatterCursorSetState::RequestState(uint32_t& request)
 	Batter* batter = GetBatter();
 	Game* game = FindGO<Game>("game");
 		if (g_pad[0]->IsTrigger(enButtonA))
-	{
+		{
+			if (game && game->GetShouldContinueTutorial())
+			{
+				return false;
+			}
 			if (game && game->GetIsInputLocked())
 			{
 				if (game->GetCurrentShotIndex() == 2 && game->GetIsInputLocked())
@@ -186,7 +194,8 @@ bool BatterCursorSetState::RequestState(uint32_t& request)
 			}
 		request = BatterSwingState::ID();
 		return true;
-	}
+		}
+
 	if (batter->GetIsOnGround())
 	{
 		request = BatterIdleState::ID();

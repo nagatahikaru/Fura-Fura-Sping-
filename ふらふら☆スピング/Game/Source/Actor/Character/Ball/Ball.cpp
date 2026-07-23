@@ -93,6 +93,7 @@ void Ball::Update()
         if (game->GetIsHitStop()) return;
         if (game->GetIsPaused()) return;
         if (game->GetIsInputLocked()) return;
+        if (game->GetShouldContinueTutorial()) return;
         float dt = (1.0f / 60.0f) * game->GetTimeScale();
 
         m_throwTimer += dt;
