@@ -146,6 +146,8 @@ private:
 	SpriteRender m_wakuModel;
 	SpriteRender m_continueSprite;  
 	SpriteRender m_titleSprite;    
+	SpriteRender m_continueSprite2;
+	SpriteRender m_titleSprite2;
 	SpriteRender m_tutorial;
 
 	// === SpriteRender (配列) ===

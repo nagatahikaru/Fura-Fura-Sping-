@@ -126,8 +126,10 @@ InGameUI::InGameUI() {
 	InitSprite(m_guruN, "guruguruN", 300.0f, 295.0f);
 	InitSprite(m_spriteRenderBat, "batto", 330, 430);
 	InitSprite(m_spriteRenderMeet, "mi-to", 45.0f, 45.0f);
-	InitSprite(m_continueSprite, "tudukeru", 200.0f, 200.0f);
-	InitSprite(m_titleSprite, "yameru", 200.0f, 200.0f);
+	InitSprite(m_continueSprite, "tudukeru", 350.0f, 250.0f);
+	InitSprite(m_titleSprite, "yameru", 350.0f, 250.0f);
+	InitSprite(m_continueSprite2, "tudukeru2", 350.0f, 250.0f);
+	InitSprite(m_titleSprite2, "yameru2", 350.0f, 250.0f);
 	InitSprite(m_tutorial,"tutorial", 300.0f, 300.0f);
 }
 
@@ -609,19 +611,37 @@ void InGameUI::Render(RenderContext& rc) {
 		const float baseScale = 1.0f;
 		const float selectedScale = 2.0f; // ★ 選択中はこの倍率まで拡大
 
-		// 「つづける」ボタン
-		float continueScale = selectTitle ? baseScale : selectedScale;
-		m_continueSprite.SetPosition(Vector3{ -200.0f, -50.0f, 0.0f });
-		m_continueSprite.SetScale(Vector3{ continueScale, continueScale, 1.0f });
-		m_continueSprite.Update();
-		m_continueSprite.Draw(rc);
+		// 1. 「つづける」ボタンの処理
+		if (selectTitle) {
+			// 選択されていない側（通常サイズ） -> `m_continueSprite2` を表示
+			m_continueSprite2.SetPosition(Vector3{ -300.0f, -50.0f, 0.0f });
+			m_continueSprite2.SetScale(Vector3{ baseScale, baseScale, 1.0f });
+			m_continueSprite2.Update();
+			m_continueSprite2.Draw(rc);
+		}
+		else {
+			// 選択されている側（拡大） -> `m_continueSprite` を表示
+			m_continueSprite.SetPosition(Vector3{ -300.0f, -50.0f, 0.0f });
+			m_continueSprite.SetScale(Vector3{ selectedScale, selectedScale, 1.0f });
+			m_continueSprite.Update();
+			m_continueSprite.Draw(rc);
+		}
 
-		// 「タイトルへ戻る」ボタン
-		float titleScale = selectTitle ? selectedScale : baseScale;
-		m_titleSprite.SetPosition(Vector3{ 200.0f, -50.0f, 0.0f });
-		m_titleSprite.SetScale(Vector3{ titleScale, titleScale, 1.0f });
-		m_titleSprite.Update();
-		m_titleSprite.Draw(rc);
+		// 2. 「タイトルへ戻る」ボタンの処理
+		if (selectTitle) {
+			// 選択されている側（拡大） -> `m_titleSprite` を表示
+			m_titleSprite.SetPosition(Vector3{ 300.0f, -50.0f, 0.0f });
+			m_titleSprite.SetScale(Vector3{ selectedScale, selectedScale, 1.0f });
+			m_titleSprite.Update();
+			m_titleSprite.Draw(rc);
+		}
+		else {
+			// 選択されていない側（通常サイズ） -> `m_titleSprite2` を表示
+			m_titleSprite2.SetPosition(Vector3{ 300.0f, -50.0f, 0.0f });
+			m_titleSprite2.SetScale(Vector3{ baseScale, baseScale, 1.0f });
+			m_titleSprite2.Update();
+			m_titleSprite2.Draw(rc);
+		}
 
 		return; // ← UI全部消してこれだけ出す
 	}
