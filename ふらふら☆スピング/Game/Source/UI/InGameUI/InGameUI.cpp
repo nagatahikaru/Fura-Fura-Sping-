@@ -896,48 +896,49 @@ void InGameUI::Render(RenderContext& rc) {
 			//m_ballIcon[i].Draw(rc);
 		}
 
-		m_kiiro1.SetPosition(Vector3{ -1005.0f, 250.0f, 0.0f });
-		m_kiiro1.SetScale({ -1.0f, 1.0f, 1.0f });
-		m_kiiro1.Update();
-		m_kiiro1.Draw(rc);
-		m_kiiro2.SetPosition(Vector3{ -1005.0f, 150.0f, 0.0f });
-		m_kiiro2.SetScale({ -1.0f, 1.0f, 1.0f });
-		m_kiiro2.Update();
-		m_kiiro2.Draw(rc);
-		m_kiiro3.SetScale({ -1.0f, 1.0f, 1.0f });
-		m_kiiro3.SetPosition(Vector3{ -1005.0f, 50.0f, 0.0f });
-		m_kiiro3.Update();
-		m_kiiro3.Draw(rc);
-
-		m_besu.SetPosition(Vector3{ 740, 300, 0});
+		m_besu.SetPosition(Vector3{ 740, 300, 0 });
 		m_besu.Update();
 		m_besu.Draw(rc);
 
-		// ★ ストライク（バツ）スプライトを縦に並べて表示
-		for (int i = 0; i < 3; i++) {
+		if (m_hasPredictedBall && m_game && m_game->GetDifficulty() != Difficulty::Tutorial) {
+			m_kiiro1.SetPosition(Vector3{ -1005.0f, 250.0f, 0.0f });
+			m_kiiro1.SetScale({ -1.0f, 1.0f, 1.0f });
+			m_kiiro1.Update();
+			m_kiiro1.Draw(rc);
+			m_kiiro2.SetPosition(Vector3{ -1005.0f, 150.0f, 0.0f });
+			m_kiiro2.SetScale({ -1.0f, 1.0f, 1.0f });
+			m_kiiro2.Update();
+			m_kiiro2.Draw(rc);
+			m_kiiro3.SetScale({ -1.0f, 1.0f, 1.0f });
+			m_kiiro3.SetPosition(Vector3{ -1005.0f, 50.0f, 0.0f });
+			m_kiiro3.Update();
+			m_kiiro3.Draw(rc);
 
-			if (m_isMiss[i]) {
-				// 位置：左上あたりに縦並び（好きな位置に調整OK）
-				float baseX = -790.0f;
-				float baseY = 262.5f;
+			// ★ ストライク（バツ）スプライトを縦に並べて表示
+			for (int i = 0; i < 3; i++) {
 
-				m_batu[i].SetPosition(Vector3{
-					baseX,
-					baseY - i * 100.0f,   // ← 縦に並べる
-					0.0f
-					});
+				if (m_isMiss[i]) {
+					// 位置：左上あたりに縦並び（好きな位置に調整OK）
+					float baseX = -790.0f;
+					float baseY = 262.5f;
 
-				m_batu[i].SetScale({ 2.0f, 2.0f, 1.0f }); // 大きさ調整（必要なら）
-				m_batu[i].SetMulColor({ 1, 0, 0, 1 });      // 赤色で表示
+					m_batu[i].SetPosition(Vector3{
+						baseX,
+						baseY - i * 100.0f,   // ← 縦に並べる
+						0.0f
+						});
+
+					m_batu[i].SetScale({ 2.0f, 2.0f, 1.0f }); // 大きさ調整（必要なら）
+					m_batu[i].SetMulColor({ 1, 0, 0, 1 });      // 赤色で表示
+				}
+				else {
+					m_batu[i].SetMulColor({ 1, 1, 1, 0 });      // 非表示
+				}
+
+				m_batu[i].Update();
+				m_batu[i].Draw(rc);
 			}
-			else {
-				m_batu[i].SetMulColor({ 1, 1, 1, 0 });      // 非表示
-			}
-
-			m_batu[i].Update();
-			m_batu[i].Draw(rc);
 		}
-
 		// --- ぐるぐるカウント色変更 ---
 	// --- ぐるぐるカウント色変更（5刻み） ---
 		// --- ぐるぐるカウント色変更（5刻み） ---
@@ -1022,53 +1023,55 @@ void InGameUI::Render(RenderContext& rc) {
 			m_bsuki.Draw(rc);
 		}
 
-		wchar_t boll[256];
-		if (m_isError) {
-			double meter = (double)m_km / 100.0;
-			swprintf_s(boll, L"%.2f m", meter);
-		}
-		else {
-			double meter = (double)m_km / 100.0;
-			swprintf_s(boll, L"%.2f m", meter);
-		}
-		// 1球目〜3球目のスコア表示
-		for (int i = 0; i < 3; i++) {
-
-			wchar_t buf[256];
-
-			if (!m_shotDone[i]) {
-				swprintf_s(buf, L"%d:--- m", i + 1);
+		if (m_hasPredictedBall && m_game && m_game->GetDifficulty() != Difficulty::Tutorial) {
+			wchar_t boll[256];
+			if (m_isError) {
+				double meter = (double)m_km / 100.0;
+				swprintf_s(boll, L"%.2f m", meter);
 			}
 			else {
-				if (m_threeShots[i] == 0) {
-					swprintf_s(buf, L"%d: ", i + 1);
-				}
-				else
-				{
-					double meter = (double)m_threeShots[i] / 100.0;
-					swprintf_s(buf, L"%d:%.2f m", i + 1, meter);
-				}
+				double meter = (double)m_km / 100.0;
+				swprintf_s(boll, L"%.2f m", meter);
 			}
+			// 1球目〜3球目のスコア表示
+			for (int i = 0; i < 3; i++) {
 
-			float y = 285.0f - i * 100.0f;  // 縦位置をずらす
+				wchar_t buf[256];
 
-			if (i == 0) {
-				m_fontBollRender1.SetText(buf);
-				m_fontBollRender1.SetPosition(-924.0f, y, 0.0f);
-				m_fontBollRender1.SetColor(0, 0, 0, 1);
-				m_fontBollRender1.Draw(rc);
-			}
-			else if (i == 1) {
-				m_fontBollRender2.SetText(buf);
-				m_fontBollRender2.SetPosition(-924.0f, y, 0.0f);
-				m_fontBollRender2.SetColor(0, 0, 0, 1);
-				m_fontBollRender2.Draw(rc);
-			}
-			else {
-				m_fontBollRender3.SetText(buf);
-				m_fontBollRender3.SetPosition(-924.0f, y, 0.0f);
-				m_fontBollRender3.SetColor(0, 0, 0, 1);
-				m_fontBollRender3.Draw(rc);
+				if (!m_shotDone[i]) {
+					swprintf_s(buf, L"%d:--- m", i + 1);
+				}
+				else {
+					if (m_threeShots[i] == 0) {
+						swprintf_s(buf, L"%d: ", i + 1);
+					}
+					else
+					{
+						double meter = (double)m_threeShots[i] / 100.0;
+						swprintf_s(buf, L"%d:%.2f m", i + 1, meter);
+					}
+				}
+
+				float y = 285.0f - i * 100.0f;  // 縦位置をずらす
+
+				if (i == 0) {
+					m_fontBollRender1.SetText(buf);
+					m_fontBollRender1.SetPosition(-924.0f, y, 0.0f);
+					m_fontBollRender1.SetColor(0, 0, 0, 1);
+					m_fontBollRender1.Draw(rc);
+				}
+				else if (i == 1) {
+					m_fontBollRender2.SetText(buf);
+					m_fontBollRender2.SetPosition(-924.0f, y, 0.0f);
+					m_fontBollRender2.SetColor(0, 0, 0, 1);
+					m_fontBollRender2.Draw(rc);
+				}
+				else {
+					m_fontBollRender3.SetText(buf);
+					m_fontBollRender3.SetPosition(-924.0f, y, 0.0f);
+					m_fontBollRender3.SetColor(0, 0, 0, 1);
+					m_fontBollRender3.Draw(rc);
+				}
 			}
 		}
 
