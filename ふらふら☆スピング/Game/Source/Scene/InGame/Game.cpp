@@ -258,6 +258,7 @@ void Game::Update()
 					m_InGameUI->SetUIVisible(true);
 					m_InGameUI->SetFontVisble(true);
 					m_InGameUI->SetReplayVisible(false);
+					m_InGameUI->ResetFade();
 				}
 
 				Pitcher* pitcher = FindGO<Pitcher>("pitcher");
@@ -444,16 +445,11 @@ void Game::Update()
 		if (m_afterLandingTimer >= 1.5f) {
 
 			// ★ 3球目の着地から1秒経ったら、ここで初めて入力をロックしてフェードアウトを開始する
-			if (m_shots == 2) {
-				m_isInputLocked = true; // ★リプレイ直前のここでロック！
+			if (m_shots == m_maxShots - 1) {   // ★ 修正：ハードコードの2をm_maxShots-1に変更
+				m_isInputLocked = true;
 				if (m_difficulty == Difficulty::Tutorial) {
-					//　tutorialモードでは、リプレイを再生せずに続けるか、タイトルに戻るかを選択するUIを表示する
 					m_shouldContinueTutorial = true;
 				}
-				/*DecideBestReplay();
-				if (m_bestShotIndex != -1) {
-					m_shouldStartReplay = true;
-				}*/
 				else {
 					DecideBestReplay();
 					if (m_bestShotIndex != -1) {
@@ -463,12 +459,9 @@ void Game::Update()
 						GoToResult();
 						return;
 					}
-					StartEndFade(); // フェードアウトしてリプレイへ
-					//GoToResult();
+					StartEndFade();
 					return;
 				}
-				//StartEndFade(); // フェードアウトしてリプレイへ
-				//return;
 			}
 
 			// ★ 1球目・2球目の着地後1秒経ったときの処理

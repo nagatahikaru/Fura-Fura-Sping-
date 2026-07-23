@@ -551,9 +551,16 @@ void InGameUI::OnStrike(int ballIndex)
 
 void InGameUI::ResetMissFlags()
 {
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 5; i++) {
 		m_isMiss[i] = false;
 	}
+}
+
+void InGameUI::ResetFade()
+{
+	m_isFadeOut = false;
+	m_isFadeIn = false;
+	m_fadeAlpha = 0.0f;   
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -596,7 +603,7 @@ void InGameUI::Render(RenderContext& rc) {
 		return; // ← ここでリターンしてUI全部消す
 	}
 
-	if (game->GetShouldContinueTutorial()) {
+	if (game && game->GetShouldContinueTutorial()) {
 		bool selectTitle = game->GetIsTutorialSelectTitle();
 
 		const float baseScale = 1.0f;
@@ -651,7 +658,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 			//赤い枠
 			m_wakuModel.SetPosition(Vector3{ 10.0f, -70.0f, 0.0f });
-			m_wakuModel.SetMulColor({ 1.0f,1.0f,1.0f,0.5f });
+			m_wakuModel.SetMulColor({ 1,1,1,0.5f });
 			m_wakuModel.Update();
 			m_wakuModel.Draw(rc);
 
@@ -682,7 +689,11 @@ void InGameUI::Render(RenderContext& rc) {
 			m_kuro.Draw(rc);
 
 			if (game) {
-				Difficulty diff = game->GetDifficulty();
+				Difficulty diff = Difficulty::Easy;
+				if (game != nullptr) {
+					diff = game->GetDifficulty();
+				}
+
 				SpriteRender* pDiffSprite = nullptr;
 				SpriteRender* pDiffSprite2 = nullptr;
 				// 現在の難易度に応じて描画するスプライトを決定
@@ -1132,7 +1143,11 @@ void InGameUI::Render(RenderContext& rc) {
 		}
 
 		if (game) {
-			Difficulty diff = game->GetDifficulty();
+			Difficulty diff = Difficulty::Easy;
+			if (game != nullptr) {
+				diff = game->GetDifficulty();
+			}
+
 			SpriteRender* pDiffSprite = nullptr;
 
 			// 現在の難易度に応じて描画するスプライトを決定
