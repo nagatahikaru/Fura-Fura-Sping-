@@ -360,6 +360,10 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 
 	// 常に最新のアルファ値を適用（ifの外に出すことでバグを防止）
 	m_ballAlpha = alpha;
+
+	float startScale = 0.5f;
+	float endScale = 1.0f;
+	m_ballUIScale = Lerp(startScale, endScale, t);
 }
 
 //打った後に呼び出してボールUIを消す
@@ -603,6 +607,7 @@ void InGameUI::Render(RenderContext& rc) {
 
 			m_spriteRenderBall.SetPosition(uiPos);
 
+			m_spriteRenderBall.SetScale(Vector3{ m_ballUIScale, m_ballUIScale, 1.0f });
 			// ★ 距離に応じた透明度を適用！
 			Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
 			m_spriteRenderBall.SetMulColor(color);

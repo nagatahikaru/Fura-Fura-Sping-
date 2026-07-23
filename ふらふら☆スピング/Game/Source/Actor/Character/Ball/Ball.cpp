@@ -60,6 +60,8 @@ bool Ball::Start()
     m_throwEndPos = m_position;
     m_modelRender.SetPosition(m_position);
 
+    m_hasThrowOnce = false;
+
 
     // ★ UI に初期位置を送る（これが重要）
     Game* game = FindGO<Game>("game");
@@ -492,6 +494,8 @@ void Ball::Throw(const Vector3& targetPos)
     m_targetPos = targetPos;
     m_throwEndPos = targetPos;
 
+    m_hasThrowOnce = true;
+
     // ★ 1. ゲーム側から現在の難易度を取得する
     Difficulty currentDifficulty = Normal; // デフォルト
     Game* game = FindGO<Game>("game");
@@ -770,6 +774,7 @@ void Ball::ResetBall()
     m_isMagicBall = false;
     m_hasPlayedDisappearEffect = false;
     m_hasPlayedReappearEffect = false;
+    m_hasThrowOnce = false;
     m_ballType = Straight;
     m_curveDir = 0;
     SetPosition(m_position);
@@ -790,6 +795,11 @@ void Ball::ResetThrowTimer()
 
 void Ball::Render(RenderContext& rc)
 {
+    if (!m_hasThrowOnce)
+    {
+        return;
+    }
+
     Game* game = FindGO<Game>("game");
 
     // 【追加】リプレイ中の特殊な非表示・表示ルール

@@ -51,6 +51,7 @@ private:
 	float m_buttonPressTimer = 0.0f;
 	float m_uiToggleTimer = 0.0f;
 	float m_ballAlpha = 0.0f;   // 透明度（0=透明, 1=完全表示）
+	float m_ballUIScale = 1.0f; //距離に応じたボールUIのスケール
 	float m_fadeAlpha = 0.0f;
 	float m_fadeSpeed = 0.5f; // 2秒で真っ黒になる例
 	float m_meetCursorScale = 1.0f; // ミートカーソルの基本スケール
