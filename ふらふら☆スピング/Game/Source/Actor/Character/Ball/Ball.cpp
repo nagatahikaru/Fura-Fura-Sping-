@@ -509,6 +509,10 @@ void Ball::Throw(const Vector3& targetPos)
 
     switch (currentDifficulty)
     {
+    case Tutorial:
+        baseSpeed = 1500.0f;
+        m_baseGravity = 5.5f;
+        break;
     case Easy:
         baseSpeed = 1500.0f;
         m_baseGravity = 5.5f;
@@ -525,6 +529,15 @@ void Ball::Throw(const Vector3& targetPos)
 
     float speed = baseSpeed;
 
+  /*  if (!m_isDifficultyConfigured) {
+        const DifficultyParams& p = GetDifficultyParams(currentDifficulty);
+        m_baseBallSpeed = p.ballBaseSpeed;
+        m_baseGravity = p.ballGravity;
+        m_isDifficultyConfigured = true;
+    }
+
+    SelectBallType(currentDifficulty);*/
+
     const float KReferenceSpeed = 2000.0f; //KReferenceSpeed:基準となる球速(Y方向の初速を計算するときに基準として使う球速の値)
     const float KInitialVYRatio = -0.1 / 4.0f; //KInitialVYRatio:傾きの比率(Z方向に対してY方向がどのくらいの割合)
     const float KFixedInitialVY = KInitialVYRatio * KReferenceSpeed; //常に同じ値
@@ -539,7 +552,7 @@ void Ball::Throw(const Vector3& targetPos)
     // ★ 2. 難易度に応じた球種の確率調整
     m_isMagicBall = false; // 初期化
 
-    if (currentDifficulty == Easy)
+    if (currentDifficulty == Easy || currentDifficulty == Tutorial)
     {
         m_ballType = Straight;
     }
@@ -740,6 +753,9 @@ float Ball::PredictLandingDistance()
     float gravity = 0.0f;
     switch (currentDifficulty)
     {
+    case Tutorial:
+        gravity = 5.5f;
+        break;
     case Easy:
         gravity = 5.5f;
         break;
@@ -796,10 +812,10 @@ void Ball::ResetThrowTimer()
 
 void Ball::Render(RenderContext& rc)
 {
-    if (!m_hasThrowOnce)
+   /* if (!m_hasThrowOnce)
     {
         return;
-    }
+    }*/
 
     Game* game = FindGO<Game>("game");
 

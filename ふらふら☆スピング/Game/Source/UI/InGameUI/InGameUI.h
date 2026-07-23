@@ -224,7 +224,7 @@ public:
 	}
 	void HitBallUI();
 	void ResetMissFlags();
-
+	void ResetFade();
 	private:
 	// ----------------------------------------
 	// 便利関数

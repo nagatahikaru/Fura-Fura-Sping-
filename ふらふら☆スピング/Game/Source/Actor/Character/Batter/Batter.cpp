@@ -164,6 +164,14 @@ void Batter::setDifficultyVariables()
 
 	// 難易度に応じて変数を設定
 	switch (m_game->GetDifficulty()) {
+	case Difficulty::Tutorial:
+		m_meatRange = m_meatRange * 3.0f;
+		m_adjacentFrames = 8;
+		m_difficultyPowerScale = 0.70f;
+		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_EASY;
+		m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_EASY;
+		m_isDifficultyConfigured = true;
+		break;
 	case Difficulty::Easy:
 		m_meatRange = m_meatRange*3.0f;
 		m_adjacentFrames = 8;

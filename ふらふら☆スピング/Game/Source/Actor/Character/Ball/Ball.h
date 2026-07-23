@@ -126,7 +126,7 @@ public:
 	void SetIsPaused(bool isPaused) { m_isPaused = isPaused; }
 	bool GetIsPaused() const { return m_isPaused; }
 
-	void SelectBallType(Difficulty diff);
+	void SelectBallType(Difficulty diff) {};
 
 	// ★ エラー「ApplyProSpiritsDrop」対策として宣言を追加（必要に応じてCPP側に実装してください）
 	void ApplyProSpiritsDrop(float dt);
