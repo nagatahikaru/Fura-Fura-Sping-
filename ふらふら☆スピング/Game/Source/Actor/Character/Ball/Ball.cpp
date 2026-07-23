@@ -53,9 +53,9 @@ bool Ball::Start()
 
     //モデルの読み込み
     m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-    m_modelRender.SetScale({ 20.0f,20.0f,20.0f });
+    m_modelRender.SetScale({ 10.0f,10.0f,10.0f });
 
-    m_position = { -60.0f, 780.0f, 2000.0f };
+    m_position = { -60.0f, 650.0f, 1000.0f };
     m_throwStartPos = m_position;
     m_throwEndPos = m_position;
     m_modelRender.SetPosition(m_position);
@@ -97,7 +97,7 @@ void Ball::Update()
 
         m_throwTimer += dt;
 
-        if (m_throwTimer >= 3.8f && !m_isMove)
+        if (m_throwTimer >= 3.7f && !m_isMove)
         {
             ResetBall();
 
@@ -127,7 +127,7 @@ void Ball::Update()
                     //終盤:一気に重力を強める
                     float t = RemapClamp(progress, dropStartRatio, 1.0f);
                     float easedT = t * t * t;
-                    gravityScale = 0.5f + easedT * 7.0f;
+                    gravityScale = 0.6f + easedT * 8.0f;
                 }
 
                 m_velocity.y -= m_baseGravity * gravityScale * dt;
