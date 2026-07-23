@@ -51,6 +51,7 @@ private:
 	bool m_isMove = false;
 	bool m_hasHit = false;
 	bool m_isPaused = true;
+	bool m_hasThrowOnce = false;
 	bool m_isDifficultyConfigured = false;
 
 	float m_dropStartRatioOverride;
