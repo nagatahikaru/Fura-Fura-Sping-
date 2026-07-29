@@ -53,7 +53,7 @@ bool Ball::Start()
 
     //モデルの読み込み
     m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-    m_modelRender.SetScale({ 10.0f,10.0f,10.0f });
+    m_modelRender.SetScale({ 8.0f,8.0f,8.0f });
 
     m_position = { -60.0f, 650.0f, 1000.0f };
     m_throwStartPos = m_position;
@@ -100,7 +100,7 @@ void Ball::Update()
 
         m_throwTimer += dt;
 
-        if (m_throwTimer >= 3.7f && !m_isMove)
+        if (m_throwTimer >= 3.6f && !m_isMove)
         {
             ResetBall();
 
@@ -194,6 +194,12 @@ void Ball::Update()
 
             if (!m_hasHit)
             {
+                //ランダムで決めたコース(m_pitchTargetX)へ向けての位置を補正
+                float minZ = 1000.0f;
+                float maxZ = 6200.0f;
+                float progress = RemapClamp(m_position.z, minZ, maxZ);
+                m_position.x = m_throwStartPos.x + (m_pitchTargetX - m_throwStartPos.x) * EaseOutCubic(progress);
+
                 switch (m_ballType)
                 {
                 case ShakeHorizontal:
@@ -439,10 +445,10 @@ void Ball::Slider(float dt)
 
     float progress = RemapClamp(m_position.z, minZ, maxZ);
     float peakRatio = 0.6f; // ★ 0.35f → 0.55f に変更（戻り始めを遅らせる）
-    float outwardAmount = 150.0f; // ★ 80.0f → 150.0f に変更
+    float outwardAmount = 40.0f; // ★ 80.0f → 150.0f に変更
 
     float startX = m_throwStartPos.x;
-    float targetX = m_throwStartPos.x;
+    float targetX = m_pitchTargetX;
     float dir = (m_curveDir != 0) ? (float)m_curveDir : 1.0f;
     float peakX = startX + outwardAmount * dir;
 
@@ -518,8 +524,8 @@ void Ball::Throw(const Vector3& targetPos)
         m_baseGravity = 5.5f;
         break;
     case Normal:
-        baseSpeed = 1750.0f;
-        m_baseGravity = 9.5f;
+        baseSpeed = 1700.0f;
+        m_baseGravity = 9.0f;
         break;
     default: //Hard
         baseSpeed = 2000.0f;
@@ -541,6 +547,9 @@ void Ball::Throw(const Vector3& targetPos)
     const float KReferenceSpeed = 2000.0f; //KReferenceSpeed:基準となる球速(Y方向の初速を計算するときに基準として使う球速の値)
     const float KInitialVYRatio = -0.1 / 4.0f; //KInitialVYRatio:傾きの比率(Z方向に対してY方向がどのくらいの割合)
     const float KFixedInitialVY = KInitialVYRatio * KReferenceSpeed; //常に同じ値
+
+    //高さにもランダム幅を持たせる(値を大きくするほど上下のばらつきが増える)
+    float randomVYOffset = ((rand() % 2001) / 1000.0f - 1.0f) * 8.0f;
 
     m_velocity.x = 0.0f;
     m_velocity.y = KFixedInitialVY;
@@ -611,6 +620,14 @@ void Ball::Throw(const Vector3& targetPos)
     else
     {
         m_curveDir = 0.0f;
+    }
+     
+    //投球コースをランダムに散らす(ワールド座標基準)
+    {
+        const float frameCenterX = 10.0f;
+        const float targetHalfW = 30.0f;  //ここの数値で散らばりの幅を調整
+        float randOffsetX = ((rand() % 2001) / 1000.0f - 1.0f) * targetHalfW;
+        m_pitchTargetX = m_throwStartPos.x + randOffsetX;
     }
 
     // ★ リプレイ記録開始（投球開始時）
