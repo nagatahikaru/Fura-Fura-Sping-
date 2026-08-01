@@ -20,6 +20,7 @@ private:
 	float m_radius = 10.0f;
 	float m_baseScale = 50.0f;
 	float m_baseGravity = 0.0f;
+	float m_pitchTargetX = 0.0f;
 	ModelRender m_modelRender;
 	bool m_hasReached5500 = false;
 	bool m_hasFixed = false;
