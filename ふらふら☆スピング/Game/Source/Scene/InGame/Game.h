@@ -22,6 +22,9 @@ enum CameraMode
 class Game : public Source
 {
 private:
+	// ★ 難易度によって最大5球（Tutorial）まであるため、全ショット配列はこのサイズに統一する
+	static const int MAX_SHOTS = 5;
+
 	// === 主要オブジェクト参照 ===
 	GameCamera* m_gameCamera;	//ゲームカメラ。
 	Background* m_background;	//背景。
@@ -54,7 +57,7 @@ private:
 	bool m_isRotationSeen = true;		// 回転（グルグル演出）を見せたかどうか
 
 	// === スコア管理 ===
-	int m_scores[3] = { 0,0,0 };	// 各回（1〜3球目）のスコア保存
+	int m_scores[MAX_SHOTS] = { 0,0,0,0,0 };	// 各回（最大5球分）のスコア保存
 
 	// === ミス演出待機 ===
 	bool  m_isMissWait = false;		// 空振り後の待機演出中かどうか
@@ -62,7 +65,7 @@ private:
 	float m_fadeInDelayTimer = -1.0f;	// フェードイン開始までの遅延タイマー（-1は未使用状態）
 
 	// === リプレイ軌道データ ===
-	std::vector<std::vector<Vector3>> m_replayPaths;	// 3球分のボール軌道データ
+	std::vector<std::vector<Vector3>> m_replayPaths;	// 各球分のボール軌道データ（Start()でMAX_SHOTS分resize）
 
 	// === リプレイ再生制御 ===
 	float m_replayTimer = 0.0f;			// リプレイ再生の経過時間
@@ -71,7 +74,7 @@ private:
 	std::vector<Vector3> m_currentReplay;	// 現在再生中の軌道データ
 	bool m_shouldStartReplay = false;		// リプレイを開始すべきかどうかのフラグ
 	float m_replayDuration = 5.0f;			// リプレイの最大再生時間（3秒で打ち切り、とコメントあり）
-	Vector3 m_initialVelocities[3];		// 各球（1〜3球目）投球直後の初速度
+	Vector3 m_initialVelocities[MAX_SHOTS];		// 各球投球直後の初速度
 	int m_replayStartFrame = 0;			// リプレイ開始フレーム番号
 	int m_replayPitchFrame = 0;			// リプレイ中の投球フレーム番号
 	bool m_isRecording = false;			// リプレイ用に軌道を記録中かどうか
@@ -84,23 +87,23 @@ private:
 	float m_replaySkipHoldTime = 0.0f;		// リプレイスキップ用のBボタン長押し時間
 	bool m_hasAppliedHitMoment = false;	// ヒット瞬間の演出（ヒットストップ等）を適用済みかどうか
 	bool m_startFadeSE2 = false;			// フェード用SE2を再生開始したかどうか
-	bool m_hasSwung[3] = { false, false, false };	// 各球（1〜3球目）でスイングしたかどうか
+	bool m_hasSwung[MAX_SHOTS] = { false, false, false, false, false };	// 各球でスイングしたかどうか
 
 	// === 難易度 ===
 	Difficulty m_difficulty = Difficulty::Easy;	// 現在の難易度設定
 
 	// === リプレイ用フレーム記録 ===
 	int m_replayFrameCounter = 0;			// リプレイ記録用フレームカウンタ
-	int m_swingFrame[3] = { -1, -1, -1 };	// 各球のスイング発生フレーム番号
-	int m_pitchFrame[3] = { 0,0,0 };		// 各球の投球発生フレーム番号
+	int m_swingFrame[MAX_SHOTS] = { -1, -1, -1, -1, -1 };	// 各球のスイング発生フレーム番号
+	int m_pitchFrame[MAX_SHOTS] = { 0,0,0,0,0 };		// 各球の投球発生フレーム番号
 	bool  m_isReplayPlaying = false;		// リプレイ再生中かどうか
 
 	// === 打球データ（各球ごと） ===
-	int     m_hitFrame[3];			// 各球のヒット発生フレーム番号
-	Vector3 m_hitVelocities[3];	// 各球のヒット時の速度ベクトル
-	Vector3 m_hitDirections[3];	// 各球のヒット時の方向ベクトル
-	Vector3 m_hitStartPos[3];		// 各球のヒット開始位置
-	float   m_hitPower[3];			// 各球のヒットパワー
+	int     m_hitFrame[MAX_SHOTS];			// 各球のヒット発生フレーム番号
+	Vector3 m_hitVelocities[MAX_SHOTS];	// 各球のヒット時の速度ベクトル
+	Vector3 m_hitDirections[MAX_SHOTS];	// 各球のヒット時の方向ベクトル
+	Vector3 m_hitStartPos[MAX_SHOTS];		// 各球のヒット開始位置
+	float   m_hitPower[MAX_SHOTS];			// 各球のヒットパワー
 
 	// === ショット進行管理 ===
 	int m_shots = 0;				// 何回打ったか（現在の球数カウンタ）
@@ -141,16 +144,16 @@ private:
 
 		bool swingTriggered;		// Aボタンを押した瞬間かどうか
 	};
-	std::vector<ReplayFrame> m_replayFrames[3];	// 3球分のリプレイフレーム記録
+	std::vector<ReplayFrame> m_replayFrames[MAX_SHOTS];	// 各球分のリプレイフレーム記録
 
 	// === ポーズ・スイング遅延 ===
 	bool m_isPaused = false;				// ゲームが一時停止中かどうか
 	int m_replaySwingDelayFrames = 0;		// リプレイ中のスイング再生遅延フレーム数
 
 	// === 難易度依存の球数 ===
-	int m_maxShots = 3;	// 難易度によって変わる球数（デフォルト3球）
+	int m_maxShots = 3;	// 難易度によって変わる球数（デフォルト3球、実行時はGetDifficultyParams()で上書き）
 
-	bool m_isMagicBallShot[3] = { false, false, false };
+	bool m_isMagicBallShot[MAX_SHOTS] = { false, false, false, false, false };
 	float m_hitGlanceTimer = 0.0f;
 	bool  m_isHitGlancing = false;
 	bool m_hasStartedReplayZoom = false;
@@ -282,21 +285,21 @@ public:
 
 	int GetHitFrame(int shotIndex) const
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			return m_hitFrame[shotIndex];
 		}
 		return -1; // 無効なインデックスの場合は-1を返す
 	}
 	void SetHitFrame(int shotIndex, int frame)
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			m_hitFrame[shotIndex] = frame;
 		}
 	}
 
 	const Vector3& GetHitVelocity(int shotIndex) const
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			return m_hitVelocities[shotIndex];
 		}
 		static Vector3 zeroVelocity = Vector3::Zero;
@@ -304,13 +307,13 @@ public:
 	}
 	void SetHitVelocity(int shotIndex, const Vector3& velocity)
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			m_hitVelocities[shotIndex] = velocity;
 		}
 	}
 	const Vector3& GetHitDirection(int shotIndex) const
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			return m_hitDirections[shotIndex];
 		}
 		static Vector3 zeroDirection = Vector3::Zero;
@@ -318,14 +321,14 @@ public:
 	}
 	void SetHitDirection(int shotIndex, const Vector3& direction)
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			m_hitDirections[shotIndex] = direction;
 		}
 	}
 
 	const Vector3& GetHitStartPos(int shotIndex) const
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			return m_hitStartPos[shotIndex];
 		}
 		static Vector3 zeroPos = Vector3::Zero;
@@ -333,14 +336,14 @@ public:
 	}
 	void SetHitStartPos(int shotIndex, const Vector3& pos)
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			m_hitStartPos[shotIndex] = pos;
 		}
 	}
 
 	const float& GetHitPower(int shotIndex) const
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			return m_hitPower[shotIndex];
 		}
 		static float zeroPower = 0.0f;
@@ -348,7 +351,7 @@ public:
 	}
 	void SetHitPower(int shotIndex, float power)
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			m_hitPower[shotIndex] = power;
 		}
 	}
@@ -379,7 +382,7 @@ public:
 	}
 	std::vector<ReplayFrame> GetReplayFrames(int shotIndex) const
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			return m_replayFrames[shotIndex];
 		}
 		return std::vector<ReplayFrame>(); // 無効なインデックスの場合は空のベクトルを返す
@@ -387,21 +390,21 @@ public:
 
 	void SetReplayFrames(int shotIndex, const std::vector<ReplayFrame>& frames)
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			m_replayFrames[shotIndex] = frames;
 		}
 	}
 
 	int GetPitchFrame(int shotIndex) const
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			return m_pitchFrame[shotIndex];
 		}
 		return -1; // 無効なインデックスの場合は-1を返す
 	}
 	void SetPitchFrame(int shotIndex, int frame)
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			m_pitchFrame[shotIndex] = frame;
 		}
 	}
@@ -460,12 +463,23 @@ public:
 	}
 	void SetSwingFrame(int shotIndex, int frame)
 	{
-		if (shotIndex >= 0 && shotIndex < 3) {
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
 			m_swingFrame[shotIndex] = frame;
 		}
 	}
-	void SetHasSwung(int shotIndex, bool swung) { m_hasSwung[shotIndex] = swung; }
-	bool GetHasSwung(int shotIndex) const { return m_hasSwung[shotIndex]; }
+	void SetHasSwung(int shotIndex, bool swung)
+	{
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
+			m_hasSwung[shotIndex] = swung;
+		}
+	}
+	bool GetHasSwung(int shotIndex) const
+	{
+		if (shotIndex >= 0 && shotIndex < MAX_SHOTS) {
+			return m_hasSwung[shotIndex];
+		}
+		return false;
+	}
 	int GetReplayFrameCount() const;
 	void StartReplayRecording();
 	int GetShots() const { return m_shots; }
@@ -476,10 +490,10 @@ public:
 	void GoToTiter();          // ★ 追加：タイトルへ戻る
 	bool GetIsTutorialSelectTitle() const { return m_isTutorialSelectTitle; } // ★ 追加
 	void SetIsMagicBallShot(int shot, bool isMagic) {
-		if (shot >= 0 && shot < 3) m_isMagicBallShot[shot] = isMagic;
+		if (shot >= 0 && shot < MAX_SHOTS) m_isMagicBallShot[shot] = isMagic;
 	}
 	bool GetIsMagicBallShot(int shot) const {
-		return (shot >= 0 && shot < 3) ? m_isMagicBallShot[shot] : false;
+		return (shot >= 0 && shot < MAX_SHOTS) ? m_isMagicBallShot[shot] : false;
 	}
 	void StartHitGlance(float duration);
 };

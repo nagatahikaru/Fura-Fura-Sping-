@@ -61,8 +61,7 @@ bool Game::Start()
 	const DifficultyParams& p = GetDifficultyParams(m_difficulty);
 	m_maxShots = p.pitchCount;
 
-	m_replayPaths.resize(3);
-
+	m_replayPaths.resize(MAX_SHOTS);
 	return true;
 }
 
@@ -446,11 +445,17 @@ void Game::Update()
 
 			// ★ 3球目の着地から1秒経ったら、ここで初めて入力をロックしてフェードアウトを開始する
 			if (m_shots == m_maxShots - 1) {   // ★ 修正：ハードコードの2をm_maxShots-1に変更
-				m_isInputLocked = true;
+
 				if (m_difficulty == Difficulty::Tutorial) {
+					// ★ 評価スプライト(Nice/Great/Perfectなど)の表示が終わるまで選択画面への遷移を待つ
+					if (m_afterLandingTimer < 3.0f) {
+						return;
+					}
+					m_isInputLocked = true;
 					m_shouldContinueTutorial = true;
 				}
 				else {
+					m_isInputLocked = true;
 					DecideBestReplay();
 					if (m_bestShotIndex != -1) {
 						m_shouldStartReplay = true;
@@ -846,7 +851,7 @@ void Game::DecideBestReplay()
 	m_bestShotIndex = -1;
 	float best = -1.0f;
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < m_maxShots; i++) {
 		// ★ スコアが0（空振り）は対象外にする
 		if (m_scores[i] > 0.0f && m_scores[i] > best && m_replayPaths[i].size() > 0) {
 			best = m_scores[i];
@@ -865,7 +870,7 @@ void Game::GoToResult()
 {
 	// ★ 記録が1でもあれば SE2 を鳴らす
 	bool hasScore = false;
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < m_maxShots; i++) {
 		if (m_scores[i] > 0) {
 			hasScore = true;
 			break;

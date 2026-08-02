@@ -84,6 +84,7 @@ InGameUI::InGameUI() {
 	InitSprite(m_kiiro1, "kiiro", 880.0f, 600.0f);
 	InitSprite(m_kiiro2, "kiiro", 880.0f, 600.0f);
 	InitSprite(m_kiiro3, "kiiro", 880.0f, 600.0f);
+	InitSprite(m_nokoribat, "kiiro", 880.0f, 600.0f);
 	InitSprite(m_besu, "besu", 550.0f, 450.0f);
 	InitSprite(m_baisoku, "baisoku", 350.0f, 350.0f);
 	InitSprite(m_shuchusen, "shuchusen", 1920.0f, 1080.0f);
@@ -97,9 +98,11 @@ InGameUI::InGameUI() {
 	InitSprite(m_Abotan, "Abotann", 200.0f, 200.0f);
 	InitSprite(m_Abotan2, "abotann2", 200.0f, 200.0f);
 	InitSprite(m_gizagiza, "gizagiza", 200.0f, 200.0f);
-	InitSprite(m_ballIcon[0], "ball", 50.0f, 50.0f, { -570, 430, 0 });
-	InitSprite(m_ballIcon[1], "ball", 50.0f, 50.0f, { -500, 430, 0 });
-	InitSprite(m_ballIcon[2], "ball", 50.0f, 50.0f, { -430, 430, 0 });
+	InitSprite(m_ballIcon[0], "ball", 50.0f, 50.0f, { -920, 230, 0 });
+	InitSprite(m_ballIcon[1], "ball", 50.0f, 50.0f, { -850, 230, 0 });
+	InitSprite(m_ballIcon[2], "ball", 50.0f, 50.0f, { -780, 230, 0 });
+	InitSprite(m_ballIcon[3], "ball", 50.0f, 50.0f, { -710, 230, 0 });
+	InitSprite(m_ballIcon[4], "ball", 50.0f, 50.0f, { -640, 230, 0 });
 	InitSprite(m_spritekuro, "kuro", 1920.0f, 1080.0f);
 	InitSprite(m_bbb, "bbb", 200.0f, 200.0f);
 	InitSprite(m_bsuki, "bsuki", 550.0f, 500.0f);
@@ -897,30 +900,49 @@ void InGameUI::Render(RenderContext& rc) {
 
 	if (m_isFontVisible) {
 
-		wchar_t kyu[64];
-		swprintf_s(kyu, 64, L"のこり%d球", m_ballCount);
+		Game* gameForBallCount = FindGO<Game>("game");
+		bool isTutorialMode = (gameForBallCount && gameForBallCount->GetDifficulty() == Difficulty::Tutorial);
 
-		m_fontBallCount.SetText(kyu);
-		m_fontBallCount.SetPosition(-600.0f, 500.0f, 0.0f); // 位置は調整してOK
-		m_fontBallCount.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
-		//m_fontBallCount.Draw(rc);
+		if (isTutorialMode) {
+			m_nokoribat.SetPosition(Vector3{ -1000.0f, 300.0f, 0.0f });
+			m_nokoribat.SetScale({ -1.0f, 1.0f, 1.0f });
+			m_nokoribat.Update();
+			m_nokoribat.Draw(rc);
 
-		for (int i = 0; i < 3; i++) {
-			if (i < m_ballCount) {
-				m_ballIcon[i].SetMulColor({ 1,1,1,1 });   // 表示
+			wchar_t kyu[64];
+			swprintf_s(kyu, 64, L"のこり%d球", m_ballCount);
+			m_fontBallCount.SetText(kyu);
+			m_fontBallCount.SetPosition(-900.0f, 340.0f, 0.0f); // 位置は調整してOK
+			m_fontBallCount.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
+			m_fontBallCount.Draw(rc);
+
+			
+
+			for (int i = 0; i < 5; i++) {
+				if (i < m_ballCount) {
+					m_ballIcon[i].SetMulColor({ 1,1,1,1 });   // 表示
+				}
+				else {
+					m_ballIcon[i].SetMulColor({ 1,1,1,0 });   // 非表示
+				}
+				m_ballIcon[i].Update();
+				m_ballIcon[i].Draw(rc);
 			}
-			else {
-				m_ballIcon[i].SetMulColor({ 1,1,1,0 });   // 非表示
-			}
-			m_ballIcon[i].Update();
-			//m_ballIcon[i].Draw(rc);
 		}
 
 		m_besu.SetPosition(Vector3{ 740, 300, 0 });
 		m_besu.Update();
 		m_besu.Draw(rc);
 
-		if (m_hasPredictedBall && m_game && m_game->GetDifficulty() != Difficulty::Tutorial) {
+		Game* gameForKiiro = FindGO<Game>("game");
+		bool shouldHideKiiroAndBatu = false;
+
+		if (gameForKiiro) {
+			CameraMode cam = gameForKiiro->GetCameraMode();
+			shouldHideKiiroAndBatu = (cam == Camera_Kakutei || cam == Camera_Replay);
+		}
+
+		if (!shouldHideKiiroAndBatu && m_game && m_game->GetDifficulty() != Difficulty::Tutorial) {
 			m_kiiro1.SetPosition(Vector3{ -1005.0f, 250.0f, 0.0f });
 			m_kiiro1.SetScale({ -1.0f, 1.0f, 1.0f });
 			m_kiiro1.Update();
@@ -936,25 +958,20 @@ void InGameUI::Render(RenderContext& rc) {
 
 			// ★ ストライク（バツ）スプライトを縦に並べて表示
 			for (int i = 0; i < 3; i++) {
-
 				if (m_isMiss[i]) {
-					// 位置：左上あたりに縦並び（好きな位置に調整OK）
 					float baseX = -790.0f;
 					float baseY = 262.5f;
-
 					m_batu[i].SetPosition(Vector3{
 						baseX,
-						baseY - i * 100.0f,   // ← 縦に並べる
+						baseY - i * 100.0f,
 						0.0f
 						});
-
-					m_batu[i].SetScale({ 2.0f, 2.0f, 1.0f }); // 大きさ調整（必要なら）
-					m_batu[i].SetMulColor({ 1, 0, 0, 1 });      // 赤色で表示
+					m_batu[i].SetScale({ 2.0f, 2.0f, 1.0f });
+					m_batu[i].SetMulColor({ 1, 0, 0, 1 });
 				}
 				else {
-					m_batu[i].SetMulColor({ 1, 1, 1, 0 });      // 非表示
+					m_batu[i].SetMulColor({ 1, 1, 1, 0 });
 				}
-
 				m_batu[i].Update();
 				m_batu[i].Draw(rc);
 			}
@@ -1043,7 +1060,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_bsuki.Draw(rc);
 		}
 
-		if (m_hasPredictedBall && m_game && m_game->GetDifficulty() != Difficulty::Tutorial) {
+		if (!shouldHideKiiroAndBatu && m_game && m_game->GetDifficulty() != Difficulty::Tutorial) {
 			wchar_t boll[256];
 			if (m_isError) {
 				double meter = (double)m_km / 100.0;

@@ -149,9 +149,10 @@ private:
 	SpriteRender m_continueSprite2;
 	SpriteRender m_titleSprite2;
 	SpriteRender m_tutorial;
+	SpriteRender m_nokoribat;
 
 	// === SpriteRender (配列) ===
-	SpriteRender m_ballIcon[3];
+	SpriteRender m_ballIcon[5];
 	SpriteRender m_batu[3];
 
 public:
