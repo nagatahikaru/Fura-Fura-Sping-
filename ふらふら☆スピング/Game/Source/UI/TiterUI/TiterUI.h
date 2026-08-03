@@ -37,6 +37,7 @@ private:
 	SpriteRender m_nanido3;
 	SpriteRender m_Ade;
 	SpriteRender m_tutorial;
+	SpriteRender m_tutorial2;
 	int m_cursor = 0; // 0 = ゲーム, 1 = メニュー
 	int m_selectedDifficulty = 0; // 難易度選択のカーソル用
 	bool m_isDeciding = false;     // 決定演出中か
