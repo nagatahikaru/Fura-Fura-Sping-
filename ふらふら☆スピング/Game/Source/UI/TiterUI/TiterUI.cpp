@@ -44,13 +44,13 @@ bool TiterUI::Start()
 
     // ▼ 難易度選択用UI（TransitionUIから引越し）
     m_easySprite.Init("Assets/sprite/Difficulty_Easy.dds", 400.0f, 400.0f);
-    m_easySprite.SetPosition({ -480.0f, -320.0f, 0.0f });
+    m_easySprite.SetPosition({ -600.0f, -320.0f, 0.0f });
 
     m_normalSprite.Init("Assets/sprite/Difficulty_Normal.dds", 360.0f, 360.0f);
-    m_normalSprite.SetPosition({ 0.0f, -320.0f, 0.0f });
+    m_normalSprite.SetPosition({ -200.0f, -320.0f, 0.0f });
 
     m_hardSprite.Init("Assets/sprite/Difficulty_Hard.dds", 290.0f, 290.0f);
-    m_hardSprite.SetPosition({ 480.0f, -320.0f, 0.0f });
+    m_hardSprite.SetPosition({ 200.0f, -320.0f, 0.0f });
 
     m_easyDetail.Init("Assets/sprite/Detail_Easy.dds", 2000.0f, 1200.0f);
     m_easyDetail.SetPosition({ -11.5f, -3.5f, 0.0f });
@@ -62,7 +62,10 @@ bool TiterUI::Start()
     m_hardDetail.SetPosition({ 0.0f, 0.0f, 0.0f });
 
     m_tutorial.Init("Assets/sprite/tutorial.dds", 300.0f, 300.0f);
-    m_tutorial.SetPosition({ 600.0f, 0.0f, 0.0f });
+    m_tutorial.SetPosition({ 600.0f, -300.0f, 0.0f });
+
+    m_tutorial2.Init("Assets/sprite/tutorial2.dds", 1500.0f, 920.0f);
+    m_tutorial2.SetPosition({ -0.5f, -35.5f, 0.0f });
 
     m_nanido.Init("Assets/sprite/nanido.dds", 800.0f, 600.0f);
     m_nanido.SetPosition({ 0.0f, 420.0f, 0.0f });
@@ -299,6 +302,9 @@ void TiterUI::Render(RenderContext& rc)
             m_hardDetail.Draw(rc);
         
             break;
+        case 3:
+            m_tutorial2.Update();
+            m_tutorial2.Draw(rc);
         }
         m_tutorial.Update();
         m_tutorial.Draw(rc);
