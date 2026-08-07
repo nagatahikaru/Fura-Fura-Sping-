@@ -31,7 +31,9 @@ Game::~Game()
 	auto start1 = FindGO<Start1>("start1");
 	if (start1) DeleteGO(start1);
 
-
+	if (m_rainEffectId != 0 && g_effectManager) {
+		g_effectManager->StopEffect(m_rainEffectId);
+	}
 }
 
 
@@ -62,6 +64,16 @@ bool Game::Start()
 	m_maxShots = p.pitchCount;
 
 	m_replayPaths.resize(MAX_SHOTS);
+
+	if (m_difficulty == Difficulty::Hard && g_effectManager) {
+		m_rainEffectId = g_effectManager->PlayEffect(
+			enEffect_ame,
+			Vector3(0, 30000.0f,5500.0),   // 頭上あたりの座標（要調整）
+			Vector3(40,40,70),
+			Quaternion::Identity
+		);
+	}
+
 	return true;
 }
 
@@ -101,6 +113,7 @@ void Game::Update()
 	//	m_replayDuration = 3.0f;   // 短め
 	//	break;
 	//}
+
 
 	// ★ ぐるぐる値を毎フレーム Game に保存する
 	if (m_batter) {
