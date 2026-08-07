@@ -18,6 +18,7 @@ enum EffectType {
 	enEffect_DownArrow10,
 	enEffect_HitBat,
 	enEffect_kemuri,
+	enEffect_ame,
 	enEffect_Num
 };
 
@@ -143,7 +144,8 @@ private:
 		u"DownArrow9",
 		u"DownArrow10",
 		u"HitBat",
-		u"kemuri"
+		u"kemuri",
+		u"ame"
 	};
 
 	std::unordered_map<uint32_t, EffectEmitter*> m_effects;					//effectÇ÷ÇÃéQè∆ÅB
