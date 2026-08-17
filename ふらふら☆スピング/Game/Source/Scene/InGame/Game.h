@@ -164,6 +164,7 @@ private:
 	// === エフェクト ===
 	uint32_t m_rainEffectId = 0; 
 	uint32_t m_kazeEffectId = 0;
+	uint32_t m_kaze2EffectId = 0;
 public:
 	Game() {}
 	~Game();

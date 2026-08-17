@@ -78,14 +78,24 @@ bool Game::Start()
 		);
 	}
 
-	//if (m_difficulty == Difficulty::Hard && g_effectManager) {
-	//	m_kazeEffectId = g_effectManager->PlayEffect(
-	//		enEffect_kaze,
-	//		Vector3(0, 0.0f, 5000.0),   // 頭上あたりの座標（要調整）
-	//		Vector3(40, 40, 70),
-	//		Quaternion::Identity
-	//	);
-	//}
+	if (m_difficulty == Difficulty::Hard && g_effectManager) {
+		if (rand() % 2 == 0) {
+			m_kazeEffectId = g_effectManager->PlayEffect(
+				enEffect_kaze,
+				Vector3(0, 0.0f, 5000.0),
+				Vector3(40, 40, 70),
+				Quaternion::Identity
+			);
+		}
+		else {
+			m_kaze2EffectId = g_effectManager->PlayEffect(
+				enEffect_kaze2,
+				Vector3(0, 0.0f, 5000.0),
+				Vector3(40, 40, 70),
+				Quaternion::Identity
+			);
+		}
+	}
 
 	return true;
 }
@@ -838,8 +848,20 @@ void Game::StartReplay(int index)
 	m_cameraMode = Camera_Replay;
 	m_currentReplay = m_replayPaths[index];
 	m_replayPitchFrame = m_pitchFrame[index];  // ← ★追加
-	// ★★★ 追加：ピッチャーとボールをリセットしてタイミングを合わせる ★★★
 
+	// ★ リプレイ中は風エフェクトだけ止める
+	if (m_kazeEffectId != 0 && g_effectManager) {
+		g_effectManager->StopEffect(m_kazeEffectId);
+		m_kazeEffectId = 0;
+	}
+
+	// ★ リプレイ中は風エフェクトだけ止める
+	if (m_kaze2EffectId != 0 && g_effectManager) {
+		g_effectManager->StopEffect(m_kaze2EffectId);
+		m_kaze2EffectId = 0;
+	}
+
+	// ★★★ 追加：ピッチャーとボールをリセットしてタイミングを合わせる ★★★
 	if (m_pitcher) {
 		m_pitcher->PlayPitchAnimation();        // ← 投球アニメを再生
 	}
