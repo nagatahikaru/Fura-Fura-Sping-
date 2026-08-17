@@ -14,6 +14,8 @@
 #include"Source/Scene/Start/Start.h"
 #include "Source/DifficultyParams.h"
 #include "Source/Scene/Titer/Titer.h"
+#include <cstdlib>
+#include <ctime>
 
 Game::~Game()
 {
@@ -43,6 +45,7 @@ Game::~Game()
 
 bool Game::Start()
 {
+	srand(static_cast<unsigned int>(time(nullptr)));
 
 	// ★ Load で作ったオブジェクトを取得するだけ
 	m_skyCube = FindGO<SkyCube>("skyCube");
@@ -76,26 +79,55 @@ bool Game::Start()
 			Vector3(40,40,70),
 			Quaternion::Identity
 		);
+		g_soundManager->PlaySE(enSound_SE16);
 	}
 
 	if (m_difficulty == Difficulty::Hard && g_effectManager) {
-		if (rand() % 2 == 0) {
-			m_kazeEffectId = g_effectManager->PlayEffect(
-				enEffect_kaze,
-				Vector3(0, 0.0f, 5000.0),
-				Vector3(40, 40, 70),
-				Quaternion::Identity
-			);
-		}
-		else {
-			m_kaze2EffectId = g_effectManager->PlayEffect(
-				enEffect_kaze2,
-				Vector3(0, 0.0f, 5000.0),
-				Vector3(40, 40, 70),
-				Quaternion::Identity
-			);
-		}
+	int r = rand() % 4;
+	switch (r) {
+	case 0:
+		m_kazeEffectId = g_effectManager->PlayEffect(
+			enEffect_kaze,
+			Vector3(0, 0.0f, 5000.0),
+			Vector3(40, 40, 70),
+			Quaternion::Identity
+		);
+		g_soundManager->PlaySE(enSound_SE17);
+		m_currentWindType = Wind_LeftToRight;
+		break;
+	case 1:
+		m_kaze2EffectId = g_effectManager->PlayEffect(
+			enEffect_kaze2,
+			Vector3(0, 0.0f, 5000.0),
+			Vector3(40, 40, 70),
+			Quaternion::Identity
+		);
+		g_soundManager->PlaySE(enSound_SE17);
+		m_currentWindType = Wind_RightToLeft;
+		break;
+	case 2:
+		m_kaze3EffectId = g_effectManager->PlayEffect(
+			enEffect_kaze3,
+			Vector3(0, 0.0f, 2000.0),
+			Vector3(40, 40, 70),
+			Quaternion::Identity
+		);
+		g_soundManager->PlaySE(enSound_SE17);
+		m_currentWindType = Wind_Tailwind;
+		break;
+	case 3:
+		m_kaze4EffectId = g_effectManager->PlayEffect(
+			enEffect_kaze4,
+			Vector3(0, 0.0f, 2000.0),
+			Vector3(40, 40, 70),
+			Quaternion::Identity
+		);
+		g_soundManager->PlaySE(enSound_SE17);
+		m_currentWindType = Wind_Headwind;
+		break;
 	}
+	m_isWindActive = true;
+}
 
 	return true;
 }
@@ -849,17 +881,17 @@ void Game::StartReplay(int index)
 	m_currentReplay = m_replayPaths[index];
 	m_replayPitchFrame = m_pitchFrame[index];  // ← ★追加
 
-	// ★ リプレイ中は風エフェクトだけ止める
-	if (m_kazeEffectId != 0 && g_effectManager) {
-		g_effectManager->StopEffect(m_kazeEffectId);
-		m_kazeEffectId = 0;
-	}
+	//// ★ リプレイ中は風エフェクトだけ止める
+	//if (m_kazeEffectId != 0 && g_effectManager) {
+	//	g_effectManager->StopEffect(m_kazeEffectId);
+	//	m_kazeEffectId = 0;
+	//}
 
-	// ★ リプレイ中は風エフェクトだけ止める
-	if (m_kaze2EffectId != 0 && g_effectManager) {
-		g_effectManager->StopEffect(m_kaze2EffectId);
-		m_kaze2EffectId = 0;
-	}
+	//// ★ リプレイ中は風エフェクトだけ止める
+	//if (m_kaze2EffectId != 0 && g_effectManager) {
+	//	g_effectManager->StopEffect(m_kaze2EffectId);
+	//	m_kaze2EffectId = 0;
+	//}
 
 	// ★★★ 追加：ピッチャーとボールをリセットしてタイミングを合わせる ★★★
 	if (m_pitcher) {

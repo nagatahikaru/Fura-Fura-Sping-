@@ -21,6 +21,8 @@ enum EffectType {
 	enEffect_ame,
 	enEffect_kaze,
 	enEffect_kaze2,
+	enEffect_kaze3,
+	enEffect_kaze4,
 	enEffect_Num
 };
 
@@ -149,7 +151,9 @@ private:
 		u"kemuri",
 		u"ame",
 		u"kaze",
-		u"kaze2"
+		u"kaze2",
+		u"kaze3",
+		u"kaze4"
 	};
 
 	std::unordered_map<uint32_t, EffectEmitter*> m_effects;					//effectÇ÷ÇÃéQè∆ÅB

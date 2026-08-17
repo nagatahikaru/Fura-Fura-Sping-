@@ -19,6 +19,16 @@ enum CameraMode
 	Camera_BackBall,
 	Camera_Kakutei
 };
+
+enum WindType
+{
+	Wind_None,
+	Wind_LeftToRight,   // 左から右への風
+	Wind_RightToLeft,   // 右から左への風
+	Wind_Tailwind,      // 追い風
+	Wind_Headwind       // 向かい風
+};
+
 class Game : public Source
 {
 private:
@@ -165,6 +175,10 @@ private:
 	uint32_t m_rainEffectId = 0; 
 	uint32_t m_kazeEffectId = 0;
 	uint32_t m_kaze2EffectId = 0;
+	uint32_t m_kaze3EffectId = 0;
+	uint32_t m_kaze4EffectId = 0;
+	WindType m_currentWindType = Wind_None;   
+	bool m_isWindActive = false;              
 public:
 	Game() {}
 	~Game();
@@ -501,4 +515,7 @@ public:
 		return (shot >= 0 && shot < MAX_SHOTS) ? m_isMagicBallShot[shot] : false;
 	}
 	void StartHitGlance(float duration);
+
+	WindType GetCurrentWindType() const { return m_currentWindType; }
+	bool GetIsWindActive() const { return m_isWindActive; }
 };

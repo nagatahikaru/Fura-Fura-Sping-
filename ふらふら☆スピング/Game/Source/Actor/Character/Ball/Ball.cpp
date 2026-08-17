@@ -170,6 +170,32 @@ void Ball::Update()
                 m_velocity.y -= m_baseGravity * dt;
             }
 
+        // ★ 風の影響（Hardのみ、打った後の打球にだけ適用）
+        if (m_hasHit && game->GetIsWindActive())
+        {
+            const float kWindPowerX = 8.0f;  // 左右の押し流し強さ
+            const float kWindPowerZ = -6.0f;  // 前後の伸び/失速強さ
+
+            switch (game->GetCurrentWindType())
+            {
+            case Wind_LeftToRight:
+                m_velocity.x += kWindPowerX * dt;
+                break;
+            case Wind_RightToLeft:
+                m_velocity.x -= kWindPowerX * dt;
+                break;
+            case Wind_Tailwind:
+                m_velocity.z -= kWindPowerZ * dt;
+                break;
+            case Wind_Headwind:
+                m_velocity.z += kWindPowerZ * dt;
+                if (m_velocity.z > 0.0f) m_velocity.z = 0.0f;
+                break;
+            default:
+                break;
+            }
+        }
+
             //  1. 元の m_velocity を破壊しないよう、このフレーム専用の速度変数を作る
             Vector3 currentFrameVelocity = m_velocity;
 
@@ -762,32 +788,43 @@ float Ball::PredictLandingDistance()
     Vector3 vel = game->GetHitVelocity(shot);
 
     float dt = 1.0f / 60.0f;
-    Difficulty currentDifficulty = Normal; // デフォルト
+    Difficulty currentDifficulty = Normal;
     if (game) {
-        currentDifficulty = game->GetDifficulty(); // ※Gameクラスにある難易度取得関数
+        currentDifficulty = game->GetDifficulty();
     }
-    // ★ 難易度ごとの重力を決定（ループ外）
+
     float gravity = 0.0f;
     switch (currentDifficulty)
     {
-    case Tutorial:
-        gravity = 5.5f;
-        break;
-    case Easy:
-        gravity = 5.5f;
-        break;
-    case Normal:
-        gravity = 9.5f;
-        break;
-    default: // Hard
-        gravity = 16.0f;
-        break;
+    case Tutorial: gravity = 5.5f; break;
+    case Easy:     gravity = 5.5f; break;
+    case Normal:   gravity = 9.5f; break;
+    default:       gravity = 16.0f; break;
     }
 
-    // ★ 着地まで予測
+    // ★ 風の影響もシミュレーション内で反映
+    bool windActive = game->GetIsWindActive();
+    WindType windType = game->GetCurrentWindType();
+    const float kWindPowerX = 8.0f;
+    const float kWindPowerZ = -6.0f;
+
     while (pos.y > 0.0f) {
 
-        vel.y -= gravity * dt;   // ← 難易度ごとの重力が反映される
+        vel.y -= gravity * dt;
+
+        if (windActive) {
+            switch (windType)
+            {
+            case Wind_LeftToRight: vel.x += kWindPowerX * dt; break;
+            case Wind_RightToLeft: vel.x -= kWindPowerX * dt; break;
+            case Wind_Tailwind:    vel.z -= kWindPowerZ * dt; break;
+            case Wind_Headwind:
+                vel.z += kWindPowerZ * dt;
+                if (vel.z > 0.0f) vel.z = 0.0f;
+                break;
+            default: break;
+            }
+        }
 
         pos += vel * dt;
     }
