@@ -160,7 +160,10 @@ private:
 	float m_replayZoomDelayTimer = 0.0f;   // ★ 投球フレーム到達後の経過時間
 	float m_replayZoomDelaySeconds = 0.0f; // ★ 何秒待ってからズーム開始するか
 	bool  m_hasReachedPitchFrame = false;  // ★ 投球フレームに到達済みか
-	uint32_t m_rainEffectId = 0; // ★ Hard難易度時の雨エフェクトID
+
+	// === エフェクト ===
+	uint32_t m_rainEffectId = 0; 
+	uint32_t m_kazeEffectId = 0;
 public:
 	Game() {}
 	~Game();

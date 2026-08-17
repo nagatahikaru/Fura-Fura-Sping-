@@ -188,14 +188,19 @@ void Load::Update()
     switch (m_loadStep)
     {
     case 0:
-        NewGO<SkyCube>(0, "skyCube");
+    {
+        auto sky = NewGO<SkyCube>(0, "skyCube");
+        if (sky && m_difficulty == Difficulty::Hard) {
+            sky->SetType(enSkyCubeType_DayToon_4);
+        }
         m_gaugeFill.SetMulColor({ 1,1,1,1 });
         m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guA.SetMulColor({ 1,1,1,1 });
         m_guR.SetMulColor({ 1,1,1,0 });
         m_guB.SetMulColor({ 1, 1, 1, 0 });
         m_realProgress = 0.1f;
-        break;
+    }
+    break;
     case 1:
         m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guA.SetMulColor({ 1,1,1,0 });
