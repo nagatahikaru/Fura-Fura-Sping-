@@ -34,6 +34,10 @@ Game::~Game()
 	if (m_rainEffectId != 0 && g_effectManager) {
 		g_effectManager->StopEffect(m_rainEffectId);
 	}
+
+	if (m_kazeEffectId != 0 && g_effectManager) {
+		g_effectManager->StopEffect(m_kazeEffectId);
+	}
 }
 
 
@@ -73,6 +77,15 @@ bool Game::Start()
 			Quaternion::Identity
 		);
 	}
+
+	//if (m_difficulty == Difficulty::Hard && g_effectManager) {
+	//	m_kazeEffectId = g_effectManager->PlayEffect(
+	//		enEffect_kaze,
+	//		Vector3(0, 0.0f, 5000.0),   // 頭上あたりの座標（要調整）
+	//		Vector3(40, 40, 70),
+	//		Quaternion::Identity
+	//	);
+	//}
 
 	return true;
 }

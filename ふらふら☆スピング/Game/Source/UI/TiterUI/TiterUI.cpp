@@ -64,8 +64,8 @@ bool TiterUI::Start()
     m_tutorial.Init("Assets/sprite/tutorial.dds", 300.0f, 300.0f);
     m_tutorial.SetPosition({ 600.0f, -300.0f, 0.0f });
 
-    m_tutorial2.Init("Assets/sprite/tutorial2.dds", 1500.0f, 920.0f);
-    m_tutorial2.SetPosition({ -0.5f, -35.5f, 0.0f });
+    m_tutorial2.Init("Assets/sprite/tutorial2.dds", 1514.5f, 960.0f);
+    m_tutorial2.SetPosition({ 3.0f, -39.0f, 0.0f });
 
     m_nanido.Init("Assets/sprite/nanido.dds", 800.0f, 600.0f);
     m_nanido.SetPosition({ 0.0f, 420.0f, 0.0f });
