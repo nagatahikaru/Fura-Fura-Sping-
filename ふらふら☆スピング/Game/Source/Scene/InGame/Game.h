@@ -26,7 +26,7 @@ enum WindType
 	Wind_LeftToRight,   // 左から右への風
 	Wind_RightToLeft,   // 右から左への風
 	Wind_Tailwind,      // 追い風
-	Wind_Headwind       // 向かい風
+	Wind_Headwind,       // 向かい風
 };
 
 class Game : public Source
