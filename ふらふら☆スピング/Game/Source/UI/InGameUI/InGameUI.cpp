@@ -75,12 +75,52 @@ namespace {
 		sprite.Init(GetSpriteFilePath(name).c_str(), width, height);
 		sprite.SetPosition(pos);
 	}
+
+	/// <summary>
+	/// Vector4 と Matrix の乗算（行ベクトル×行列）。
+	/// Batter::InverseProjectionMatrix と同じ計算規則。
+	/// ワールド→ビュー→クリップ空間への変換に使用する。
+	/// </summary>
+	inline Vector4 MulVec4Mat(const Vector4& v, const Matrix& m)
+	{
+		Vector4 result;
+
+		result.x =
+			v.x * m._11 +
+			v.y * m._21 +
+			v.z * m._31 +
+			v.w * m._41;
+
+		result.y =
+			v.x * m._12 +
+			v.y * m._22 +
+			v.z * m._32 +
+			v.w * m._42;
+
+		result.z =
+			v.x * m._13 +
+			v.y * m._23 +
+			v.z * m._33 +
+			v.w * m._43;
+
+		result.w =
+			v.x * m._14 +
+			v.y * m._24 +
+			v.z * m._34 +
+			v.w * m._44;
+
+		return result;
+	}
 }
 
 InGameUI::InGameUI() {
 	InitSprite(m_wakuModel, "waku", 800.0f, 600.0f);
 	InitSprite(m_spriteRenderReplay, "REPLAY", 300.0f, 300.0f);
 	InitSprite(m_spriteRenderBall, "ball", 30.0f, 30.0f);
+	// ★ ConvertBall3DToUI が返すのは「投影された点そのもの」なので、
+	//   スプライトの見た目の中心とズレないよう、ピボットを明示的に中心(0.5,0.5)に固定する。
+	//   Sprite::DEFAULT_PIVOT が中心でない場合でも、ここでズレを防止できる。
+	m_spriteRenderBall.SetPivot(Vector2(0.5f, 0.5f));
 	InitSprite(m_kiiro1, "kiiro", 880.0f, 600.0f);
 	InitSprite(m_kiiro2, "kiiro", 880.0f, 600.0f);
 	InitSprite(m_kiiro3, "kiiro", 880.0f, 600.0f);
@@ -125,7 +165,7 @@ InGameUI::InGameUI() {
 	InitSprite(m_easySprite, "Difficulty_Easy", 400.0f, 400.0);
 	InitSprite(m_normalSprite, "Difficulty_Normal", 320.0f, 320.0f);
 	InitSprite(m_hardSprite, "Difficulty_Hard", 350.0f, 280.0f);
-	InitSprite(m_guruE,"guruguruE", 300.0f, 300.0f);
+	InitSprite(m_guruE, "guruguruE", 300.0f, 300.0f);
 	InitSprite(m_guruN, "guruguruN", 300.0f, 295.0f);
 	InitSprite(m_spriteRenderBat, "batto", 330, 430);
 	InitSprite(m_spriteRenderMeet, "mi-to", 45.0f, 45.0f);
@@ -133,7 +173,7 @@ InGameUI::InGameUI() {
 	InitSprite(m_titleSprite, "yameru", 350.0f, 250.0f);
 	InitSprite(m_continueSprite2, "tudukeru2", 350.0f, 250.0f);
 	InitSprite(m_titleSprite2, "yameru2", 350.0f, 250.0f);
-	InitSprite(m_tutorial,"tutorial", 300.0f, 300.0f);
+	InitSprite(m_tutorial, "tutorial", 300.0f, 300.0f);
 }
 
 InGameUI::~InGameUI() {
@@ -384,20 +424,38 @@ void InGameUI::HitBallUI() {
 
 Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
 {
-	// Z の進み具合（0 = 手前、1 = 奥）
-	float minZ = 1000.0f;
-	float maxZ = 6500.0f;
-	float t = (ballPos3D.z - minZ) / (maxZ - minZ);
-	t = clamp(t, 0.0f, 1.0f);
+	// ★ 以前は固定係数の手打ち近似式（x*0.1、(y-750)*0.15 など）でUI座標を
+	//   計算していたため、GameCamera が Follow_Back 等でボールの速度・距離に
+	//   応じて位置やFOVを動的に変えると、実際のボール描画位置とズレていた。
+	//
+	//   Batter::ScreenToRay（スクリーン→3Dレイ）と対になる、実カメラの
+	//   View/Projection行列を使った正しい「ワールド→スクリーン」変換に置き換える。
 
-	// ★ 横移動 = X の動き + Z による中央寄り
-	float xFromX = -ballPos3D.x * -0.1f;       // ← X の動きを8倍（調整しやすい）
-    //float xFromZ = (0.5f - t) * 200.0f;
+	// UIは画面中心を(0,0)とする座標系（-960~960, -540~540）
+	const float screenW = 1920.0f;
+	const float screenH = 1080.0f;
 
-	float uiX = xFromX;// + xFromZ;
+	Vector4 worldPos = { ballPos3D.x, ballPos3D.y, ballPos3D.z, 1.0f };
 
-	// 縦はそのまま
-	float uiY = (ballPos3D.y - 750.0f) * 0.15f - 80.0f - t * 20.0f;
+	Matrix view = g_camera3D->GetViewMatrix();
+	Matrix proj = g_camera3D->GetProjectionMatrix();
+
+	Vector4 viewPos = MulVec4Mat(worldPos, view);   // ワールド → ビュー空間
+	Vector4 clipPos = MulVec4Mat(viewPos, proj);    // ビュー → クリップ空間
+
+	// カメラのほぼ真横・後方など w が 0 に近い場合は除算で座標が飛ぶため、
+	// 直前のUI座標を維持してワープを防ぐ
+	if (clipPos.w < 0.0001f) {
+		return m_fixedBallUIPos;
+	}
+
+	// クリップ空間 → NDC（-1〜1）
+	float ndcX = clipPos.x / clipPos.w;
+	float ndcY = clipPos.y / clipPos.w;
+
+	// NDC → 画面中心基準のUIピクセル座標
+	float uiX = ndcX * (screenW * 0.5f);
+	float uiY = ndcY * (screenH * 0.5f);
 
 	return Vector3{ uiX, uiY, 0.0f };
 }
@@ -565,7 +623,7 @@ void InGameUI::ResetFade()
 {
 	m_isFadeOut = false;
 	m_isFadeIn = false;
-	m_fadeAlpha = 0.0f;   
+	m_fadeAlpha = 0.0f;
 }
 
 void InGameUI::Render(RenderContext& rc) {
@@ -577,7 +635,7 @@ void InGameUI::Render(RenderContext& rc) {
 	Game* game = FindGO <Game>("game");
 	bool isReadyPhase = false;
 	if (game) {
-		isReadyPhase = game->GetIsReadyPhase(); 
+		isReadyPhase = game->GetIsReadyPhase();
 	}
 
 	bool isKakuteiMode = (game && game->GetCameraMode() == Camera_Kakutei);
@@ -706,197 +764,197 @@ void InGameUI::Render(RenderContext& rc) {
 			m_spriteRenderMeet.Draw(rc);
 		}
 
-			m_kuro.SetPosition(Vector3{ -800.0f,-280.0f,0.0f });
-			m_kuro.SetMulColor({ 0,0,0,0.5 });
-			m_kuro.Update();
-			m_kuro.Draw(rc);
+		m_kuro.SetPosition(Vector3{ -800.0f,-280.0f,0.0f });
+		m_kuro.SetMulColor({ 0,0,0,0.5 });
+		m_kuro.Update();
+		m_kuro.Draw(rc);
 
-			if (game) {
-				Difficulty diff = Difficulty::Easy;
-				if (game != nullptr) {
-					diff = game->GetDifficulty();
-				}
-
-				SpriteRender* pDiffSprite = nullptr;
-				SpriteRender* pDiffSprite2 = nullptr;
-				// 現在の難易度に応じて描画するスプライトを決定
-				if (diff == Difficulty::Easy) {
-					pDiffSprite2 = &m_guruE;
-				}
-				else if (diff == Difficulty::Normal) {
-					pDiffSprite2 = &m_guruN;
-				}
-				else if (diff == Difficulty::Hard) { // 必要に応じて異なるDifficulty列挙型に合わせてください
-					pDiffSprite = &m_gurahu;
-				}
-				else if (diff == Difficulty::Tutorial) {
-					pDiffSprite2 = &m_guruE;
-				}
-
-				// スプライトが存在すれば位置を設定して描画
-				if (pDiffSprite) {
-					// 表示位置（画面左上あたり、バスカットや残り球数の邪魔にならない位置に調整してください）
-					pDiffSprite->SetPosition(Vector3{ -800.0f,-280.0f,0.0f });
-					pDiffSprite->Update();
-					pDiffSprite->Draw(rc);
-				}
-				if (pDiffSprite2) {
-					pDiffSprite2->SetPosition(Vector3{ -800.0f,-290.0f,0.0f });
-					pDiffSprite2->Update();
-					pDiffSprite2->Draw(rc);
-				}
-			}
-
-			m_keisuu.SetPosition(Vector3{ -800.0f,-480.0f,0.0f });
-			m_keisuu.Update();
-			m_keisuu.Draw(rc);
-
-			double t = (double)m_guruGuruCount / 50.0;
-			t = clamp(t, 0.0, 1.0);
-
-			double currentMultiplier = 1.0 + 49.0 * pow(t, 2.5);
-			float progressRatioY = (float)((currentMultiplier - 1.0) / 49.0);
-			progressRatioY = clamp(progressRatioY, 0.0f, 1.0f);
-
-			float progressRatioX = (float)t;
-
-			Vector3 graphBasePos = Vector3{ -930.0f, -400.0f, 0.0f };
-
-			Vector3 ballMapPos;
-			ballMapPos.x = graphBasePos.x + (progressRatioX * m_miniMapHeightX);
-			ballMapPos.y = graphBasePos.y + (progressRatioY * m_miniMapHeightY);
-			ballMapPos.z = 0.0f;
-
-			m_ballMapIcon.SetPosition(ballMapPos);
-			m_ballMapIcon.Update();
-			m_ballMapIcon.Draw(rc);
-		
-			// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
-			if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed && !isReadyPhase)
-			{
-				m_taimingu.SetPosition(Vector3{ 800.0f, -50.0f, 0.0f });
-				m_taimingu.Update();
-				m_taimingu.Draw(rc);
-
-				// ★ 0.5秒ごとに m_isAltUI が true / false になる
-				if (m_isAltUI) {
-					// 交互UI：Aボタン2
-					m_Abotan2.SetPosition(Vector3{ 800.0f, -233.0f, 0.0f });
-					m_Abotan2.Update();
-					m_Abotan2.Draw(rc);
-
-					m_gizagiza.SetPosition(Vector3{ 800.0f,-180.0f, 0.0f });
-					m_gizagiza.Update();
-					m_gizagiza.Draw(rc);
-				}
-				else {
-					// 交互UI：Aボタン
-					m_Abotan.SetPosition(Vector3{ 800.0f, -233.0f, 0.0f });
-					m_Abotan.Update();
-					m_Abotan.Draw(rc);
-				}
-			}
-		
-		}
-	
-
-		if (m_hasPredictedBall&& m_game && m_game->GetDifficulty() != Difficulty::Hard) {
-
-			Vector3 uiPos;
-
-			if (m_isBallUIFixed) {
-				uiPos = m_fixedBallUIPos;   // ← 変換しない
-			}
-			else {
-				uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
-			}
-
-			m_spriteRenderBall.SetPosition(uiPos);
-
-			// ★ 距離に応じた透明度を適用！
-			Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
-			m_spriteRenderBall.SetMulColor(color);
-
-			m_spriteRenderBall.Update();
-			m_spriteRenderBall.Draw(rc);
-		}
-
-
-	
-		if (m_isStrikeAnim) {
-
-			// ① 拡大アニメ（0.4秒）
-			if (m_strikeTimer < 0.4f) {
-
-				m_strikeTimer += g_gameTime->GetFrameDeltaTime();
-				float t = m_strikeTimer / 0.4f;
-				if (t > 1.0f) t = 1.0f;
-
-				float scale;
-				if (t < 0.7f)
-					scale = Lerp(0.3f, 1.2f, t / 0.7f);
-				else
-					scale = Lerp(1.2f, 1.0f, (t - 0.7f) / 0.3f);
-
-				m_strikeSprite.SetScale(Vector3{ scale, scale, 1.0f });
-
-				float alpha = Lerp(0.0f, 1.0f, t);
-				m_strikeSprite.SetMulColor({ 1,1,1,alpha });
-			}
-			else {
-				// ② アニメ終了後の待機時間（1秒）
-				m_strikeHoldTime -= g_gameTime->GetFrameDeltaTime();
-
-				if (m_strikeHoldTime <= 0.0f) {
-					m_isStrikeAnim = false;  // 完全終了
-				}
-			}
-
-			// ★ 描画
-			m_strikeSprite.Update();
-			m_strikeSprite.Draw(rc);
-		}
-
-		bool shouldShowStageUI = false;
 		if (game) {
-			bool isReadyPhase = game->GetIsReadyPhase(); // 操作確認フラグを取得
-			bool isCatcherAndNotGuruGuru = (game->GetCameraMode() == Camera_Catcher && m_guruGuruTimer <= 0.0f);
+			Difficulty diff = Difficulty::Easy;
+			if (game != nullptr) {
+				diff = game->GetDifficulty();
+			}
 
-			if (isReadyPhase || isCatcherAndNotGuruGuru) {
-				shouldShowStageUI = true;
+			SpriteRender* pDiffSprite = nullptr;
+			SpriteRender* pDiffSprite2 = nullptr;
+			// 現在の難易度に応じて描画するスプライトを決定
+			if (diff == Difficulty::Easy) {
+				pDiffSprite2 = &m_guruE;
+			}
+			else if (diff == Difficulty::Normal) {
+				pDiffSprite2 = &m_guruN;
+			}
+			else if (diff == Difficulty::Hard) { // 必要に応じて異なるDifficulty列挙型に合わせてください
+				pDiffSprite = &m_gurahu;
+			}
+			else if (diff == Difficulty::Tutorial) {
+				pDiffSprite2 = &m_guruE;
+			}
+
+			// スプライトが存在すれば位置を設定して描画
+			if (pDiffSprite) {
+				// 表示位置（画面左上あたり、バスカットや残り球数の邪魔にならない位置に調整してください）
+				pDiffSprite->SetPosition(Vector3{ -800.0f,-280.0f,0.0f });
+				pDiffSprite->Update();
+				pDiffSprite->Draw(rc);
+			}
+			if (pDiffSprite2) {
+				pDiffSprite2->SetPosition(Vector3{ -800.0f,-290.0f,0.0f });
+				pDiffSprite2->Update();
+				pDiffSprite2->Draw(rc);
 			}
 		}
 
-		// 難易度別の回転数設定（1回だけ）
-		int rotationPerLevel = 3;
-		Difficulty diff = game->GetDifficulty();
-		const DifficultyParams& p = GetDifficultyParams(diff);
-		rotationPerLevel = p.guruguruSEInterval;
+		m_keisuu.SetPosition(Vector3{ -800.0f,-480.0f,0.0f });
+		m_keisuu.Update();
+		m_keisuu.Draw(rc);
+
+		double t = (double)m_guruGuruCount / 50.0;
+		t = clamp(t, 0.0, 1.0);
+
+		double currentMultiplier = 1.0 + 49.0 * pow(t, 2.5);
+		float progressRatioY = (float)((currentMultiplier - 1.0) / 49.0);
+		progressRatioY = clamp(progressRatioY, 0.0f, 1.0f);
+
+		float progressRatioX = (float)t;
+
+		Vector3 graphBasePos = Vector3{ -930.0f, -400.0f, 0.0f };
+
+		Vector3 ballMapPos;
+		ballMapPos.x = graphBasePos.x + (progressRatioX * m_miniMapHeightX);
+		ballMapPos.y = graphBasePos.y + (progressRatioY * m_miniMapHeightY);
+		ballMapPos.z = 0.0f;
+
+		m_ballMapIcon.SetPosition(ballMapPos);
+		m_ballMapIcon.Update();
+		m_ballMapIcon.Draw(rc);
+
+		// ★ ぐるぐる中 or 打った後は Aボタン UI を出さない
+		if (m_guruGuruTimer <= 0.0f && !m_isBallUIFixed && !isReadyPhase)
+		{
+			m_taimingu.SetPosition(Vector3{ 800.0f, -50.0f, 0.0f });
+			m_taimingu.Update();
+			m_taimingu.Draw(rc);
+
+			// ★ 0.5秒ごとに m_isAltUI が true / false になる
+			if (m_isAltUI) {
+				// 交互UI：Aボタン2
+				m_Abotan2.SetPosition(Vector3{ 800.0f, -233.0f, 0.0f });
+				m_Abotan2.Update();
+				m_Abotan2.Draw(rc);
+
+				m_gizagiza.SetPosition(Vector3{ 800.0f,-180.0f, 0.0f });
+				m_gizagiza.Update();
+				m_gizagiza.Draw(rc);
+			}
+			else {
+				// 交互UI：Aボタン
+				m_Abotan.SetPosition(Vector3{ 800.0f, -233.0f, 0.0f });
+				m_Abotan.Update();
+				m_Abotan.Draw(rc);
+			}
+		}
+
+	}
 
 
-		// ★ 警告スプライト表示（難易度別）
-		if (shouldShowStageUI && m_guruGuruCount >= rotationPerLevel)
-		{
-			m_guruguruSprite.SetMulColor({ 1,1,1,1 });
-			m_guruguruSprite.SetPosition(Vector3{ 0.0f,465.0f, 0.0f });
-			m_guruguruSprite.Update();
-			m_guruguruSprite.Draw(rc);
+	if (m_hasPredictedBall && m_game && m_game->GetDifficulty() != Difficulty::Hard) {
+
+		Vector3 uiPos;
+
+		if (m_isBallUIFixed) {
+			uiPos = m_fixedBallUIPos;   // ← 変換しない
 		}
-		else
-		{
-			m_guruguruSprite.SetMulColor({ 1,1,1,0 });
+		else {
+			uiPos = ConvertBall3DToUI(m_predictedBallPos3D);
 		}
 
-		// ★ ステージテキスト表示（同じ rotationPerLevel を使う）
-		if (shouldShowStageUI && m_guruGuruCount >= rotationPerLevel)
-		{
-			m_fontStage.SetText(m_debuffComment);
-			m_fontStage.SetPosition(-270.0f, 500.0f, 0.0f);
-			m_fontStage.SetScale(0.8f);
-			m_fontStage.SetColor(0, 0, 0, 1);
-			m_fontStage.Draw(rc);
+		m_spriteRenderBall.SetPosition(uiPos);
+
+		// ★ 距離に応じた透明度を適用！
+		Vector4 color = Vector4(1.0f, 1.0f, 1.0f, m_ballAlpha);
+		m_spriteRenderBall.SetMulColor(color);
+
+		m_spriteRenderBall.Update();
+		m_spriteRenderBall.Draw(rc);
+	}
+
+
+
+	if (m_isStrikeAnim) {
+
+		// ① 拡大アニメ（0.4秒）
+		if (m_strikeTimer < 0.4f) {
+
+			m_strikeTimer += g_gameTime->GetFrameDeltaTime();
+			float t = m_strikeTimer / 0.4f;
+			if (t > 1.0f) t = 1.0f;
+
+			float scale;
+			if (t < 0.7f)
+				scale = Lerp(0.3f, 1.2f, t / 0.7f);
+			else
+				scale = Lerp(1.2f, 1.0f, (t - 0.7f) / 0.3f);
+
+			m_strikeSprite.SetScale(Vector3{ scale, scale, 1.0f });
+
+			float alpha = Lerp(0.0f, 1.0f, t);
+			m_strikeSprite.SetMulColor({ 1,1,1,alpha });
 		}
-	
+		else {
+			// ② アニメ終了後の待機時間（1秒）
+			m_strikeHoldTime -= g_gameTime->GetFrameDeltaTime();
+
+			if (m_strikeHoldTime <= 0.0f) {
+				m_isStrikeAnim = false;  // 完全終了
+			}
+		}
+
+		// ★ 描画
+		m_strikeSprite.Update();
+		m_strikeSprite.Draw(rc);
+	}
+
+	bool shouldShowStageUI = false;
+	if (game) {
+		bool isReadyPhase = game->GetIsReadyPhase(); // 操作確認フラグを取得
+		bool isCatcherAndNotGuruGuru = (game->GetCameraMode() == Camera_Catcher && m_guruGuruTimer <= 0.0f);
+
+		if (isReadyPhase || isCatcherAndNotGuruGuru) {
+			shouldShowStageUI = true;
+		}
+	}
+
+	// 難易度別の回転数設定（1回だけ）
+	int rotationPerLevel = 3;
+	Difficulty diff = game->GetDifficulty();
+	const DifficultyParams& p = GetDifficultyParams(diff);
+	rotationPerLevel = p.guruguruSEInterval;
+
+
+	// ★ 警告スプライト表示（難易度別）
+	if (shouldShowStageUI && m_guruGuruCount >= rotationPerLevel)
+	{
+		m_guruguruSprite.SetMulColor({ 1,1,1,1 });
+		m_guruguruSprite.SetPosition(Vector3{ 0.0f,465.0f, 0.0f });
+		m_guruguruSprite.Update();
+		m_guruguruSprite.Draw(rc);
+	}
+	else
+	{
+		m_guruguruSprite.SetMulColor({ 1,1,1,0 });
+	}
+
+	// ★ ステージテキスト表示（同じ rotationPerLevel を使う）
+	if (shouldShowStageUI && m_guruGuruCount >= rotationPerLevel)
+	{
+		m_fontStage.SetText(m_debuffComment);
+		m_fontStage.SetPosition(-270.0f, 500.0f, 0.0f);
+		m_fontStage.SetScale(0.8f);
+		m_fontStage.SetColor(0, 0, 0, 1);
+		m_fontStage.Draw(rc);
+	}
+
 
 	if (m_isFontVisible) {
 
@@ -916,7 +974,7 @@ void InGameUI::Render(RenderContext& rc) {
 			m_fontBallCount.SetColor(0.0f, 0.0f, 0.0f, 1.0f);
 			m_fontBallCount.Draw(rc);
 
-			
+
 
 			for (int i = 0; i < 5; i++) {
 				if (i < m_ballCount) {
@@ -1045,7 +1103,7 @@ void InGameUI::Render(RenderContext& rc) {
 		if (displayTime > 0.0f) {
 			m_Count.Draw(rc);
 		}
-		
+
 
 		if (isReadyPhase) {
 			m_kakunin.SetPosition(Vector3{ 800.0f, -60.0f, 0.0f });
@@ -1200,7 +1258,7 @@ void InGameUI::Render(RenderContext& rc) {
 			else if (diff == Difficulty::Hard) { // 必要に応じて異なるDifficulty列挙型に合わせてください
 				pDiffSprite = &m_hardSprite;
 			}
-			else if( diff == Difficulty::Tutorial) { // ★ 追加
+			else if (diff == Difficulty::Tutorial) { // ★ 追加
 				pDiffSprite = &m_tutorial;
 			}
 
@@ -1255,5 +1313,5 @@ void InGameUI::Render(RenderContext& rc) {
 		m_spritekuro.Update();
 		m_spritekuro.Draw(rc);
 	}
-	
+
 }
