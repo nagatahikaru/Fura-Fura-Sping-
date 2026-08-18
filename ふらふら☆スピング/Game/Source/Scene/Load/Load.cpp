@@ -131,8 +131,8 @@ void Load::Update()
                 // UIを非表示にする
                 m_grobu.SetMulColor({ 1,1,1,0 });
                 m_B.SetMulColor({ 1,1,1,0 });
-             
-                // ゲームシーンへ遷移
+
+                // 🌟 【ここに先ほどのコードを丸ごと入れます】
                 auto loadUI = FindGO<LoadUI>("loadUI");
                 if (loadUI) DeleteGO(loadUI);
                 NewGO<InGameUI>(0, "inGameUI");
@@ -140,6 +140,8 @@ void Load::Update()
                 Game* game = FindGO<Game>("game");
                 if (game) {
                     game->SetDifficulty(m_difficulty);
+                    // ★ ロードで決まった雨フラグをゲームに引き渡す
+                    game->SetIsRainyFromLoad(m_isRainyResult);
                 }
                 DeleteGO(this);
             }
@@ -190,8 +192,24 @@ void Load::Update()
     case 0:
     {
         auto sky = NewGO<SkyCube>(0, "skyCube");
-        if (sky && m_difficulty == Difficulty::Hard) {
-            sky->SetType(enSkyCubeType_DayToon_4);
+        if (sky) {
+            if (m_difficulty == Difficulty::Hard) {
+                // ★ ロード側で雨を抽選 (0:雨, 1:晴れなど)
+                int r = rand() % 2;
+                if (r == 0) {
+                    m_isRainyResult = true;
+                    sky->SetType(enSkyCubeType_DayToon_4); // 雨用のスカイキューブ
+                }
+                else {
+                    m_isRainyResult = false;
+                    sky->SetType(enSkyCubeType_Day); // 通常（晴れ）用のスカイキューブ
+                }
+            }
+            else {
+                // Hard以外
+                m_isRainyResult = false;
+                sky->SetType(enSkyCubeType_Day);
+            }
         }
         m_gaugeFill.SetMulColor({ 1,1,1,1 });
         m_guL.SetMulColor({ 1, 1, 1, 0 });

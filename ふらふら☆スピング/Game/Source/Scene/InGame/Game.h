@@ -178,7 +178,8 @@ private:
 	uint32_t m_kaze3EffectId = 0;
 	uint32_t m_kaze4EffectId = 0;
 	WindType m_currentWindType = Wind_None;   
-	bool m_isWindActive = false;              
+	bool m_isWindActive = false;       
+	bool m_isRainyFromLoad = false;
 public:
 	Game() {}
 	~Game();
@@ -518,4 +519,5 @@ public:
 
 	WindType GetCurrentWindType() const { return m_currentWindType; }
 	bool GetIsWindActive() const { return m_isWindActive; }
+	void SetIsRainyFromLoad(bool isRainy) { m_isRainyFromLoad = isRainy; }
 };

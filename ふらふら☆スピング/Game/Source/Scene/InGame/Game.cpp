@@ -76,22 +76,17 @@ bool Game::Start()
 
 	m_replayPaths.resize(MAX_SHOTS);
 
-	if (m_difficulty == Difficulty::Hard && g_effectManager) {
-		int r = rand() % 2;   // ★ 4 → 5 に変更（無風を追加、各20%）
-		switch (r) {
-		case 0:
-			m_rainEffectId = g_effectManager->PlayEffect(
-				enEffect_ame,
-				Vector3(0, 30000.0f, 5500.0),   // 頭上あたりの座標（要調整）
-				Vector3(40, 40, 70),
-				Quaternion::Identity
-			);
-			g_soundManager->PlaySE(enSound_SE16);
-			break;
-		case 1:
-			break;
-		}
+	// ★ ロード側で決まった結果（m_isRainyFromLoad）をもとにエフェクトとSEを再生する
+	if (m_difficulty == Difficulty::Hard && m_isRainyFromLoad && g_effectManager) {
+		m_rainEffectId = g_effectManager->PlayEffect(
+			enEffect_ame,
+			Vector3(0, 30000.0f, 5500.0),
+			Vector3(40, 40, 70),
+			Quaternion::Identity
+		);
+		g_soundManager->PlaySE(enSound_SE16);
 	}
+
 	if (m_difficulty == Difficulty::Hard && g_effectManager) {
 		int r = rand() % 5;   // ★ 4 → 5 に変更（無風を追加、各20%）
 		switch (r) {
