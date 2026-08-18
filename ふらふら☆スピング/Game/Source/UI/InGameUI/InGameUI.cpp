@@ -1232,21 +1232,21 @@ void InGameUI::Render(RenderContext& rc) {
 		m_bsuki.Draw(rc);
 	}
 
-	Ball* ball = FindGO<Ball>("ball");
-	if (ball) {
-		Vector3 ballPos = ball->GetPosition();
+	//Ball* ball = FindGO<Ball>("ball");
+	//if (ball) {
+	//	Vector3 ballPos = ball->GetPosition();
 
-		wchar_t ballPosText[128];
-		swprintf_s(ballPosText, 128,
-			L"Ball X:%.1f Y:%.1f Z:%.1f",
-			ballPos.x, ballPos.y, ballPos.z);
+	//	wchar_t ballPosText[128];
+	//	swprintf_s(ballPosText, 128,
+	//		L"Ball X:%.1f Y:%.1f Z:%.1f",
+	//		ballPos.x, ballPos.y, ballPos.z);
 
-		m_fontDebug1.SetText(ballPosText);
-		m_fontDebug1.SetPosition(0.0f, 450.0f, 0.0f); // 画面左下あたり。お好みで調整
-		m_fontDebug1.SetScale(0.8f);
-		m_fontDebug1.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-		m_fontDebug1.Draw(rc);
-	}
+	//	m_fontDebug1.SetText(ballPosText);
+	//	m_fontDebug1.SetPosition(0.0f, 450.0f, 0.0f); 
+	//	m_fontDebug1.SetScale(0.8f);
+	//	m_fontDebug1.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+	//	m_fontDebug1.Draw(rc);
+	//}
 
 	// ★ 黒フェード描画（常に最前面）
 	if (m_fadeAlpha > 0.0f) {
