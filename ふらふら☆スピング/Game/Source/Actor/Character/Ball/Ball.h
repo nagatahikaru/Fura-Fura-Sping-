@@ -10,6 +10,7 @@ private:
 	Vector3 m_throwStartPos = Vector3::Zero;
 	Vector3 m_throwEndPos = Vector3::Zero;
 	Vector3 m_prevPosition;
+	Vector3 m_finalPos;
 
 	float m_rotateSpeed = 7660.0f;
 	float m_rotationAngle = 0.0f;

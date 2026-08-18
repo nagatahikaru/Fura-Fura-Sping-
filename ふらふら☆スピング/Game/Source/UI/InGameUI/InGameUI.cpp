@@ -457,6 +457,26 @@ Vector3 InGameUI::ConvertBall3DToUI(const Vector3& ballPos3D)
 	float uiX = ndcX * (screenW * 0.5f);
 	float uiY = ndcY * (screenH * 0.5f);
 
+	//ボールを赤い枠の中にボールUIを収める
+	const float frameCenterX = 10.0f;
+	const float frameCenterY = -70.0f;
+
+	const float frameWidth = 800.0f;
+	const float frameHeight = 15.0f;
+
+	const float ballHalfSize = 15.0f;
+
+	//赤枠の内側
+	const float minX = frameCenterX - frameWidth * 0.5f + ballHalfSize;
+	const float maxX = frameCenterX + frameWidth * 0.5f - ballHalfSize;
+
+	const float minY = frameCenterY - frameHeight * 0.5f + ballHalfSize;
+	const float maxY = frameCenterY + frameHeight * 0.5f - ballHalfSize;
+
+	//範囲外に出たら赤枠の端で止める
+	uiX = clamp(uiX, minX, maxX);
+	uiY = clamp(uiY, minY, maxY);
+
 	return Vector3{ uiX, uiY, 0.0f };
 }
 
@@ -464,6 +484,10 @@ void InGameUI::FixBallUI(const Vector3& pos3D)
 {
 	m_isBallUIFixed = true;
 	m_fixedBallUIPos = ConvertBall3DToUI(pos3D);
+
+	// 予測点を表示
+	m_hasPredictedBall = true;
+	m_ballAlpha = 1.0f;
 }
 
 void InGameUI::SetMeetCursorPosition(Vector3 m_inputOffset)
