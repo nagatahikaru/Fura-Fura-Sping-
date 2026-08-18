@@ -33,6 +33,35 @@ namespace
             ? 4.0f * t * t * t
             : 1.0f - powf(-2.0f * t + 2.0f, 3.0f) / 2.0f;
     }
+
+    //  角度帯ごとのフェードアウト距離テーブル
+    struct AngleThreshold
+    {
+        float maxAngleDeg;
+        float distance;
+    };
+
+    const AngleThreshold kFadeThresholdTable[] = {
+        { 10.0f, 30000.0f },
+        { 20.0f, 28000.0f },
+        { 30.0f, 24000.0f },
+        { 40.0f, 20000.0f },
+        { 50.0f, 16000.0f },
+        { 60.0f, 12000.0f },
+    };
+
+    float GetThresholdFromTable(float angleDeg)
+    {
+        float absAngle = fabsf(angleDeg);
+        for (const auto& entry : kFadeThresholdTable)
+        {
+            if (absAngle <= entry.maxAngleDeg)
+            {
+                return entry.distance;
+            }
+        }
+        return kFadeThresholdTable[sizeof(kFadeThresholdTable) / sizeof(kFadeThresholdTable[0]) - 1].distance;
+    }
 }
 
 
@@ -259,13 +288,18 @@ void Ball::Update()
                 if (game) {
                     game->SetKmValue(distance);
 
-                    if (!m_hasShownPrediction && distance >= 24000.0f && m_position.y >= 300.0f) {
+                    // ★ 角度を計算して角度帯テーブルからしきい値を取得
+                    float dx = m_position.x - m_hitStartPos.x;
+                    float dz = m_hitStartPos.z - m_position.z;
+                    float angleDeg = atan2f(dx, dz) * (180.0f / 3.14159265f);
+                    float threshold = GetFadeThresholdByAngle(angleDeg);
+
+                    if (!m_hasShownPrediction && distance >= threshold && m_position.y >= 300.0f) {
 
                         float predicted = PredictLandingDistance();
                         m_storedPredictedDistance = predicted;
 
-                        // 🌟 追加：予測距離が 80000.0f（80m）未満の「ボテボテの当たり」ならNiceなどのUIを出さない
-                        if (predicted >= 24000.0f) {
+                        if (predicted >= threshold) {
                             InGameUI* ui = game->GetInGameUI();
                             if (ui) {
                                 ui->ShowPrediction(predicted);
@@ -273,21 +307,17 @@ void Ball::Update()
                             m_hasShownPrediction = true;
                         }
                         else {
-                            // 80m未満のゴロだった場合は、空中での予測表示フラグだけ true にして
-                            // 何度もこのブロックに入らないようにロックだけしておく
                             m_hasShownPrediction = true;
                         }
                     }
 
-                    // ★ 空中で100m超えた瞬間にイベント発火
-                    if (!game->GetHasTriggered100m() && distance >= 25000.0f && m_position.y >= 250.0f) {
+                    // ★ 空中で一定距離超えた瞬間にイベント発火（予測しきい値+1000で発火）
+                    if (!game->GetHasTriggered100m() && distance >= threshold + 1000.0f && m_position.y >= 250.0f) {
                         game->OnOver100m();
                         game->SetHasTriggered100m(true);
                     }
                 }
             }
-
-
 
             // Z>=5500 の固定処理
             if (!m_hasFixed && m_position.z >= 6000.0f) {
@@ -517,6 +547,12 @@ void Ball::ApplyProSpiritsDrop(float dt)
     }
 
     m_position.y = m_pitchStartY - dropOffset;
+}
+
+// 角度帯テーブルからしきい値を取得
+float Ball::GetFadeThresholdByAngle(float angleDeg) const
+{
+    return GetThresholdFromTable(angleDeg);
 }
 
 void Ball::Throw(const Vector3& targetPos)

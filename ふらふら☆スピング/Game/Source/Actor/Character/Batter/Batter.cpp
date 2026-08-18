@@ -576,7 +576,7 @@ void Batter::HitBat()
 	hitDir.y += 21.0f;
 
 	float currentAngleRad = atan2f(hitDir.x, -hitDir.z);
-	constexpr float MAX_ANGLE_DEG = 30.0f;
+	constexpr float MAX_ANGLE_DEG = 60.0f;
 	constexpr float maxAngleRad = nsK2EngineLow::Math::DegToRad(MAX_ANGLE_DEG);
 
 	if (currentAngleRad > maxAngleRad) {

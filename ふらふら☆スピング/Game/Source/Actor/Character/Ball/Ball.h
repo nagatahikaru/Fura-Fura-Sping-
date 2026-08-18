@@ -131,4 +131,6 @@ public:
 
 	// ★ エラー「ApplyProSpiritsDrop」対策として宣言を追加（必要に応じてCPP側に実装してください）
 	void ApplyProSpiritsDrop(float dt);
+
+	float GetFadeThresholdByAngle(float angleDeg) const;
 };
