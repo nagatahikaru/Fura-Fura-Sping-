@@ -14,11 +14,13 @@ namespace nsApp
 		//m_filePathList[CharacterModelType::PicherUniformNumber_0] = GetCharacterModelFilePath("Picher/Picher");
 
 		///* キャッチャーモデル。*/
-		//m_filePathList[CharacterModelType::CatcherUniformNumber_0] = GetCharacterModelFilePath("Catcher/Catcher");
+		m_filePathList[CharacterModelType::CatcherUniformNumber_0] = GetCharacterModelFilePath("Catcher/Catcher");
 
 		/* 装備モデル。*/
 		/* バット。*/
 		m_filePathList[CharacterModelType::Bat] = GetWeaponModelFilePath("Bat/bat");
+		m_filePathList[CharacterModelType::Boll] = GetWeaponModelFilePath("Boll/Boll");
+		m_filePathList[CharacterModelType::Glove] = GetWeaponModelFilePath("Glove/Glove");
 		
 	}
 

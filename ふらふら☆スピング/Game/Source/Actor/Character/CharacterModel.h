@@ -18,11 +18,12 @@ namespace nsApp
 		//PicherUniformNumber_0,		
 
 		///*キャッチャーモデルを定義。*/
-		//CatcherUniformNumber_0,
+		CatcherUniformNumber_0,
 
 		/* モデルを定義。*/
 		Bat,
 		Boll,
+		Glove,
 		Null
 	};
 
@@ -200,33 +201,32 @@ namespace nsApp
 
 
 	private:	
-		std::unordered_map<CharacterModelType, std::string> m_filePathList;		                                               /* モデルIDからファイルパスを文字列に変化。*/
-		std::unique_ptr<ModelRender> m_characterModelRender;                                                                   /* モデルを管理。*/
-		std::unique_ptr<ModelRender> m_weaponModelRender;                                                                      /* 武器モデルを管理。*/
+		std::unordered_map<CharacterModelType, std::string> m_filePathList;	/* モデルIDからファイルパスを文字列に変化。*/
+		std::unique_ptr<ModelRender> m_characterModelRender;                /* モデルを管理。*/
+		std::unique_ptr<ModelRender> m_weaponModelRender;                   /* 武器モデルを管理。*/
 		std::wstring m_attackBoneName;
 
 		/* ファイルパスを定数化するための変数群。*/
-		std::string m_modelFilePath;                                                                                           /* モデルのファイルパスを格納。*/
-		std::string m_characterModelFilePath = "Assets/modelData/";															   /* プレイヤー/NPCモデルのファイルパスを格納。*/
-		std::string m_modelExtension = ".tkm";                                                                                 /* プレイヤー/NPCモデルの拡張子を格納。*/
-		std::string m_weaponModelFilePath = "Assets/modelData/";                                              /* 武器モデルのファイルパスを格納。*/
+		std::string m_modelFilePath;                                        /* モデルのファイルパスを格納。*/
+		std::string m_characterModelFilePath = "Assets/modelData/";			/* プレイヤー/NPCモデルのファイルパスを格納。*/
+		std::string m_modelExtension = ".tkm";								/* プレイヤー/NPCモデルの拡張子を格納。*/
+		std::string m_weaponModelFilePath = "Assets/modelData/";			/* 武器モデルのファイルパスを格納。*/
 
-		//int boneID;                                                                                                            /* ボーンIDを格納。*/
+		//int boneID;                                                       /* ボーンIDを格納。*/
 
 		Quaternion m_matrixRotation;
-		Quaternion m_weaponRotation;                                                                                             /* 武器の回転を管理する変数。*/
+		Quaternion m_weaponRotation;                                        /* 武器の回転を管理する変数。*/
 
-		Matrix m_handMatrix; 																					               /* 武器を装備させるときの右手のボーンの行列を管理する変数。*/
-		Matrix m_rotationMatrix;                                                                                               /* 武器を装備させたときの武器の傾きを制御。*/
+		Matrix m_handMatrix; 												/* 武器を装備させるときの右手のボーンの行列を管理する変数。*/
+		Matrix m_rotationMatrix;                                            /* 武器を装備させたときの武器の傾きを制御。*/
 
-		Vector3 m_xAxis;                                                                                                       /* 武器を装備させるときの右手のボーンの行列から抽出したX軸を管理する変数。*/
-		Vector3 m_yAxis;                                                                                                       /* 武器を装備させるときの右手のボーンの行列から抽出したY軸を管理する変数。*/
-		Vector3 m_zAxis;                                                                                                       /* 武器を装備させるときの右手のボーンの行列から抽出したZ軸を管理する変数。*/
+		Vector3 m_xAxis;                                                    /* 武器を装備させるときの右手のボーンの行列から抽出したX軸を管理する変数。*/
+		Vector3 m_yAxis;                                                    /* 武器を装備させるときの右手のボーンの行列から抽出したY軸を管理する変数。*/
+		Vector3 m_zAxis;                                                    /* 武器を装備させるときの右手のボーンの行列から抽出したZ軸を管理する変数。*/
 		Vector3 m_matrixPosition;
-		Vector3 m_weaponOffset;                                                                                                /* 武器の位置のずれを管理する変数。*/
+		Vector3 m_weaponOffset;                                             /* 武器の位置のずれを管理する変数。*/
 		Vector3 m_offsetPosition; 
-		float m_playSpeed = 1.0f; /* 武器の位置のずれを管理する変数。*/
-		bool m_isWeaponRotasition = false;                                                                                             /* 武器の回転を制御する変数。*/
-		Quaternion m_weaponOffsetRot;
+		float m_playSpeed = 1.0f;											/* 武器の位置のずれを管理する変数。*/
+		bool m_isWeaponRotasition = false;                                  /* 武器の回転を制御する変数。*/
 	};	
 }

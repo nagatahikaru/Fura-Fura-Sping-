@@ -128,10 +128,6 @@ private:
     float m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_NORMAL;
     float m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_NORMAL;
 
-private:
-
-
-
 public:
 
 

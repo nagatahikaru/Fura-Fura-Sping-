@@ -4,56 +4,15 @@
 
 namespace CATCHER {
 	std::string FILE_PATH_CATCHER_AIM = ("Assets/animData/catcher/");
-	std::string FILE_PATH_CATCHER = ("Assets/modelData/Catcher/");
-	std::string FILE_PATH_TKM = (".tkm");
 	std::string FILE_PATH_DDS = (".tka");
-	std::string FILE_PATH = {
-		"Catcher"
-	};
 	std::string FILE_PATH_ANIMATION[1] = {
 		"idle"
 	};
-	inline std::string GetcatcherFilePath()
-	{
-		return FILE_PATH_CATCHER + FILE_PATH + FILE_PATH_TKM;
-	}
+
 
 	inline std::string GetAnimationFilePath(int number)
 	{
 		return FILE_PATH_CATCHER_AIM + FILE_PATH_ANIMATION[number] + FILE_PATH_DDS;
-	}
-
-	/**
-	* モデルの一括初期化処理
-	* ModelRenderの初期化、位置、スケール設定、更新処理をまとめて行う関数
-	* modelRender			初期化するModelRenderのポインタ
-	* m_animationClips		アニメーションクリップの配列
-	* enAnimationClip_Num	アニメーションクリップの数
-	* pos					モデルの位置
-	* scl					モデルのスケール
-	* filePath				モデルデータのファイルパス
-	* 例:
-	* InitModelRender(
-	* 	&m_modelRender[i],
-	* 	m_animationClips,
-	* 	enAnimationClip_Num,
-	* 	Vector3(0.0f, 0.0f, 0.0f),
-	* 	Vector3(1.0f, 1.0f, 1.0f),
-	* 	GetModelFilePath(i));
-	*/
-	void InitModelRender(
-		ModelRender* modelRender
-		, AnimationClip* m_animationClips
-		, int enAnimationClip_Num
-		, const Vector3& pos
-		, const Vector3& scl
-		, const Quaternion& rot
-		, std::string filePath) {
-		modelRender->Init(filePath.c_str(), m_animationClips, enAnimationClip_Num, enModelUpAxisZ);
-		modelRender->SetPosition(pos);
-		modelRender->SetScale(scl);
-		modelRender->SetRotation(rot);
-		modelRender->Update();
 	}
 
 	void LoadAnimationClips(AnimationClip* m_animationClips, int enAnimation, int enAnimationClip_Num)
@@ -64,57 +23,54 @@ namespace CATCHER {
 			m_animationClips[j].SetLoopFlag(true);
 		}
 	}
-
-	/**
-	*  CharacterControllerの初期化処理
-	*  characterController	初期化するCharacterControllerのポインタ
-	*  scale				体の大きさ
-	*  pos					初期位置
-	*  使い方
-	*	InitCharacterController(&m_characterController,
-	*	Vector3(1.0f, 2.0f, 1.0f),
-	*	Vector3(0.0f, 0.0f, 0.0f));
-	*/
-	void InitCharacterController(CharacterController* characterController, const Vector3& scale, const Vector3& pos)
-	{
-		characterController->Init(scale.x, scale.y, pos);
-		characterController->SetCollisionActive(true);
-		characterController->IsOnGround();
-	}
 };
-
 
 Catcher::~Catcher()
 {
-	delete m_collisionObject;
+
 }
 
 bool Catcher::Start()
 {
-	CATCHER::LoadAnimationClips(m_animationClips,enAnimationClip_Idle, enAnimationClip_Num);
-	
-	Quaternion rot = m_transform.m_rotation;
-	rot.AddRotationY(Math::DegToRad(180.0f));
-	m_transform.m_rotation = rot;	
+	CATCHER::LoadAnimationClips(m_animationClips, enAnimationClip_Idle, enAnimationClip_Num);
 
-	CATCHER::InitModelRender(
-		&m_modelRender,
+
+	// インスタンスの生成
+	m_characterModel = std::make_unique<nsApp::CharacterModel>();
+
+	// ※ animationClip と numClips は環境に合わせて適切な値を渡してください
+	m_characterModel->LoadCharacterModel(
+		nsApp::CharacterModelType::CatcherUniformNumber_0,
 		m_animationClips,
-		enAnimationClip_Num,
-		CATCHER::CatcherBasicSettings::INITIAL_COORDINATE,
-		CATCHER::CatcherBasicSettings::INITIAL_SCALE,
-		m_transform.m_rotation,
-		CATCHER::GetcatcherFilePath());
-	
-	CATCHER::InitCharacterController(&m_characterController,
-		CATCHER::CatcherBasicSettings::COLLISION_SCALE,
-		CATCHER::CatcherBasicSettings::INITIAL_COORDINATE);
+		enAnimationClip_Num);
 
-	m_collisionObject = new CollisionObject;
-	m_collisionObject->CreateBox(
-		CATCHER::CatcherBasicSettings::INITIAL_COORDINATE,
-		Quaternion::Identity,
-		CATCHER::CatcherBasicSettings::COLLISION_SCALE);
+	// 2. 武器（グローブ）の読み込み
+	m_characterModel->LoadWeaponModel(nsApp::CharacterModelType::Glove);
+
+	// 3. アタッチするボーンの設定とオフセットの調整
+	m_characterModel->SetWeaponAttackBone(L"mixamorig:RightHand"); // 実際のボーン名に合わせる
+	m_characterModel->SetWeaponOffset(CATCHER::GLOVE::OFFSET_GLOVE);
+	
+
+	m_transform.m_position = CATCHER::CatcherBasicSettings::INITIAL_COORDINATE;
+	Quaternion rot = m_transform.m_rotation;
+	rot.AddRotationY(Math::DegToRad(CATCHER::CatcherBasicSettings::INITIAL_ROTATION_Y));
+	m_transform.m_rotation = rot;
+
+	Quaternion rotWeapon = m_rotWeapon;
+	rotWeapon.AddRotationX(Math::DegToRad(30.0f));
+	rotWeapon.AddRotationZ(Math::DegToRad(75.0f));
+	m_rotWeapon = rotWeapon;
+
+
+	// 4. 初期位置やスケールの設定
+	m_characterModel->SetPosition(m_transform.m_position);
+	m_characterModel->SetCharacterScale(CATCHER::CatcherBasicSettings::INITIAL_SCALE);
+	m_characterModel->SettRotation(m_transform.m_rotation);
+	m_characterModel->SetWeaponScale(CATCHER::GLOVE::INITIAL_SCALE);
+	m_characterModel->SetWeaponRotation(m_rotWeapon);
+
+	m_characterModel->Update();
 
 	m_ball = FindGO<Ball>("ball");
 	m_game = FindGO<Game>("game");
@@ -126,7 +82,7 @@ void Catcher::Update()
 {
 	if (m_isPaused) return;
 
-	if(m_game==nullptr)
+	if (m_game == nullptr)
 	{
 		m_game = FindGO<Game>("game");
 		return;
@@ -140,7 +96,7 @@ void Catcher::Update()
 
 void Catcher::Catch()
 {
-	if(m_collisionObject->IsHit(m_ball->GetCollisionObject()))
+	if (m_collisionObject->IsHit(m_ball->GetCollisionObject()))
 	{
 		m_game->OnBallLanded();
 	}
@@ -148,14 +104,15 @@ void Catcher::Catch()
 
 void Catcher::PlayeAnimation(int animationNo)
 {
-	m_modelRender.PlayAnimation(animationNo);
+	if (m_characterModel)
+		m_characterModel->PlayAnimation(animationNo, 0.2f);
 }
 
 void Catcher::Render(RenderContext& rc)
 {
 	if (m_game == nullptr)
 	{
-		m_game= FindGO<Game>("game");
+		m_game = FindGO<Game>("game");
 		return;
 	}
 	if (m_game->GetCameraType() == 0)
@@ -163,5 +120,6 @@ void Catcher::Render(RenderContext& rc)
 		return;
 	}
 	//モデルの描画
-	m_modelRender.Draw(rc);
+
+	m_characterModel->DrawCharacterModel(rc);
 }
