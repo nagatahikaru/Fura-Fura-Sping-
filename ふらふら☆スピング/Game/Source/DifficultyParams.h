@@ -1,23 +1,32 @@
-// DifficultyParams.h
+ï»¿// DifficultyParams.h
 #pragma once
-#include "Source/Scene/InGame/Game.h" // Difficulty enum ‚ğg‚¤‚½‚ß
+#include "Source/Scene/InGame/Game.h" // Difficulty enum ã‚’ä½¿ã†ãŸã‚
 
 struct DifficultyParams
 {
     // Ball
-	float ballBaseSpeed;// “Š‹…‚ÌŠî–{‘¬“x
-	float ballGravity;// “Š‹…‚Ìd—Í
-	int   magicBallChancePercent;// –‚‹…‚ÌoŒ»Šm—¦i“j
-	float controlAccuracy; // ƒRƒ“ƒgƒ[ƒ‹¸“xiƒ‰ƒ“ƒ_ƒ€ƒ^[ƒQƒbƒg¶¬—pj
-	int   pitchCount; // “Š‹…”
+	float ballBaseSpeed;// æŠ•çƒã®åŸºæœ¬é€Ÿåº¦
+	float ballGravity;// æŠ•çƒã®é‡åŠ›
+	int   magicBallChancePercent;// é­”çƒã®å‡ºç¾ç¢ºç‡ï¼ˆï¼…ï¼‰
+	float controlAccuracy; // ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ç²¾åº¦ï¼ˆãƒ©ãƒ³ãƒ€ãƒ ã‚¿ãƒ¼ã‚²ãƒƒãƒˆç”Ÿæˆç”¨ï¼‰
+	int   pitchCount; // æŠ•çƒæ•°
     // Game
-	float replayDuration;// ƒŠƒvƒŒƒC‚ÌÄ¶ŠÔi•bj
-	int   guruguruSEInterval;// ‚®‚é‚®‚éSE‚ğ–Â‚ç‚·ŠÔŠui‚®‚é‚®‚é‚Ì‰ñ”j
+	float replayDuration;// ãƒªãƒ—ãƒ¬ã‚¤ã®å†ç”Ÿæ™‚é–“ï¼ˆç§’ï¼‰
+	int   guruguruSEInterval;// ãã‚‹ãã‚‹SEã‚’é³´ã‚‰ã™é–“éš”ï¼ˆãã‚‹ãã‚‹ã®å›æ•°ï¼‰
     // Batter
-    float meatRangeMultiplier; // ƒ~[ƒg”ÍˆÍ‚Ì”{—¦
-    int   adjacentFrames;      // ‘OŒã”»’èƒtƒŒ[ƒ€
+    float meatRangeMultiplier; // ãƒŸãƒ¼ãƒˆç¯„å›²ã®å€ç‡
+    int   adjacentFrames;      // å‰å¾Œåˆ¤å®šãƒ•ãƒ¬ãƒ¼ãƒ 
 };
 
+/*
+* é›£æ˜“åº¦ã«å¿œã˜ãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¿”ã™é–¢æ•°
+* å‘¼ã³å‡ºã—æ–¹
+* cppãƒ•ã‚¡ã‚¤ãƒ«ã®å…ˆé ­ã«#include "Source/DifficultyParams.h"ã‚’è¿½åŠ ã—ã¦ã‹ã‚‰
+* ä¸‹è¨˜ã®ã‚ˆã†ã«å‘¼ã³å‡ºã™
+* const DifficultyParams& params = GetDifficultyParams(Difficulty::Easy);
+* ã€€ã€€ã€€ã€€ã€€ã€€ã€€ (â†“çŸ¢å°ä½¿ã„ãŸã„å¤‰æ•°)
+* ä½¿ã„æ–¹ã¯params.ballBaseSpeedãªã©ã§ã‚¢ã‚¯ã‚»ã‚¹å¯èƒ½
+*/
 inline const DifficultyParams& GetDifficultyParams(Difficulty diff)
 {
     static const DifficultyParams table[4] = {		
