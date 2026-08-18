@@ -182,6 +182,7 @@ public:
 	void SetBatterSide(bool isLeft);
 	void SetPause(bool isPaused);
 	void SetPredictedBallPos(const Vector3& pos3D);
+	void HitBallUI();
 	Vector3 ConvertBall3DToUI(const Vector3& pos3D);
 	void FixBallUI(const Vector3& pos3D);
 	void SetMeetCursorPosition(Vector3 m_inputOffset);
@@ -217,7 +218,7 @@ public:
 	void SetCursorScale(float distance)
 	{
 		m_meetCursorScale = distance;
-	};
+	}
 	float m_perfectAnimTimer = 0.0f;
 	bool  m_isPerfectAnimActive = false;
 	void SetGameInstance(Game* game) { m_game = game; }
@@ -225,7 +226,6 @@ public:
 	{
 		m_debuffComment = comment;
 	}
-	void HitBallUI();
 	void ResetMissFlags();
 	void ResetFade();
 	private:

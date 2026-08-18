@@ -319,16 +319,15 @@ void Ball::Update()
                 }
             }
 
-            // Z>=5500 の固定処理
-            if (!m_hasFixed && m_position.z >= 6000.0f) {
-                if (game) {
-                    InGameUI* ui = game->GetInGameUI();
-                    if (ui) {
-                        ui->FixBallUI(m_position);
-                    }
-                }
-                m_hasFixed = true;
-            }
+            //// Z>=5500 の固定処理
+            //if (!m_hasFixed && m_position.z >= 5500.0f) {
+            //        InGameUI* ui = game->GetInGameUI();
+            //        if (ui) {
+            //            ui->FixBallUI(m_finalPos);
+            //        }
+            //    
+            //    m_hasFixed = true;
+            //}
 
             // ★ ストライク判定（Z が 7000 を超えた瞬間）
             if (!m_hasPlayedSE6 && m_position.z >= 7270.0f) {
@@ -485,7 +484,9 @@ void Ball::Update()
     if (game) {
         InGameUI* ui = game->GetInGameUI();
         if (ui) {
-            ui->SetPredictedBallPos(m_position);
+            Vector3 uiPos = m_position;
+
+            ui->SetPredictedBallPos(m_finalPos);
         }
     }
 
@@ -520,8 +521,7 @@ void Ball::Slider(float dt)
     }
     else
     {
-        float driftSpeed = 4.0f;
-        m_position.x += driftSpeed * dir * dt;
+        m_position.x = targetX;
     }
 }
 
@@ -686,8 +686,8 @@ void Ball::Throw(const Vector3& targetPos)
      
     //投球コースをランダムに散らす(ワールド座標基準)
     {
-        const float frameCenterX = 10.0f;
-        const float targetHalfW = 30.0f;  //ここの数値で散らばりの幅を調整
+        const float frameCenterX = 5.0f;
+        const float targetHalfW = 15.0f;  //ここの数値で散らばりの幅を調整
         float randOffsetX = ((rand() % 2001) / 1000.0f - 1.0f) * targetHalfW;
         m_pitchTargetX = m_throwStartPos.x + randOffsetX;
     }
@@ -695,6 +695,63 @@ void Ball::Throw(const Vector3& targetPos)
     // ★ リプレイ記録開始（投球開始時）
     m_replayPath.clear();
     m_isRecording = true;
+
+    //投げた瞬間にボールの到達予定位置を計算
+    m_finalPos = m_throwStartPos;
+
+    const float finalZ = 5500.0f;
+
+    //投球コースの最終位置
+    float finalX = m_pitchTargetX;
+
+    //予測点の左右位置の調整
+    finalX += 7.0f;
+
+    if (m_pitchTargetX < m_throwStartPos.x)
+    {
+        finalX += 3.0f;
+    }
+
+    //スローボールの時の補正
+    if (m_ballType == SlowBall)
+    {
+        finalX += 1.0f;
+    }
+    //変化球の最終的な変化を反映
+    if (m_ballType == Curve)
+    {
+        finalX += m_curveDir * m_breakAmount;
+    }
+    else if (m_ballType == ShakeHorizontal)
+    {
+        finalX += sinf(finalZ * 0.01f) * 3.0f;
+    }
+
+    //縦方向
+    float finalY = m_pitchStartY;
+
+    if (m_ballType == ShakeVertical)
+    {
+        finalY += sinf(finalZ * 0.008f) * 8.0f;
+    }
+
+    //最終位置
+    m_finalPos = Vector3{
+        finalX,
+        finalY,
+        finalZ
+    };
+
+    //投球開始時点でUIを最終到達位置に固定
+    if (game)
+    {
+        InGameUI* ui = game->GetInGameUI();
+
+        if (ui)
+        {
+            ui->FixBallUI(m_finalPos);
+        }
+    }
 
     // ★ 投げた瞬間の Z を UI に送る（必須）
     if (game) {
