@@ -201,7 +201,7 @@ void GameCamera::Update() {
             Vector3 toDesired = desiredPos - m_cameraPos;
             float distToDesired = toDesired.Length();
 
-            float maxSpeed = 13.0f; // 1フレームあたりの最大移動量
+            float maxSpeed = m_replayZoomMaxSpeed;  // 1フレームあたりの最大移動量
             if (distToDesired > 0.001f) {
                 Vector3 dirNorm = toDesired;
                 dirNorm.Normalize();

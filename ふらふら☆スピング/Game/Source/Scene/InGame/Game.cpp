@@ -70,6 +70,10 @@ bool Game::Start()
 	const DifficultyParams& p = GetDifficultyParams(m_difficulty);
 	m_maxShots = p.pitchCount;
 
+	if (m_gameCamera) {
+		m_gameCamera->SetReplayZoomMaxSpeed(p.replayZoomMaxSpeed);
+	}
+
 	m_replayPaths.resize(MAX_SHOTS);
 
 	if (m_difficulty == Difficulty::Hard && g_effectManager) {
