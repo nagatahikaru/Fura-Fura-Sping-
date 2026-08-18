@@ -28,6 +28,7 @@ public:
 	void FreezeCamera();
 	void UnfreezeCamera();   
 	void StartReplayZoomToBall();
+	void SetReplayZoomMaxSpeed(float speed) { m_replayZoomMaxSpeed = speed; }
 private:
 	/*Vector3 m_cameraPos;
 	float m_angle;*/
@@ -59,6 +60,6 @@ private:
 	float   m_replayZoomTimer = 0.0f;
 	float   m_replayZoomDuration = 5.0f;
 	Vector3 m_replayZoomStartTarget;   // ★ ズーム開始時点のtarget保存用
-
+	float m_replayZoomMaxSpeed = 13.0f;
 };
 

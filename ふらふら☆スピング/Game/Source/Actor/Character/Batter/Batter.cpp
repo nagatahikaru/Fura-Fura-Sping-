@@ -191,7 +191,7 @@ void Batter::setDifficultyVariables()
 	case Difficulty::Hard:
 		m_meatRange = m_meatRange*2.0f;
 		m_adjacentFrames = 6;
-		m_difficultyPowerScale = 1.0f;
+		m_difficultyPowerScale = 1.15f;
 		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_HARD;
 		m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_HARD;
 		m_isDifficultyConfigured = true;
