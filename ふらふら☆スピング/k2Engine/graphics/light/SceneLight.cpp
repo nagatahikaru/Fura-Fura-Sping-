@@ -1,11 +1,11 @@
-#include "k2EnginePreCompile.h"
+ï»¿#include "k2EnginePreCompile.h"
 #include "graphics/light/SceneLight.h"
 #include "graphics/light/VolumeSpotLight.h"
 
 namespace nsK2Engine {
     void SPointLight::Update()
     {
-        // g—p’†‚Ìƒ‰ƒCƒg‚ÍƒJƒƒ‰‹óŠÔ‚Å‚ÌÀ•W‚ğŒvZ‚·‚éB
+        // ä½¿ç”¨ä¸­ã®ãƒ©ã‚¤ãƒˆã¯ã‚«ãƒ¡ãƒ©ç©ºé–“ã§ã®åº§æ¨™ã‚’è¨ˆç®—ã™ã‚‹ã€‚
         if (!isUse) {
             return;
         }
@@ -14,7 +14,7 @@ namespace nsK2Engine {
     }
     void SSpotLight::Update()
     {
-        // g—p’†‚Ìƒ‰ƒCƒg‚ÍƒJƒƒ‰‹óŠÔ‚Å‚ÌÀ•W‚ğŒvZ‚·‚éB
+        // ä½¿ç”¨ä¸­ã®ãƒ©ã‚¤ãƒˆã¯ã‚«ãƒ¡ãƒ©ç©ºé–“ã§ã®åº§æ¨™ã‚’è¨ˆç®—ã™ã‚‹ã€‚
         if (!isUse) {
             return;
         }
@@ -24,54 +24,55 @@ namespace nsK2Engine {
         cameraRotInv.Inverse();
         cameraRotInv.Apply(directionInView);
     }
+
     void SceneLight::Init()
     {
-        // ‘¾—zŒõ
-        m_light.directionalLight[0].color.x = 1.2f;//Ô
-		m_light.directionalLight[0].color.y = 1.2f;//—Î
-		m_light.directionalLight[0].color.z = 1.2f;//Â
+        // å¤ªé™½å…‰
+        m_light.directionalLight[0].color.x = 1.3f;//èµ¤
+		m_light.directionalLight[0].color.y = 1.15f;//ç·‘
+		m_light.directionalLight[0].color.z = 0.9f;//é’
 
-		m_light.directionalLight[0].direction.x = 1.0f;//x²•ûŒü‚©‚çŒõ‚ª“–‚½‚é
-		m_light.directionalLight[0].direction.y = -1.0f;//y²•ûŒü‚©‚çŒõ‚ª“–‚½‚é
-		m_light.directionalLight[0].direction.z = -1.0f;//x²•ûŒü‚©‚çŒõ‚ª“–‚½‚é
-		m_light.directionalLight[0].direction.Normalize();//³‹K‰»
-		m_light.directionalLight[0].castShadow = true;//‰e‚ğ—‚Æ‚·
+		m_light.directionalLight[0].direction.x = 0.8f;//xè»¸æ–¹å‘ã‹ã‚‰å…‰ãŒå½“ãŸã‚‹
+		m_light.directionalLight[0].direction.y = -0.5f;//yè»¸æ–¹å‘ã‹ã‚‰å…‰ãŒå½“ãŸã‚‹
+		m_light.directionalLight[0].direction.z = -0.4f;//xè»¸æ–¹å‘ã‹ã‚‰å…‰ãŒå½“ãŸã‚‹
+		m_light.directionalLight[0].direction.Normalize();//æ­£è¦åŒ–
+		m_light.directionalLight[0].castShadow = true;//å½±ã‚’è½ã¨ã™
 
-        //
-      /*  m_light.directionalLight[1].color.x = 1.0f;
-        m_light.directionalLight[1].color.y = 1.0f;
-        m_light.directionalLight[1].color.z = 1.0f;
+        //è£œåŠ©å…‰(é€†å…‰/ãƒªãƒ ãƒ©ã‚¤ãƒˆç”¨) â€” æœ‰åŠ¹åŒ–ã€‚ä¸»å…‰ã¨åå¯¾å´ã‹ã‚‰å¼±ã‚ã«å½“ã¦ã‚‹
+        m_light.directionalLight[1].color.x = 0.35f;
+        m_light.directionalLight[1].color.y = 0.35f;
+        m_light.directionalLight[1].color.z = 0.4f;
 
-        m_light.directionalLight[1].direction.x = -1.0f;
-        m_light.directionalLight[1].direction.y = -1.0f;
-        m_light.directionalLight[1].direction.z = 1.0f;
+        m_light.directionalLight[1].direction.x = -0.6f;
+        m_light.directionalLight[1].direction.y = -0.3f;
+        m_light.directionalLight[1].direction.z = 0.7f;
         m_light.directionalLight[1].direction.Normalize();
         m_light.directionalLight[1].castShadow = false;
 
-        // ’n–Ê‚©‚ç‚ÌÆ‚è•Ô‚µ
-        m_light.directionalLight[2].color.x = 0.6f;
-        m_light.directionalLight[2].color.y = 0.6f;
-        m_light.directionalLight[2].color.z = 0.6f;
+        // åœ°é¢ã‹ã‚‰ã®ç…§ã‚Šè¿”ã—
+        m_light.directionalLight[2].color.x = 0.2f;
+        m_light.directionalLight[2].color.y = 0.22f;
+        m_light.directionalLight[2].color.z = 0.15f;
 
         m_light.directionalLight[2].direction.x = -1.0f;
         m_light.directionalLight[2].direction.y = 1.0f;
         m_light.directionalLight[2].direction.z = 1.0f;
-        m_light.directionalLight[2].direction.Normalize();*/
+        m_light.directionalLight[2].direction.Normalize();
 
-		// ŠÂ‹«Œõ
+		// ç’°å¢ƒå…‰
         m_light.ambinetLight.x = 0.1f;
-		m_light.ambinetLight.y = 0.1f;
-		m_light.ambinetLight.z = 0.1f;
+		m_light.ambinetLight.y = 0.11f;
+		m_light.ambinetLight.z = 0.14f;
         m_light.eyePos = g_camera3D->GetPosition();
         m_light.numPointLight = 0;
 
-        // ‘S‚Ä‚Ìƒ|ƒCƒ“ƒgƒ‰ƒCƒg‚ğ–¢g—p‚É‚·‚é
+        // å…¨ã¦ã®ãƒã‚¤ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã‚’æœªä½¿ç”¨ã«ã™ã‚‹
         for (auto& pt : m_light.pointLights) {
             pt.UnUse();
             pt.SetAffectPowParam(1.0f);
             m_unusePointLightQueue.push_back(&pt);
         }
-        // ‚·‚×‚Ä‚ÌƒXƒ|ƒbƒgƒ‰ƒCƒg‚ğ–¢g—p‚É‚·‚éB
+        // ã™ã¹ã¦ã®ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆã‚’æœªä½¿ç”¨ã«ã™ã‚‹ã€‚
         int spNo = 0;
         for (auto& sp : m_light.spotLights) {
             sp.UnUse();
@@ -80,9 +81,7 @@ namespace nsK2Engine {
             spNo++;
         }
     }
-    
-    
-    
+
     void SceneLight::Update()
     {
         m_light.numPointLight = MAX_POINT_LIGHT - static_cast<int>(m_unusePointLightQueue.size());
