@@ -180,6 +180,8 @@ private:
 	WindType m_currentWindType = Wind_None;   
 	bool m_isWindActive = false;       
 	bool m_isRainyFromLoad = false;
+	SoundSource* m_rainSE = nullptr;
+	SoundSource* m_kazeSE = nullptr;
 public:
 	Game() {}
 	~Game();

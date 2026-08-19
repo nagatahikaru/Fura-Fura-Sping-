@@ -40,6 +40,30 @@ Game::~Game()
 	if (m_kazeEffectId != 0 && g_effectManager) {
 		g_effectManager->StopEffect(m_kazeEffectId);
 	}
+
+	if (m_kaze2EffectId != 0 && g_effectManager) {
+		g_effectManager->StopEffect(m_kaze2EffectId);
+	}
+
+	if (m_kaze3EffectId != 0 && g_effectManager) {
+		g_effectManager->StopEffect(m_kaze3EffectId);
+	}
+
+	if (m_kaze4EffectId != 0 && g_effectManager) {
+		g_effectManager->StopEffect(m_kaze4EffectId);
+	}
+
+	if (m_rainSE) {
+		m_rainSE->Stop();
+		DeleteGO(m_rainSE);
+		m_rainSE = nullptr;
+	}
+
+	if (m_kazeSE) {
+		m_kazeSE->Stop();
+		DeleteGO(m_kazeSE);
+		m_kazeSE = nullptr;
+	}
 }
 
 
@@ -84,7 +108,7 @@ bool Game::Start()
 			Vector3(40, 40, 70),
 			Quaternion::Identity
 		);
-		g_soundManager->PlaySE(enSound_SE16);
+		m_rainSE = g_soundManager->PlaySE(enSound_SE16);
 	}
 
 	if (m_difficulty == Difficulty::Hard && g_effectManager) {
@@ -97,7 +121,7 @@ bool Game::Start()
 				Vector3(40, 40, 70),
 				Quaternion::Identity
 			);
-			g_soundManager->PlaySE(enSound_SE17);
+			m_kazeSE = g_soundManager->PlaySE(enSound_SE17);   // ★変更
 			m_currentWindType = Wind_LeftToRight;
 			break;
 		case 1:
@@ -107,7 +131,7 @@ bool Game::Start()
 				Vector3(40, 40, 70),
 				Quaternion::Identity
 			);
-			g_soundManager->PlaySE(enSound_SE17);
+			m_kazeSE = g_soundManager->PlaySE(enSound_SE17);   // ★変更
 			m_currentWindType = Wind_RightToLeft;
 			break;
 		case 2:
@@ -117,7 +141,7 @@ bool Game::Start()
 				Vector3(40, 40, 70),
 				Quaternion::Identity
 			);
-			g_soundManager->PlaySE(enSound_SE17);
+			m_kazeSE = g_soundManager->PlaySE(enSound_SE17);   // ★変更
 			m_currentWindType = Wind_Tailwind;
 			break;
 		case 3:
@@ -127,7 +151,7 @@ bool Game::Start()
 				Vector3(40, 40, 70),
 				Quaternion::Identity
 			);
-			g_soundManager->PlaySE(enSound_SE17);
+			m_kazeSE = g_soundManager->PlaySE(enSound_SE17);   // ★変更
 			m_currentWindType = Wind_Headwind;
 			break;
 		case 4:
