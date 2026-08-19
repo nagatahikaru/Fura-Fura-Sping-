@@ -882,7 +882,8 @@ void InGameUI::Render(RenderContext& rc) {
 	}
 
 
-	if (m_hasPredictedBall && m_game && m_game->GetDifficulty() != Difficulty::Hard) {
+	if (m_hasPredictedBall && m_game && m_game->GetDifficulty() != Difficulty::Hard
+		&& m_game->GetCameraMode() != Camera_Replay) {
 
 		Vector3 uiPos;
 
