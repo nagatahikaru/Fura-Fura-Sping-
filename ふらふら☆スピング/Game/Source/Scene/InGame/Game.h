@@ -520,4 +520,5 @@ public:
 	WindType GetCurrentWindType() const { return m_currentWindType; }
 	bool GetIsWindActive() const { return m_isWindActive; }
 	void SetIsRainyFromLoad(bool isRainy) { m_isRainyFromLoad = isRainy; }
+	bool GetIsRainy() const { return m_isRainyFromLoad; }
 };
