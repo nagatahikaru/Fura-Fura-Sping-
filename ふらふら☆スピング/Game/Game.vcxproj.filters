@@ -52,9 +52,6 @@
     <Filter Include="Source\UI\InGameUI">
       <UniqueIdentifier>{f4df807b-c9f2-4793-8243-fb57e6a01940}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\UI\ResultUI">
-      <UniqueIdentifier>{f02b0b99-e0db-4825-957c-9293dff3af38}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\UI\TiterUI">
       <UniqueIdentifier>{3c027f7f-e78e-4392-bb52-5102aae0aa37}</UniqueIdentifier>
     </Filter>
@@ -163,9 +160,6 @@
     </ClCompile>
     <ClCompile Include="Source\UI\TiterUI\TiterUI.cpp">
       <Filter>Source\UI\TiterUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UI\ResultUI\ResultUI.cpp">
-      <Filter>Source\UI\ResultUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\UI\InGameUI\InGameUI.cpp">
       <Filter>Source\UI\InGameUI</Filter>
@@ -319,9 +313,6 @@
     </ClInclude>
     <ClInclude Include="Source\UI\TiterUI\TiterUI.h">
       <Filter>Source\UI\TiterUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UI\ResultUI\ResultUI.h">
-      <Filter>Source\UI\ResultUI</Filter>
     </ClInclude>
     <ClInclude Include="Source\UI\InGameUI\InGameUI.h">
       <Filter>Source\UI\InGameUI</Filter>
