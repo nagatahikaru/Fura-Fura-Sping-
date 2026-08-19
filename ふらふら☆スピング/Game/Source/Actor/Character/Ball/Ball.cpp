@@ -84,7 +84,7 @@ bool Ball::Start()
     m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
     m_modelRender.SetScale({ 8.0f,8.0f,8.0f });
 
-    m_position = { -60.0f, 650.0f, 1000.0f };
+    m_position = { -60.0f, 600.0f,-100.0f };
     m_throwStartPos = m_position;
     m_throwEndPos = m_position;
     m_modelRender.SetPosition(m_position);
