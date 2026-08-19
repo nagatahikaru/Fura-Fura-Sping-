@@ -203,7 +203,7 @@ void Ball::Update()
         if (m_hasHit && game->GetIsWindActive())
         {
             float baseX = game->GetIsRainy() ? 1.2f : 1.0f; //雨、晴れの順
-            float baseZ = game->GetIsRainy() ? -0.8f : -0.6f; //雨、晴れの順
+            float baseZ = game->GetIsRainy() ? -0.7f : -0.5f; //雨、晴れの順
 
             const float kWindPowerX = baseX * (1.0f + 0.001f * m_position.y);
             const float kWindPowerZ = baseZ * (1.0f + 0.001f * m_position.y);
@@ -903,7 +903,7 @@ float Ball::PredictLandingDistance()
     WindType windType = game->GetCurrentWindType();
 
     float baseX = game->GetIsRainy() ? 1.2f : 1.0f;
-    float baseZ = game->GetIsRainy() ? -0.8f : -0.6f;
+    float baseZ = game->GetIsRainy() ? -0.7f : -0.5f;
 
     const float kWindPowerX = baseX * (1.0f + 0.001f * m_position.y);
     const float kWindPowerZ = baseZ * (1.0f + 0.001f * m_position.y);
