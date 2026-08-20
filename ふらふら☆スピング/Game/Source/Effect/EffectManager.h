@@ -29,6 +29,7 @@ enum EffectType {
 	enEffect_kaze03,
 	enEffect_kaze04,
 	enEffect_inazuma,
+	enEffect_CloudOfDust,
 	enEffect_Num
 };
 
@@ -166,6 +167,7 @@ private:
 		u"kaze03",
 		u"kaze04",
 		u"inazuma",
+		u"Cloud of dust",
 	};
 
 	std::unordered_map<uint32_t, EffectEmitter*> m_effects;					//effectÇ÷ÇÃéQè∆ÅB
