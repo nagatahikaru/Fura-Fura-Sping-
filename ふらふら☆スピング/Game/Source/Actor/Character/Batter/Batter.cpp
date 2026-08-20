@@ -167,7 +167,7 @@ void Batter::setDifficultyVariables()
 	case Difficulty::Tutorial:
 		m_meatRange = m_meatRange * 3.0f;
 		m_adjacentFrames = 8;
-		m_difficultyPowerScale = 0.70f;
+		m_difficultyPowerScale = 0.60f;
 		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_EASY;
 		m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_EASY;
 		m_isDifficultyConfigured = true;
@@ -175,7 +175,7 @@ void Batter::setDifficultyVariables()
 	case Difficulty::Easy:
 		m_meatRange = m_meatRange*3.0f;
 		m_adjacentFrames = 8;
-		m_difficultyPowerScale = 0.70f;
+		m_difficultyPowerScale = 0.60f;
 		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_EASY;
 		m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_EASY;
 		m_isDifficultyConfigured = true;
@@ -183,7 +183,7 @@ void Batter::setDifficultyVariables()
 	case Difficulty::Normal:
 		m_meatRange = m_meatRange*2.5f;
 		m_adjacentFrames = 7;
-		m_difficultyPowerScale = 0.9f;
+		m_difficultyPowerScale = 0.8f;
 		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_NORMAL;
 		m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_NORMAL;
 		m_isDifficultyConfigured = true;

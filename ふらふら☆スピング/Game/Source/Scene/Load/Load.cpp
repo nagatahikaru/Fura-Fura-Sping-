@@ -144,8 +144,8 @@ void Load::Update()
                 Game* game = FindGO<Game>("game");
                 if (game) {
                     game->SetDifficulty(m_difficulty);
-                    // ★ ロードで決まった雨フラグをゲームに引き渡す
-                    game->SetIsRainyFromLoad(m_isRainyResult);
+                    // ★ ロードで決まった天候をゲームに引き渡す
+                    game->SetWeatherType(m_weatherResult);
                 }
                 DeleteGO(this);
             }
@@ -199,45 +199,47 @@ void Load::Update()
         auto sceneLight = FindGO<SceneLight>("sceneLight");
 
         if (sky) {
-            bool isRainy = false;
+            bool isRainy = false; // ライト演出の分岐用（小雨・大雨どちらもtrue扱い）
+
             if (m_difficulty == Difficulty::Hard) {
-                int r = rand() % 2;
-                if (r == 0) {
-                    m_isRainyResult = true;
+                int r = rand() % 100; // 0〜99
+
+                if (r < 40) {
+                    m_weatherResult = WeatherType::Sunny;
+                    isRainy = false;
+                    sky->SetType(enSkyCubeType_Day);
+                }
+                else if (r < 80) {
+                    m_weatherResult = WeatherType::LightRain;
                     isRainy = true;
-                    sky->SetType(enSkyCubeType_DayToon_4); // 雨用のスカイキューブ
+                    sky->SetType(enSkyCubeType_DayToon_4);
                 }
                 else {
-                    m_isRainyResult = false;
-                    sky->SetType(enSkyCubeType_Day); // 通常（晴れ）用のスカイキューブ
+                    m_weatherResult = WeatherType::HeavyRain;
+                    isRainy = true;
+                    sky->SetType(enSkyCubeType_DayToon_4); // 大雨用の別スカイキューブがあれば差し替え可
                 }
             }
             else {
-                m_isRainyResult = false;
+                m_weatherResult = WeatherType::Sunny;
                 sky->SetType(enSkyCubeType_Day);
             }
 
             // ライトのカラーと環境光を天候に合わせて切り替える
             if (sceneLight != nullptr) {
                 if (isRainy) {
-                    // 【雨の場合】
-                    // 1. ディレクショナルライト[0]を暗く、少し青みがかった色にする
-                    // （※元の方向ベクトルは Init 時のもの、あるいは現在のものを維持または適宜指定）
                     sceneLight->SetDirectionLight(
                         0,
-                        Vector3(1.0f, 1.0f, -1.0f), // 既存の方向
-                        Vector3(0.05f, 0.06f, 0.09f)   // 雨用の青暗いカラー
+                        Vector3(1.0f, 1.0f, -1.0f),
+                        Vector3(0.05f, 0.06f, 0.09f)
                     );
-
-                    // 2. 環境光を落として全体の陰影を重くする
                     sceneLight->SetAmbinet(Vector3(0.002f, 0.002f, 0.004f));
                 }
                 else {
-                    // 【通常の晴れの場合】
                     sceneLight->SetDirectionLight(
                         0,
                         Vector3(1.0f, -1.0f, -1.0f),
-                        Vector3(1.2f, 1.2f, 1.2f)    // 通常の明るさ
+                        Vector3(1.2f, 1.2f, 1.2f)
                     );
                     sceneLight->SetAmbinet(Vector3(0.1f, 0.1f, 0.1f));
                 }
