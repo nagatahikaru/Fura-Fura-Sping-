@@ -103,7 +103,7 @@ bool Game::Start()
 	// ★ ロード側で決まった結果（m_isRainyFromLoad）をもとにエフェクトとSEを再生する
 	if (m_difficulty == Difficulty::Hard && m_isRainyFromLoad && g_effectManager) {
 		m_rainEffectId = g_effectManager->PlayEffect(
-			enEffect_ame,
+			enEffect_ame2,
 			Vector3(0, 30000.0f, 5500.0),
 			Vector3(40, 40, 70),
 			Quaternion::Identity
