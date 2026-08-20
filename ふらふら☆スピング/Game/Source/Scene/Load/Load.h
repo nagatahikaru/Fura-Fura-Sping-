@@ -36,5 +36,5 @@ private:
     float m_timer;
     bool m_isHappened = false; // ‰‰o‚ª”­¶‚µ‚½‚©‚Ç‚¤‚©‚ğ‹L˜^
     int m_luckyImage = 0;      // 0:‚È‚µ, 1:‚±‚¯‰æ‘œ, 2:‚µ‚è‚à‚¿‰æ‘œ
-    bool m_isRainyResult = false;
+    WeatherType m_weatherResult = WeatherType::Sunny;
 };

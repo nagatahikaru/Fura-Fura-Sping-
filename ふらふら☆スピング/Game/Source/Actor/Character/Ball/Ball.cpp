@@ -47,7 +47,7 @@ namespace
         { 30.0f, 24000.0f },
         { 40.0f, 20000.0f },
         { 50.0f, 16000.0f },
-        { 60.0f, 12000.0f },
+        { 60.0f, 14000.0f },
     };
 
     float GetThresholdFromTable(float angleDeg)
@@ -202,8 +202,24 @@ void Ball::Update()
         // ★ 風の影響（Hardのみ、打った後の打球にだけ適用）
         if (m_hasHit && game->GetIsWindActive())
         {
-            float baseX = game->GetIsRainy() ? 1.2f : 1.0f; //雨、晴れの順
-            float baseZ = game->GetIsRainy() ? -0.7f : -0.5f; //雨、晴れの順
+            float baseX = 1.0f;
+            float baseZ = -0.5f;
+
+            switch (game->GetWeatherType())
+            {
+            case WeatherType::Sunny:
+                baseX = 1.0f;
+                baseZ = -0.5f;
+                break;
+            case WeatherType::LightRain:
+                baseX = 1.1f;
+                baseZ = -0.6f;
+                break;
+            case WeatherType::HeavyRain:
+                baseX = 1.2f;
+                baseZ = -0.7f;
+                break;
+            }
 
             const float kWindPowerX = baseX * (1.0f + 0.001f * m_position.y);
             const float kWindPowerZ = baseZ * (1.0f + 0.001f * m_position.y);
@@ -924,8 +940,24 @@ float Ball::PredictLandingDistance()
     bool windActive = game->GetIsWindActive();
     WindType windType = game->GetCurrentWindType();
 
-    float baseX = game->GetIsRainy() ? 1.2f : 1.0f;
-    float baseZ = game->GetIsRainy() ? -0.7f : -0.5f;
+    float baseX = 1.0f;
+    float baseZ = -0.5f;
+
+    switch (game->GetWeatherType())
+    {
+    case WeatherType::Sunny:
+        baseX = 1.0f;
+        baseZ = -0.5f;
+        break;
+    case WeatherType::LightRain:
+        baseX = 1.1f;
+        baseZ = -0.6f;
+        break;
+    case WeatherType::HeavyRain:
+        baseX = 1.2f;
+        baseZ = -0.7f;
+        break;
+    }
 
     while (pos.y > 0.0f) {
 

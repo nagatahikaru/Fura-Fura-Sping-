@@ -100,70 +100,135 @@ bool Game::Start()
 
 	m_replayPaths.resize(MAX_SHOTS);
 
-	// ★ ロード側で決まった結果（m_isRainyFromLoad）をもとにエフェクトとSEを再生する
-	if (m_difficulty == Difficulty::Hard && m_isRainyFromLoad && g_effectManager) {
-		m_rainEffectId = g_effectManager->PlayEffect(
-			enEffect_ame2,
-			Vector3(0, 30000.0f, 5500.0),
-			Vector3(40, 40, 70),
-			Quaternion::Identity
-		);
-		m_rainSE = g_soundManager->PlaySE(enSound_SE16);
+	// ★ ロード側で決まった天候（m_weatherType）をもとにエフェクトとSEを再生する
+	if (m_difficulty == Difficulty::Hard && g_effectManager) {
+
+		if (m_weatherType == WeatherType::LightRain) {
+			// 小雨：ame（小ぶり）
+			m_rainEffectId = g_effectManager->PlayEffect(
+				enEffect_ame,
+				Vector3(0, 30000.0f, 5500.0),
+				Vector3(40, 40, 70),
+				Quaternion::Identity
+			);
+			m_rainSE = g_soundManager->PlaySE(enSound_SE16);
+		}
+		else if (m_weatherType == WeatherType::HeavyRain) {
+			// 大雨：ame2（大降り）
+			m_rainEffectId = g_effectManager->PlayEffect(
+				enEffect_ame2,
+				Vector3(0, 30000.0f, 5500.0),
+				Vector3(40, 40, 70),
+				Quaternion::Identity
+			);
+			m_rainSE = g_soundManager->PlaySE(enSound_SE16);
+		}
+		// Sunny の場合は何もしない
 	}
 
 	if (m_difficulty == Difficulty::Hard && g_effectManager) {
-		int r = rand() % 5;   // ★ 4 → 5 に変更（無風を追加、各20%）
-		switch (r) {
-		case 0:
-			m_kazeEffectId = g_effectManager->PlayEffect(
-				enEffect_kaze,
-				Vector3(0, 0.0f, 5000.0),
-				Vector3(40, 40, 70),
-				Quaternion::Identity
-			);
-			m_kazeSE = g_soundManager->PlaySE(enSound_SE17);   // ★変更
-			m_currentWindType = Wind_LeftToRight;
-			break;
-		case 1:
-			m_kaze2EffectId = g_effectManager->PlayEffect(
-				enEffect_kaze2,
-				Vector3(0, 0.0f, 5000.0),
-				Vector3(40, 40, 70),
-				Quaternion::Identity
-			);
-			m_kazeSE = g_soundManager->PlaySE(enSound_SE17);   // ★変更
-			m_currentWindType = Wind_RightToLeft;
-			break;
-		case 2:
-			m_kaze3EffectId = g_effectManager->PlayEffect(
-				enEffect_kaze3,
-				Vector3(0, 0.0f, 2000.0),
-				Vector3(40, 40, 70),
-				Quaternion::Identity
-			);
-			m_kazeSE = g_soundManager->PlaySE(enSound_SE17);   // ★変更
-			m_currentWindType = Wind_Tailwind;
-			break;
-		case 3:
-			m_kaze4EffectId = g_effectManager->PlayEffect(
-				enEffect_kaze4,
-				Vector3(0, 0.0f, 2000.0),
-				Vector3(40, 40, 70),
-				Quaternion::Identity
-			);
-			m_kazeSE = g_soundManager->PlaySE(enSound_SE17);   // ★変更
-			m_currentWindType = Wind_Headwind;
-			break;
-		case 4:
-			// ★ 無風：エフェクトもSEも鳴らさず、風タイプだけ設定
-			m_currentWindType = Wind_None;
-			m_isWindActive = false;   // ★ 無風なので風フラグをOFFに
-			break;
-		}
 
-		// ★ 無風以外のときだけ風を有効化する（case4は上で既にfalseにしている）
-		if (r != 4) {
-			m_isWindActive = true;
+		if (m_weatherType == WeatherType::HeavyRain) {
+			// ★ 大雨のときだけ kaze01〜04（無風なし、4種均等）
+			int r = rand() % 4;
+			switch (r) {
+			case 0:
+				m_kazeEffectId = g_effectManager->PlayEffect(
+					enEffect_kaze01,
+					Vector3(0, 0.0f, 5000.0),
+					Vector3(40, 40, 70),
+					Quaternion::Identity
+				);
+				m_kazeSE = g_soundManager->PlaySE(enSound_SE17);
+				m_currentWindType = Wind_LeftToRight;
+				break;
+			case 1:
+				m_kaze2EffectId = g_effectManager->PlayEffect(
+					enEffect_kaze02,
+					Vector3(0, 0.0f, 5000.0),
+					Vector3(40, 40, 70),
+					Quaternion::Identity
+				);
+				m_kazeSE = g_soundManager->PlaySE(enSound_SE17);
+				m_currentWindType = Wind_RightToLeft;
+				break;
+			case 2:
+				m_kaze3EffectId = g_effectManager->PlayEffect(
+					enEffect_kaze03,
+					Vector3(0, 0.0f, 2000.0),
+					Vector3(40, 40, 70),
+					Quaternion::Identity
+				);
+				m_kazeSE = g_soundManager->PlaySE(enSound_SE17);
+				m_currentWindType = Wind_Tailwind;
+				break;
+			case 3:
+				m_kaze4EffectId = g_effectManager->PlayEffect(
+					enEffect_kaze04,
+					Vector3(0, 0.0f, 2000.0),
+					Vector3(40, 40, 70),
+					Quaternion::Identity
+				);
+				m_kazeSE = g_soundManager->PlaySE(enSound_SE17);
+				m_currentWindType = Wind_Headwind;
+				break;
+			}
+
+			m_isWindActive = true;   // ★ 大雨は無風なしなので常にON
+		}
+		else {
+			// ★ 晴れ・小雨は従来通り（kaze〜kaze4、無風あり20%）
+			int r = rand() % 5;
+			switch (r) {
+			case 0:
+				m_kazeEffectId = g_effectManager->PlayEffect(
+					enEffect_kaze,
+					Vector3(0, 0.0f, 5000.0),
+					Vector3(40, 40, 70),
+					Quaternion::Identity
+				);
+				m_kazeSE = g_soundManager->PlaySE(enSound_SE17);
+				m_currentWindType = Wind_LeftToRight;
+				break;
+			case 1:
+				m_kaze2EffectId = g_effectManager->PlayEffect(
+					enEffect_kaze2,
+					Vector3(0, 0.0f, 5000.0),
+					Vector3(40, 40, 70),
+					Quaternion::Identity
+				);
+				m_kazeSE = g_soundManager->PlaySE(enSound_SE17);
+				m_currentWindType = Wind_RightToLeft;
+				break;
+			case 2:
+				m_kaze3EffectId = g_effectManager->PlayEffect(
+					enEffect_kaze3,
+					Vector3(0, 0.0f, 2000.0),
+					Vector3(40, 40, 70),
+					Quaternion::Identity
+				);
+				m_kazeSE = g_soundManager->PlaySE(enSound_SE17);
+				m_currentWindType = Wind_Tailwind;
+				break;
+			case 3:
+				m_kaze4EffectId = g_effectManager->PlayEffect(
+					enEffect_kaze4,
+					Vector3(0, 0.0f, 2000.0),
+					Vector3(40, 40, 70),
+					Quaternion::Identity
+				);
+				m_kazeSE = g_soundManager->PlaySE(enSound_SE17);
+				m_currentWindType = Wind_Headwind;
+				break;
+			case 4:
+				m_currentWindType = Wind_None;
+				m_isWindActive = false;
+				break;
+			}
+
+			if (r != 4) {
+				m_isWindActive = true;
+			}
 		}
 	}
 
@@ -230,6 +295,35 @@ void Game::Update()
 	if (m_InGameUI) {
 		m_InGameUI->SetBallCount(m_maxShots - m_shots);
 		//m_InGameUI->SetBallCount(3 - m_shots);
+	}
+
+	// ★ 雷を一定間隔（5〜10秒のランダム）で発生させる（大雨のときのみ）
+	if (m_difficulty == Difficulty::Hard && m_weatherType == WeatherType::HeavyRain && g_effectManager) {
+		m_thunderTimer += g_gameTime->GetFrameDeltaTime();
+		if (m_thunderTimer >= m_thunderInterval) {
+			m_thunderTimer = 0.0f;
+
+			m_thunderInterval = 5.0f + static_cast<float>(rand() % 6); // 5.0〜10.0
+
+			Vector3 thunderPos;
+			int r = rand() % 10;
+			if (r == 0) {
+				float randX = static_cast<float>(rand() % 2001) - 2000.0f;
+				float randZ = static_cast<float>(rand() % 1001) - 100.0f;
+				thunderPos = Vector3(randX, 0.0f, randZ);
+			}
+			else {
+				float randX = static_cast<float>(rand() % 10001) - 5000.0f;
+				thunderPos = Vector3(randX, 2000.0f, -5000.0);
+			}
+
+			g_effectManager->PlayEffect(
+				enEffect_inazuma,
+				thunderPos,
+				Vector3(40, 40, 70),
+				Quaternion::Identity
+			);
+		}
 	}
 
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止

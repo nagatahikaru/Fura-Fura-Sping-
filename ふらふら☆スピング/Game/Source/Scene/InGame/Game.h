@@ -29,6 +29,12 @@ enum WindType
 	Wind_Headwind,       // 向かい風
 };
 
+enum class WeatherType {
+	Sunny,      // 晴れ
+	LightRain,  // 小雨（ame）
+	HeavyRain   // 大雨（ame2）
+};
+
 class Game : public Source
 {
 private:
@@ -173,15 +179,19 @@ private:
 
 	// === エフェクト ===
 	uint32_t m_rainEffectId = 0; 
+	uint32_t m_inazumaEffectId = 0;
 	uint32_t m_kazeEffectId = 0;
 	uint32_t m_kaze2EffectId = 0;
 	uint32_t m_kaze3EffectId = 0;
 	uint32_t m_kaze4EffectId = 0;
-	WindType m_currentWindType = Wind_None;   
+	WindType m_currentWindType = Wind_None; 
+	WeatherType m_weatherType = WeatherType::Sunny;
 	bool m_isWindActive = false;       
 	bool m_isRainyFromLoad = false;
 	SoundSource* m_rainSE = nullptr;
 	SoundSource* m_kazeSE = nullptr;
+	float m_thunderTimer = 0.0f;      // 雷の発生間隔用タイマー
+	float m_thunderInterval = 0.0f;   // 何秒おきに雷を落とすか（お好みで調整）
 public:
 	Game() {}
 	~Game();
@@ -520,6 +530,8 @@ public:
 	void StartHitGlance(float duration);
 
 	WindType GetCurrentWindType() const { return m_currentWindType; }
+	void SetWeatherType(WeatherType type) { m_weatherType = type; }
+	WeatherType GetWeatherType() const { return m_weatherType; }
 	bool GetIsWindActive() const { return m_isWindActive; }
 	void SetIsRainyFromLoad(bool isRainy) { m_isRainyFromLoad = isRainy; }
 	bool GetIsRainy() const { return m_isRainyFromLoad; }
