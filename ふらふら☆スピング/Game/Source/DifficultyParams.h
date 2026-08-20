@@ -31,9 +31,9 @@ struct DifficultyParams
 inline const DifficultyParams& GetDifficultyParams(Difficulty diff)
 {
     static const DifficultyParams table[4] = {
-        /* Easy    */ { 1300.0f, 4.0f,  0, 0.3f,3, 5.0f, 7, 13.0f,  3.0f, 8 },
-        /* Normal  */ { 1500.0f, 9.5f,  0, 0.5f,3, 4.0f, 5, 16.0f, 2.0f, 5 },
-        /* Hard    */ { 2000.0f, 25.0f, 10,1.0f,3, 3.0f, 3, 19.0f, 1.0f, 2 },
+        /* Easy    */ { 1300.0f, 4.0f,  0, 0.3f,3, 5.5f, 7, 13.0f,  3.0f, 8 },
+        /* Normal  */ { 1500.0f, 9.5f,  0, 0.5f,3, 4.5f, 5, 16.0f, 2.0f, 5 },
+        /* Hard    */ { 2000.0f, 25.0f, 10,1.0f,3, 3.5f, 3, 19.0f, 1.0f, 2 },
         /* Tutorial*/ { 1300.0f, 4.0f,  0, 0.1f,5, 5.0f, 7, 8.0f,  3.0f, 8 },
     };
     return table[diff];

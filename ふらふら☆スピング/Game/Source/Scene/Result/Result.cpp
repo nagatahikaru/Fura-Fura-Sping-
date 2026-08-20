@@ -65,7 +65,7 @@ bool Result::Start()
 		m_isFadingSE2 = false;
 	}
 	else {
-		m_se2Volume = 3.0f;
+		m_se2Volume = 2.0f;
 		m_isFadingSE2 = true;
 	}
 
@@ -360,7 +360,7 @@ void Result::Render(RenderContext& rc)
 		m_fontGuruguru.Draw(rc);
 
 		// --- 下の行：計算式（距離 × 倍率） ---
-		swprintf_s(buf, L"最終スコア = %.2fm * %ls倍", m_displayKm / 100.0f, mulBuf);
+		swprintf_s(buf, L"最終スコア = %.2fポイント * %ls倍", m_displayKm / 100.0f, mulBuf);
 		m_fontFormula.SetText(buf);
 		m_fontFormula.SetPosition(-630, 40, 0);
 		m_fontFormula.SetColor(1, 1, 1, 1);
