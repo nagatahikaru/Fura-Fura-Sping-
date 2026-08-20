@@ -297,6 +297,25 @@ void Game::Update()
 		//m_InGameUI->SetBallCount(3 - m_shots);
 	}
 
+
+	{
+		//ぐるぐる旋回の開始・終了を検知してカメラの演出を切り替える
+		bool isRotationSeen = (m_batter && m_batter->GetRotationSeen());
+
+		if (isRotationSeen && !m_hasStartedGuruIntroCamera) {
+			//旋回が始まった瞬間に1回だけ呼ぶ
+			if (m_gameCamera) {
+				m_gameCamera->StartGuruGuruIntroCamera();
+			}
+			m_hasStartedGuruIntroCamera = true;
+		}
+		else if (!isRotationSeen && m_hasStartedGuruIntroCamera) {
+			//旋回が終わった瞬間に元のカメラへ戻す
+			if (m_gameCamera) {
+				m_gameCamera->SetCatcherCamera();
+			}
+			m_hasStartedGuruIntroCamera = false;
+
 	// ★ 雷を一定間隔（5〜10秒のランダム）で発生させる（大雨のときのみ）
 	if (m_difficulty == Difficulty::Hard && m_weatherType == WeatherType::HeavyRain && g_effectManager) {
 		m_thunderTimer += g_gameTime->GetFrameDeltaTime();
@@ -579,9 +598,14 @@ void Game::Update()
 		return; // 注視中は他のカメラ切り替えロジックを止める
 	}
 
+
+
 	switch (m_cameraMode) {
 	case Camera_Catcher:
-		m_gameCamera->SetCatcherCamera();
+		//m_gameCamera->SetCatcherCamera();
+		if (!(m_batter && m_batter->GetRotationSeen())) {
+			m_gameCamera->SetCatcherCamera();
+		}
 		break;
 
 	case Camera_Replay:

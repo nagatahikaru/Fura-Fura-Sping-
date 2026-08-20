@@ -1,12 +1,13 @@
-#pragma once
+ï»¿#pragma once
 class Ball;
 class  Catcher;
 enum FollowMode {
-	Follow_None,   // ’Ç”ö‚µ‚È‚¢i‰¡ƒJƒƒ‰j
-	Follow_Back,   // Œã‚ë‚©‚ç’Ç”ö
-	Follow_Side,    // ‰¡‚©‚çŒ©‚éiŒÅ’èj
+	Follow_None,   // è¿½å°¾ã—ãªã„ï¼ˆæ¨ªã‚«ãƒ¡ãƒ©ï¼‰
+	Follow_Back,   // å¾Œã‚ã‹ã‚‰è¿½å°¾
+	Follow_Side,    // æ¨ªã‹ã‚‰è¦‹ã‚‹ï¼ˆå›ºå®šï¼‰
 	Follow_ImpactGlance,
-	Follow_ReplayZoom
+	Follow_ReplayZoom,
+	Follow_GuruGuruIntro
 };
 class GameCamera:public IGameObject
 {
@@ -21,7 +22,7 @@ public:
 	void SetFollowBallBackCamera();
 	void SetkakuteiCamera();
 	void SetImpactGlanceCamera();
-	// š ƒ{[ƒ‹‚ğƒZƒbƒg‚·‚éŠÖ”
+	// â˜… ãƒœãƒ¼ãƒ«ã‚’ã‚»ãƒƒãƒˆã™ã‚‹é–¢æ•°
 	void SetBall(Ball* ball) { m_ball = ball; }
 	void SetCatcher(Catcher* catcher) { m_catcher = catcher; }
 	void StartHitMomentCamera();
@@ -29,6 +30,7 @@ public:
 	void UnfreezeCamera();   
 	void StartReplayZoomToBall();
 	void SetReplayZoomMaxSpeed(float speed) { m_replayZoomMaxSpeed = speed; }
+	void StartGuruGuruIntroCamera();
 private:
 	/*Vector3 m_cameraPos;
 	float m_angle;*/
@@ -40,26 +42,35 @@ private:
 	Quaternion m_rot;
 	Vector3 m_forward;
 	float m_moveSpeed = 10.0f;
-	float m_yaw = 0.0f;   // ¶‰E‰ñ“]Šp“x
+	float m_yaw = 0.0f;   // å·¦å³å›è»¢è§’åº¦
 	float m_rotSpeed = 1.0f;
-	float m_pitch = 0.0f;   // ã‰º‰ñ“]Šp“x
+	float m_pitch = 0.0f;   // ä¸Šä¸‹å›è»¢è§’åº¦
 	FontRender m_fontrender;
 	float m_viewAngle = Math::DegToRad(0.0f);
-	// ššš ‚±‚ê‚ª–³‚¢‚©‚çƒGƒ‰[‚É‚È‚Á‚Ä‚¢‚½ ššš
-	Ball* m_ball = nullptr;        // ƒ{[ƒ‹‚Ö‚Ìƒ|ƒCƒ“ƒ^
+	// â˜…â˜…â˜… ã“ã‚ŒãŒç„¡ã„ã‹ã‚‰ã‚¨ãƒ©ãƒ¼ã«ãªã£ã¦ã„ãŸ â˜…â˜…â˜…
+	Ball* m_ball = nullptr;        // ãƒœãƒ¼ãƒ«ã¸ã®ãƒã‚¤ãƒ³ã‚¿
 	Catcher* m_catcher = nullptr;
-	bool m_isFollowBall = false;   // ’Ç”öƒ‚[ƒhƒtƒ‰ƒO
+	bool m_isFollowBall = false;   // è¿½å°¾ãƒ¢ãƒ¼ãƒ‰ãƒ•ãƒ©ã‚°
 	FollowMode m_followMode = Follow_None;
 	bool m_isHitMoment = false;
 	float m_hitMomentTimer = 0.0f;
 	Vector3 m_frozenPos = Vector3::Zero;
 	Vector3 m_frozenTarget = Vector3::Zero;
 	bool m_isFrozen = false;
-	Vector3 m_replayZoomStartPos;   // ƒY[ƒ€ŠJn‚ÌƒJƒƒ‰ˆÊ’u
+	Vector3 m_replayZoomStartPos;   // ã‚ºãƒ¼ãƒ é–‹å§‹æ™‚ã®ã‚«ãƒ¡ãƒ©ä½ç½®
 	bool    m_replayZoomActive = false;
 	float   m_replayZoomTimer = 0.0f;
 	float   m_replayZoomDuration = 5.0f;
-	Vector3 m_replayZoomStartTarget;   // š ƒY[ƒ€ŠJn“_‚Ìtarget•Û‘¶—p
+	Vector3 m_replayZoomStartTarget;   // â˜… ã‚ºãƒ¼ãƒ é–‹å§‹æ™‚ç‚¹ã®targetä¿å­˜ç”¨
 	float m_replayZoomMaxSpeed = 13.0f;
+
+	float m_guruIntroTimer = 0.0f;
+	float m_guruIntroDuration = 5.0f;
+	float m_guruIntroStartYaw = 0.0f;
+	float m_guruIntroStartPitch = 0.0f;
+	float m_guruIntroStartZoom = 0.0f;
+	float m_guruIntroEndYaw = 0.0f;
+	float m_guruIntroEndPitch = 0.0f;
+	float m_guruIntroEndZoom = 0.0f;
 };
 
