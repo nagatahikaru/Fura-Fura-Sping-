@@ -57,6 +57,11 @@ private:
 	bool m_isDifficultyConfigured = false;
 
 	float m_dropStartRatioOverride;
+
+	bool m_isRolling = false;              // ★ 追加：着地後、転がっている最中かどうか
+	static constexpr float kRollingFriction = 200.0f;   // ★ 追加：転がり中の減速量（速度/秒）
+	static constexpr float kRollingStopSpeed = 30.0f;   // ★ 追加：これ未満の速度で完全停止
+
 	float m_pitchStartY = 0.0f; // ★ エラー対策で追加
 	Vector3 m_targetPos = Vector3::Zero; // ★ エラー対策で追加
 

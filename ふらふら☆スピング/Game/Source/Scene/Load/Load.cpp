@@ -11,8 +11,12 @@
 #include "Source/Actor/Character/Ball/Ball.h"
 #include "Source/Actor/Character/Catcher/Catcher.h"
 #include"Source/UI/LoadUI/LoadUI.h"
+#include <cstdlib>  
+#include <ctime>    
+
 bool Load::Start()
 {
+    srand(static_cast<unsigned int>(time(nullptr)));
     // 背景
     m_spriteRender.Init("Assets/sprite/siro.dds", 1920.0f, 1080.0f);
     m_guruguru.Init("Assets/sprite/guruguru.dds", 500.f, 500.0f);

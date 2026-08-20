@@ -123,7 +123,7 @@ void Ball::Update()
         if (!game->IsGameStarted()) return;
         if (game->GetIsHitStop()) return;
         if (game->GetIsPaused()) return;
-        if (game->GetIsInputLocked()) return;
+        if (game->GetIsInputLocked() && !m_isRolling) return;
         if (game->GetShouldContinueTutorial()) return;
         float dt = (1.0f / 60.0f) * game->GetTimeScale();
 
@@ -233,7 +233,7 @@ void Ball::Update()
 
             // 2. スローボールかつ打撃前で、バッター手前に来たら一時変数の速度だけを半分にする
           // スローボールかつ打撃前で、バッター手前に来たときの処理
-            if (!m_hasHit && m_ballType == SlowBall)
+            if (!m_hasHit && !m_isRolling && m_ballType == SlowBall)
             {
                 if (m_position.z >= 5450.0f && m_position.z < 6500.0f)
                 {
@@ -250,7 +250,7 @@ void Ball::Update()
             m_position += currentFrameVelocity * dt;
             m_throwEndPos = m_position;
 
-            if (!m_hasHit)
+            if (!m_hasHit && !m_isRolling)
             {
                 //ランダムで決めたコース(m_pitchTargetX)へ向けての位置を補正
                 float minZ = 1000.0f;
@@ -352,7 +352,7 @@ void Ball::Update()
             }
 
             // ★ 空振り判定（打撃ゾーンを通過したら次へ）
-            if (!m_hasHit && m_position.z > 9000.0f) {
+            if (!m_hasHit && !m_isRolling && m_position.z > 9000.0f) {
                 Game* game = FindGO<Game>("game");
                 if (game) {
                     game->SetIsInputLocked(true);
@@ -371,36 +371,58 @@ void Ball::Update()
             if (m_position.y <= 0.0f)
             {
                 m_position.y = 0.0f;
-                m_isMove = false;
 
                 Game* game = FindGO<Game>("game");
-                if (game) {
-                    float finalDistance = 0.0f;
-                    InGameUI* ui = game->GetInGameUI();
 
-                    if (m_hasHit) {
+                // ★ 初回着地時（まだ着地イベントを発行していない場合）だけ距離計算とイベント発火
+                if (m_hasHit)
+                {
+                    if (game) {
+                        float finalDistance = 0.0f;
+                        InGameUI* ui = game->GetInGameUI();
+
                         if (m_hasShownPrediction) {
-                            // すでに空中ですごい当たり（Nice以上）の予測UIが出ている場合
                             finalDistance = m_storedPredictedDistance;
                         }
                         else {
-                            // ★空中で予測が出なかった場合（ボテボテのゴロなど）
                             float dz = m_position.z - m_hitStartPos.z;
-                            finalDistance = -dz; // 実際の着地距離を計算
+                            finalDistance = -dz;
 
-                            // 🌟 着地した瞬間に、ゴロ用としてUIをキックする！
                             if (ui) {
-                                // UI側に新しく作った Prediction_Goro などのタイプを渡す
-                                // （もしShowPredictionにタイプを渡せない構造なら、ui->ShowGoroPrediction(finalDistance) のような専用関数を作ってもOKです）
                                 ui->ShowPrediction(finalDistance);
                             }
                         }
-                        m_hasHit = false;
+
+                        game->SetKmValue(finalDistance);
+                        game->OnBallLanded();
                     }
 
-                    // 確実にゲーム側に最終飛距離をセットして着地イベントを呼ぶ
-                    game->SetKmValue(finalDistance);
-                    game->OnBallLanded();
+                    m_hasHit = false;
+                    m_velocity.y = 0.0f;   // ★ 着地したら上下速度は消す（跳ねない）
+                    m_isRolling = true;    // ★ ここから転がり処理へ
+                }
+
+                // ★ 転がり中：水平速度を摩擦で少しずつ減衰させる
+                if (m_isRolling)
+                {
+                    float horizSpeed = sqrtf(m_velocity.x * m_velocity.x + m_velocity.z * m_velocity.z);
+
+                    if (horizSpeed > kRollingStopSpeed)
+                    {
+                        float newSpeed = horizSpeed - kRollingFriction * dt;
+                        if (newSpeed < 0.0f) newSpeed = 0.0f;
+
+                        float scale = (horizSpeed > 0.0001f) ? (newSpeed / horizSpeed) : 0.0f;
+                        m_velocity.x *= scale;
+                        m_velocity.z *= scale;
+                    }
+                    else
+                    {
+                        // 十分遅くなったので完全停止
+                        m_velocity = Vector3::Zero;
+                        m_isMove = false;
+                        m_isRolling = false;
+                    }
                 }
             }
 
@@ -905,13 +927,15 @@ float Ball::PredictLandingDistance()
     float baseX = game->GetIsRainy() ? 1.2f : 1.0f;
     float baseZ = game->GetIsRainy() ? -0.7f : -0.5f;
 
-    const float kWindPowerX = baseX * (1.0f + 0.001f * m_position.y);
-    const float kWindPowerZ = baseZ * (1.0f + 0.001f * m_position.y);
     while (pos.y > 0.0f) {
 
         vel.y -= gravity * dt;
 
         if (windActive) {
+            // ★ ここで毎回、シミュレーション中の pos.y を使って計算し直す
+            const float kWindPowerX = baseX * (1.0f + 0.001f * pos.y);
+            const float kWindPowerZ = baseZ * (1.0f + 0.001f * pos.y);
+
             switch (windType)
             {
             case Wind_LeftToRight: vel.x += kWindPowerX * dt; break;
@@ -947,6 +971,7 @@ void Ball::ResetBall()
     m_hasThrowOnce = false;
     m_ballType = Straight;
     m_curveDir = 0;
+    m_isRolling = false;
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
     if (game) {
