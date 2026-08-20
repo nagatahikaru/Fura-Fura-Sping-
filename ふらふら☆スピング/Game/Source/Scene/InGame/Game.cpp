@@ -315,6 +315,8 @@ void Game::Update()
 				m_gameCamera->SetCatcherCamera();
 			}
 			m_hasStartedGuruIntroCamera = false;
+		}
+	}
 
 	// ★ 雷を一定間隔（5〜10秒のランダム）で発生させる（大雨のときのみ）
 	if (m_difficulty == Difficulty::Hard && m_weatherType == WeatherType::HeavyRain && g_effectManager) {
