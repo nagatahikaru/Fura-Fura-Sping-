@@ -82,6 +82,7 @@ private:
     EnAnimationClip m_setAnimation = enAnimationClip_Idle;              // 現在アニメーション    
     Transform m_transform;                                              // トランスフォーム    
     Quaternion m_initialRotation;                                       // 初期回転
+	Quaternion m_rotation;                                              // 回転
 
     Vector3 m_facingDir = Vector3(1.0f, 0.0f, 0.0f);                    // プレイヤーの向き
     Vector3 m_meetPosition;                                             // ミート位置    
@@ -112,6 +113,7 @@ private:
     float m_prevAngle = 0.0f;                                           // 前回角度    
     float m_guruGuruBatTimer = 0.0f;                                    // 回転タイマー    
     float m_totalRotation = 0.0f;                                       // 総回転量
+	float m_inputAngle = 0.0f;                                          // 入力角度
 
     int m_guruGuruBatCount = 0;                                         // 回転回数
 	int m_adjacentFrames = 0;                                           // 前後フレームの値
@@ -123,6 +125,11 @@ private:
 
         // ヒットエフェクト
         uint32_t m_effectHitID;
+
+		// 土煙エフェクト
+        uint32_t m_effectCloudID;
+
+		float m_cloudEffectCount = 0; // 土煙エフェクトの数
     };
     EffectInfo m_inro;                                                  // エフェクト情報
     float m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_NORMAL;
@@ -436,6 +443,9 @@ public:
     // エフェクト更新
     void DownArrowEffect();
 
+	// 土煙エフェクト
+    void CloudofdustEffect(Vector3 pos);
+
     // 接地判定
     const bool GetIsOnGround() const
     {
@@ -502,4 +512,8 @@ public:
         return m_isPaused;
     }
 
+    Vector3 GetPosition() const
+    {
+        return m_modelPos;
+	}
 };

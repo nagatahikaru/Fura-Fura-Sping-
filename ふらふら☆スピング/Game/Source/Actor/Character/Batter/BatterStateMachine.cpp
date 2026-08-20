@@ -123,11 +123,12 @@ void BatterRotationState::Enter()
 
 void BatterRotationState::Update()
 {
-	Batter* batter = GetBatter();	
+	Batter* batter = GetBatter();
 	batter->Rotation();
 	batter->RotationUpdate();
 	batter->RoundAndRoundBat();
 	batter->AnimationUpdate();
+	batter->CloudofdustEffect(batter->GetPosition());
 }
 
 void BatterRotationState::Exit()

@@ -296,7 +296,6 @@ void Batter::Rotation()
 
 	m_modelPos = m_bodyCenter; // 位置は中心固定
 
-
 	//////////////////////////
 	//コントローラー操作
 	//右スティックの入力量を取得
@@ -304,12 +303,12 @@ void Batter::Rotation()
 	stickL.x = g_pad[0]->GetLStickXF();
 	stickL.y = g_pad[0]->GetLStickYF();
 
-	float inputAngle = atan2f(stickL.y, stickL.x); // 入力角度を計算
+	m_inputAngle = atan2f(stickL.y, stickL.x); // 入力角度を計算
 
 	// 入力角度に基づいてバッターの位置を更新
-	m_modelPos.x = m_bodyCenter.x + BATTER::ROTATION_RADIUS * cosf(inputAngle);
+	m_modelPos.x = m_bodyCenter.x + BATTER::ROTATION_RADIUS * cosf(m_inputAngle);
 	m_modelPos.y = m_bodyCenter.y;
-	m_modelPos.z = m_bodyCenter.z + BATTER::ROTATION_RADIUS * sinf(inputAngle);
+	m_modelPos.z = m_bodyCenter.z + BATTER::ROTATION_RADIUS * sinf(m_inputAngle);
 
 	// バッターの位置を更新
 	Vector3 toCenter = m_bodyCenter - m_modelPos;
@@ -393,23 +392,22 @@ void Batter::RotationUpdate()
 {
 	//　フラグが立っているときは回転を適用、そうでないときは初期回転に戻す
 	if (m_isRotation)
-	{	
+	{
 		float yaw = atan2f(m_facingDir.x, m_facingDir.z);
 
 		// 90度補正
 		yaw += Math::DegToRad(90.0f);
 
-		Quaternion rot;
-		rot.SetRotationY(yaw);
+		
+		m_rotation.SetRotationY(yaw);
 		m_characterModel->SetPosition(m_modelPos);
-		m_characterModel->SettRotation(rot);
+		m_characterModel->SettRotation(m_rotation);
 
 		Quaternion weaponrot;
 		weaponrot.SetRotationDeg(BATTER::BAT::ROTATION_ANGLE, 230.0f);
 		m_characterModel->SetWeaponRotation(true);
 		m_characterModel->SetWeaponRotation(weaponrot);
 		m_characterModel->SetWeaponPosition(Vector3(m_transform.m_position.x, m_transform.m_position.y + BATTER::BAT::HEIGHT_OFFSET, m_transform.m_position.z));
-	
 	}
 	else
 	{
@@ -417,10 +415,8 @@ void Batter::RotationUpdate()
 		m_characterModel->SetPosition(m_transform.m_position);
 		m_characterModel->SetWeaponRotation(false);
 	}
-	
 	m_characterModel->Update();
 }
-
 
 /** カーソル関連コード */
 
@@ -691,7 +687,7 @@ void Batter::DownArrowEffect()
 {	
 	if (m_guruGuruBatCount < 3) return;
 
-	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)){		
+	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)){
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
 	
@@ -712,11 +708,29 @@ void Batter::HitEffect(Vector3 pos)
 {
 	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectHitID)) {
 		return; // すでにエフェクトが再生中なら新たに出さない
-	}	
+	}
 	m_inro.m_effectHitID = g_effectManager->PlayEffect(
 		enEffect_HitBat,
 		pos,
 		Vector3(30.0f, 30.0f, 30.0f));
+}
+
+void Batter::CloudofdustEffect(Vector3 pos)
+{
+	if (m_inputAngle <= 0.0f)
+	{
+		// 角度が0以下の場合はエフェクトを出さない
+		return;
+	}
+	if (m_inro.m_cloudEffectCount>0.5) {
+		m_inro.m_cloudEffectCount = 0.0f;
+		return; // すでにエフェクトが再生中なら新たに出さない
+	}
+	m_inro.m_effectCloudID = g_effectManager->PlayEffect(
+		enEffect_CloudOfDust,
+		pos,
+		Vector3(70.0f, 20.0f, 70.0f));
+	m_inro.m_cloudEffectCount += g_gameTime->GetFrameDeltaTime();
 }
 
 /** 計算関連コード */
