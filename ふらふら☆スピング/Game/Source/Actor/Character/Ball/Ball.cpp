@@ -930,9 +930,9 @@ float Ball::PredictLandingDistance()
     float gravity = 0.0f;
     switch (currentDifficulty)
     {
-    case Tutorial: gravity = 5.5f; break;
-    case Easy:     gravity = 5.5f; break;
-    case Normal:   gravity = 9.5f; break;
+    case Tutorial: gravity = 2.5f; break;
+    case Easy:     gravity = 2.5f; break;
+    case Normal:   gravity = 4.5f; break;
     default:       gravity = 16.0f; break;
     }
 
