@@ -82,7 +82,7 @@ bool Ball::Start()
 
     //モデルの読み込み
     m_modelRender.Init("Assets/modelData/Ball/Ball.tkm");
-    m_modelRender.SetScale({ 8.0f,8.0f,8.0f });
+    m_modelRender.SetScale({ 3.0f,3.0f,3.0f });
 
     m_position = { -60.0f, 600.0f,-100.0f };
     m_throwStartPos = m_position;
@@ -152,14 +152,14 @@ void Ball::Update()
                 if (progress <= dropStartRatio)
                 {
                     //序盤～中盤:重力はほぼ無効化→水平に伸びて見える
-                    gravityScale = 0.5f;
+                    gravityScale = 0.6f;
                 }
                 else
                 {
                     //終盤:一気に重力を強める
                     float t = RemapClamp(progress, dropStartRatio, 1.0f);
                     float easedT = t * t * t;
-                    gravityScale = 0.6f + easedT * 8.0f;
+                    gravityScale = 0.5f + easedT * 5.0f;
                 }
 
                 m_velocity.y -= m_baseGravity * gravityScale * dt;
@@ -167,7 +167,7 @@ void Ball::Update()
             else if (m_initialSpeedZ > 0.0f)
             {
                 float speedMultiplier = m_velocity.z / m_initialSpeedZ;
-                float clamped = fminf(speedMultiplier, 1.6f);
+                float clamped = fminf(speedMultiplier, 1.2f);
                 m_velocity.y -= m_baseGravity * (clamped * clamped) * dt;
             }
             else
@@ -471,8 +471,8 @@ void Ball::Update()
         t = fmaxf(0.0f, fminf(t, 1.0f));
 
         // --- スケール計算 ---
-        float startScale = 8.0f; // ピッチャーリリース時の視認用サイズ（大きい）
-        float finalScale = 5.0f;  // バッター手前での本来のサイズ（小さい）
+        float startScale = 3.5f; // ピッチャーリリース時の視認用サイズ（小さい）
+        float finalScale = 4.5f;  // バッター手前での本来のサイズ（大きい）
 
         // t=0.0(ピッチャー) のときは startScale、t=1.0(バッター) のときは finalScale になる線形補間
         float scale = startScale + (finalScale - startScale) * t;
@@ -619,16 +619,16 @@ void Ball::Throw(const Vector3& targetPos)
     switch (currentDifficulty)
     {
     case Tutorial:
-        baseSpeed = 1500.0f;
-        m_baseGravity = 5.5f;
+        baseSpeed = 1250.0f;
+        m_baseGravity = 2.5f;
         break;
     case Easy:
-        baseSpeed = 1500.0f;
-        m_baseGravity = 5.5f;
+        baseSpeed = 1250.0f;
+        m_baseGravity = 2.5f;
         break;
     case Normal:
-        baseSpeed = 1700.0f;
-        m_baseGravity = 9.0f;
+        baseSpeed = 1500.0f;
+        m_baseGravity = 4.5f;
         break;
     default: //Hard
         baseSpeed = 2000.0f;
