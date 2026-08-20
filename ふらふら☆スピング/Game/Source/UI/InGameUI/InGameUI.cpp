@@ -392,15 +392,13 @@ void InGameUI::SetPredictedBallPos(const Vector3& pos3D) {
 
 	// ★ アルファ値の計算（0.5 = 半透明、0.0 = 完全透明）
 	float alpha = 0.0f;
+	const float kFadeInStart = 0.30f;
 
-	if (t < 0.30f) {
-		// 最初の30%は 0.7f を維持
+	if (t < kFadeInStart) {
 		alpha = 0.0f;
 	}
 	else {
-		// 0.30〜1.0 を 0〜1 に圧縮
-		float u = (t - 0.15f) / 0.85f;
-
+		float u = (t - kFadeInStart) / (1.0f - kFadeInStart);
 		// 二乗でゆっくり立ち上がり、最終的に 0.0f（完全透明）にする
 		// u=0 のとき alpha=0.7f、u=1 のとき alpha=0.0f
 		alpha = u * u;
@@ -762,7 +760,7 @@ void InGameUI::Render(RenderContext& rc) {
 		if (!isSpinning) {
 
 			//赤い枠
-			m_wakuModel.SetPosition(Vector3{ 10.0f, -70.0f, 0.0f });
+			m_wakuModel.SetPosition(Vector3{ 10.0f, -75.0f, 0.0f });
 			m_wakuModel.SetMulColor({ 1,1,1,0.5f });
 			m_wakuModel.Update();
 			m_wakuModel.Draw(rc);
