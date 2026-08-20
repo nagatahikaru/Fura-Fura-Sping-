@@ -232,6 +232,26 @@ void Game::Update()
 		//m_InGameUI->SetBallCount(3 - m_shots);
 	}
 
+	{
+		//ぐるぐる旋回の開始・終了を検知してカメラの演出を切り替える
+		bool isRotationSeen = (m_batter && m_batter->GetRotationSeen());
+
+		if (isRotationSeen && !m_hasStartedGuruIntroCamera) {
+			//旋回が始まった瞬間に1回だけ呼ぶ
+			if (m_gameCamera) {
+				m_gameCamera->StartGuruGuruIntroCamera();
+			}
+			m_hasStartedGuruIntroCamera = true;
+		}
+		else if (!isRotationSeen && m_hasStartedGuruIntroCamera) {
+			//旋回が終わった瞬間に元のカメラへ戻す
+			if (m_gameCamera) {
+				m_gameCamera->SetCatcherCamera();
+			}
+			m_hasStartedGuruIntroCamera = false;
+		}
+	}
+
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止
 	if (FindGO<Start1>("start1") != nullptr) {
 
@@ -485,9 +505,14 @@ void Game::Update()
 		return; // 注視中は他のカメラ切り替えロジックを止める
 	}
 
+
+
 	switch (m_cameraMode) {
 	case Camera_Catcher:
-		m_gameCamera->SetCatcherCamera();
+		//m_gameCamera->SetCatcherCamera();
+		if (!(m_batter && m_batter->GetRotationSeen())) {
+			m_gameCamera->SetCatcherCamera();
+		}
 		break;
 
 	case Camera_Replay:

@@ -523,4 +523,5 @@ public:
 	bool GetIsWindActive() const { return m_isWindActive; }
 	void SetIsRainyFromLoad(bool isRainy) { m_isRainyFromLoad = isRainy; }
 	bool GetIsRainy() const { return m_isRainyFromLoad; }
+	bool m_hasStartedGuruIntroCamera = false;
 };

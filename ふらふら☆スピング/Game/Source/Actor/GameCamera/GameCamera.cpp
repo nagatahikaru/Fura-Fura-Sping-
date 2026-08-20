@@ -133,6 +133,22 @@ void GameCamera::Update() {
         return;   // ← 追尾も回転も一切しない
     }
 
+    //イントロ演出中のyaw/pitchを毎フレーム補間する
+    if (m_followMode == Follow_GuruGuruIntro)
+    {
+        m_guruIntroTimer += g_gameTime->GetFrameDeltaTime();
+        float t = Clamp(m_guruIntroTimer / m_guruIntroDuration, 0.0f, 1.0f);
+
+        m_yaw = m_guruIntroStartYaw;
+        m_pitch = m_guruIntroStartPitch;
+
+        //ズーム
+        float currentZoom = m_guruIntroStartZoom + (m_guruIntroEndZoom - m_guruIntroStartZoom) * t;
+
+        g_camera3D->SetViewAngle(Math::DegToRad(currentZoom));
+
+    }
+
     // --- 回転（Yaw + Pitch） ---
     m_rotYaw.SetRotationDeg(Vector3::AxisY, m_yaw);
 
@@ -248,6 +264,31 @@ void GameCamera::FreezeCamera()
 void GameCamera::UnfreezeCamera()
 {
     m_isFrozen = false;
+}
+
+void GameCamera::StartGuruGuruIntroCamera()
+{
+    //カメラの位置はキャッチャーカメラと同じ場所に固定(位置は動かさない)
+    m_cameraPos = { -50.0f,475.0f,6300.0f };
+
+    //開始角度:斜め右下を見る
+    m_guruIntroStartYaw = 25.0f; //右方向の角度
+    m_guruIntroStartPitch = -20.0;    //下方向の角度
+
+    m_guruIntroEndYaw = 0.0f;
+    m_guruIntroEndPitch = -6.0f;
+
+    //ズーム開始・終了
+    m_guruIntroStartZoom = 50.0f;
+    m_guruIntroEndZoom = 35.0f;
+    m_yaw = m_guruIntroStartYaw;
+    m_pitch = m_guruIntroStartPitch;
+
+    m_guruIntroTimer = 0.0f;
+    m_guruIntroDuration = 5.0f; //ぐるぐる時間に合わせる
+
+    g_camera3D->SetViewAngle(Math::DegToRad(m_guruIntroStartZoom));
+    m_followMode = Follow_GuruGuruIntro;
 }
 
 void GameCamera::Render(RenderContext& rc) {
