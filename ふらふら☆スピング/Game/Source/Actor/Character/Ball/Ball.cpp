@@ -152,14 +152,14 @@ void Ball::Update()
                 if (progress <= dropStartRatio)
                 {
                     //序盤～中盤:重力はほぼ無効化→水平に伸びて見える
-                    gravityScale = 0.6f;
+                    gravityScale = 0.4f;
                 }
                 else
                 {
                     //終盤:一気に重力を強める
                     float t = RemapClamp(progress, dropStartRatio, 1.0f);
                     float easedT = t * t * t;
-                    gravityScale = 0.5f + easedT * 5.0f;
+                    gravityScale = 0.4f + easedT * 6.0f;
                 }
 
                 m_velocity.y -= m_baseGravity * gravityScale * dt;
