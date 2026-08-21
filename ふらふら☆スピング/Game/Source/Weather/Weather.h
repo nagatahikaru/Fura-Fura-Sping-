@@ -70,6 +70,7 @@ private:
 
     SoundSource* m_rainSE = nullptr;
     SoundSource* m_kazeSE = nullptr;
+    SoundSource* m_inazumaSE = nullptr;
 
     float m_thunderTimer = 0.0f;
     float m_thunderInterval = 5.0f;
