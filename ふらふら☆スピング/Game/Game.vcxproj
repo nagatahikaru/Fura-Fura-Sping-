@@ -275,6 +275,7 @@
     <ClCompile Include="Source\UI\SoundTestUI\SoundTestUI.cpp" />
     <ClCompile Include="Source\UI\TiterUI\TiterUI.cpp" />
     <ClCompile Include="Source\UI\UIManager.cpp" />
+    <ClCompile Include="Source\Weather\Weather.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -334,6 +335,7 @@
     <ClInclude Include="Source\UI\TiterUI\TiterUI.h" />
     <ClInclude Include="Source\UI\UIManager.h" />
     <ClInclude Include="Source\Util\CRC32.h" />
+    <ClInclude Include="Source\Weather\Weather.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />
   </ItemGroup>

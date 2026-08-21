@@ -1,6 +1,7 @@
 #pragma once
 #include "Source/Source.h"
 #include "Source/Scene/InGame/Game.h"
+#include "Source/Weather/Weather.h"
 class Load : public Source
 {
 public:

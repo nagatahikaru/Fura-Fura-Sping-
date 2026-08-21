@@ -100,6 +100,9 @@
     <Filter Include="Source\Actor\Character\Batter\Debuff\DebuffStage\DifficultyLevel">
       <UniqueIdentifier>{17bc4808-08d9-4ecd-bfbf-999f3f21518c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Weather">
+      <UniqueIdentifier>{2b6c8833-bb71-45b0-9fe3-ea605de3b741}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -250,6 +253,9 @@
     </ClCompile>
     <ClCompile Include="Source\DifficultyParams.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Weather\Weather.cpp">
+      <Filter>Source\Weather</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -409,6 +415,9 @@
     </ClInclude>
     <ClInclude Include="Source\Actor\Character\Pitcher\StrikeZone.h">
       <Filter>Source\Actor\Character\Pitcher</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Weather\Weather.h">
+      <Filter>Source\Weather</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
