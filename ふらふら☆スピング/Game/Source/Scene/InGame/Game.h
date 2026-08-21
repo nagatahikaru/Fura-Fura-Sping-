@@ -2,6 +2,7 @@
 #include "Source/Source.h"
 #include "Source/Actor/Character/Ball/Ball.h"
 #include "Source/Difficulty.h"
+#include"Source/Weather/Weather.h"
 class GameCamera;
 class Background;
 class InGameUI;
@@ -10,7 +11,6 @@ class Pitcher;
 class Catcher;
 class Start1;
 
-
 enum CameraMode
 {
 	Camera_Catcher,
@@ -18,21 +18,6 @@ enum CameraMode
 	Camera_Ball,
 	Camera_BackBall,
 	Camera_Kakutei
-};
-
-enum WindType
-{
-	Wind_None,
-	Wind_LeftToRight,   // 左から右への風
-	Wind_RightToLeft,   // 右から左への風
-	Wind_Tailwind,      // 追い風
-	Wind_Headwind,       // 向かい風
-};
-
-enum class WeatherType {
-	Sunny,      // 晴れ
-	LightRain,  // 小雨（ame）
-	HeavyRain   // 大雨（ame2）
 };
 
 class Game : public Source
@@ -51,6 +36,7 @@ private:
 	SkyCube* m_skyCube;			//スカイキューブ。
 	InGameUI* m_InGameUI;		//インゲームUI。
 	Start1* m_start1;			// タイトル/開始演出オブジェクト
+	Weather* m_weather = nullptr;
 
 	// === カメラ・進行状態 ===
 	CameraMode m_cameraMode = Camera_Catcher;	// 現在のカメラモード（初期はキャッチャー視点）
@@ -177,21 +163,9 @@ private:
 	float m_replayZoomDelaySeconds = 0.0f; // ★ 何秒待ってからズーム開始するか
 	bool  m_hasReachedPitchFrame = false;  // ★ 投球フレームに到達済みか
 
-	// === エフェクト ===
-	uint32_t m_rainEffectId = 0; 
-	uint32_t m_inazumaEffectId = 0;
-	uint32_t m_kazeEffectId = 0;
-	uint32_t m_kaze2EffectId = 0;
-	uint32_t m_kaze3EffectId = 0;
-	uint32_t m_kaze4EffectId = 0;
-	WindType m_currentWindType = Wind_None; 
 	WeatherType m_weatherType = WeatherType::Sunny;
-	bool m_isWindActive = false;       
-	bool m_isRainyFromLoad = false;
-	SoundSource* m_rainSE = nullptr;
-	SoundSource* m_kazeSE = nullptr;
-	float m_thunderTimer = 0.0f;      // 雷の発生間隔用タイマー
-	float m_thunderInterval = 0.0f;   // 何秒おきに雷を落とすか（お好みで調整）
+	WindType m_currentWindType;
+	bool m_isWindActive;
 public:
 	Game() {}
 	~Game();
@@ -529,11 +503,25 @@ public:
 	}
 	void StartHitGlance(float duration);
 
-	WindType GetCurrentWindType() const { return m_currentWindType; }
-	void SetWeatherType(WeatherType type) { m_weatherType = type; }
-	WeatherType GetWeatherType() const { return m_weatherType; }
-	bool GetIsWindActive() const { return m_isWindActive; }
-	void SetIsRainyFromLoad(bool isRainy) { m_isRainyFromLoad = isRainy; }
-	bool GetIsRainy() const { return m_isRainyFromLoad; }
+	void SetWeatherType(WeatherType type)
+	{
+		m_weatherType = type;
+	}
+
+	WeatherType GetWeatherType() const
+	{
+		return m_weatherType;
+	}
+
+	WindType GetWindType() const
+	{
+		return m_currentWindType;
+	}
+
+	bool IsWindActive() const
+	{
+		return m_isWindActive;
+	}
+
 	bool m_hasStartedGuruIntroCamera = false;
 };

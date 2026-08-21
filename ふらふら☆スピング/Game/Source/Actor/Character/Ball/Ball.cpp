@@ -200,7 +200,7 @@ void Ball::Update()
             }
 
         // ★ 風の影響（Hardのみ、打った後の打球にだけ適用）
-        if (m_hasHit && game->GetIsWindActive())
+        if (m_hasHit &&game->IsWindActive())
         {
             float baseX = 1.0f;
             float baseZ = -0.5f;
@@ -224,7 +224,7 @@ void Ball::Update()
             const float kWindPowerX = baseX * (1.0f + 0.001f * m_position.y);
             const float kWindPowerZ = baseZ * (1.0f + 0.001f * m_position.y);
 
-            switch (game->GetCurrentWindType())
+            switch (game->GetWindType())
             {
             case Wind_LeftToRight:
                 m_velocity.x += kWindPowerX * dt;
@@ -937,8 +937,8 @@ float Ball::PredictLandingDistance()
     }
 
     // ★ 風の影響もシミュレーション内で反映
-    bool windActive = game->GetIsWindActive();
-    WindType windType = game->GetCurrentWindType();
+    bool windActive = game->IsWindActive();
+    WindType windType = game->GetWindType();
 
     float baseX = 1.0f;
     float baseZ = -0.5f;
