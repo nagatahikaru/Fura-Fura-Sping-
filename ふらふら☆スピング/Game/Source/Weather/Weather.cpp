@@ -290,6 +290,10 @@ void Weather::UpdateThunder()
         Vector3(40, 40, 70),
         Quaternion::Identity
     );
+    if (g_soundManager)
+    {
+        m_inazumaSE = g_soundManager->PlaySE(enSound_SE18);
+    }
 }
 
 

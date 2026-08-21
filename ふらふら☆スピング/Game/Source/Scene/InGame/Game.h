@@ -164,8 +164,6 @@ private:
 	bool  m_hasReachedPitchFrame = false;  // ★ 投球フレームに到達済みか
 
 	WeatherType m_weatherType = WeatherType::Sunny;
-	WindType m_currentWindType;
-	bool m_isWindActive;
 public:
 	Game() {}
 	~Game();
@@ -515,12 +513,12 @@ public:
 
 	WindType GetWindType() const
 	{
-		return m_currentWindType;
+		return m_weather ? m_weather->GetWindType() : Wind_None;
 	}
 
 	bool IsWindActive() const
 	{
-		return m_isWindActive;
+		return m_weather ? m_weather->IsWindActive() : false;
 	}
 
 	bool m_hasStartedGuruIntroCamera = false;
