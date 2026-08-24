@@ -251,7 +251,7 @@ void Ball::Update()
           // スローボールかつ打撃前で、バッター手前に来たときの処理
             if (!m_hasHit && !m_isRolling && m_ballType == SlowBall)
             {
-                if (m_position.z >= 5450.0f && m_position.z < 7000.0f)
+                if (m_position.z >= 5000.0f && m_position.z < 6000.0f)
                 {
                     if (!isReplay) {
                         currentFrameVelocity *= 0.5f; // 通常プレイ時は減速
