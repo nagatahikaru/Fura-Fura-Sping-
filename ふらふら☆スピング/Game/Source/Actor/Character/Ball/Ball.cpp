@@ -251,10 +251,10 @@ void Ball::Update()
           // スローボールかつ打撃前で、バッター手前に来たときの処理
             if (!m_hasHit && !m_isRolling && m_ballType == SlowBall)
             {
-                if (m_position.z >= 5450.0f && m_position.z < 6500.0f)
+                if (m_position.z >= 5450.0f && m_position.z < 7000.0f)
                 {
                     if (!isReplay) {
-                        currentFrameVelocity *= 0.4f; // 通常プレイ時は減速
+                        currentFrameVelocity *= 0.5f; // 通常プレイ時は減速
                     }
                     else {
                         currentFrameVelocity *= 1.0f; // リプレイ時は等速
@@ -652,7 +652,7 @@ void Ball::Throw(const Vector3& targetPos)
     const float KFixedInitialVY = KInitialVYRatio * KReferenceSpeed; //常に同じ値
 
     //高さにもランダム幅を持たせる(値を大きくするほど上下のばらつきが増える)
-    float randomVYOffset = ((rand() % 2001) / 1000.0f - 1.0f) * 8.0f;
+    float randomVYOffset = ((rand() % 2001) / 1000.0f - 1.0f) * 6.0f;
 
     m_velocity.x = 0.0f;
     m_velocity.y = KFixedInitialVY;
@@ -671,10 +671,10 @@ void Ball::Throw(const Vector3& targetPos)
     else if (currentDifficulty == Normal)
     {
         int rate = rand() % 100;
-        if (rate < 60) {
+        if (rate < 70) {
             m_ballType = Straight;          // 70% ストレート
         }
-        else if (rate < 30) {
+        else if (rate < 90) {
             m_ballType = Curve;             // 20% カーブ
         }
         else {
@@ -759,10 +759,10 @@ void Ball::Throw(const Vector3& targetPos)
         finalX += 1.0f;
     }
     //変化球の最終的な変化を反映
-    if (m_ballType == Curve)
+   /* if (m_ballType == Curve)
     {
         finalX += m_curveDir * m_breakAmount;
-    }
+    }*/
     else if (m_ballType == ShakeHorizontal)
     {
         finalX += sinf(finalZ * 0.01f) * 3.0f;
