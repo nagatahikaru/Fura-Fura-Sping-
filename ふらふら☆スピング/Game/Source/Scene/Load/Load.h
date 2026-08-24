@@ -9,6 +9,7 @@ public:
     void Update() override;
     void Render(RenderContext& rc) override;
     void SetDifficulty(Difficulty diff) { m_difficulty = diff; }
+    void SetIsRetry(bool retry) { m_isRetry = retry; }
 private:
     SpriteRender m_spriteRender;
     SpriteRender m_gaugeFill;   // 中身（伸びる）
@@ -38,4 +39,5 @@ private:
     bool m_isHappened = false; // 演出が発生したかどうかを記録
     int m_luckyImage = 0;      // 0:なし, 1:こけ画像, 2:しりもち画像
     WeatherType m_weatherResult = WeatherType::Sunny;
+    bool m_isRetry = false;
 };

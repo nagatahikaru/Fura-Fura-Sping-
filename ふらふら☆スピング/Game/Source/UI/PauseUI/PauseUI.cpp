@@ -142,26 +142,23 @@ void PauseUI::Update()
 
         else if (m_cursor == 1) {
 
-            // ★ SE2 を止める
             g_soundManager->StopSE2();
 
             if (g_bgm) {
-                // 現在の音量設定値に基づく正しいマスター計算値を取得
                 g_bgm->SetVolume(g_soundManager->GetCalculatedBGMVolume(g_soundManager->m_bgmVolume));
             }
 
-            // ★ ゲームをやり直す（ロード画面から再開）
             Game* game = FindGO<Game>("game");
             if (game) {
-                DeleteGO(game);   // 今のゲームを削除
+                DeleteGO(game);
             }
 
-            // ★ Load シーンを開始
             Load* load = NewGO<Load>(0, "load");
             if (load) {
                 load->SetDifficulty(m_difficulty);
+                load->SetIsRetry(true);   // ★ 追加：やり直しであることを伝える
             }
-            DeleteGO(this);  // PauseUI を閉じる
+            DeleteGO(this);
         }
 
         else if (m_cursor == 2) {

@@ -67,9 +67,11 @@ void Load::Update()
     if (m_loadFinished) {
         m_finishWait += g_gameTime->GetFrameDeltaTime();
         if (!m_bgmStarted && m_finishWait >= 1.0f) {
-            float v = g_soundManager->m_bgmVolume / 100.0f;
-            g_soundManager->PlayingSound(enSound_GameBGM1, true, powf(v, 1.5f));
-            m_bgmStarted = true;
+            if (!m_isRetry) {
+                float v = g_soundManager->m_bgmVolume / 100.0f;
+                g_soundManager->PlayingSound(enSound_GameBGM1, true, powf(v, 1.5f));
+            }
+            m_bgmStarted = true; 
         }
 
         if (m_isHappened) {
@@ -154,9 +156,11 @@ void Load::Update()
 
         if (g_pad[0]->IsTrigger(enButtonA)) {
             if (!m_bgmStarted) {
-                float v = g_soundManager->m_bgmVolume / 100.0f;
-                float curved = powf(v, 1.5f);
-                g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
+                if (!m_isRetry) {
+                    float v = g_soundManager->m_bgmVolume / 100.0f;
+                    float curved = powf(v, 1.5f);
+                    g_soundManager->PlayingSound(enSound_GameBGM1, true, curved);
+                }
                 m_bgmStarted = true;
             }
 
@@ -325,7 +329,9 @@ void Load::Update()
         break;
     case 9:
         m_realProgress = 1.0f;
-        g_soundManager->StopBGM();
+        if (!m_isRetry) {
+            g_soundManager->StopBGM();
+        }
         m_guL.SetMulColor({ 1, 1, 1, 0 });
         m_guA.SetMulColor({ 1,1,1,0 });
         m_guR.SetMulColor({ 1,1,1,1 });

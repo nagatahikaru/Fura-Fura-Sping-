@@ -141,8 +141,6 @@ void Game::Update()
 		//m_InGameUI->SetBallCount(3 - m_shots);
 	}
 
-
-	{
 		//ぐるぐる旋回の開始・終了を検知してカメラの演出を切り替える
 		bool isRotationSeen = (m_batter && m_batter->GetRotationSeen());
 
@@ -160,7 +158,6 @@ void Game::Update()
 			}
 			m_hasStartedGuruIntroCamera = false;
 		}
-	}
 
 	// ★ カウントダウン中はポーズボタン無効 & ゲームロジック停止
 	if (FindGO<Start1>("start1") != nullptr) {
@@ -184,9 +181,9 @@ void Game::Update()
 		if (FindGO<PauseUI>("pause") != nullptr) return;
 		if (FindGO<SoundTestUI>("soundtest") != nullptr) return;
 		// ★ ここでポーズ突入SE
-		if (g_soundManager && g_soundManager->m_seVolume > 0) {
-			g_soundManager->PlaySE(enSound_SE);   // 好きなSEに
-		}
+		//if (g_soundManager && g_soundManager->m_seVolume > 0) {
+		//	g_soundManager->PlaySE(enSound_SE);   // 好きなSEに
+		//}
 		SetIsPaused(true);
 
 		if (m_InGameUI) {
@@ -218,6 +215,11 @@ void Game::Update()
 				pitcher->ResetThrow(); // 既存の初期化関数を呼んで Idle ＆ タイマー0に戻す
 			}
 
+			// ★ 打つフェーズ開始時にSEを鳴らす（スキップ時）
+			/*if (g_soundManager && g_soundManager->m_seVolume > 0) {
+				g_soundManager->PlaySE(enSound_ute, 1.0f);
+			}*/
+
 			return; // スキップしたフレームはここで処理を抜ける
 		}
 
@@ -235,6 +237,11 @@ void Game::Update()
 			if (m_batter) {
 				m_batter->SetCursorMode(true); // カーソル操作モードを確定
 			}
+
+			// ★ 打つフェーズ開始時にSEを鳴らす
+			/*if (g_soundManager && g_soundManager->m_seVolume > 0) {
+				g_soundManager->PlaySE(enSound_ute, 1.0f);
+			}*/
 		}
 		return; // ⭕ 5秒間はここでUpdateを抜けることで、後続の「投球開始処理」へ進ませない
 	}

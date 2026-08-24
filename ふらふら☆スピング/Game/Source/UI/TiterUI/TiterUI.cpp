@@ -99,6 +99,10 @@ void TiterUI::Update()
 {
     float dt = g_gameTime->GetFrameDeltaTime();
 
+    if (m_inputLocked) {
+        return;
+    }
+
     // 【共通】難易度決定後のアニメーション・フェードアウト処理
     if (m_isDeciding) {
         m_decideTimer += dt;

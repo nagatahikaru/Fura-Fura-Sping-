@@ -18,5 +18,7 @@ private:
 	Transform* m_transform;
 	SoundSource* m_bgm=nullptr;
 	TiterUI* m_titerUI;
+	int m_titleCallFrameCount = 0;
+	bool m_bgmStarted = false;
 };
 
