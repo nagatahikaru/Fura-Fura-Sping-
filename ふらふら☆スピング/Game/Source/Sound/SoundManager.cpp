@@ -43,7 +43,8 @@ namespace {
 		"SE15",
 		"SE16",
 		"SE17",
-		"SE18"
+		"SE18",
+		"SE19"
 	};	
 }
 
@@ -211,6 +212,14 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 		SoundSource* se = NewGO<SoundSource>(0);
 		se->Init(number);
 		se->SetVolume(curved * 4.0f * masterScale);   // ★ 倍率はお好みで調整
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_SE19) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 2.0f * masterScale);   // ★ 倍率はお好みで調整
 		se->Play(false);
 		return se;
 	}

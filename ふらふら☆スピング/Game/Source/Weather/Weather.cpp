@@ -70,7 +70,7 @@ void Weather::StartRainEffect()
 
         if (g_soundManager)
         {
-            m_rainSE = g_soundManager->PlaySE(enSound_SE16);
+            m_rainSE = g_soundManager->PlaySE(enSound_SE19);
         }
     }
 }
