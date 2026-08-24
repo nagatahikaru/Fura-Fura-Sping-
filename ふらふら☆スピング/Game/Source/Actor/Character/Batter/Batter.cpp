@@ -335,6 +335,15 @@ void Batter::Rotation()
 */
 void Batter::RoundAndRoundBat()
 {
+	// ★ フェーズ開始の検知（タイマーが満タンの状態で最初に呼ばれたフレーム）
+	/*if (!m_hasPlayedGuruStartSE && m_guruGuruBatTimer >= BATTER::BAT::SPIN_TIME_LIMIT)
+	{
+		if (g_soundManager && g_soundManager->m_seVolume > 0) {
+			g_soundManager->PlaySE(enSound_guru1, 1.0f);
+		}
+		m_hasPlayedGuruStartSE = true;
+	}*/
+
 	m_guruGuruBatTimer -= g_gameTime->GetFrameDeltaTime();
 	// ★ UI に残り時間を送る
 	if (m_inGameUI) {
@@ -351,6 +360,14 @@ void Batter::RoundAndRoundBat()
 		m_game->SetIsReadyPhase(true);
 		m_game->SetReadyTimer(BATTER::READY_TIME); // 5秒にセット
 		m_characterModel->Update();
+
+		// ★ ぐるぐる終了時にSTOP2を鳴らす
+	/*	if (g_soundManager && g_soundManager->m_seVolume > 0) {
+			g_soundManager->PlaySE(enSound_STOP2, 1.0f);
+		}*/
+
+		// ★ 次回のフェーズ開始検知用にリセット
+		m_hasPlayedGuruStartSE = false;
 	}
 }
 

@@ -44,7 +44,13 @@ namespace {
 		"SE16",
 		"SE17",
 		"SE18",
-		"SE19"
+		"SE19",
+		"guru1",
+		"START",
+		"START2",
+		"STOP2",
+		"ute",
+		"TitleCall"
 	};	
 }
 
@@ -189,6 +195,38 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 		return se;
 	}
 
+	if (number == enSound_SE7) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 3.0f * masterScale);    // ★ マスターを掛ける
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_SE8) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 3.0f * masterScale);    // ★ マスターを掛ける
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_SE9) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 3.0f * masterScale);    // ★ マスターを掛ける
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_SE10) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 3.0f * masterScale);    // ★ マスターを掛ける
+		se->Play(false);
+		return se;
+	}
+
 	if (number == enSound_SE14) {
 		SoundSource* se = NewGO<SoundSource>(0);
 		se->Init(number);
@@ -203,7 +241,15 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 	if (number == enSound_SE16) {
 		SoundSource* se = NewGO<SoundSource>(0);
 		se->Init(number);
-		se->SetVolume(curved * 1.5f * masterScale);   // ★ 倍率はお好みで調整
+		se->SetVolume(curved * 1.5f * masterScale);  
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_SE17) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 0.7f * masterScale);
 		se->Play(false);
 		return se;
 	}
@@ -211,7 +257,7 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 	if (number == enSound_SE18) {
 		SoundSource* se = NewGO<SoundSource>(0);
 		se->Init(number);
-		se->SetVolume(curved * 4.0f * masterScale);   // ★ 倍率はお好みで調整
+		se->SetVolume(curved * 2.0f * masterScale);   
 		se->Play(false);
 		return se;
 	}
@@ -219,7 +265,56 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 	if (number == enSound_SE19) {
 		SoundSource* se = NewGO<SoundSource>(0);
 		se->Init(number);
-		se->SetVolume(curved * 2.0f * masterScale);   // ★ 倍率はお好みで調整
+		se->SetVolume(curved * 2.0f * masterScale);   
+		se->Play(false);
+		return se;
+	}
+
+
+	if (number == enSound_guru1) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 3.0f * masterScale);   
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_STRAT) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 3.0f * masterScale);
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_STRAT2) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 3.0f * masterScale);
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_STOP2) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 3.0f * masterScale);
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_ute) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 3.0f * masterScale);
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_TitleCall) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 3.0f * masterScale);
 		se->Play(false);
 		return se;
 	}

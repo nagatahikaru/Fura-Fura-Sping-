@@ -134,7 +134,7 @@ private:
     EffectInfo m_inro;                                                  // エフェクト情報
     float m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_NORMAL;
     float m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_NORMAL;
-
+    bool m_hasPlayedGuruStartSE = false;
 public:
 
 

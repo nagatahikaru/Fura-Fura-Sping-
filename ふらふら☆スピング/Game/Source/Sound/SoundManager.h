@@ -34,6 +34,12 @@ enum Sound{
 	enSound_SE17,
 	enSound_SE18,
 	enSound_SE19,
+	enSound_guru1,
+	enSound_STRAT,
+	enSound_STRAT2,
+	enSound_STOP2,
+	enSound_ute,
+	enSound_TitleCall,
 	enSound_Num //このステータスは、サウンドの総数を表しているため、この下には追加しないでください。
 };
 class SoundManager :public IGameObject
@@ -75,6 +81,7 @@ public:
 	float m_se2FadeDuration = 0.0f;
 	float m_se2FadeTimer = 0.0f;
 	float m_se2StartVolume = 0.0f;
+	bool m_hasPlayedTitleCall = false;
 };
 
 extern SoundManager* g_soundManager;

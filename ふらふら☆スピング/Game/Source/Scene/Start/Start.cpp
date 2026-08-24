@@ -39,6 +39,13 @@ void Start1::Update()
         DeleteGO(this);
     }
 
+    if (!m_playedStartSE) {
+        if (g_soundManager) {
+            g_soundManager->PlaySE(Sound::enSound_STRAT2, 100.0f);
+        }
+        m_playedStartSE = true;
+    }
+
     // 0〜1秒 → 3
     if (m_timer < 1.0f) {
         float t = m_timer / 1.0f;   // 0 → 1
@@ -74,14 +81,6 @@ void Start1::Update()
     }
     // 3〜4秒 → START!!（奥から手前に“現れる” → 最後0.2秒停止）
     else if (m_timer < 4.0f) {
-
-        // ★ START!! に入った瞬間だけ SE 再生
-        if (!m_playedStartSE) {
-            if (g_soundManager) {
-                g_soundManager->PlaySE(Sound::enSound_SE, 100.0f);
-            }
-            m_playedStartSE = true;
-        }
 
         float t = (m_timer - 3.0f);   // 0.0 → 1.0
 

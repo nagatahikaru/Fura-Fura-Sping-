@@ -13,6 +13,7 @@ class TiterUI :public Source
 	bool Start() override;
 	void Update() override;
 	void Render(RenderContext& rc) override;
+	void SetInputLocked(bool locked) { m_inputLocked = locked; }
 private:
 	TitleState m_state = State_MainMenu;
 	SpriteRender m_start;
@@ -43,5 +44,6 @@ private:
 	bool m_isDeciding = false;     // 決定演出中か
 	float m_decideTimer = 0.0f;    // 決定演出タイマー
 	float m_fadeAlpha = 0.0f;      // 黒フェードのアルファ値
+	bool m_inputLocked = false;
 };
 
