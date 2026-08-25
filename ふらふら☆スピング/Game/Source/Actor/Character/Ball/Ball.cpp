@@ -459,26 +459,42 @@ void Ball::Update()
         m_modelRender.SetRotation(rot);
 
 
+        if (m_wasHit)
+        {
+            // ★ 打たれてから 0.5秒かけて大きくする
+            const float kHitScaleDuration = 0.5f;
+            const float kPreHitScale = 4.5f;  // 打たれる直前の投球スケール（finalScaleと合わせる）
+            const float kHitScale = 8.5f;     // 最終的な大きさ
 
-        //距離に応じてスケール変更
-        float minZ = 1000.0f;  // ピッチャーマウンド（スタート）
-        float maxZ = 6200.0f;  // キャッチャー・バッター付近（最小になる位置）
+            m_hitScaleTimer += dt;
 
-        // Z座標から 0.0 〜 1.0 の割合(t)を計算
-        float t = (m_position.z - minZ) / (maxZ - minZ);
+            float t = RemapClamp(m_hitScaleTimer, 0.0f, kHitScaleDuration);
+            float easedT = EaseOutCubic(t); // 序盤速く、終盤ゆっくり収束
 
-        // 範囲外を安全にクランプ（0.0未満なら0.0、1.0より大きければ1.0に固定）
-        t = fmaxf(0.0f, fminf(t, 1.0f));
+            float scale = kPreHitScale + (kHitScale - kPreHitScale) * easedT;
+            m_modelRender.SetScale({ scale, scale, scale });
+        }
+        else
+        {
+            float minZ = 1000.0f;  // ピッチャーマウンド（スタート）
+            float maxZ = 6200.0f;  // キャッチャー・バッター付近（最小になる位置）
 
-        // --- スケール計算 ---
-        float startScale = 3.5f; // ピッチャーリリース時の視認用サイズ（小さい）
-        float finalScale = 4.5f;  // バッター手前での本来のサイズ（大きい）
+            // Z座標から 0.0 〜 1.0 の割合(t)を計算
+            float t = (m_position.z - minZ) / (maxZ - minZ);
 
-        // t=0.0(ピッチャー) のときは startScale、t=1.0(バッター) のときは finalScale になる線形補間
-        float scale = startScale + (finalScale - startScale) * t;
+            // 範囲外を安全にクランプ（0.0未満なら0.0、1.0より大きければ1.0に固定）
+            t = fmaxf(0.0f, fminf(t, 1.0f));
 
-        // 計算したスケールを適用
-        m_modelRender.SetScale({ scale, scale, scale });
+            // --- スケール計算 ---
+            float startScale = 3.5f; // ピッチャーリリース時の視認用サイズ（小さい）
+            float finalScale = 4.5f;  // バッター手前での本来のサイズ（大きい）
+
+            // t=0.0(ピッチャー) のときは startScale、t=1.0(バッター) のときは finalScale になる線形補間
+            float scale = startScale + (finalScale - startScale) * t;
+
+            // 計算したスケールを適用
+            m_modelRender.SetScale({ scale, scale, scale });
+        }
     }
     else {
 
@@ -859,6 +875,8 @@ void Ball::HitBall(const Vector3& hitDirection, float hitPower)
     // ★ 打った瞬間の位置を記録
     m_hitStartPos = m_position;
     m_hasHit = true;
+    m_wasHit = true;
+    m_hitScaleTimer = 0.0f;
     Game* game = FindGO<Game>("game");
     if (game) {
         int shot = game->GetShots();
@@ -993,6 +1011,8 @@ void Ball::ResetBall()
     m_velocity = Vector3::Zero;
     m_isMove = false;
     m_hasHit = false;
+    m_wasHit = false;
+    m_hitScaleTimer = 0.0f;
     m_hasFixed = false;
     m_hasStrike = false;
     m_hasShownPrediction = false;

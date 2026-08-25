@@ -52,6 +52,8 @@ private:
 	bool m_isRecording = false;
 	bool m_isMove = false;
 	bool m_hasHit = false;
+	bool m_wasHit = false;
+	float m_hitScaleTimer = 0.0f;
 	bool m_isPaused = true;
 	bool m_hasThrowOnce = false;
 	bool m_isDifficultyConfigured = false;

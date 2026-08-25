@@ -974,9 +974,9 @@ void Game::StartEndFade()
 
 	m_InGameUI->StartFadeOut(0.5f);
 
-	// ★★★ 3球目リプレイ用：SE2 をここでもフェードアウト開始 ★★★
-	if (g_soundManager) {
-		g_soundManager->FadeOutSE2(2.0f);   // ← あなたの好きな秒数
+	if (g_soundManager && !m_startFadeSE2) {   
+		m_startFadeSE2 = true;
+		g_soundManager->FadeOutSE2(2.0f);
 	}
 
 	m_InGameUI->m_onFadeOutFinished = [this]() {
