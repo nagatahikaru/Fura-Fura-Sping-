@@ -84,11 +84,12 @@ void SoundManager::Update()
 
 		if (t >= 1.0f) {
 			m_se2->Stop();
+			DeleteGO(m_se2);   // ★ 追加：インスタンスを完全に破棄
+			m_se2 = nullptr;   // ★ 追加：次回 PlaySE で新規生成させる
 			m_isFadingSE2 = false;
 		}
 	}
 }
-
 SoundSource* SoundManager::PlayingSound(Sound number, bool isLoop, float volume)
 {
 	// すでに同じBGMが流れているなら再生しない（継続）
@@ -174,14 +175,16 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 	// ★ マスターボリュームの倍率（0.0〜1.0）
 	float masterScale = m_masterVolume / 100.0f;
 
-	// ★ SE2 は 1 個だけにする
 	if (number == enSound_SE2) {
+		m_isFadingSE2 = false;
+		m_se2FadeTimer = 0.0f;
+
 		if (!m_se2) {
 			m_se2 = NewGO<SoundSource>(0);
 			m_se2->Init(number);
 		}
 
-		m_se2BaseVolume = curved * 3.0f * masterScale;  // ★ マスターを掛ける
+		m_se2BaseVolume = curved * 3.0f * masterScale;
 		m_se2->SetVolume(m_se2BaseVolume);
 		m_se2->Play(false);
 

@@ -571,11 +571,11 @@ void InGameUI::ShowPrediction(float prDistance)
 	}
 	else
 	{
-		if (m_predictedDistance < 60000.0f) {
+		if (m_predictedDistance < 70000.0f) {
 			m_predictionType = Prediction_Nice;
 			g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
 		}
-		else if (m_predictedDistance < 80000.0f) {
+		else if (m_predictedDistance < 90000.0f) {
 			m_predictionType = Prediction_Great;
 			g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
 		}
