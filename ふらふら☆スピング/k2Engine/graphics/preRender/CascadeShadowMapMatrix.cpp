@@ -9,97 +9,89 @@ namespace nsK2Engine {
         const Vector3& sceneMinPosition
     )
     {
-        // Å‘åƒtƒ@[‚Í150m
+        // æœ€å¤§ãƒ•ã‚¡ãƒ¼ã¯150m
         float maxFar = g_camera3D->GetFar() * cascadeAreaRateTbl[NUM_SHADOW_MAP-1];
-        //ƒrƒ…[s—ñ‚ğŒvZ‚·‚éB
+        //ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹ã€‚
         Matrix viewMatrix;
         Vector3 lightTarget = g_camera3D->GetPosition();
         Vector3 lightPos = lightTarget;
-        // ƒ‰ƒCƒg‚Ì‚‚³‚Í50mŒˆ‚ß‘Å‚¿B
+        // ãƒ©ã‚¤ãƒˆã®é«˜ã•ã¯50mæ±ºã‚æ‰“ã¡ã€‚
         float lightMaxHeight = 5000.0f;
         lightPos += (lightDirection) * (lightMaxHeight / lightDirection.y);
-        //ã•ûŒü‚ğİ’è
+        //ä¸Šæ–¹å‘ã‚’è¨­å®š
         if (fabsf(lightDirection.y) > 0.9999f) {
-            //‚Ù‚Ú^ãA^‰º‚ğŒü‚¢‚Ä‚¢‚é
+            //ã»ã¼çœŸä¸Šã€çœŸä¸‹ã‚’å‘ã„ã¦ã„ã‚‹
             viewMatrix.MakeLookAt(lightPos, lightTarget, g_vec3AxisX);
         }
         else {
             viewMatrix.MakeLookAt(lightPos, lightTarget, g_vec3AxisY);
         }
-        Matrix projMatrix;
-        projMatrix.MakeOrthoProjectionMatrix(
-            5000.0f,
-            5000.0f,
-            1.0f,
-            maxFar
-        );
-
-        // •ªŠ„ƒGƒŠƒA‚ÌÅ‘å[“x’l‚ğ’è‹`‚·‚é
+        // åˆ†å‰²ã‚¨ãƒªã‚¢ã®æœ€å¤§æ·±åº¦å€¤ã‚’å®šç¾©ã™ã‚‹
         float cascadeAreaTbl[NUM_SHADOW_MAP] = {
-            maxFar * cascadeAreaRateTbl[SHADOW_MAP_AREA_NEAR],     // ‹ß‰e‚ğ‰f‚·Å‘å[“x’l
-            maxFar * cascadeAreaRateTbl[SHADOW_MAP_AREA_MIDDLE],   // ’†‰e‚ğ‰f‚·Å‘å[“x’l
-            maxFar * cascadeAreaRateTbl[SHADOW_MAP_AREA_FAR] ,     // ‰“‰e‚ğ‰f‚·Å‘å[“x’lB
+            maxFar * cascadeAreaRateTbl[SHADOW_MAP_AREA_NEAR],     // è¿‘å½±ã‚’æ˜ ã™æœ€å¤§æ·±åº¦å€¤
+            maxFar * cascadeAreaRateTbl[SHADOW_MAP_AREA_MIDDLE],   // ä¸­å½±ã‚’æ˜ ã™æœ€å¤§æ·±åº¦å€¤
+            maxFar * cascadeAreaRateTbl[SHADOW_MAP_AREA_FAR] ,     // é å½±ã‚’æ˜ ã™æœ€å¤§æ·±åº¦å€¤ã€‚
         };
-        // ƒJƒƒ‰‚Ì‘O•ûŒüA‰E•ûŒüAã•ûŒü‚ğ‹‚ß‚é
-        // ‘O•ûŒü‚Æ‰E•ûŒü‚Í‚·‚Å‚ÉŒvZÏ‚İ‚È‚Ì‚ÅA‚»‚ê‚ğˆø‚Á’£‚Á‚Ä‚­‚é
+        // ã‚«ãƒ¡ãƒ©ã®å‰æ–¹å‘ã€å³æ–¹å‘ã€ä¸Šæ–¹å‘ã‚’æ±‚ã‚ã‚‹
+        // å‰æ–¹å‘ã¨å³æ–¹å‘ã¯ã™ã§ã«è¨ˆç®—æ¸ˆã¿ãªã®ã§ã€ãã‚Œã‚’å¼•ã£å¼µã£ã¦ãã‚‹
         const auto& cameraForward = g_camera3D->GetForward();
         const auto& cameraRight = g_camera3D->GetRight();
 
-        // ƒJƒƒ‰‚Ìã•ûŒü‚Í‘O•ûŒü‚Æ‰E•ûŒü‚ÌŠOÏ‚Å‹‚ß‚é
+        // ã‚«ãƒ¡ãƒ©ã®ä¸Šæ–¹å‘ã¯å‰æ–¹å‘ã¨å³æ–¹å‘ã®å¤–ç©ã§æ±‚ã‚ã‚‹
         Vector3 cameraUp;
         cameraUp.Cross(cameraForward, cameraRight);
-        // nearDepth‚ÍƒGƒŠƒA‚ÌÅ¬[“x’l‚ğ•\‚·
-            // ˆê”Ô‹ß‚¢ƒGƒŠƒA‚ÌÅ¬[“x’l‚ÍƒJƒƒ‰‚ÌƒjƒAƒNƒŠƒbƒv
+        // nearDepthã¯ã‚¨ãƒªã‚¢ã®æœ€å°æ·±åº¦å€¤ã‚’è¡¨ã™
+            // ä¸€ç•ªè¿‘ã„ã‚¨ãƒªã‚¢ã®æœ€å°æ·±åº¦å€¤ã¯ã‚«ãƒ¡ãƒ©ã®ãƒ‹ã‚¢ã‚¯ãƒªãƒƒãƒ—
         float nearDepth = g_camera3D->GetNear();
         for (int areaNo = 0; areaNo < NUM_SHADOW_MAP; areaNo++)
         {
-            // step-7 ƒGƒŠƒA‚ğ“à•ï‚·‚é‹‘ä‚Ì‚W’¸“_‚ğ‹‚ß‚é
-            // ƒGƒŠƒA‚Ì‹ß•½–Ê‚Ì’†S‚©‚ç‚Ìã–ÊA‰º–Ê‚Ü‚Å‚Ì‹——£‚ğ‹‚ß‚é
+            // step-7 ã‚¨ãƒªã‚¢ã‚’å†…åŒ…ã™ã‚‹è¦–éŒå°ã®ï¼˜é ‚ç‚¹ã‚’æ±‚ã‚ã‚‹
+            // ã‚¨ãƒªã‚¢ã®è¿‘å¹³é¢ã®ä¸­å¿ƒã‹ã‚‰ã®ä¸Šé¢ã€ä¸‹é¢ã¾ã§ã®è·é›¢ã‚’æ±‚ã‚ã‚‹
             float nearY = tanf(g_camera3D->GetViewAngle() * 0.5f) * nearDepth;
 
-            // ƒGƒŠƒA‚Ì‹ß•½–Ê‚Ì’†S‚©‚ç‚Ì‰E–ÊA¶–Ê‚Ü‚Å‚Ì‹——£‚ğ‹‚ß‚é
+            // ã‚¨ãƒªã‚¢ã®è¿‘å¹³é¢ã®ä¸­å¿ƒã‹ã‚‰ã®å³é¢ã€å·¦é¢ã¾ã§ã®è·é›¢ã‚’æ±‚ã‚ã‚‹
             float nearX = nearY * g_camera3D->GetAspect();
 
-            // ƒGƒŠƒA‚Ì‰“•½–Ê‚Ì’†S‚©‚ç‚Ìã–ÊA‰º–Ê‚Ü‚Å‚Ì‹——£‚ğ‹‚ß‚é
+            // ã‚¨ãƒªã‚¢ã®é å¹³é¢ã®ä¸­å¿ƒã‹ã‚‰ã®ä¸Šé¢ã€ä¸‹é¢ã¾ã§ã®è·é›¢ã‚’æ±‚ã‚ã‚‹
             float farY = tanf(g_camera3D->GetViewAngle() * 0.5f) * cascadeAreaTbl[areaNo];
 
-            // ƒGƒŠƒA‚Ì‰“•½–Ê‚Ì’†S‚©‚ç‚Ì‰E–ÊA¶–Ê‚Ü‚Å‚Ì‹——£‚ğ‹‚ß‚é
+            // ã‚¨ãƒªã‚¢ã®é å¹³é¢ã®ä¸­å¿ƒã‹ã‚‰ã®å³é¢ã€å·¦é¢ã¾ã§ã®è·é›¢ã‚’æ±‚ã‚ã‚‹
             float farX = farY * g_camera3D->GetAspect();
 
-            // ƒGƒŠƒA‚Ì‹ß•½–Ê‚Ì’†SÀ•W‚ğ‹‚ß‚é
+            // ã‚¨ãƒªã‚¢ã®è¿‘å¹³é¢ã®ä¸­å¿ƒåº§æ¨™ã‚’æ±‚ã‚ã‚‹
             Vector3 nearPos = g_camera3D->GetPosition() + cameraForward * nearDepth;
 
-            // ƒGƒŠƒA‚Ì‰“•½–Ê‚Ì’†SÀ•W‚ğ‹‚ß‚é
+            // ã‚¨ãƒªã‚¢ã®é å¹³é¢ã®ä¸­å¿ƒåº§æ¨™ã‚’æ±‚ã‚ã‚‹
             Vector3 farPos = g_camera3D->GetPosition() + cameraForward * cascadeAreaTbl[areaNo];
 
-            // 8’¸“_‚ğ‹‚ß‚é
+            // 8é ‚ç‚¹ã‚’æ±‚ã‚ã‚‹
             Vector3 vertex[8];
 
-            // ‹ß•½–Ê‚Ì‰Eã‚Ì’¸“_
+            // è¿‘å¹³é¢ã®å³ä¸Šã®é ‚ç‚¹
             vertex[0] += nearPos + cameraUp * nearY + cameraRight * nearX;
 
-            // ‹ß•½–Ê‚Ì¶ã‚Ì’¸“_
+            // è¿‘å¹³é¢ã®å·¦ä¸Šã®é ‚ç‚¹
             vertex[1] += nearPos + cameraUp * nearY + cameraRight * -nearX;
 
-            // ‹ß•½–Ê‚Ì‰E‰º‚Ì’¸“_
+            // è¿‘å¹³é¢ã®å³ä¸‹ã®é ‚ç‚¹
             vertex[2] += nearPos + cameraUp * -nearY + cameraRight * nearX;
 
-            // ‹ß•½–Ê‚Ì¶‰º‚Ì’¸“_
+            // è¿‘å¹³é¢ã®å·¦ä¸‹ã®é ‚ç‚¹
             vertex[3] += nearPos + cameraUp * -nearY + cameraRight * -nearX;
 
-            // ‰“•½–Ê‚Ì‰Eã‚Ì’¸“_
+            // é å¹³é¢ã®å³ä¸Šã®é ‚ç‚¹
             vertex[4] += farPos + cameraUp * farY + cameraRight * farX;
 
-            // ‰“•½–Ê‚Ì¶ã‚Ì’¸“_
+            // é å¹³é¢ã®å·¦ä¸Šã®é ‚ç‚¹
             vertex[5] += farPos + cameraUp * farY + cameraRight * -farX;
 
-            // ‰“•½–Ê‚Ì‰E‰º‚Ì’¸“_
+            // é å¹³é¢ã®å³ä¸‹ã®é ‚ç‚¹
             vertex[6] += farPos + cameraUp * -farY + cameraRight * farX;
 
-            // ‰“•½–Ê‚Ì¶‰º‚Ì’¸“_
+            // é å¹³é¢ã®å·¦ä¸‹ã®é ‚ç‚¹
             vertex[7] += farPos + cameraUp * -farY + cameraRight * -farX;
 
-            // 8’¸“_‚ğƒJƒƒ‰‹óŠÔ‚É•ÏŠ·‚µ‚ÄA‹ß•½–Ê‚Æ‰“•½–Ê‚ğ‹‚ß‚éB
+            // 8é ‚ç‚¹ã‚’ã‚«ãƒ¡ãƒ©ç©ºé–“ã«å¤‰æ›ã—ã¦ã€è¿‘å¹³é¢ã¨é å¹³é¢ã‚’æ±‚ã‚ã‚‹ã€‚
             float nearZ = FLT_MAX, farZ = -FLT_MAX;
             for (auto v : vertex) {
                 viewMatrix.Apply(v);
@@ -107,7 +99,24 @@ namespace nsK2Engine {
                 farZ = max(v.z, farZ);
             }
 
-            // 8’¸“_‚ğƒ‰ƒCƒgƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“‹óŠÔ‚É•ÏŠ·‚µ‚ÄA8’¸“_‚ÌÅ‘å’lAÅ¬’l‚ğ‹‚ß‚é
+            // ã“ã®ã‚«ã‚¹ã‚±ãƒ¼ãƒ‰ã®æ·±åº¦ç¯„å›²ã«ã´ã£ãŸã‚Šåˆã†æŠ•å½±è¡Œåˆ—ã‚’ä½œã‚‹ã€‚
+            // å…¨ã‚«ã‚¹ã‚±ãƒ¼ãƒ‰ã§åŒã˜åºƒã„æ·±åº¦ç¯„å›²ã‚’ä½¿ã†ã¨æ·±åº¦ç²¾åº¦ãŒè¶³ã‚Šãªããªã‚Šã€
+            // è¿‘è·é›¢ç”¨(é«˜è§£åƒåº¦)ã®ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã§ã‚‚å½±ã®ãƒã‚¤ã‚¢ã‚¹ãŒãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã§
+            // å¤§ãããªã‚Šã™ãã¦ã€å½±ãŒè¶³å…ƒã‹ã‚‰æµ®ã„ã¦è¦‹ãˆã‚‹åŸå› ã«ãªã£ã¦ã„ãŸã€‚
+            // è¦–éŒå°ã‚¹ãƒ©ã‚¤ã‚¹ã®å¤–å´ã«ã„ã‚‹é®è”½ç‰©(ç”»é¢å¤–ã®é«˜ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãªã©)ã¾ã§
+            // å½±ã‚’è½ã¨ã›ã‚‹ã‚ˆã†ã«ã€è¿‘å¹³é¢å´ã«ã¯å¥¥è¡Œãã®åŠåˆ†ã ã‘ä½™è£•ã‚’æŒãŸã›ã‚‹ã€‚
+            float depthRange = max(1.0f, farZ - nearZ);
+            float cascadeNear = max(1.0f, nearZ - depthRange * 0.5f);
+            float cascadeFar = max(cascadeNear + 1.0f, farZ);
+            Matrix projMatrix;
+            projMatrix.MakeOrthoProjectionMatrix(
+                5000.0f,
+                5000.0f,
+                cascadeNear,
+                cascadeFar
+            );
+
+            // 8é ‚ç‚¹ã‚’ãƒ©ã‚¤ãƒˆãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³ç©ºé–“ã«å¤‰æ›ã—ã¦ã€8é ‚ç‚¹ã®æœ€å¤§å€¤ã€æœ€å°å€¤ã‚’æ±‚ã‚ã‚‹
             Matrix lvpMatrix = viewMatrix * projMatrix;
             Vector3 vMax, vMin;
             vMax = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
@@ -119,7 +128,7 @@ namespace nsK2Engine {
                 vMin.Min(v);
             }
 
-            // step-9 ƒNƒƒbƒvs—ñ‚ğ‹‚ß‚é
+            // step-9 ã‚¯ãƒ­ãƒƒãƒ—è¡Œåˆ—ã‚’æ±‚ã‚ã‚‹
             float xScale = 2.0f / (vMax.x - vMin.x);
             float yScale = 2.0f / (vMax.y - vMin.y);
             float xOffset = (vMax.x + vMin.x) * -0.5f * xScale;
@@ -130,10 +139,10 @@ namespace nsK2Engine {
             clopMatrix.m[3][0] = xOffset;
             clopMatrix.m[3][1] = yOffset;
 
-            // ƒ‰ƒCƒgƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ‚ÉƒNƒƒbƒvs—ñ‚ğæZ‚·‚é
+            // ãƒ©ã‚¤ãƒˆãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã«ã‚¯ãƒ­ãƒƒãƒ—è¡Œåˆ—ã‚’ä¹—ç®—ã™ã‚‹
             m_lvpcMatrix[areaNo] = lvpMatrix * clopMatrix;
 
-            // Ÿ‚ÌƒGƒŠƒA‚Ì‹ß•½–Ê‚Ü‚Å‚Ì‹——£‚ğ‘ã“ü‚·‚é
+            // æ¬¡ã®ã‚¨ãƒªã‚¢ã®è¿‘å¹³é¢ã¾ã§ã®è·é›¢ã‚’ä»£å…¥ã™ã‚‹
             nearDepth = cascadeAreaTbl[areaNo];
         }
     };

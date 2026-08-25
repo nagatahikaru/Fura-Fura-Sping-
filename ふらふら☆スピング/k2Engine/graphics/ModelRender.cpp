@@ -119,7 +119,8 @@ namespace nsK2Engine {
 		EnModelUpAxis enModelUpAxis,
 		bool isShadowReciever,
 		int maxInstance,
-		bool isFrontCullingOnDrawShadowMap)
+		bool isFrontCullingOnDrawShadowMap,
+		const char* gbufferPsEntryPointFuncOverride)
 	{
 		// インスタンシング描画用のデータを初期化。
 		InitInstancingDraw(maxInstance);
@@ -130,7 +131,7 @@ namespace nsK2Engine {
 		// アニメーション済み頂点バッファの計算処理を初期化。
 		InitComputeAnimatoinVertexBuffer(filePath, enModelUpAxis);
 		// GBuffer描画用のモデルを初期化。
-		InitModelOnRenderGBuffer(*g_renderingEngine, filePath, enModelUpAxis, isShadowReciever);
+		InitModelOnRenderGBuffer(*g_renderingEngine, filePath, enModelUpAxis, isShadowReciever, gbufferPsEntryPointFuncOverride);
 		// ZPrepass描画用のモデルを初期化。
 		InitModelOnZprepass(*g_renderingEngine, filePath, enModelUpAxis);
 		// シャドウマップ描画用のモデルを初期化。
@@ -205,7 +206,8 @@ namespace nsK2Engine {
 		RenderingEngine& renderingEngine,
 		const char* tkmFilePath,
 		EnModelUpAxis enModelUpAxis,
-		bool isShadowReciever
+		bool isShadowReciever,
+		const char* psEntryPointFuncOverride
 	)
 	{
 		ModelInitData modelInitData;
@@ -219,7 +221,10 @@ namespace nsK2Engine {
 			//スケルトンを指定する。
 			modelInitData.m_skeleton = &m_skeleton;		}
 
-		if (isShadowReciever) {
+		if (psEntryPointFuncOverride != nullptr) {
+			modelInitData.m_psEntryPointFunc = psEntryPointFuncOverride;
+		}
+		else if (isShadowReciever) {
 			modelInitData.m_psEntryPointFunc = "PSMainShadowReciever";
 		}
 		//モデルの上方向を指定する。

@@ -35,7 +35,16 @@ namespace {
 		ModelRender* modelRender
 		, PhysicsStaticObject* physicsStaticObject
 		, std::string filePath) {
-		modelRender->Init(filePath.c_str());
+		// 白いボールを目立たせるため、背景(芝・観客席など)は明るさと彩度を落として描画する。
+		modelRender->Init(
+			filePath.c_str(),
+			nullptr,
+			0,
+			enModelUpAxisZ,
+			true,
+			1,
+			false,
+			"PSMainBackgroundTint");
 		physicsStaticObject->CreateFromModel(
 			modelRender->GetModel()
 			, modelRender->GetModel().GetWorldMatrix());//モデルから静的な物理オブジェクトを生成
