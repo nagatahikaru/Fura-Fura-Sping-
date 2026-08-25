@@ -50,7 +50,7 @@ namespace {
 		"START2",
 		"STOP2",
 		"ute",
-		"TitleCall"
+		"TitleCall3"
 	};	
 }
 
@@ -311,7 +311,7 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 		return se;
 	}
 
-	if (number == enSound_TitleCall) {
+	if (number == enSound_TitleCall3) {
 		SoundSource* se = NewGO<SoundSource>(0);
 		se->Init(number);
 		se->SetVolume(curved * 3.0f * masterScale);

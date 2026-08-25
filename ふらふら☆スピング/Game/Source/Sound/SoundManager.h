@@ -39,7 +39,7 @@ enum Sound{
 	enSound_STRAT2,
 	enSound_STOP2,
 	enSound_ute,
-	enSound_TitleCall,
+	enSound_TitleCall3,
 	enSound_Num //このステータスは、サウンドの総数を表しているため、この下には追加しないでください。
 };
 class SoundManager :public IGameObject

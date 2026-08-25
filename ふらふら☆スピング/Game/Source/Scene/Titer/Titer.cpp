@@ -18,32 +18,33 @@ bool Titer::Start()
 	}
 
 
-    //if (!g_soundManager->m_hasPlayedTitleCall)
-    //{
-    //    // ★ アプリ起動後、初めてタイトルに来た時だけコール
-    //    g_soundManager->PlaySE(enSound_TitleCall, 0.0f); 
-    //    g_soundManager->m_hasPlayedTitleCall = true;
-    //    m_bgmStarted = false;
-    //    m_titleCallFrameCount = 0;
+    if (!g_soundManager->m_hasPlayedTitleCall)
+    {
+        // ★ アプリ起動後、初めてタイトルに来た時だけコール
+        g_soundManager->PlaySE(enSound_TitleCall3, 0.0f); 
+        g_soundManager->m_hasPlayedTitleCall = true;
+        m_bgmStarted = false;
+        m_titleCallFrameCount = 0;
+        m_titleCallPending = true;
 
-    //    // ★ コール再生中はUI操作をロック
-    //    if (m_titerUI) {
-    //        m_titerUI->SetInputLocked(true);
-    //    }
-    //}
-    //else
-    //{
-    //    // ★ 2回目以降（ゲームから戻ってきた時）は即BGM
-    //    float v = g_soundManager->m_bgmVolume / 100.0f;
-    //    float curved = powf(v, 2.0f);
-    //    g_bgm = g_soundManager->PlayingSound(enSound_TitleBGM, true, curved);
-    //    m_bgmStarted = true;
-    //}
-
-         float v = g_soundManager->m_bgmVolume / 100.0f;
+        // ★ コール再生中はUI操作をロック
+        if (m_titerUI) {
+            m_titerUI->SetInputLocked(true);
+        }
+    }
+    else
+    {
+        // ★ 2回目以降（ゲームから戻ってきた時）は即BGM
+        float v = g_soundManager->m_bgmVolume / 100.0f;
         float curved = powf(v, 2.0f);
         g_bgm = g_soundManager->PlayingSound(enSound_TitleBGM, true, curved);
         m_bgmStarted = true;
+    }
+
+    /*     float v = g_soundManager->m_bgmVolume / 100.0f;
+        float curved = powf(v, 2.0f);
+        g_bgm = g_soundManager->PlayingSound(enSound_TitleBGM, true, curved);
+        m_bgmStarted = true;*/
 	return true;
 }
 
@@ -53,6 +54,21 @@ void Titer::Update()
 		DeleteGO(this);
         return;
 	}
+
+    //// ★ Update()内、毎フレーム呼ばれる場所に追加
+    //if (m_titleCallPending)
+    //{
+    //    m_titleCallFrameCount++;
+
+    //    const int kTitleCallDelayFrames = 60 * 10; // ★ 60fps想定で10秒
+
+    //    if (m_titleCallFrameCount >= kTitleCallDelayFrames)
+    //    {
+    //        g_soundManager->PlaySE(enSound_TitleCall3, 0.0f);
+    //        g_soundManager->m_hasPlayedTitleCall = true;
+    //        m_titleCallPending = false;
+    //    }
+    //}
 
     if (!m_bgmStarted) {
         m_titleCallFrameCount++;

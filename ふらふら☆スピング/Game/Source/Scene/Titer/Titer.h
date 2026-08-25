@@ -20,5 +20,6 @@ private:
 	TiterUI* m_titerUI;
 	int m_titleCallFrameCount = 0;
 	bool m_bgmStarted = false;
+	bool m_titleCallPending = false;
 };
 
