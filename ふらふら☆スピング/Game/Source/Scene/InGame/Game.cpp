@@ -64,6 +64,12 @@ bool Game::Start()
 	if (m_weather)
 	{
 		m_weather->SetWeatherType(m_weatherType);
+		m_weather->SetDifficulty(m_difficulty); // ★ 追加
+	}
+
+	if (m_weather)
+	{
+		m_weather->SetWeatherType(m_weatherType);
 	}
 
 	const DifficultyParams& p = GetDifficultyParams(m_difficulty);
@@ -388,6 +394,7 @@ void Game::Update()
 		}
 		m_timeScale = 1.0f;
 	}
+
 	else if (!m_hasTriggered100m) {
 		// ★ 100m演出前だけ倍速を許可
 		if (m_canFastForward && g_pad[0]->IsPress(enButtonB)) {

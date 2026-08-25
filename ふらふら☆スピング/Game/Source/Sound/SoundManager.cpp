@@ -274,7 +274,7 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 	if (number == enSound_SE20) {
 		SoundSource* se = NewGO<SoundSource>(0);
 		se->Init(number);
-		se->SetVolume(curved * 1.5f * masterScale);
+		se->SetVolume(curved * 1.0f * masterScale);
 		se->Play(false);
 		return se;
 	}
