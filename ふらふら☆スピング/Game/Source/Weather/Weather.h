@@ -38,7 +38,10 @@ public:
     {
         return m_weatherType;
     }
-
+    void SetDifficulty(Difficulty difficulty)   
+    {
+        m_difficulty = difficulty;
+    }
     WindType GetWindType() const
     {
         return m_currentWindType;
@@ -56,7 +59,7 @@ private:
     void StopEffects();
 private:
     WeatherType m_weatherType = WeatherType::Sunny;
-
+    Difficulty m_difficulty = Difficulty::Hard;
     WindType m_currentWindType = Wind_None;
 
     bool m_isWindActive = false;

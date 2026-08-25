@@ -83,6 +83,14 @@ void Weather::StartWindEffect()
         return;
     }
 
+    // š HardˆÈŠO‚Íí‚É–³•—
+    if (m_difficulty != Difficulty::Hard)
+    {
+        m_currentWindType = Wind_None;
+        m_isWindActive = false;
+        return;
+    }
+
     int r;
 
     // ‘å‰J‚Ìê‡
