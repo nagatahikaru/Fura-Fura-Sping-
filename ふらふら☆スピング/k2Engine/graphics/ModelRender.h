@@ -43,7 +43,8 @@ namespace nsK2Engine {
 			EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
 			bool isShadowReciever = true,
 			int maxInstance = 1,
-			bool isFrontCullingOnDrawShadowMap = false);
+			bool isFrontCullingOnDrawShadowMap = false,
+			const char* gbufferPsEntryPointFuncOverride = nullptr);
 		/// <summary>
 		/// 半透明描画を行うオブジェクトを初期化。
 		/// </summary>
@@ -404,7 +405,8 @@ namespace nsK2Engine {
 			RenderingEngine& renderingEngine,
 			const char* tkmFilePath,
 			EnModelUpAxis enModelUpAxis,
-			bool isShadowReciever);
+			bool isShadowReciever,
+			const char* psEntryPointFuncOverride);
 		/// <summary>
 		/// 半透明オブジェクト描画パスで使用されるモデルを初期化。
 		/// </summary>

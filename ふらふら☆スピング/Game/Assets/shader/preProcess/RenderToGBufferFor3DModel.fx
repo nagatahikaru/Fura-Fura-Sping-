@@ -110,3 +110,22 @@ SPSOut PSMainShadowReciever(SPSIn psIn)
 {
     return PSMainCore(psIn, 1);
 }
+// 背景(芝・観客席など)専用: 白いボールを目立たせるため、明るさと彩度を落として描画する。
+SPSOut PSMainBackgroundTint(SPSIn psIn)
+{
+    SPSOut psOut = PSMainCore(psIn, 1); // 背景は影を受け取る。
+    // 彩度を下げると緑が白っぽいグレーに寄ってボールとの区別がつきにくくなるため、
+    // 彩度はむしろ少し上げて色味を保ったまま、明るさだけを落とす。
+    float luminance = dot(psOut.albedo.rgb, float3(0.299f, 0.587f, 0.114f));
+    static const float saturation = 1.6f; // 1.0で元の彩度、1.0超で色を濃くする。
+    static const float brightness = 0.4f; // 明るさの倍率。
+    // saturationを1.0超にすると成分が0~1の範囲を外れることがある。
+    // 先にsaturateすると輝度の高いテクセルだけ0/1で急にクランプされてジャギーになるため、
+    // 明るさを掛けて値を縮めてから最後にクランプする。
+    float3 tinted = saturate(lerp(luminance.xxx, psOut.albedo.rgb, saturation) * brightness);
+    // ファウルラインなど元々白い部分まで暗くすると、周囲の土/芝との差が急に大きくなって
+    // 輪郭のジャギーが目立つため、明るいテクセルほど元の色に近づけて滑らかにつなぐ。
+    float keepOriginalRate = smoothstep(0.6f, 0.9f, luminance);
+    psOut.albedo.rgb = lerp(tinted, psOut.albedo.rgb, keepOriginalRate);
+    return psOut;
+}

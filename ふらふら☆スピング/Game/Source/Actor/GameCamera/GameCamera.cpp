@@ -24,6 +24,8 @@ bool GameCamera::Start() {
     g_camera3D->SetNear(1.0f);
     g_camera3D->SetFar(100000.0f);
 
+    // ブルームが強すぎて画面が白っぽく霞むのを抑えるため、閾値を上げて弱める。
+    g_renderingEngine->SetBloomThreshold(2.5f);
     SetCatcherCamera();
     return true;
 }
