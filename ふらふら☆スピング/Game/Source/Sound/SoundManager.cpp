@@ -45,6 +45,7 @@ namespace {
 		"SE17",
 		"SE18",
 		"SE19",
+		"SE20",
 		"guru1",
 		"START",
 		"START2",
@@ -266,6 +267,14 @@ SoundSource* SoundManager::PlaySE(Sound number, float volume)
 		SoundSource* se = NewGO<SoundSource>(0);
 		se->Init(number);
 		se->SetVolume(curved * 2.0f * masterScale);   
+		se->Play(false);
+		return se;
+	}
+
+	if (number == enSound_SE20) {
+		SoundSource* se = NewGO<SoundSource>(0);
+		se->Init(number);
+		se->SetVolume(curved * 1.5f * masterScale);
 		se->Play(false);
 		return se;
 	}

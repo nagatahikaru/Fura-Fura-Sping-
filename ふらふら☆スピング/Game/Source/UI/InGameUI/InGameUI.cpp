@@ -565,17 +565,17 @@ void InGameUI::ShowPrediction(float prDistance)
 	m_predictionAlpha = 1.0f; // 必要に応じてフェードインの初期値など
 
 	// 🌟 距離が 80m 未満なら「ゴロ」として扱う
-	if (m_predictedDistance < 24000.0f)
+	if (m_predictedDistance < 29000.0f)
 	{
 		m_predictionType = Prediction_Goro;
 	}
 	else
 	{
-		if (m_predictedDistance < 80000.0f) {
+		if (m_predictedDistance < 60000.0f) {
 			m_predictionType = Prediction_Nice;
 			g_soundManager->PlaySE(Sound::enSound_SE7, 100.0f);  // ★ ナイス音
 		}
-		else if (m_predictedDistance < 93000.0f) {
+		else if (m_predictedDistance < 80000.0f) {
 			m_predictionType = Prediction_Great;
 			g_soundManager->PlaySE(Sound::enSound_SE8, 100.0f);  // ★ グレイト音
 		}

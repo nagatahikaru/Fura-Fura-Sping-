@@ -304,6 +304,7 @@ void Batter::Rotation()
 	stickL.y = g_pad[0]->GetLStickYF();
 
 	m_inputAngle = atan2f(stickL.y, stickL.x); // 入力角度を計算
+	CheckDirectionChangeSE(); // ★ ここに追加：方向転換を検知してSE20を鳴らす
 
 	// 入力角度に基づいてバッターの位置を更新
 	m_modelPos.x = m_bodyCenter.x + BATTER::ROTATION_RADIUS * cosf(m_inputAngle);
@@ -697,6 +698,8 @@ void Batter::ResetSwing()
 
 	// ★ カーソルモードもリセット
 	m_isCursorMode = false;
+
+	m_guruGuruDirection = -1;
 }
 
 /** 演出関連コード */
@@ -748,6 +751,54 @@ void Batter::CloudofdustEffect(Vector3 pos)
 		pos,
 		Vector3(70.0f, 20.0f, 70.0f));
 	m_inro.m_cloudEffectCount += g_gameTime->GetFrameDeltaTime();
+}
+
+/** スティック入力方向(4方向)を判定し、切り替わった瞬間にSE20を鳴らす */
+void Batter::CheckDirectionChangeSE()
+{
+	Vector3 stickL = Vector3::Zero;
+	stickL.x = g_pad[0]->GetLStickXF();
+	stickL.y = g_pad[0]->GetLStickYF();
+
+	// ニュートラル(入力なし)のときは判定しない
+	constexpr float STICK_DEADZONE = 0.3f;
+	if (stickL.Length() < STICK_DEADZONE)
+	{
+		return;
+	}
+
+	float angleDeg = atan2f(stickL.y, stickL.x) * BATTER::RAD_TO_DEG;
+	if (angleDeg < 0.0f) angleDeg += 360.0f; // 0〜360に正規化
+
+	// 4方向に分類 (右:0, 上:1, 左:2, 下:3)
+	int direction = 0;
+	if (angleDeg >= 45.0f && angleDeg < 135.0f)
+	{
+		direction = 1; // 上
+	}
+	else if (angleDeg >= 135.0f && angleDeg < 225.0f)
+	{
+		direction = 2; // 左
+	}
+	else if (angleDeg >= 225.0f && angleDeg < 315.0f)
+	{
+		direction = 3; // 下
+	}
+	else
+	{
+		direction = 0; // 右
+	}
+
+	// 方向が変わった瞬間だけSE20を鳴らす
+	if (m_guruGuruDirection != -1 && direction != m_guruGuruDirection)
+	{
+		if (g_soundManager && g_soundManager->m_seVolume > 0)
+		{
+			g_soundManager->PlaySE(enSound_SE20, 1.0f);
+		}
+	}
+
+	m_guruGuruDirection = direction;
 }
 
 /** 計算関連コード */
