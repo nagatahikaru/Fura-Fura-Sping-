@@ -34,6 +34,7 @@ enum Sound{
 	enSound_SE17,
 	enSound_SE18,
 	enSound_SE19,
+	enSound_SE20,
 	enSound_guru1,
 	enSound_STRAT,
 	enSound_STRAT2,
