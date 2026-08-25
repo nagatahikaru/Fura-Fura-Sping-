@@ -396,12 +396,14 @@ void Game::Update()
 	}
 
 	else if (!m_hasTriggered100m) {
-		// ★ 100m演出前だけ倍速を許可
+		// ★ 100m演出前だけ倍速を許可（難易度別）
+		const DifficultyParams& p = GetDifficultyParams(m_difficulty);
+
 		if (m_canFastForward && g_pad[0]->IsPress(enButtonB)) {
-			m_timeScale = 15.0f;
+			m_timeScale = p.fastForwardScaleWithB;
 		}
 		else if (m_canFastForward) {
-			m_timeScale = 7.5f;
+			m_timeScale = p.fastForwardScale;
 		}
 		else {
 			m_timeScale = 1.0f;

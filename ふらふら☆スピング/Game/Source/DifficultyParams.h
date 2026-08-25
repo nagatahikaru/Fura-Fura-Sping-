@@ -14,6 +14,8 @@ struct DifficultyParams
     float replayDuration;// リプレイの再生時間（秒）
     int   guruguruSEInterval;// ぐるぐるSEを鳴らす間隔（ぐるぐるの回数）
     float replayZoomMaxSpeed; // ★ 追加：リプレイズームカメラの1フレーム最大移動量
+    float fastForwardScale;       // ★ 追加：通常時の倍速
+    float fastForwardScaleWithB;  // ★ 追加：Bボタン押し込み時の倍速
     // Batter
     float meatRangeMultiplier; // ミート範囲の倍率
     int   adjacentFrames;      // 前後判定フレーム
@@ -31,10 +33,10 @@ struct DifficultyParams
 inline const DifficultyParams& GetDifficultyParams(Difficulty diff)
 {
     static const DifficultyParams table[4] = {
-        /* Easy    */ { 1300.0f, 4.0f,  0, 0.3f,3, 5.5f, 7, 13.0f,  3.0f, 8 },
-        /* Normal  */ { 1500.0f, 9.5f,  0, 0.5f,3, 4.5f, 5, 16.0f, 2.0f, 5 },
-        /* Hard    */ { 2000.0f, 25.0f, 10,1.0f,3, 3.5f, 3, 19.0f, 1.0f, 2 },
-        /* Tutorial*/ { 1300.0f, 4.0f,  0, 0.1f,5, 5.0f, 7, 8.0f,  3.0f, 8 },
+        /* Easy    */ { 1300.0f, 4.0f,  0, 0.3f,3, 5.5f, 7, 13.0f, 13.5f, 21.0f, 3.0f, 8 },
+        /* Normal  */ { 1500.0f, 9.5f,  0, 0.5f,3, 4.5f, 5, 16.0f, 11.0f, 18.5f, 2.0f, 5 },
+        /* Hard    */ { 2000.0f, 25.0f, 10,1.0f,3, 3.5f, 3, 19.0f, 7.5f, 15.0f, 1.0f, 2 },
+        /* Tutorial*/ { 1300.0f, 4.0f,  0, 0.1f,5, 5.0f, 7, 8.0f,  13.5f, 21.5f, 3.0f, 8 },
     };
     return table[diff];
 }
