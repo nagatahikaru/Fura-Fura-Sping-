@@ -84,7 +84,7 @@ void Weather::StartWindEffect()
     }
 
     // š HardˆÈŠO‚Íí‚É–³•—
-    if (m_difficulty != Difficulty::Hard)
+    if (m_difficulty == Difficulty::Tutorial)
     {
         m_currentWindType = Wind_None;
         m_isWindActive = false;
