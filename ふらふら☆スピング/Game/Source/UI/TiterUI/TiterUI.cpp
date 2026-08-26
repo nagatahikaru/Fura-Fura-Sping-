@@ -111,7 +111,7 @@ void TiterUI::Update()
         if (m_selectedDifficulty == 0)      m_easySprite.SetMulColor({ 1,1,1, blink });
         else if (m_selectedDifficulty == 1) m_normalSprite.SetMulColor({ 1,1,1, blink });
         else if (m_selectedDifficulty == 2) m_hardSprite.SetMulColor({ 1,1,1, blink });
-
+        else if (m_selectedDifficulty == 3) m_tutorial.SetMulColor({ 1,1,1, blink });
         // šŒˆ’èŽžAØ‚è‘Ö‚í‚éÚ×‰æ‘œ‚àˆê‚É“_–Å‚³‚¹‚éê‡‚Í‚±‚±‚Éˆ—‚ð’Ç‰Á‚Å‚«‚Ü‚·
         if (m_decideTimer >= 0.5f) {
             m_fadeAlpha += dt * 1.5f;
