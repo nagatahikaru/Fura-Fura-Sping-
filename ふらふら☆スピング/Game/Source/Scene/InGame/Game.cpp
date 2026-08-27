@@ -679,7 +679,9 @@ void Game::GoToTiter()
 
 	auto pause = FindGO<PauseUI>("pause");
 	if (pause) DeleteGO(pause);
-
+	if (g_soundManager) {
+		g_soundManager->StopSE2();   // ★ 歓声(SE2)を止めてからタイトルへ
+	}
 	// ★ タイトルシーンへ遷移（クラス名は実際のものに合わせてください）
 	NewGO<Titer>(0);
 
@@ -736,6 +738,12 @@ void Game::OnBallLanded()
 	m_hasStartedDistance = false;   // ★ ここでもリセット
 	m_isTutorialSelectTitle = false;   // ★ 追加：初期カーソルは「続ける」
 	m_tutorialStickNeutral = true;     // ★ 追加
+
+	if (g_soundManager && !m_startFadeSE2) {
+		m_startFadeSE2 = true;
+		g_soundManager->FadeOutSE2(3.0f); // 秒数はお好みで調整
+	}
+
 	Pitcher* pitcher = FindGO<Pitcher>("pitcher");
 	if (pitcher) {
 		pitcher->ResetThrow();

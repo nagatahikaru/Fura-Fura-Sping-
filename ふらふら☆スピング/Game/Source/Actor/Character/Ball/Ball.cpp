@@ -42,9 +42,9 @@ namespace
     };
 
     const AngleThreshold kFadeThresholdTable[] = {
-        { 10.0f, 30000.0f },
-        { 20.0f, 28000.0f },
-        { 30.0f, 24000.0f },
+        { 10.0f, 34000.0f },
+        { 20.0f, 32000.0f },
+        { 30.0f, 26000.0f },
         { 40.0f, 20000.0f },
         { 50.0f, 16000.0f },
         { 60.0f, 14000.0f },
@@ -61,6 +61,18 @@ namespace
             }
         }
         return kFadeThresholdTable[sizeof(kFadeThresholdTable) / sizeof(kFadeThresholdTable[0]) - 1].distance;
+    }
+
+    float GetWindDifficultyScale(Difficulty difficulty)
+    {
+        switch (difficulty)
+        {
+        case Tutorial: return 0.0f;
+        case Easy:     return 0.3f;
+        case Normal:   return 0.5f;
+        case Hard:     return 1.0f;
+        default:       return 1.0f;
+        }
     }
 }
 
@@ -220,6 +232,10 @@ void Ball::Update()
                 baseZ = -0.7f;
                 break;
             }
+
+            float diffScale = GetWindDifficultyScale(game->GetDifficulty());
+            baseX *= diffScale;
+            baseZ *= diffScale;
 
             const float kWindPowerX = baseX * (1.0f + 0.001f * m_position.y);
             const float kWindPowerZ = baseZ * (1.0f + 0.001f * m_position.y);
@@ -976,6 +992,10 @@ float Ball::PredictLandingDistance()
         baseZ = -0.7f;
         break;
     }
+
+    float diffScale = GetWindDifficultyScale(currentDifficulty);
+    baseX *= diffScale;
+    baseZ *= diffScale;
 
     while (pos.y > 0.0f) {
 
