@@ -61,9 +61,14 @@ private:
 	float m_dropStartRatioOverride;
 
 	bool m_isRolling = false;              // ★ 追加：着地後、転がっている最中かどうか
-	static constexpr float kRollingFriction = 200.0f;   // ★ 追加：転がり中の減速量（速度/秒）
+	static constexpr float kRollingFriction = 50.0f;   // ★ 追加：転がり中の減速量（速度/秒）
 	static constexpr float kRollingStopSpeed = 30.0f;   // ★ 追加：これ未満の速度で完全停止
 
+	int  m_bounceCount = 0;
+	static constexpr int kMaxBounces = 2;                // 最大バウンド回数
+	static constexpr float kBounceRestitution = 0.35f;   // 反発係数（跳ねるたびに弱くなる）
+	static constexpr float kMinBounceSpeed = 10.0f;      // これ未満のY速度ならバウンドさせず転がりへ
+	bool m_isBouncing = false;   // ★ 追加：バウンド中かどうか
 	float m_pitchStartY = 0.0f; // ★ エラー対策で追加
 	Vector3 m_targetPos = Vector3::Zero; // ★ エラー対策で追加
 

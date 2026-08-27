@@ -565,7 +565,7 @@ void InGameUI::ShowPrediction(float prDistance)
 	m_predictionAlpha = 1.0f; // 必要に応じてフェードインの初期値など
 
 	// 🌟 距離が 80m 未満なら「ゴロ」として扱う
-	if (m_predictedDistance < 34000.0f)
+	if (m_predictedDistance < 32000.0f)
 	{
 		m_predictionType = Prediction_Goro;
 	}
