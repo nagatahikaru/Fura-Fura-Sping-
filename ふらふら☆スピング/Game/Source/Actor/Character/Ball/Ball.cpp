@@ -42,8 +42,8 @@ namespace
     };
 
     const AngleThreshold kFadeThresholdTable[] = {
-        { 10.0f, 34000.0f },
-        { 20.0f, 32000.0f },
+        { 10.0f, 32000.0f },
+        { 20.0f, 30000.0f },
         { 30.0f, 26000.0f },
         { 40.0f, 20000.0f },
         { 50.0f, 16000.0f },
@@ -135,7 +135,7 @@ void Ball::Update()
         if (!game->IsGameStarted()) return;
         if (game->GetIsHitStop()) return;
         if (game->GetIsPaused()) return;
-        if (game->GetIsInputLocked() && !m_isRolling) return;
+        if (game->GetIsInputLocked() && !m_isRolling && m_bounceCount == 0) return; 
         if (game->GetShouldContinueTutorial()) return;
         float dt = (1.0f / 60.0f) * game->GetTimeScale();
 
@@ -407,6 +407,7 @@ void Ball::Update()
                 Game* game = FindGO<Game>("game");
 
                 // ★ 初回着地時（まだ着地イベントを発行していない場合）だけ距離計算とイベント発火
+                               // ★ 初回着地時（まだ着地イベントを発行していない場合）だけ距離計算とイベント発火
                 if (m_hasHit)
                 {
                     if (game) {
@@ -426,12 +427,30 @@ void Ball::Update()
                         }
 
                         game->SetKmValue(finalDistance);
-                        game->OnBallLanded();
+                        game->OnBallLanded();   // ★ 初回着地のみ呼ばれる（バウンド中は再度呼ばない）
                     }
 
                     m_hasHit = false;
-                    m_velocity.y = 0.0f;   // ★ 着地したら上下速度は消す（跳ねない）
-                    m_isRolling = true;    // ★ ここから転がり処理へ
+                    m_bounceCount = 0;   // ★ バウンドカウンタ初期化
+                }
+
+                // ★ バウンド処理：反発係数でY速度を反転、規定回数を超えたら転がりへ移行
+                if (!m_isRolling)
+                {
+                    float incomingSpeed = fabsf(m_velocity.y);
+
+                    if (m_bounceCount < kMaxBounces && incomingSpeed > kMinBounceSpeed)
+                    {
+                        m_velocity.y = incomingSpeed * kBounceRestitution;  // ★ 跳ねるたびに弱くなる
+                        m_bounceCount++;
+                    }
+                    else
+                    {
+                        // ★ 十分弱くなった、または規定回数を超えたので転がりへ移行
+                        m_velocity.y = 0.0f;
+                        m_isRolling = true;
+                        m_isBouncing = false;
+                    }
                 }
 
                 // ★ 転がり中：水平速度を摩擦で少しずつ減衰させる
@@ -1043,6 +1062,8 @@ void Ball::ResetBall()
     m_hasThrowOnce = false;
     m_ballType = Straight;
     m_curveDir = 0;
+    m_bounceCount = 0;     
+    m_isBouncing = false;
     m_isRolling = false;
     SetPosition(m_position);
     Game* game = FindGO<Game>("game");
