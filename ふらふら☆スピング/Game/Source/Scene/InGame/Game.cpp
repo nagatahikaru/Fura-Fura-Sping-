@@ -302,6 +302,13 @@ void Game::Update()
 
 				ResetForNextShot();
 
+				m_cameraMode = Camera_Catcher;
+				m_hasStartedGuruIntroCamera = false;
+				if (m_gameCamera) {
+					m_gameCamera->UnfreezeCamera();     // パーフェクト確定等で凍結されていた場合の解除
+					m_gameCamera->SetCatcherCamera();
+				}
+
 				if (m_InGameUI) {
 					m_InGameUI->SetUIVisible(true);
 					m_InGameUI->SetFontVisble(true);
