@@ -16,7 +16,7 @@
 // ファイル冒頭付近に追加（std::clampが使えない場合のため）
 template <typename T>
 constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
-    return (v < lo) ? lo : (hi < v) ? hi : v;
+	return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
 namespace BATTER {
@@ -48,6 +48,13 @@ namespace BATTER {
 	}
 };
 
+namespace {
+	constexpr float DUST_INTERVAL = 0.07f;  // 土煙を出す間隔(秒)
+	constexpr float DUST_BACK_OFFSET = 10.0f;  // 進行方向の後ろへのずらし量
+	constexpr float DUST_FOOT_OFFSET_Y = 0.0f;  // 足元の高さ補正(地面に合わせて調整)
+	constexpr float DUST_YAW_OFFSET_DEG = 0.0f; // エフェクト素材の向き補正(素材に合わせて調整)
+}
+
 Batter::Batter()
 {
 	m_stateMachine = std::make_unique<BatterStateMachine>();
@@ -56,7 +63,7 @@ Batter::Batter()
 
 Batter::~Batter()
 {
-	
+
 	m_stateMachine->SetBatter(nullptr);
 	m_debuffStageStateMachine->SetBatter(nullptr);
 	delete m_debuffStageManager;
@@ -77,7 +84,7 @@ bool Batter::Start()
 	{
 		BATTER::InitAnimation(m_animationClips, j, true);
 	}
-	for(int j = enAnimationClip_Swing; j < enAnimationClip_Num; j++)
+	for (int j = enAnimationClip_Swing; j < enAnimationClip_Num; j++)
 	{
 		BATTER::InitAnimation(m_animationClips, j, false);
 	}
@@ -86,8 +93,8 @@ bool Batter::Start()
 
 	// ※ animationClip と numClips は環境に合わせて適切な値を渡してください
 	m_characterModel->LoadCharacterModel(
-		nsApp::CharacterModelType::BatterUniformNumber_0, 
-		m_animationClips, 
+		nsApp::CharacterModelType::BatterUniformNumber_0,
+		m_animationClips,
 		enAnimationClip_Num);
 
 	// 2. 武器（バット）の読み込み
@@ -98,14 +105,14 @@ bool Batter::Start()
 	m_characterModel->SetWeaponOffset(BATTER::BAT::OFFSET_BAT);
 
 	m_transform.m_position = BATTER::INITIAL_COORDINATE;
-	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);	
+	m_transform.m_rotation.SetRotationYFromDirectionXZ(m_facingDir);
 
 	// 4. 初期位置やスケールの設定
 	m_characterModel->SetPosition(m_transform.m_position);
 	m_characterModel->SetCharacterScale(BATTER::INITIAL_SCALE);
 	m_characterModel->SettRotation(m_transform.m_rotation);
 	m_characterModel->SetWeaponScale(BATTER::INITIAL_SCALE);
-	
+
 
 	BATTER::InitCharacterController(&m_characterController,
 		BATTER::COLLISION_SCALE,
@@ -118,7 +125,7 @@ bool Batter::Start()
 	m_characterController.SetPosition(m_transform.m_position);
 	m_initialRotation = m_transform.m_rotation;
 
-	m_bodyCenter = BATTER::INITIAL_COORDINATE + Vector3(-30.0f,40.0f,0.0f);
+	m_bodyCenter = BATTER::INITIAL_COORDINATE + Vector3(-30.0f, 40.0f, 0.0f);
 
 	m_guruGuruBatTimer = BATTER::BAT::SPIN_TIME_LIMIT;
 
@@ -127,9 +134,9 @@ bool Batter::Start()
 		m_meetCursorWorldPos,
 		Quaternion::Identity,
 		BATTER::BAT::COLLISION_SCALE_BAT);
-	m_characterModel->Update();	
+	m_characterModel->Update();
 
-	
+
 
 	m_inGameUI = FindGO<InGameUI>("inGameUI");
 	m_game = FindGO<Game>("game");
@@ -157,7 +164,7 @@ void Batter::UpdateModelPosition()
 
 void Batter::setDifficultyVariables()
 {
-	if(m_isDifficultyConfigured)
+	if (m_isDifficultyConfigured)
 	{
 		return; // 難易度設定済みなら何もしない
 	}
@@ -173,7 +180,7 @@ void Batter::setDifficultyVariables()
 		m_isDifficultyConfigured = true;
 		break;
 	case Difficulty::Easy:
-		m_meatRange = m_meatRange*3.0f;
+		m_meatRange = m_meatRange * 3.0f;
 		m_adjacentFrames = 8;
 		m_difficultyPowerScale = 0.50f;
 		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_EASY;
@@ -181,7 +188,7 @@ void Batter::setDifficultyVariables()
 		m_isDifficultyConfigured = true;
 		break;
 	case Difficulty::Normal:
-		m_meatRange = m_meatRange*2.5f;
+		m_meatRange = m_meatRange * 2.5f;
 		m_adjacentFrames = 7;
 		m_difficultyPowerScale = 0.6f;
 		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_NORMAL;
@@ -189,7 +196,7 @@ void Batter::setDifficultyVariables()
 		m_isDifficultyConfigured = true;
 		break;
 	case Difficulty::Hard:
-		m_meatRange = m_meatRange*2.0f;
+		m_meatRange = m_meatRange * 2.0f;
 		m_adjacentFrames = 6;
 		m_difficultyPowerScale = 1.1f;
 		m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_HARD;
@@ -210,8 +217,8 @@ void Batter::setDifficultyVariables()
 
 void Batter::Update()
 {
-	if(m_isPaused)
-	{		
+	if (m_isPaused)
+	{
 		return; // ゲームがポーズ中なら更新処理をスキップ
 	}
 	if (!m_inGameUI)
@@ -219,8 +226,8 @@ void Batter::Update()
 		m_inGameUI = FindGO<InGameUI>("inGameUI");
 		return;
 	}
-	m_game = FindGO<Game>("game");	
-	if(m_isReplay!= m_game->IsReplayPlaying())
+	m_game = FindGO<Game>("game");
+	if (m_isReplay != m_game->IsReplayPlaying())
 	{
 		m_isReplay = m_game->IsReplayPlaying();
 	}
@@ -251,7 +258,7 @@ void Batter::Update()
 	// バッターのステートマシンを更新
 	m_stateMachine->Update();
 	// ★ フラグが切り替わったら、ぐるぐるバットの処理を行う
-	if(!m_isRotation)
+	if (!m_isRotation)
 	{
 		m_debuffStageStateMachine->Update();
 	}
@@ -261,9 +268,9 @@ void Batter::Update()
 		m_inGameUI->SetGuruGuruCount(m_guruGuruBatCount);
 	}
 
-	if(enAnimationClip_Swing== m_setAnimation &&m_animationClips->GetAnimationEvent())
+	if (enAnimationClip_Swing == m_setAnimation && m_animationClips->GetAnimationEvent())
 	{
-		
+
 	}
 }
 
@@ -271,7 +278,7 @@ void Batter::Update()
 
 /** 回転計算処理関数 */
 void Batter::Rotation()
-{	
+{
 	//if (g_pad[0]->IsTrigger(enButtonA)|| g_pad[0]->IsTrigger(enButtonB))
 	//{
 	//	m_guruGuruBatCount+=5; // 連打でカウントを増やす
@@ -353,7 +360,7 @@ void Batter::RoundAndRoundBat()
 	// ★ タイマーが0以下になったら、回転をリセットしてカーソル操作を可能にする
 	if (m_guruGuruBatTimer <= 0.0f)
 	{
-		
+
 		m_guruGuruBatTimer = 0.0f;
 		SetRotationSeen(false);
 		m_game->SetRotationSeen(false);
@@ -416,7 +423,7 @@ void Batter::RotationUpdate()
 		// 90度補正
 		yaw += Math::DegToRad(90.0f);
 
-		
+
 		m_rotation.SetRotationY(yaw);
 		m_characterModel->SetPosition(m_modelPos);
 		m_characterModel->SettRotation(m_rotation);
@@ -482,7 +489,7 @@ void Batter::SetCursorPosition()
 
 	// デバフ適用後の最終座標
 	Vector3 finalPos = GetFinalCursorPosition();
-		
+
 
 	m_inGameUI->SetMeetCursorPosition(finalPos);
 }
@@ -623,7 +630,7 @@ void Batter::HitBat()
 		powerScale = 0.9f;
 
 	}
-	
+
 	float finalPower = 935.0f * powerScale * m_difficultyPowerScale;
 	m_ball->HitBall(hitDir, finalPower);
 
@@ -704,15 +711,15 @@ void Batter::ResetSwing()
 
 /** 演出関連コード */
 void Batter::DownArrowEffect()
-{	
+{
 	if (m_guruGuruBatCount < 3) return;
 
-	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)){
+	if (g_effectManager->GetIsPlayeEffect(m_inro.m_effectDawnID)) {
 		return; // すでにエフェクトが再生中なら新たに出さない
 	}
-	
+
 	Vector3 pos = Vector3(m_transform.m_position.x, m_transform.m_position.y + 100.0f, m_transform.m_position.z);
-	EffectType type = static_cast<EffectType>(m_guruGuruBatCount/3);
+	EffectType type = static_cast<EffectType>(m_guruGuruBatCount / 3);
 	if (type >= 10)
 	{
 		type = enEffect_DownArrow10; // 上限を10に設定
@@ -735,22 +742,84 @@ void Batter::HitEffect(Vector3 pos)
 		Vector3(30.0f, 30.0f, 30.0f));
 }
 
-void Batter::CloudofdustEffect(Vector3 pos)
+void Batter::CloudofdustEffect()
 {
-	if (m_inputAngle <= 0.0f)
+	// スティック入力がない間は出さない
+	const float lx = g_pad[0]->GetLStickXF();
+	const float ly = g_pad[0]->GetLStickYF();
+	if (lx * lx + ly * ly < 0.01f)
 	{
-		// 角度が0以下の場合はエフェクトを出さない
+		m_prevDustPos = m_modelPos;
 		return;
 	}
-	if (m_inro.m_cloudEffectCount>0.5) {
-		m_inro.m_cloudEffectCount = 0.0f;
-		return; // すでにエフェクトが再生中なら新たに出さない
+
+	// 移動方向(水平のみ)
+	Vector3 move = m_modelPos - m_prevDustPos;
+	move.y = 0.0f;
+	m_prevDustPos = m_modelPos;
+
+	// 間隔管理:溜めて、超えたら出してリセット
+	m_inro.m_cloudEffectCount += g_gameTime->GetFrameDeltaTime();
+	if (m_inro.m_cloudEffectCount < DUST_INTERVAL) {
+		return;
 	}
+	if (move.Length() < 0.001f) {
+		return;  // ほぼ動いていないときは出さない
+	}
+	m_inro.m_cloudEffectCount = 0.0f;
+	move.Normalize();
+
+	// 足元 = モデル位置から進行方向の後ろへ少しずらす
+	Vector3 footPos = m_modelPos - move * DUST_BACK_OFFSET;
+	footPos.y += DUST_FOOT_OFFSET_Y;
+
+	// 進行方向を向く回転(モデルの+90°補正は使わない)
+	Quaternion dustRot;
+	dustRot.SetRotationY(atan2f(move.x, move.z) + Math::DegToRad(DUST_YAW_OFFSET_DEG));
+
 	m_inro.m_effectCloudID = g_effectManager->PlayEffect(
 		enEffect_CloudOfDust,
-		pos,
-		Vector3(70.0f, 20.0f, 70.0f));
-	m_inro.m_cloudEffectCount += g_gameTime->GetFrameDeltaTime();
+		footPos,
+		Vector3(70.0f, 20.0f, 70.0f),
+		dustRot);
+}
+
+// ぐるぐるバットの摩擦処理
+void Batter::FrictionEffect()
+{
+	//煙が頭を貫通しないように風による煙の位置補正を行う
+
+
+	// スティック入力がない間は出さない
+	const float lx = g_pad[0]->GetLStickXF();
+	const float ly = g_pad[0]->GetLStickYF();
+	if (lx * lx + ly * ly < 0.01f || m_effectCount>1)
+	{
+		m_effectCount = 0;
+		m_Spawn_Cooldown = 0.0f;
+		return;
+	}
+
+	m_Spawn_Cooldown += g_gameTime->GetFrameDeltaTime();
+	if (m_Spawn_Cooldown >= 0.1f)
+	{
+		m_effectCount++;
+		m_Spawn_Cooldown = 0.0f;
+		m_inro.m_effectFrictionID = g_effectManager->PlayEffect(
+			enEffect_FrictionSmoke,
+			{ m_bodyCenter.x, 240.0f, m_bodyCenter.z },
+			Vector3(30.0f, 30.0f, 30.0f));
+		m_frictionEffectIDs.push_back(m_inro.m_effectFrictionID);
+	}
+}
+
+void Batter::StopFrictionEffect()
+{
+	// 最後の1個だけでなく、出した摩擦煙をすべて止める
+	for (uint32_t id : m_frictionEffectIDs) {
+		g_effectManager->StopEffect(id);
+	}
+	m_frictionEffectIDs.clear();
 }
 
 /** スティック入力方向(4方向)を判定し、切り替わった瞬間にSE20を鳴らす */

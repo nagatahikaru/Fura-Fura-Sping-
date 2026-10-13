@@ -30,6 +30,11 @@ enum EffectType {
 	enEffect_kaze04,
 	enEffect_inazuma,
 	enEffect_CloudOfDust,
+	enEffect_FrictionSmoke,
+	enEffect_Trajectory_nice,		// 飛距離判定ごとの打球の軌跡（ナイス）
+	enEffect_Trajectory_great,		// 同（グレート）
+	enEffect_Trajectory_excellent,	// 同（エクセレント）
+	enEffect_Trajectory_perfect,	// 同（パーフェクト）
 	enEffect_Num
 };
 
@@ -53,10 +58,10 @@ public:
 	/// <param name="rot">エフェクトの回転。</param>
 	/// <returns></returns>
 	uint32_t PlayEffect(
-		EffectType type= enEffect_DownArrow1,
-		const Vector3& pos=Vector3::Zero,
-		const Vector3& scale=Vector3::One,
-		const Quaternion& rot=Quaternion::Identity);
+		EffectType type = enEffect_DownArrow1,
+		const Vector3& pos = Vector3::Zero,
+		const Vector3& scale = Vector3::One,
+		const Quaternion& rot = Quaternion::Identity);
 
 	/// 移動関数 ///
 
@@ -70,8 +75,8 @@ public:
 	/// <param name="rot">エフェクトの新しい回転。</param>
 	/// <returns></returns>
 	bool MoveEffect(
-		uint32_t id=0,
-		const Vector3& pos=Vector3::Zero,
+		uint32_t id = 0,
+		const Vector3& pos = Vector3::Zero,
 		const Vector3& scale = Vector3::One,
 		const Quaternion& rot = Quaternion::Identity);
 
@@ -168,6 +173,11 @@ private:
 		u"kaze04",
 		u"inazuma",
 		u"Cloud of dust",
+		u"Friction smoke",
+		u"trajectory_nice",
+		u"trajectory_great",
+		u"trajectory_excellent",
+		u"trajectory_perfect"
 	};
 
 	std::unordered_map<uint32_t, EffectEmitter*> m_effects;					//effectへの参照。

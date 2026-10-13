@@ -8,7 +8,6 @@ namespace {
 	float RSTICK_MIN_THRESHOLD = 0.000001f;
 }
 
-
 BatterStateMachine::BatterStateMachine()
 {
 	RegisterState<BatterIdleState>();
@@ -18,12 +17,12 @@ BatterStateMachine::BatterStateMachine()
 	RegisterState<BatterReplayState>();
 	RegisterState<BatterReloadState>();
 	m_currentState = FindState(BatterIdleState::ID());
-	
+
 }
 
 BatterStateMachine::~BatterStateMachine()
 {
-	
+
 }
 
 void BatterStateMachine::Update()
@@ -41,14 +40,14 @@ void BatterStateMachine::Update()
 }
 
 void BatterIdleState::Enter()
-{ 
-	Batter* batter = GetBatter();	
-	batter->SetPlayAnimation(batter->GetEnAnimationClip());	
+{
+	Batter* batter = GetBatter();
+	batter->SetPlayAnimation(batter->GetEnAnimationClip());
 }
 
 void BatterIdleState::Update()
 {
-	Batter* batter = GetBatter();	
+	Batter* batter = GetBatter();
 	batter->AnimationUpdate();
 }
 
@@ -56,7 +55,7 @@ void BatterIdleState::Exit()
 {
 	Batter* batter = GetBatter();
 	batter->SetPlayAnimation(batter->GetEnAnimationClip());
-	
+
 }
 
 //待機状態からの状態遷移判定。
@@ -128,13 +127,15 @@ void BatterRotationState::Update()
 	batter->RotationUpdate();
 	batter->RoundAndRoundBat();
 	batter->AnimationUpdate();
-	batter->CloudofdustEffect(batter->GetPosition());
+	batter->CloudofdustEffect();
+	batter->FrictionEffect();
 }
 
 void BatterRotationState::Exit()
 {
 	Batter* batter = GetBatter();
 	batter->RotationUpdate();
+	batter->StopFrictionEffect();   // 回転ターンが終わったら煙を消す
 }
 
 bool BatterRotationState::RequestState(uint32_t& request)
@@ -143,7 +144,7 @@ bool BatterRotationState::RequestState(uint32_t& request)
 	float ly = g_pad[0]->GetLStickYF();
 	Batter* batter = GetBatter();
 
-	if (lx< 0.0f && ly < 0.0f)
+	if (lx < 0.0f && ly < 0.0f)
 	{
 		request = BatterIdleState::ID();
 		return true;
@@ -180,22 +181,22 @@ bool BatterCursorSetState::RequestState(uint32_t& request)
 {
 	Batter* batter = GetBatter();
 	Game* game = FindGO<Game>("game");
-		if (g_pad[0]->IsTrigger(enButtonA))
+	if (g_pad[0]->IsTrigger(enButtonA))
+	{
+		if (game && game->GetShouldContinueTutorial())
 		{
-			if (game && game->GetShouldContinueTutorial())
+			return false;
+		}
+		if (game && game->GetIsInputLocked())
+		{
+			if (game->GetCurrentShotIndex() == 2 && game->GetIsInputLocked())
 			{
-				return false;
+				return false; // 遷移を拒否
 			}
-			if (game && game->GetIsInputLocked())
-			{
-				if (game->GetCurrentShotIndex() == 2 && game->GetIsInputLocked())
-				{
-					return false; // 遷移を拒否
-				}
-			}
+		}
 		request = BatterSwingState::ID();
 		return true;
-		}
+	}
 
 	if (batter->GetIsOnGround())
 	{

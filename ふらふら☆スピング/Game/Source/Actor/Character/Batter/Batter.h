@@ -9,19 +9,19 @@
 #include "Debuff/DebuffStage/DebuffStageManager.h"
 
 
-namespace BATTER{
-   extern std::string FILE_PATH_BATTER;
-   extern std::string FILE_PATH_DDS;
-   extern std::string FILE_PATH_ANIMATION[4];
+namespace BATTER {
+    extern std::string FILE_PATH_BATTER;
+    extern std::string FILE_PATH_DDS;
+    extern std::string FILE_PATH_ANIMATION[4];
 
     namespace BAT
     {
         const Vector3 OFFSET_BAT = Vector3(100.0f, 150.0f, 0.0f); //バットのオフセット
         const Vector3 COLLISION_SCALE_BAT = Vector3(114.285714286f, 80.0f, 40.0f);
         const Vector3 ROTATION_ANGLE = Vector3(0.0f, 0.0f, 1.0f); //バットの回転角度と回転速度
-		constexpr float SPIN_TIME_LIMIT = 5.0f;             //回転の時間制限
-		constexpr float HALF_ROTATION_ANGLE = 180.0f;   //回転の半分の角度
-		constexpr float FULL_ROTATION_ANGLE = 360.0f;   //回転の全体の角度		
+        constexpr float SPIN_TIME_LIMIT = 5.0f;             //回転の時間制限
+        constexpr float HALF_ROTATION_ANGLE = 180.0f;   //回転の半分の角度
+        constexpr float FULL_ROTATION_ANGLE = 360.0f;   //回転の全体の角度		
         constexpr float HEIGHT_OFFSET = 200.0f; //バットの高さオフセット
     }
 
@@ -47,9 +47,9 @@ namespace BATTER{
     constexpr float HIT_ZONE_RADIUS = 50.0f;			// 真ん中から端までの最大距離 (6080 - 6075)
     constexpr float RAD_TO_DEG = 180.0f / 3.14159265f;	//ラジアンを度に変換するための定数
     constexpr float CURSOR_MOVE_SPEED = 500.0f;			// カーソルの移動速度（ピクセル/秒）
-	constexpr float ROTATION_RADIUS = 30.0f;			// 回転の半径
-	constexpr float LENGTH_EPSILON = 0.001f;            // 長さの比較に使用する小さな値
-	constexpr float READY_TIME = 5.0f;					// 準備時間
+    constexpr float ROTATION_RADIUS = 30.0f;			// 回転の半径
+    constexpr float LENGTH_EPSILON = 0.001f;            // 長さの比較に使用する小さな値
+    constexpr float READY_TIME = 5.0f;					// 準備時間
 }
 
 
@@ -62,7 +62,7 @@ private:
         enAnimationClip_Idle,       // 待機
         enAnimationClip_Rotation,   // 回転
         enAnimationClip_Swing,      // スイング
-		enAnimationClip_SwingGo,    // スイングゴー
+        enAnimationClip_SwingGo,    // スイングゴー
         enAnimationClip_Num
     };
     std::unique_ptr<BatterStateMachine> m_stateMachine;                 // バッターステート管理   
@@ -70,7 +70,7 @@ private:
     std::unique_ptr<nsApp::CharacterModel> m_characterModel;            // キャラクターモデル
     Vector3 m_posIdle = Vector3(-420.0f, -90.0f, 5500.0f);
     Vector3 m_posSwingGo = Vector3(-420.0f, -40.0f, 5500.0f);
-    Vector3 m_posSwing = Vector3(-420.0f, -40.0f, 5500.0f); 
+    Vector3 m_posSwing = Vector3(-420.0f, -40.0f, 5500.0f);
     void UpdateModelPosition();
     Game* m_game = nullptr;                                             // ゲーム本体    
     InGameUI* m_inGameUI = nullptr;                                     // UI   
@@ -82,7 +82,7 @@ private:
     EnAnimationClip m_setAnimation = enAnimationClip_Idle;              // 現在アニメーション    
     Transform m_transform;                                              // トランスフォーム    
     Quaternion m_initialRotation;                                       // 初期回転
-	Quaternion m_rotation;                                              // 回転
+    Quaternion m_rotation;                                              // 回転
 
     Vector3 m_facingDir = Vector3(1.0f, 0.0f, 0.0f);                    // プレイヤーの向き
     Vector3 m_meetPosition;                                             // ミート位置    
@@ -96,7 +96,9 @@ private:
     Vector2 m_inputdelayScale = Vector2(1.0f, 1.0f);                    // カーソル移動の遅延スケール
     Vector3 m_bodyCenter;                                               // 本体中心
     Vector3 m_modelPos;                                                 // モデルの半径
-	Vector3 m_hitPosition;                                              // ヒット位置
+    Vector3 m_hitPosition;                                              // ヒット位置
+    Vector3 m_prevDustPos = Vector3::Zero;                              // 前フレームのモデル位置(移動方向算出用)
+    Vector3 m_prevDustOffset = Vector3::Zero;                           // 前フレームの土煙オフセット(移動方向算出用)
 
     Vector2 m_inputScale = Vector2(1.0f, 1.0f);                         // カーソル入力スケール   
     Vector2 m_inversioninputScale = Vector2(1.0f, 1.0f);                // 反転カーソル入力スケール
@@ -106,18 +108,21 @@ private:
     bool m_isDelayFrag = false;                                         // カーソル移動の遅延フラグ    
     bool m_isRotation = true;                                           // 回転有効
     bool m_isReplay = false;                                            // リプレイ中フラグ
-	bool m_isDifficultyConfigured = false;                              // 難易度設定済みフラグ
+    bool m_isDifficultyConfigured = false;                              // 難易度設定済みフラグ
 
-    float m_meatRange = 50.0f;                                          // ヒット範囲    
-    float m_cursorMoveScale = 1.0f;                                     // カーソル移動速度倍率 
-    float m_prevAngle = 0.0f;                                           // 前回角度    
-    float m_guruGuruBatTimer = 0.0f;                                    // 回転タイマー    
+    float m_meatRange = 50.0f;                                          // ヒット範囲
+    float m_cursorMoveScale = 1.0f;                                     // カーソル移動速度倍率
+    float m_prevAngle = 0.0f;                                           // 前回角度
+    float m_guruGuruBatTimer = 0.0f;                                    // 回転タイマー
     float m_totalRotation = 0.0f;                                       // 総回転量
-	float m_inputAngle = 0.0f;                                          // 入力角度
+    float m_inputAngle = 0.0f;                                          // 入力角度
+    float m_difficultyPowerScale = 1.0f;                                // 難易度ごとの威力倍率
+    float m_Spawn_Cooldown = 0.0f;                                      // エフェクトの出現クールダウン
 
     int m_guruGuruBatCount = 0;                                         // 回転回数
-	int m_adjacentFrames = 0;                                           // 前後フレームの値
-    float m_difficultyPowerScale = 1.0f; // 難易度ごとの威力倍率
+    int m_adjacentFrames = 0;                                           // 前後フレームの値
+    int m_effectCount = 0;                                              // エフェクトの数
+
     struct EffectInfo
     {
         // 出現エフェクト
@@ -126,11 +131,15 @@ private:
         // ヒットエフェクト
         uint32_t m_effectHitID;
 
-		// 土煙エフェクト
+        // 土煙エフェクト
         uint32_t m_effectCloudID;
 
-		float m_cloudEffectCount = 0; // 土煙エフェクトの数
+        // 摩擦煙エフェクト
+        uint32_t m_effectFrictionID;
+
+        float m_cloudEffectCount = 0; // 土煙エフェクトの数
     };
+    std::vector<uint32_t> m_frictionEffectIDs;                          // 出した摩擦煙のID(終了時にまとめて止める)
     EffectInfo m_inro;                                                  // エフェクト情報
     float m_hitZoneUpperLimit = BATTER::HIT_ZONE_CENTER + BATTER::HIT_ZONE_UPPER_OFFSET_NORMAL;
     float m_hitZoneLowerLimit = BATTER::HIT_ZONE_CENTER - BATTER::HIT_ZONE_LOWER_OFFSET_NORMAL;
@@ -200,12 +209,12 @@ public:
     void SetSwingGoAnimation()
     {
         m_setAnimation = enAnimationClip_SwingGo;
-	}
+    }
 
     bool GetSwingGoAnimation() const
     {
         return m_setAnimation == enAnimationClip_SwingGo;
-	}
+    }
 
     // アニメーション再生中判定
     bool IsPlayAnimation()
@@ -224,7 +233,7 @@ public:
     {
         return m_characterModel->IsPlayAnimation()
             && m_setAnimation == enAnimationClip_SwingGo;
-	}
+    }
 
     // カーソル座標更新
     void SetCursorPosition();
@@ -444,8 +453,14 @@ public:
     // エフェクト更新
     void DownArrowEffect();
 
-	// 土煙エフェクト
-    void CloudofdustEffect(Vector3 pos);
+    // 土煙エフェクト
+    void CloudofdustEffect();
+
+    // 摩擦煙エフェクト
+    void FrictionEffect();
+
+    // 摩擦煙エフェクト停止
+    void StopFrictionEffect();
 
     // 接地判定
     const bool GetIsOnGround() const
@@ -484,14 +499,14 @@ public:
     Vector3 GetHitPosition() const
     {
         return m_hitPosition;
-	}
+    }
 
     Ball* GetBall() const
     {
         return m_ball;
     }
 
-    Game* GetGame() const 
+    Game* GetGame() const
     {
         return m_game;
     }
@@ -499,7 +514,7 @@ public:
     InGameUI* GetInGameUI() const
     {
         return m_inGameUI;
-	}
+    }
 
     //難易度ごとに打ちやすさを変更する関数
     void setDifficultyVariables();
@@ -507,7 +522,7 @@ public:
     void SetIsPaused(bool isPaused)
     {
         m_isPaused = isPaused;
-	}
+    }
     bool GetIsPaused() const
     {
         return m_isPaused;
@@ -516,7 +531,8 @@ public:
     Vector3 GetPosition() const
     {
         return m_modelPos;
-	}
+    }
 
     void CheckDirectionChangeSE();
+
 };
