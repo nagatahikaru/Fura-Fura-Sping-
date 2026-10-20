@@ -53,6 +53,10 @@ namespace {
 	constexpr float DUST_BACK_OFFSET = 10.0f;  // 進行方向の後ろへのずらし量
 	constexpr float DUST_FOOT_OFFSET_Y = 0.0f;  // 足元の高さ補正(地面に合わせて調整)
 	constexpr float DUST_YAW_OFFSET_DEG = 0.0f; // エフェクト素材の向き補正(素材に合わせて調整)
+
+	// 回転中に出した摩擦煙のID。回転が終わったらまとめて止める
+	// (Batter.h を変更しないよう、このファイル内に持つ。Batter は1体のみ)
+	std::vector<uint32_t> g_frictionEffectIDs;
 }
 
 Batter::Batter()
@@ -809,17 +813,23 @@ void Batter::FrictionEffect()
 			enEffect_FrictionSmoke,
 			{ m_bodyCenter.x, 240.0f, m_bodyCenter.z },
 			Vector3(30.0f, 30.0f, 30.0f));
-		m_frictionEffectIDs.push_back(m_inro.m_effectFrictionID);
+		g_frictionEffectIDs.push_back(m_inro.m_effectFrictionID);
 	}
 }
 
 void Batter::StopFrictionEffect()
 {
+	// 回転状態の Exit は、スティックが左下に入るたびに(Idleを経由して)呼ばれる。
+	// 回し続けている間は煙を止めず、回転ターンが終わった(回転状態でなくなった)ときだけ止める
+	if (m_isRotation) {
+		return;
+	}
+
 	// 最後の1個だけでなく、出した摩擦煙をすべて止める
-	for (uint32_t id : m_frictionEffectIDs) {
+	for (uint32_t id : g_frictionEffectIDs) {
 		g_effectManager->StopEffect(id);
 	}
-	m_frictionEffectIDs.clear();
+	g_frictionEffectIDs.clear();
 }
 
 /** スティック入力方向(4方向)を判定し、切り替わった瞬間にSE20を鳴らす */
